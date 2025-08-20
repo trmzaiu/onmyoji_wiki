@@ -34,15 +34,9 @@
 
               <div class="dropdown-menu" :class="{ active: isDropdownOpen }">
                 <!-- Factions -->
-                <div
-                  class="dropdown-item"
-                >
-                  <NuxtLink to="/onmyoji/Seimei" class="submenu-label"
-                    >Seimei</NuxtLink
-                  >
-                  <NuxtLink to="/onmyoji/Kagura" class="submenu-label"
-                    >Kagura</NuxtLink
-                  >
+                <div class="dropdown-item">
+                  <NuxtLink to="/onmyoji/Seimei" class="submenu-label">Seimei</NuxtLink>
+                  <NuxtLink to="/onmyoji/Kagura" class="submenu-label">Kagura</NuxtLink>
                   <NuxtLink to="/onmyoji/Hiromasa" class="submenu-label"
                     >Hiromasa</NuxtLink
                   >
@@ -111,6 +105,9 @@ export default {
 </script>
 
 <style scoped>
+html {
+  scroll-behavior: smooth;
+}
 /* Global Styles */
 * {
   margin: 0;
@@ -119,8 +116,8 @@ export default {
 }
 
 #app {
-  font-family: "Rubik", "Long Cang", "National Park", sans-serif;
-  background:  #891727;
+  font-family: "Rubik", "Long Cang", "National Park", "Yuji Syuku", sans-serif;
+  background: #891727;
   color: #f4f1e8;
   min-height: 100vh;
 }
