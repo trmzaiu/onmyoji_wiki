@@ -17,7 +17,7 @@ const activeSkillIndex = ref(0);
 
 const formattedName = route.params.name.replace(/_/g, " ");
 
-// S: 165 -> ?, A: 127 -> 133, B: 123 -> 124, C: 102 -> ?, D: ? -> ?
+// S: 165 -> ?, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: ? -> ?
 const getATKRank = (atk) => {
   if (atk >= 165 && atk <= 171) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
@@ -46,9 +46,9 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: ? -> ?, B: 960 -> ?, C: 864 -> 939, D: 843 -> ?
+// S: 1174 -> ?, A: ? -> ?, B: 960 -> ?, C: 864 -> 939, D: 843 -> ?
 const getHPRank = (hp) => {
-  if (hp >= 1320 && hp <= 1323) return "S";
+  if (hp >= 1174 && hp <= 1323) return "S";
   else if (hp >= 1310 && hp <= 1312) return "A";
   else if (hp >= 960 && hp <= 966) return "B";
   else if (hp >= 864 && hp <= 939) return "C";
@@ -61,9 +61,9 @@ const getHPImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: 12532 -> ?, B: 10254 -> 11165, C: 9684 -> 10026, D: ? -> ?
+// S: 13785 -> ?, A: 12532 -> ?, B: 10254 -> 11165, C: 9684 -> 10026, D: ? -> ?
 const getHPEvoRank = (hp) => {
-  if (hp >= 12536 && hp <= 12536) return "S";
+  if (hp >= 13785 && hp <= 13786) return "S";
   else if (hp >= 12532 && hp <= 12535) return "A";
   else if (hp >= 10254 && hp <= 11165) return "B";
   else if (hp >= 9684 && hp <= 10026) return "C";
@@ -90,11 +90,11 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 490 -> ?, A: ? -> ?, B: 401 -> 437, C: 375 -> ?, D: ? -> ?
+// S: 490 -> ?, A: ? -> ?, B: 397 -> 437, C: 375 -> ?, D: ? -> ?
 const getDEFEvoRank = (def) => {
   if (def >= 490 && def <= 490) return "S";
   else if (def >= 488 && def <= 489) return "A";
-  else if (def >= 401 && def <= 437) return "B";
+  else if (def >= 397 && def <= 437) return "B";
   else if (def >= 375 && def <= 411) return "C";
   else return "D";
 };
@@ -119,7 +119,8 @@ const getSPDImage = (spd) => {
 };
 
 const getCritRank = (crit) => {
-  if (crit >= 10 && crit <= 12) return "S";
+  if (crit >= 12) return "SS";
+  else if (crit >= 10 && crit <= 12) return "S";
   else if (crit >= 8 && crit <= 9) return "A";
   else if (crit >= 5 && crit <= 5) return "B";
   else if (crit >= 3 && crit <= 3) return "C";
