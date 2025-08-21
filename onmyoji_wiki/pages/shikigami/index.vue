@@ -1,11 +1,51 @@
 <script setup>
 import { useSupabase } from "@/utils/useSupabase.ts";
-import { nextTick, onMounted, ref } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 const supabase = useSupabase();
+
+// ===== STATE =====
 const shikigamiList = ref([]);
 const isEnglish = ref(true);
 
+// ===== SORTING =====
+const sort = ref({ key: "id", asc: true });
+const rarityOrder = { SP: 5, SSR: 4, SR: 3, R: 2, N: 1 };
+
+const sortedShikigami = computed(() => {
+  return [...shikigamiList.value].sort((a, b) => {
+    let aValue, bValue;
+
+    switch (sort.value.key) {
+      case "name":
+        aValue = a.name?.jp?.[1]?.toLowerCase?.() || "";
+        bValue = b.name?.jp?.[1]?.toLowerCase?.() || "";
+        break;
+      case "rarity":
+        aValue = rarityOrder[a.rarity] || 0;
+        bValue = rarityOrder[b.rarity] || 0;
+        break;
+      default:
+        aValue = a[sort.value.key];
+        bValue = b[sort.value.key];
+    }
+
+    if (aValue < bValue) return sort.value.asc ? -1 : 1;
+    if (aValue > bValue) return sort.value.asc ? 1 : -1;
+    return 0;
+  });
+});
+
+function sortBy(key) {
+  if (sort.value.key === key) {
+    sort.value.asc = !sort.value.asc;
+  } else {
+    sort.value.key = key;
+    sort.value.asc = true;
+  }
+}
+
+// ===== FETCH DATA =====
 async function fetchAllShikigami() {
   const { data, error } = await supabase
     .from("Shikigami")
@@ -16,10 +56,49 @@ async function fetchAllShikigami() {
     console.error("Error fetching shikigami:", error);
   } else {
     shikigamiList.value = data;
-    await nextTick();
   }
 }
 
+// ===== REALTIME =====
+function setupRealtime() {
+  const channel = supabase
+    .channel("shikigami-changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "Shikigami",
+      },
+      (payload) => {
+        console.log("Realtime change:", payload);
+
+        if (payload.eventType === "INSERT") {
+          shikigamiList.value.push(payload.new);
+        }
+
+        if (payload.eventType === "UPDATE") {
+          const index = shikigamiList.value.findIndex((s) => s.id === payload.new.id);
+          if (index !== -1) {
+            shikigamiList.value[index] = payload.new;
+          }
+        }
+
+        if (payload.eventType === "DELETE") {
+          shikigamiList.value = shikigamiList.value.filter(
+            (s) => s.id !== payload.old.id
+          );
+        }
+      }
+    )
+    .subscribe();
+
+  onUnmounted(() => {
+    supabase.removeChannel(channel);
+  });
+}
+
+// ===== INFO TEXTS =====
 const description = {
   en:
     "Shikigami are beings who have formed contracts with onmyouji to be summoned to their aid.",
@@ -28,56 +107,32 @@ const description = {
 };
 
 const introduction = {
-  en:
-    "Shikigami are the beings summoned by the onmyouji to assist them. They form contracts which is recorded in a contract book. Shards of the contract book or a complete contract book (both the same rarity as the shikigami) for a shikigami may also be obtained to contract with the shikigami.\n\nOnce summoned, shikigami are found in the shikigami records.\n\nIn battle, shikigami are summoned through a medium like paper doll.",
-  vn:
-    "Thức Thần là những sinh linh được Âm Dương Sư triệu hồi để hỗ trợ họ. Việc triệu hồi được thực hiện thông qua khế ước, được ghi lại trong Sách Khế Ước. Người chơi có thể thu thập mảnh khế ước hoặc Sách Khế Ước hoàn chỉnh (cùng độ hiếm với Thức Thần) để ký kết và triệu hồi Thức Thần đó.\n\nSau khi được triệu hồi, Thức Thần sẽ xuất hiện trong Hồ Sơ Thức Thần.\n\nTrong trận chiến, Thức Thần được gọi ra thông qua trung giới như búp bê giấy.",
+  en: `Shikigami are the beings summoned by the onmyouji to assist them. They form contracts which is recorded in a contract book. Shards of the contract book or a complete contract book (both the same rarity as the shikigami) for a shikigami may also be obtained to contract with the shikigami.
+
+Once summoned, shikigami are found in the shikigami records.
+
+In battle, shikigami are summoned through a medium like paper doll.`,
+  vn: `Thức Thần là những sinh linh được Âm Dương Sư triệu hồi để hỗ trợ họ. Việc triệu hồi được thực hiện thông qua khế ước, được ghi lại trong Sách Khế Ước. Người chơi có thể thu thập mảnh khế ước hoặc Sách Khế Ước hoàn chỉnh (cùng độ hiếm với Thức Thần) để ký kết và triệu hồi Thức Thần đó.
+
+Sau khi được triệu hồi, Thức Thần sẽ xuất hiện trong Hồ Sơ Thức Thần.
+
+Trong trận chiến, Thức Thần được gọi ra thông qua trung giới như búp bê giấy.`,
 };
 
 const rarity = {
-  en:
-    'Shikigami have SP, SSR, SR, R, and N rarity. Rarity affects the number of shards needed to summon the shikigami and their rates in summoning.\n\nN rarity technically has the distinctions of "materials" i.e. daruma, and "gekota."',
-  vn:
-    "Thức Thần được chia thành các độ hiếm: SP, SSR, SR, R và N. Độ hiếm ảnh hưởng đến số mảnh cần để triệu hồi Thức Thần cũng như tỉ lệ xuất hiện khi triệu hồi.\n\nĐộ hiếm N thì được phân loại riêng thành: Nguyên liệu (ví dụ: Daruma), và Gekota.",
+  en: `Shikigami have SP, SSR, SR, R, and N rarity. Rarity affects the number of shards needed to summon the shikigami and their rates in summoning.
+
+N rarity technically has the distinctions of "materials" i.e. daruma, and "gekota."`,
+  vn: `Thức Thần được chia thành các độ hiếm: SP, SSR, SR, R và N. Độ hiếm ảnh hưởng đến số mảnh cần để triệu hồi Thức Thần cũng như tỉ lệ xuất hiện khi triệu hồi.
+
+Độ hiếm N thì được phân loại riêng thành: Nguyên liệu (ví dụ: Daruma), và Gekota.`,
 };
 
-const sort = ref({ key: "id", asc: true });
-
-const sortBy = (key) => {
-  if (sort.value.key === key) {
-    sort.value.asc = !sort.value.asc; // đảo chiều nếu click lại
-  } else {
-    sort.value.key = key;
-    sort.value.asc = true; // mặc định tăng
-  }
-};
-
-const sortedShikigami = computed(() => {
-  const rarityOrder = { SP: 5, SSR: 4, SR: 3, R: 2, N: 1 };
-
-  return [...shikigamiList.value].sort((a, b) => {
-    let aValue, bValue;
-
-    if (sort.value.key === "name") {
-      aValue = a.name.jp[1].toLowerCase();
-      bValue = b.name.jp[1].toLowerCase();
-    } else if (sort.value.key === "rarity") {
-      aValue = rarityOrder[a.rarity] || 0;
-      bValue = rarityOrder[b.rarity] || 0;
-    } else {
-      aValue = a[sort.value.key];
-      bValue = b[sort.value.key];
-    }
-
-    if (aValue < bValue) return sort.value.asc ? -1 : 1;
-    if (aValue > bValue) return sort.value.asc ? 1 : -1;
-    return 0;
-  });
-});
-
+// ===== LIFECYCLE =====
 onMounted(async () => {
   document.title = "Shikigami";
   await fetchAllShikigami();
+  setupRealtime();
 });
 </script>
 
@@ -159,7 +214,7 @@ onMounted(async () => {
           <tbody>
             <tr v-for="shiki in sortedShikigami" :key="shiki.id" class="shikigami-row">
               <td class="px-2 py-1 text-center text-black">{{ shiki.id }}</td>
-              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0;">
+              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0">
                 <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`"
                   ><img
                     :src="shiki.images.image_shard"
@@ -167,8 +222,8 @@ onMounted(async () => {
                     class="w-16 h-16 object-contain mx-auto"
                 /></a>
               </td>
-              
-              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0;">
+
+              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0">
                 <div class="text-red hover:text-red-500 font-semibold">
                   <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">{{
                     shiki.name.jp[1]
@@ -185,7 +240,7 @@ onMounted(async () => {
                 </div>
               </td>
 
-              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0;">
+              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0">
                 <img
                   :src="`/assets/rarity/${shiki.rarity}.webp`"
                   :alt="shiki.rarity"
