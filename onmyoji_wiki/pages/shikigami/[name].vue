@@ -17,11 +17,11 @@ const activeSkillIndex = ref(0);
 
 const formattedName = route.params.name.replace(/_/g, " ");
 
-// S: 165 -> ?, A: 127 -> 133, B: 124 -> ?, C: 102 -> ?, D: ? -> ?
+// S: 165 -> ?, A: 127 -> 133, B: 123 -> 124, C: 102 -> ?, D: ? -> ?
 const getATKRank = (atk) => {
   if (atk >= 165 && atk <= 171) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
-  else if (atk >= 124 && atk <= 126) return "B";
+  else if (atk >= 123 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 103) return "C";
   else if (atk >= 97 && atk <= 98) return "D";
   else return "E";
@@ -32,10 +32,10 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 3055 -> 3484, A: 2921 -> 2975, B: ? -> ?, C: 2385 -> ?, D: ? -> ?
+// S: 3055 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2385 -> ?, D: ? -> ?
 const getATKEvoRank = (atk) => {
   if (atk >= 3055 && atk <= 3484) return "S";
-  else if (atk >= 2921 && atk <= 2975) return "A";
+  else if (atk >= 2894 && atk <= 2975) return "A";
   else if (atk >= 2386 && atk <= 2386) return "B";
   else if (atk >= 2385 && atk <= 2385) return "C";
   else return "D";
@@ -513,7 +513,7 @@ watch(isEnglish, async () => {
                   <img
                     :src="`/assets/rarity/${shikigami.rarity}.webp`"
                     :alt="shikigami.rarity"
-                    class="w-16 h-16 object-contain mx-auto absolute top-[-30px] left-[-40px]"
+                    class="w-16 h-16 object-contain absolute top-[-30px] left-[-40px]"
                   />
                 </th>
               </tr>
@@ -1110,7 +1110,7 @@ watch(isEnglish, async () => {
                 </div>
               </div>
               <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-              
+
               <p class="text-center italic text-[#a3a3a3]">
                 "{{ shikigami.skills[activeSkillIndex].voice }}"
               </p>
@@ -1434,7 +1434,10 @@ watch(isEnglish, async () => {
             :alt="shikigami.name.jp[1]"
             class="w-full h-70 object-cover hover:scale-110 transition-transform duration-300"
           />
-          <p class="mt-4 text-center font-medium text-black">
+          <p
+            class="mt-4 text-center font-medium text-black"
+            :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+          >
             {{ isEnglish ? "Default" : "Mặc định" }}
           </p>
         </div>
