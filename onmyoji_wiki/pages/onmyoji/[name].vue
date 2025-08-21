@@ -383,7 +383,7 @@ watch(isEnglish, async () => {
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/ATK.webp" alt="ATK" />
+                <img src="/assets/stats/ATK.webp" alt="ATK" />
                 ATK
               </th>
               <td class="centered-number">{{ onmyoji.stats.ATK[0] }}</td>
@@ -392,16 +392,16 @@ watch(isEnglish, async () => {
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/HP.webp" alt="HP" />
+                <img src="/assets/stats/HP.webp" alt="HP" />
                 HP
-              </th>
+              </th> 
               <td class="centered-number">{{ onmyoji.stats.HP[0] }}</td>
               <td class="centered-number">{{ onmyoji.stats.HP[1] }}</td>
               <td>+{{ onmyoji.stats.HP[1] - onmyoji.stats.HP[0] }}</td>
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/DEF.webp" alt="DEF" />
+                <img src="/assets/stats/DEF.webp" alt="DEF" />
                 DEF
               </th>
               <td class="centered-number">{{ onmyoji.stats.DEF[0] }}</td>
@@ -410,7 +410,7 @@ watch(isEnglish, async () => {
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/SPD.webp" alt="SPD" />
+                <img src="/assets/stats/SPD.webp" alt="SPD" />
                 SPD
               </th>
               <td class="centered-number">{{ onmyoji.stats.SPD[0] }}</td>
@@ -419,7 +419,7 @@ watch(isEnglish, async () => {
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/CRIT.webp" alt="CRIT" />
+                <img src="/assets/stats/CRIT.webp" alt="CRIT" />
                 Crit
               </th>
               <td class="centered-number">{{ onmyoji.stats.Crit[0] }}%</td>
@@ -428,7 +428,7 @@ watch(isEnglish, async () => {
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/CDMG.webp" alt="CDMG" />
+                <img src="/assets/stats/CDMG.webp" alt="CDMG" />
                 Crit DMG
               </th>
               <td class="centered-number">150%</td>
@@ -437,7 +437,7 @@ watch(isEnglish, async () => {
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/HIT.webp" alt="HIT" />
+                <img src="/assets/stats/HIT.webp" alt="HIT" />
                 Effects HIT
               </th>
               <td class="centered-number">0%</td>
@@ -446,7 +446,7 @@ watch(isEnglish, async () => {
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/RES.webp" alt="RES" />
+                <img src="/assets/stats/RES.webp" alt="RES" />
                 Effects RES
               </th>
               <td class="centered-number">0%</td>
@@ -604,7 +604,7 @@ watch(isEnglish, async () => {
       </div>
       <img
         v-if="tooltipData.image"
-        :src="'/assets/' + tooltipData.image"
+        :src="'/assets/effects/' + tooltipData.image"
         :alt="tooltipData.image"
         style="width: 32px; height: 32px; margin-bottom: 8px"
       />

@@ -17,9 +17,9 @@ const activeSkillIndex = ref(0);
 
 const formattedName = route.params.name.replace(/_/g, " ");
 
-// S: ? -> ?, A: 127 -> 133, B: 124 -> ?, C: 102 -> ?, D: ? -> ?
+// S: 165 -> ?, A: 127 -> 133, B: 124 -> ?, C: 102 -> ?, D: ? -> ?
 const getATKRank = (atk) => {
-  if (atk >= 135 && atk <= 171) return "S";
+  if (atk >= 165 && atk <= 171) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 124 && atk <= 126) return "B";
   else if (atk >= 102 && atk <= 103) return "C";
@@ -29,12 +29,12 @@ const getATKRank = (atk) => {
 
 const getATKImage = (atk) => {
   const rank = getATKRank(atk);
-  return `/assets/${rank}.webp`;
+  return `/assets/stats/${rank}.webp`;
 };
 
-// S: 3055 -> 3450, A: 2921 -> 2975, B: ? -> ?, C: 2385 -> ?, D: ? -> ?
+// S: 3055 -> 3484, A: 2921 -> 2975, B: ? -> ?, C: 2385 -> ?, D: ? -> ?
 const getATKEvoRank = (atk) => {
-  if (atk >= 3055 && atk <= 3450) return "S";
+  if (atk >= 3055 && atk <= 3484) return "S";
   else if (atk >= 2921 && atk <= 2975) return "A";
   else if (atk >= 2386 && atk <= 2386) return "B";
   else if (atk >= 2385 && atk <= 2385) return "C";
@@ -43,7 +43,7 @@ const getATKEvoRank = (atk) => {
 
 const getATKEvoImage = (atk) => {
   const rank = getATKEvoRank(atk);
-  return `/assets/${rank}.webp`;
+  return `/assets/stats/${rank}.webp`;
 };
 
 // S: ? -> ?, A: ? -> ?, B: 960 -> ?, C: 864 -> 939, D: 843 -> ?
@@ -58,21 +58,21 @@ const getHPRank = (hp) => {
 
 const getHPImage = (hp) => {
   const rank = getHPRank(hp);
-  return `/assets/${rank}.webp`;
+  return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: 12532 -> ?, B: 10254 -> 11165, C: 10026 -> ?, D: ? -> ?
+// S: ? -> ?, A: 12532 -> ?, B: 10254 -> 11165, C: 9684 -> 10026, D: ? -> ?
 const getHPEvoRank = (hp) => {
   if (hp >= 12536 && hp <= 12536) return "S";
   else if (hp >= 12532 && hp <= 12535) return "A";
   else if (hp >= 10254 && hp <= 11165) return "B";
-  else if (hp >= 10026 && hp <= 10030) return "C";
+  else if (hp >= 9684 && hp <= 10026) return "C";
   else return "D";
 };
 
 const getHPEvoImage = (hp) => {
   const rank = getHPEvoRank(hp);
-  return `/assets/${rank}.webp`;
+  return `/assets/stats/${rank}.webp`;
 };
 
 // S: ? -> ?, A: 75 -> ?, B: ? -> ?, C: 63 -> 67, D: 58 -> ?
@@ -87,7 +87,7 @@ const getDEFRank = (def) => {
 
 const getDEFImage = (def) => {
   const rank = getDEFRank(def);
-  return `/assets/${rank}.webp`;
+  return `/assets/stats/${rank}.webp`;
 };
 
 // S: 490 -> ?, A: ? -> ?, B: 410 -> 437, C: 375 -> ?, D: ? -> ?
@@ -101,7 +101,7 @@ const getDEFEvoRank = (def) => {
 
 const getDEFEvoImage = (def) => {
   const rank = getDEFEvoRank(def);
-  return `/assets/${rank}.webp`;
+  return `/assets/stats/${rank}.webp`;
 };
 
 const getSPDRank = (spd) => {
@@ -115,7 +115,7 @@ const getSPDRank = (spd) => {
 
 const getSPDImage = (spd) => {
   const rank = getSPDRank(spd);
-  return `/assets/${rank}.webp`;
+  return `/assets/stats/${rank}.webp`;
 };
 
 const getCritRank = (crit) => {
@@ -129,7 +129,7 @@ const getCritRank = (crit) => {
 
 const getCritImage = (crit) => {
   const rank = getCritRank(crit);
-  return `/assets/${rank}.webp`;
+  return `/assets/stats/${rank}.webp`;
 };
 
 const processTextWithTooltips = (text) => {
@@ -458,29 +458,31 @@ watch(isEnglish, async () => {
       <div class="flex gap-6">
         <div class="w-2/3 mx-auto">
           <!-- Tabs -->
-          <div class="flex border-b border-gray-300 mb-4">
-            <button
-              class="flex py-2 px-4 text-center"
-              :class="
-                activeTab === 'default'
-                  ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-                  : 'text-[#a3a3a3] cursor-pointer'
-              "
-              @click="activeTab = 'default'"
-            >
-              {{ isEnglish ? "Default" : "Mặc định" }}
-            </button>
-            <button
-              class="flex py-2 px-4 text-center"
-              :class="
-                activeTab === 'evo'
-                  ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-                  : 'text-[#a3a3a3] cursor-pointer'
-              "
-              @click="activeTab = 'evo'"
-            >
-              {{ isEnglish ? "Evolution" : "Thức tỉnh" }}
-            </button>
+          <div v-if="shikigami.rarity !== 'SP'" class="w-full">
+            <div class="flex border-b border-gray-300 mb-4">
+              <button
+                class="flex py-2 px-4 text-center"
+                :class="
+                  activeTab === 'default'
+                    ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                    : 'text-[#a3a3a3] cursor-pointer'
+                "
+                @click="activeTab = 'default'"
+              >
+                {{ isEnglish ? "Default" : "Mặc định" }}
+              </button>
+              <button
+                class="flex py-2 px-4 text-center"
+                :class="
+                  activeTab === 'evo'
+                    ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                    : 'text-[#a3a3a3] cursor-pointer'
+                "
+                @click="activeTab = 'evo'"
+              >
+                {{ isEnglish ? "Evolution" : "Thức tỉnh" }}
+              </button>
+            </div>
           </div>
 
           <!-- Images -->
@@ -500,22 +502,16 @@ watch(isEnglish, async () => {
               :class="activeTab === 'evo' ? 'opacity-100' : 'opacity-0'"
             />
           </div>
-
-          <div class="text-black text-justify mt-5" v-if="shikigami.profile !== null">
-            {{ isEnglish ? shikigami.profile.en : shikigami.profile.vn }}
-          </div>
         </div>
 
-        <div class="flex justify-end w-1/3">
-          <table
-            class="border border-gray-400 text-sm w-full max-w-[300px] max-h-[500px]"
-          >
+        <div class="flex justify-end w-1/3 max-h-[400px]">
+          <table class="border border-gray-400 text-sm w-full">
             <thead>
               <tr>
                 <th class="border border-red table-title p-2 relative" colspan="4">
                   <div>{{ shikigami.name.jp[1] }}</div>
                   <img
-                    :src="`/assets/${shikigami.rarity}.webp`"
+                    :src="`/assets/rarity/${shikigami.rarity}.webp`"
                     :alt="shikigami.rarity"
                     class="w-16 h-16 object-contain mx-auto absolute top-[-30px] left-[-40px]"
                   />
@@ -523,7 +519,7 @@ watch(isEnglish, async () => {
               </tr>
             </thead>
             <tbody>
-              <tr class="border border-red text-black">
+              <tr class="border border-red text-black h-[60px]">
                 <td class="px-4">
                   <strong>CN</strong>
                 </td>
@@ -532,7 +528,7 @@ watch(isEnglish, async () => {
                   <div>{{ shikigami.name.cn[1] }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black">
+              <tr class="border border-red text-black h-[60px]">
                 <td class="px-4">
                   <strong>JP</strong>
                 </td>
@@ -541,7 +537,7 @@ watch(isEnglish, async () => {
                   <div>{{ shikigami.name.jp[1] }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black">
+              <tr class="border border-red text-black h-[40px]">
                 <td class="px-4">
                   <strong>GL</strong>
                 </td>
@@ -549,7 +545,7 @@ watch(isEnglish, async () => {
                   <div>{{ shikigami.name.en }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black">
+              <tr class="border border-red text-black h-[40px]">
                 <td class="px-4">
                   <strong>VN</strong>
                 </td>
@@ -557,20 +553,27 @@ watch(isEnglish, async () => {
                   <div>{{ shikigami.name.vn }}</div>
                 </td>
               </tr>
-              <tr>
+              <tr v-if="shikigami.rarity !== 'SP'">
                 <td
-                  class="border border-red p-2 h-8"
+                  class="border border-red p-2 h-10"
                   colspan="4"
                   style="background-color: #a51919; text-align: center; font-weight: 600"
                 >
                   Evo Materials
                 </td>
               </tr>
-              <tr>
-                <td class="border border-red px-2" v-for="material in shikigami.materials" :key="material.type">
+              <tr
+                v-if="shikigami.materials && shikigami.materials.length"
+                class="h-[60px]"
+              >
+                <td
+                  class="border border-red px-2"
+                  v-for="material in shikigami.materials"
+                  :key="material.type"
+                >
                   <div class="w-12 h-12 flex items-center justify-center relative">
                     <img
-                      :src="`/assets/${material.type}.webp`"
+                      :src="`/assets/materials/${material.type}.webp`"
                       :alt="material.type"
                       class="max-h-full max-w-full object-contain"
                     />
@@ -587,14 +590,14 @@ watch(isEnglish, async () => {
               </tr>
               <tr v-if="shikigami.version !== null">
                 <td
-                  class="border border-red p-2 h-8"
+                  class="border border-red p-2 h-10"
                   colspan="4"
                   style="background-color: #a51919; text-align: center; font-weight: 600"
                 >
                   Other Version
                 </td>
               </tr>
-              <tr v-if="shikigami.version !== null">
+              <tr v-if="shikigami.version !== null" class="h-[100px]">
                 <td class="border border-red" colspan="4">
                   <div class="flex flex-col items-center justify-center">
                     <img
@@ -614,6 +617,9 @@ watch(isEnglish, async () => {
             </tbody>
           </table>
         </div>
+      </div>
+      <div class="text-black text-justify mt-2" v-if="shikigami.profile !== null">
+        {{ isEnglish ? shikigami.profile.en : shikigami.profile.vn }}
       </div>
 
       <h2
@@ -654,7 +660,14 @@ watch(isEnglish, async () => {
                       width: 100%;
                     "
                   >
-                    {{ isEnglish ? "Unevolved" : "Cơ bản" }} <br />
+                    {{
+                      shikigami.rarity !== "SP"
+                        ? isEnglish
+                          ? "Unevolved"
+                          : "Cơ bản"
+                        : ""
+                    }}
+                    <br />
                     {{ isEnglish ? "Level 1" : "Cấp 1" }}
                   </div>
                 </figure>
@@ -663,7 +676,11 @@ watch(isEnglish, async () => {
               <th colspan="2">
                 <figure class="icon-img" style="position: relative">
                   <img
-                    :src="shikigami.images.image_icon_evo"
+                    :src="
+                      shikigami.rarity !== 'SP'
+                        ? shikigami.images.image_icon_evo
+                        : shikigami.images.image_icon
+                    "
                     :alt="shikigami.name.jp[1]"
                     style="object-fit: contain"
                     width="90"
@@ -679,7 +696,14 @@ watch(isEnglish, async () => {
                       width: 100%;
                     "
                   >
-                    {{ isEnglish ? "Evolved" : "Thức tỉnh" }} <br />
+                    {{
+                      shikigami.rarity !== "SP"
+                        ? isEnglish
+                          ? "Evolved"
+                          : "Thức tỉnh"
+                        : ""
+                    }}
+                    <br />
                     {{ isEnglish ? "Level 40" : "Cấp 40" }}
                   </div>
                 </figure>
@@ -689,7 +713,7 @@ watch(isEnglish, async () => {
             </tr>
             <tr>
               <th class="label-cell">
-                <img src="public/assets/ATK.webp" alt="ATK" />
+                <img src="/assets/stats/ATK.webp" alt="ATK" />
                 ATK
               </th>
               <td class="centered-number">
@@ -732,7 +756,7 @@ watch(isEnglish, async () => {
 
             <tr>
               <th class="label-cell">
-                <img src="public/assets/HP.webp" alt="HP" />
+                <img src="/assets/stats/HP.webp" alt="HP" />
                 HP
               </th>
               <td class="centered-number">
@@ -774,7 +798,7 @@ watch(isEnglish, async () => {
 
             <tr>
               <th class="label-cell">
-                <img src="public/assets/DEF.webp" alt="DEF" />
+                <img src="/assets/stats/DEF.webp" alt="DEF" />
                 DEF
               </th>
               <td class="centered-number">
@@ -816,7 +840,7 @@ watch(isEnglish, async () => {
 
             <tr>
               <th class="label-cell">
-                <img src="public/assets/SPD.webp" alt="SPD" />
+                <img src="/assets/stats/SPD.webp" alt="SPD" />
                 SPD
               </th>
               <td class="centered-number">
@@ -857,7 +881,7 @@ watch(isEnglish, async () => {
 
             <tr>
               <th class="label-cell">
-                <img src="public/assets/CRIT.webp" alt="CRIT" />
+                <img src="/assets/stats/CRIT.webp" alt="CRIT" />
                 Crit
               </th>
               <td class="centered-number">
@@ -894,7 +918,7 @@ watch(isEnglish, async () => {
 
             <tr>
               <th class="label-cell">
-                <img src="public/assets/CDMG.webp" alt="CDMG" />
+                <img src="/assets/stats/CDMG.webp" alt="CDMG" />
                 Crit DMG
               </th>
 
@@ -917,7 +941,7 @@ watch(isEnglish, async () => {
 
             <tr>
               <th class="label-cell">
-                <img src="public/assets/HIT.webp" alt="HIT" />
+                <img src="/assets/stats/HIT.webp" alt="HIT" />
                 Effects HIT
               </th>
 
@@ -940,7 +964,7 @@ watch(isEnglish, async () => {
 
             <tr>
               <th class="label-cell">
-                <img src="public/assets/RES.webp" alt="RES" />
+                <img src="/assets/stats/RES.webp" alt="RES" />
                 Effects RES
               </th>
 
@@ -985,6 +1009,7 @@ watch(isEnglish, async () => {
           {{ skill.type }}
         </button>
         <button
+          v-if="shikigami.rarity !== 'SP'"
           @click="activeSkillIndex = shikigami.skills.length"
           :class="[
             'px-4 py-2',
@@ -1065,7 +1090,7 @@ watch(isEnglish, async () => {
                   </span>
                   <span class="flex" style="margin-left: 45px; font-size: smaller">
                     <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                    <img src="public/assets/Onibi.webp" alt="Onibi" />
+                    <img src="/assets/Onibi.webp" alt="Onibi" />
                     {{ shikigami.skills[activeSkillIndex].onibi }}
                   </span>
                   <span style="margin-left: 45px; font-size: smaller">
@@ -1085,6 +1110,7 @@ watch(isEnglish, async () => {
                 </div>
               </div>
               <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+              
               <p class="text-center italic text-[#a3a3a3]">
                 "{{ shikigami.skills[activeSkillIndex].voice }}"
               </p>
@@ -1231,7 +1257,7 @@ watch(isEnglish, async () => {
                   </span>
                   <span class="flex" style="margin-left: 45px; font-size: smaller">
                     <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                    <img src="public/assets/Onibi.webp" alt="Onibi" />
+                    <img src="/assets/Onibi.webp" alt="Onibi" />
                     {{ shikigami.skills[activeSkillIndex].skill.onibi }}
                   </span>
                   <span style="margin-left: 45px; font-size: smaller">
@@ -1412,7 +1438,11 @@ watch(isEnglish, async () => {
             {{ isEnglish ? "Default" : "Mặc định" }}
           </p>
         </div>
-        <div class="flex flex-col items-center" title="Evolution">
+        <div
+          class="flex flex-col items-center"
+          title="Evolution"
+          v-if="shikigami.rarity !== 'SP'"
+        >
           <img
             :src="shikigami.images.image_evo"
             :alt="shikigami.name.jp[1]"
@@ -1480,7 +1510,7 @@ watch(isEnglish, async () => {
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919"></td>
           </tr>
-          <tr class="text-black">
+          <tr class="text-black" v-if="shikigami.rarity !== 'SP'">
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
               <img
                 :src="shikigami.images.image_skin_evo"
@@ -1543,7 +1573,7 @@ watch(isEnglish, async () => {
       </div>
       <img
         v-if="tooltipData.image"
-        :src="'/assets/' + tooltipData.image"
+        :src="'/assets/effects/' + tooltipData.image"
         :alt="tooltipData.image"
         style="width: 32px; height: 32px; margin-bottom: 8px"
       />
@@ -1562,7 +1592,7 @@ watch(isEnglish, async () => {
             </div>
             <img
               v-if="sub.image"
-              :src="'/assets/' + sub.image"
+              :src="'/assets/effects/' + sub.image"
               :alt="tooltipData.image"
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />

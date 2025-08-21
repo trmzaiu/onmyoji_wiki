@@ -187,7 +187,7 @@ onMounted(async () => {
 
               <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0;">
                 <img
-                  :src="`/assets/${shiki.rarity}.webp`"
+                  :src="`/assets/rarity/${shiki.rarity}.webp`"
                   :alt="shiki.rarity"
                   class="w-16 h-16 object-contain mx-auto"
                 />

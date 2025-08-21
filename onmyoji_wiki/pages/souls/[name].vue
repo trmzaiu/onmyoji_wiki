@@ -383,7 +383,7 @@ watch(isEnglish, async () => {
       </div>
       <img
         v-if="tooltipData.image"
-        :src="'/assets/' + tooltipData.image"
+        :src="'/assets/effects/' + tooltipData.image"
         :alt="tooltipData.image"
         style="width: 32px; height: 32px; margin-bottom: 8px"
       />
@@ -402,7 +402,7 @@ watch(isEnglish, async () => {
             </div>
             <img
               v-if="sub.image"
-              :src="'/assets/' + sub.image"
+              :src="'/assets/effects/' + sub.image"
               :alt="tooltipData.image"
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />
