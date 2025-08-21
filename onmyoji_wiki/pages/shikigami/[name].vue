@@ -32,9 +32,9 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 3055 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2385 -> ?, D: ? -> ?
+// S: 3002 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2385 -> ?, D: ? -> ?
 const getATKEvoRank = (atk) => {
-  if (atk >= 3055 && atk <= 3484) return "S";
+  if (atk >= 3002 && atk <= 3484) return "S";
   else if (atk >= 2894 && atk <= 2975) return "A";
   else if (atk >= 2386 && atk <= 2386) return "B";
   else if (atk >= 2385 && atk <= 2385) return "C";
@@ -75,12 +75,12 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: 75 -> ?, B: ? -> ?, C: 63 -> 67, D: 58 -> ?
+// S: ? -> ?, A: 75 -> ?, B: ? -> ?, C: 61 -> 67, D: 58 -> ?
 const getDEFRank = (def) => {
   if (def >= 8134 && def <= 8171) return "S";
   else if (def >= 75 && def <= 170) return "A";
   else if (def >= 68 && def <= 70) return "B";
-  else if (def >= 63 && def <= 67) return "C";
+  else if (def >= 61 && def <= 67) return "C";
   else if (def >= 58 && def <= 60) return "D";
   else return "E";
 };
@@ -90,11 +90,11 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 490 -> ?, A: ? -> ?, B: 410 -> 437, C: 375 -> ?, D: ? -> ?
+// S: 490 -> ?, A: ? -> ?, B: 401 -> 437, C: 375 -> ?, D: ? -> ?
 const getDEFEvoRank = (def) => {
   if (def >= 490 && def <= 490) return "S";
   else if (def >= 488 && def <= 489) return "A";
-  else if (def >= 410 && def <= 437) return "B";
+  else if (def >= 401 && def <= 437) return "B";
   else if (def >= 375 && def <= 411) return "C";
   else return "D";
 };
@@ -911,7 +911,7 @@ watch(isEnglish, async () => {
 
               <td>
                 <div class="flex justify-start">
-                  +{{ shikigami.stats.Crit[1] - shikigami.stats.Crit[0] }}
+                  +{{ shikigami.stats.Crit[1] - shikigami.stats.Crit[0] }}%
                 </div>
               </td>
             </tr>
