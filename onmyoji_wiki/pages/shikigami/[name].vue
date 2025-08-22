@@ -24,134 +24,324 @@ const formattedName = route.params.name.replace(/_/g, " ");
 const between = (val, min, max) => val >= min && val <= max;
 
 /* ---------------------- RANK + IMAGE ---------------------- */
-const rankRanges = {
-  // S: 165 -> ?, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: ? -> ?
-  atk: [
-    { min: 165, max: 171, rank: "S" },
-    { min: 127, max: 133, rank: "A" },
-    { min: 123, max: 124, rank: "B" },
-    { min: 102, max: 103, rank: "C" },
-    { min: 97, max: 98, rank: "D" },
-  ],
-  // S: 3002 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2385 -> ?, D: ? -> ?
-  atkEvo: [
-    { min: 3002, max: 3484, rank: "S" },
-    { min: 2894, max: 2975, rank: "A" },
-    { min: 2386, max: 2386, rank: "B" },
-    { min: 2385, max: 2385, rank: "C" },
-  ],
-  // S: 1174 -> ?, A: ? -> ?, B: 960 -> ?, C: 864 -> 939, D: 843 -> ?
-  hp: [
-    { min: 1174, max: 1323, rank: "S" },
-    { min: 1310, max: 1312, rank: "A" },
-    { min: 960, max: 966, rank: "B" },
-    { min: 864, max: 939, rank: "C" },
-    { min: 843, max: 843, rank: "D" },
-  ],
-  // S: 13785 -> ?, A: 12532 -> ?, B: 10254 -> 11165, C: 9684 -> 10026, D: ? -> ?
-  hpEvo: [
-    { min: 13785, max: 13786, rank: "S" },
-    { min: 12532, max: 12535, rank: "A" },
-    { min: 10254, max: 11165, rank: "B" },
-    { min: 9684, max: 10026, rank: "C" },
-  ],
-  // S: ? -> ?, A: 75 -> ?, B: ? -> ?, C: 61 -> 67, D: 58 -> ?
-  def: [
-    { min: 8134, max: 8171, rank: "S" },
-    { min: 75, max: 170, rank: "A" },
-    { min: 68, max: 70, rank: "B" },
-    { min: 61, max: 67, rank: "C" },
-    { min: 58, max: 60, rank: "D" },
-  ],
-  // S: 490 -> ?, A: ? -> ?, B: 397 -> 437, C: 375 -> ?, D: ? -> ?
-  defEvo: [
-    { min: 490, max: 490, rank: "S" },
-    { min: 488, max: 489, rank: "A" },
-    { min: 397, max: 437, rank: "B" },
-    { min: 375, max: 411, rank: "C" },
-  ],
-  spd: [
-    { min: 110, max: 127, rank: "S" },
-    { min: 105, max: 109, rank: "A" },
-    { min: 100, max: 104, rank: "B" },
-    { min: 95, max: 99, rank: "C" },
-    { min: 90, max: 94, rank: "D" },
-  ],
-  crit: [
-    { min: 12, max: 999, rank: "SS" },
-    { min: 10, max: 12, rank: "S" },
-    { min: 8, max: 9, rank: "A" },
-    { min: 5, max: 5, rank: "B" },
-    { min: 3, max: 3, rank: "C" },
-    { min: 0, max: 1, rank: "D" },
-  ],
+// S: 165 -> ?, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: ? -> ?
+const getATKRank = (atk) => {
+  if (atk >= 165 && atk <= 171) return "S";
+  else if (atk >= 127 && atk <= 133) return "A";
+  else if (atk >= 123 && atk <= 124) return "B";
+  else if (atk >= 102 && atk <= 103) return "C";
+  else if (atk >= 97 && atk <= 98) return "D";
+  else return "E";
 };
 
-function getRank(type, value) {
-  const ranges = rankRanges[type] || [];
-  for (const { min, max, rank } of ranges) {
-    if (between(value, min, max)) return rank;
-  }
-  return "E";
-}
+const getATKImage = (atk) => {
+  const rank = getATKRank(atk);
+  return `/assets/stats/${rank}.webp`;
+};
 
-function getRankImage(type, value) {
-  return `/assets/stats/${getRank(type, value)}.webp`;
-}
+// S: 3002 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2385 -> ?, D: ? -> ?
+const getATKEvoRank = (atk) => {
+  if (atk >= 3002 && atk <= 3484) return "S";
+  else if (atk >= 2894 && atk <= 2975) return "A";
+  else if (atk >= 2386 && atk <= 2386) return "B";
+  else if (atk >= 2385 && atk <= 2385) return "C";
+  else return "D";
+};
+
+const getATKEvoImage = (atk) => {
+  const rank = getATKEvoRank(atk);
+  return `/assets/stats/${rank}.webp`;
+};
+
+// S: 1174 -> ?, A: ? -> ?, B: 960 -> ?, C: 864 -> 939, D: 843 -> ?
+const getHPRank = (hp) => {
+  if (hp >= 1174 && hp <= 1323) return "S";
+  else if (hp >= 1310 && hp <= 1312) return "A";
+  else if (hp >= 960 && hp <= 966) return "B";
+  else if (hp >= 864 && hp <= 939) return "C";
+  else if (hp >= 843 && hp <= 843) return "D";
+  else return "E";
+};
+
+const getHPImage = (hp) => {
+  const rank = getHPRank(hp);
+  return `/assets/stats/${rank}.webp`;
+};
+
+// S: 13785 -> ?, A: 12532 -> ?, B: 10254 -> 11165, C: 9684 -> 10026, D: ? -> ?
+const getHPEvoRank = (hp) => {
+  if (hp >= 13785 && hp <= 13786) return "S";
+  else if (hp >= 12532 && hp <= 12535) return "A";
+  else if (hp >= 10254 && hp <= 11165) return "B";
+  else if (hp >= 9684 && hp <= 10026) return "C";
+  else return "D";
+};
+
+const getHPEvoImage = (hp) => {
+  const rank = getHPEvoRank(hp);
+  return `/assets/stats/${rank}.webp`;
+};
+
+// S: ? -> ?, A: 75 -> ?, B: ? -> ?, C: 61 -> 67, D: 58 -> ?
+const getDEFRank = (def) => {
+  if (def >= 8134 && def <= 8171) return "S";
+  else if (def >= 75 && def <= 170) return "A";
+  else if (def >= 68 && def <= 70) return "B";
+  else if (def >= 61 && def <= 67) return "C";
+  else if (def >= 58 && def <= 60) return "D";
+  else return "E";
+};
+
+const getDEFImage = (def) => {
+  const rank = getDEFRank(def);
+  return `/assets/stats/${rank}.webp`;
+};
+
+// S: 490 -> ?, A: ? -> ?, B: 397 -> 437, C: 375 -> ?, D: ? -> ?
+const getDEFEvoRank = (def) => {
+  if (def >= 490 && def <= 490) return "S";
+  else if (def >= 488 && def <= 489) return "A";
+  else if (def >= 397 && def <= 437) return "B";
+  else if (def >= 375 && def <= 411) return "C";
+  else return "D";
+};
+
+const getDEFEvoImage = (def) => {
+  const rank = getDEFEvoRank(def);
+  return `/assets/stats/${rank}.webp`;
+};
+
+const getSPDRank = (spd) => {
+  if (spd >= 110 && spd <= 127) return "S";
+  else if (spd >= 105 && spd <= 109) return "A";
+  else if (spd >= 100 && spd <= 104) return "B";
+  else if (spd >= 95 && spd <= 99) return "C";
+  else if (spd >= 90 && spd <= 94) return "D";
+  else return "E";
+};
+
+const getSPDImage = (spd) => {
+  const rank = getSPDRank(spd);
+  return `/assets/stats/${rank}.webp`;
+};
+
+const getCritRank = (crit) => {
+  if (crit >= 12) return "SS";
+  else if (crit >= 10 && crit <= 12) return "S";
+  else if (crit >= 8 && crit <= 9) return "A";
+  else if (crit >= 5 && crit <= 5) return "B";
+  else if (crit >= 3 && crit <= 3) return "C";
+  else if (crit >= 0 && crit <= 1) return "D";
+  else return "E";
+};
+
+const getCritImage = (crit) => {
+  const rank = getCritRank(crit);
+  return `/assets/stats/${rank}.webp`;
+};
 
 /* ---------------------- TOOLTIP ---------------------- */
-const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
-
-function processTextWithTooltips(text) {
+const processTextWithTooltips = (text) => {
   if (!text || !shikigami.value?.skills) return text;
 
   let processedText = text;
   const effectMap = new Map();
 
-  // gom tất cả notes + subNotes vào effectMap
   shikigami.value.skills.forEach((skill) => {
-    (skill.notes || []).forEach((noteItem) => {
-      const addToMap = (name, item) => {
-        if (name && !effectMap.has(name.toLowerCase())) {
-          effectMap.set(name.toLowerCase(), item);
-        }
-      };
-      addToMap(noteItem.name?.en, noteItem);
-      addToMap(noteItem.name?.vn, noteItem);
-      (noteItem.subNotes || []).forEach((sub) => {
-        addToMap(sub.name?.en, sub);
-        addToMap(sub.name?.vn, sub);
+    if (!skill.notes) return;
+
+    const notes = Array.isArray(skill.notes) ? skill.notes : [skill.notes];
+    notes.forEach((noteItem) => {
+      if (noteItem.name) {
+        const names = [];
+        if (noteItem.name.en) names.push(noteItem.name.en);
+        if (noteItem.name.vn && noteItem.name.vn !== noteItem.name.en)
+          names.push(noteItem.name.vn);
+
+        names.forEach((name) => {
+          if (!effectMap.has(name.toLowerCase())) {
+            effectMap.set(name.toLowerCase(), noteItem);
+          }
+        });
+      }
+
+      // ✅ thêm subNotes vào map
+      if (noteItem.subNotes) {
+        noteItem.subNotes.forEach((sub) => {
+          const subNames = [];
+          if (sub.name?.en) subNames.push(sub.name.en);
+          if (sub.name?.vn && sub.name.vn !== sub.name.en) subNames.push(sub.name.vn);
+
+          subNames.forEach((subName) => {
+            if (!effectMap.has(subName.toLowerCase())) {
+              effectMap.set(subName.toLowerCase(), sub);
+            }
+          });
+        });
+      }
+    });
+  });
+
+  const regexBold = /<b>(.*?)<\/b>/g;
+  processedText = processedText.replace(regexBold, (match, keyword) => {
+    const note = effectMap.get(keyword.toLowerCase());
+    if (!note) return match;
+
+    let noteDesc = "";
+    if (note.description) {
+      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
+    }
+
+    const colorMap = {
+      red: "#a63f37",
+      blue: "#4994d4",
+      yellow: "#c07b2a",
+    };
+    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
+
+    return `<span
+    class="effect-tooltip"
+    data-name="${keyword}"
+    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+    data-img="${note.image || ""}"
+    data-color="${color}"
+    style="color:${color}"
+  >${keyword}</span>`;
+  });
+
+  const regexAnchor = /<a>(.*?)<\/a>/g;
+  processedText = processedText.replace(regexAnchor, (match, keyword) => {
+    const note = effectMap.get(keyword.toLowerCase());
+    if (!note) return match;
+
+    let noteDesc = "";
+    if (note.description) {
+      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
+    }
+
+    const colorMap = {
+      red: "#a63f37",
+      blue: "#4994d4",
+      yellow: "#c07b2a",
+    };
+    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
+
+    return `<span
+    class="effect-highlight"
+    data-name="${keyword}"
+    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+    data-img="${note.image || ""}"
+    data-color="${color}"
+    style="color:${color}"
+  >${keyword}</span>`;
+  });
+
+  const regexCnchor = /<c>(.*?)<\/c>/g;
+  processedText = processedText.replace(regexCnchor, (match, keyword) => {
+    return `<strong>${keyword}</strong>`;
+  });
+
+  return processedText;
+};
+
+const processBoldC = (text) => {
+  if (!text) return "";
+  return text.replace(/<c>(.*?)<\/c>/g, (_, keyword) => `<strong>${keyword}</strong>`);
+};
+
+const matchedSubNotes = computed(() => {
+  if (!tooltipData.value || !shikigami.value?.skills) return [];
+
+  const desc = tooltipData.value.description || "";
+  const tooltipName = tooltipData.value.name?.toLowerCase();
+
+  let result = [];
+
+  shikigami.value.skills.forEach((skill) => {
+    if (!skill.notes) return;
+
+    const notes = Array.isArray(skill.notes) ? skill.notes : [skill.notes];
+
+    notes.forEach((noteItem) => {
+      const noteNameEn = noteItem.name?.en?.toLowerCase() || "";
+      const noteNameVn = noteItem.name?.vn?.toLowerCase() || "";
+
+      // Chỉ lấy note trùng với tooltip
+      if (tooltipName !== noteNameEn && tooltipName !== noteNameVn) return;
+
+      if (!noteItem.subNotes) return;
+
+      noteItem.subNotes.forEach((sub) => {
+        const subNameEn = sub.name?.en || "";
+        const subNameVn = sub.name?.vn || "";
+
+        const matched =
+          (subNameEn && desc.toLowerCase().includes(subNameEn.toLowerCase())) ||
+          (subNameVn && desc.toLowerCase().includes(subNameVn.toLowerCase()));
+
+        if (matched) result.push(sub);
       });
     });
   });
 
-  const replaceTag = (regex, className) =>
-    processedText.replace(regex, (match, keyword) => {
-      const note = effectMap.get(keyword.toLowerCase());
-      if (!note) return match;
+  return result;
+});
 
-      const desc = isEnglish.value ? note.description?.en : note.description?.vn;
-      const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
+const highlightNoteText = (bio, isEnglish) => {
+  const text = isEnglish ? bio.condition.en : bio.condition.vn;
+  if (!bio.note) return text;
 
-      return `<span
-        class="${className}"
-        data-name="${keyword}"
-        data-desc="${desc?.replace(/"/g, "&quot;") || ""}"
-        data-img="${note.image || ""}"
-        data-color="${color}"
-        style="color:${color}"
-      >${keyword}</span>`;
-    });
+  const noteName = isEnglish ? bio.note.en : bio.note.vn;
+  if (!noteName || !shikigamiList.value?.length) return text;
 
-  processedText = replaceTag(/<b>(.*?)<\/b>/g, "effect-tooltip");
-  processedText = replaceTag(/<a>(.*?)<\/a>/g, "effect-highlight");
-  processedText = processedText.replace(/<c>(.*?)<\/c>/g, "<strong>$1</strong>");
+  // escape regex
+  const escapedNote = noteName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escapedNote})`, "gi");
 
-  return processedText;
-}
+  // tìm shikigami (không phân biệt hoa thường + check cả en/vn/cn/jp)
+  const targetShikigami = shikigamiList.value.find((s) => {
+    const n = s.name || {};
+    if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
+    if (n.vn?.toLowerCase() === noteName.toLowerCase()) return true;
+    if (
+      Array.isArray(n.cn) &&
+      n.cn.some((c) => c.toLowerCase() === noteName.toLowerCase())
+    )
+      return true;
+    if (
+      Array.isArray(n.jp) &&
+      n.jp.some((j) => j.toLowerCase() === noteName.toLowerCase())
+    )
+      return true;
+    if (typeof n.jp === "string" && n.jp.toLowerCase() === noteName.toLowerCase())
+      return true;
 
-const processBoldC = (text) =>
-  text?.replace(/<c>(.*?)<\/c>/g, "<strong>$1</strong>") || "";
+    return false;
+  });
+
+  let jpName = noteName;
+  if (targetShikigami) {
+    const n = targetShikigami.name;
+    if (Array.isArray(n.jp)) {
+      jpName = n.jp[1] || n.jp[0] || noteName;
+    } else if (typeof n.jp === "string") {
+      jpName = n.jp;
+    }
+  }
+  jpName = jpName.replace(/\s+/g, "_");
+
+  // debug log
+  console.log("NoteName:", noteName);
+  console.log("Target:", targetShikigami);
+  console.log("Final jpName:", jpName);
+
+  return text.replace(
+    regex,
+    `<a href="/shikigami/${encodeURIComponent(
+      jpName
+    )}" class="text-[#891727] font-bold">$1</a>`
+  );
+};
 
 /* ---------------------- TOOLTIP EVENTS ---------------------- */
 const handleMouseEnter = (e) => {
@@ -326,37 +516,37 @@ watch(isEnglish, async () => {
               </tr>
             </thead>
             <tbody>
-              <tr class="border border-red text-black h-[60px]">
+              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
                 <td class="px-4">
                   <strong>CN</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ shikigami.name.cn[0] }}</div>
                   <div>{{ shikigami.name.cn[1] }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black h-[60px]">
+              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
                 <td class="px-4">
                   <strong>JP</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ shikigami.name.jp[0] }}</div>
                   <div>{{ shikigami.name.jp[1] }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black h-[40px]">
+              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
                 <td class="px-4">
                   <strong>GL</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ shikigami.name.en }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black h-[40px]">
+              <tr class="border border-red text-black min-h-[40px] max-h-[60px]">
                 <td class="px-4">
                   <strong>VN</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ shikigami.name.vn }}</div>
                 </td>
               </tr>
