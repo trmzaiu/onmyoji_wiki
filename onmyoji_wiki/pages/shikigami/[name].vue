@@ -24,9 +24,9 @@ const formattedName = route.params.name.replace(/_/g, " ");
 const between = (val, min, max) => val >= min && val <= max;
 
 /* ---------------------- RANK + IMAGE ---------------------- */
-// S: 165 -> ?, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: ? -> ?
+// S: 161 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: ? -> ?
 const getATKRank = (atk) => {
-  if (atk >= 165 && atk <= 171) return "S";
+  if (atk >= 161 && atk <= 165) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 123 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 103) return "C";
@@ -53,11 +53,11 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 1174 -> ?, A: ? -> ?, B: 960 -> ?, C: 864 -> 939, D: 843 -> ?
+// S: 1174 -> ?, A: ? -> ?, B: 960 -> 1056, C: 864 -> 939, D: 843 -> ?
 const getHPRank = (hp) => {
   if (hp >= 1174 && hp <= 1323) return "S";
   else if (hp >= 1310 && hp <= 1312) return "A";
-  else if (hp >= 960 && hp <= 966) return "B";
+  else if (hp >= 960 && hp <= 1056) return "B";
   else if (hp >= 864 && hp <= 939) return "C";
   else if (hp >= 843 && hp <= 843) return "D";
   else return "E";
@@ -68,11 +68,11 @@ const getHPImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 13785 -> ?, A: 12532 -> ?, B: 10254 -> 11165, C: 9684 -> 10026, D: ? -> ?
+// S: 13785 -> ?, A: 12532 -> ?, B: 10254 -> 11279, C: 9684 -> 10026, D: ? -> ?
 const getHPEvoRank = (hp) => {
   if (hp >= 13785 && hp <= 13786) return "S";
   else if (hp >= 12532 && hp <= 12535) return "A";
-  else if (hp >= 10254 && hp <= 11165) return "B";
+  else if (hp >= 10254 && hp <= 11279) return "B";
   else if (hp >= 9684 && hp <= 10026) return "C";
   else return "D";
 };
@@ -97,12 +97,12 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 490 -> ?, A: ? -> ?, B: 397 -> 437, C: 375 -> ?, D: ? -> ?
+// S: 490 -> ?, A: ? -> ?, B: 397 -> 437, C: 375 -> 384, D: ? -> ?
 const getDEFEvoRank = (def) => {
   if (def >= 490 && def <= 490) return "S";
   else if (def >= 488 && def <= 489) return "A";
   else if (def >= 397 && def <= 437) return "B";
-  else if (def >= 375 && def <= 411) return "C";
+  else if (def >= 375 && def <= 384) return "C";
   else return "D";
 };
 
