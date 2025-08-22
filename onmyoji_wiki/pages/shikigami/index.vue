@@ -223,7 +223,7 @@ onMounted(async () => {
                 /></a>
               </td>
 
-              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0">
+              <td class="px-2 py-1 text-center max-w-[300px]" style="border-left: 1px solid #e0e0e0">
                 <div class="text-red hover:text-red-500 font-semibold">
                   <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">{{
                     shiki.name.jp[1]
@@ -233,9 +233,9 @@ onMounted(async () => {
                   {{
                     shiki.name.cn[0] === shiki.name.jp[0]
                       ? shiki.name.cn[0]
-                      : shiki.name.cn[0] + " - " + shiki.name.jp[0]
+                      : shiki.name.cn[0] + " — " + shiki.name.jp[0]
                   }}
-                  {{ shiki.name.en === shiki.name.jp[1] ? "" : "- " + shiki.name.en }} -
+                  {{ shiki.name.en === shiki.name.jp[1] ? "" : "— " + shiki.name.en }} —
                   {{ shiki.name.vn }}
                 </div>
               </td>

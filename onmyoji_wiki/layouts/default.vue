@@ -6,7 +6,7 @@
         <div class="row-span-3 flex items-center p-2">
           <img
             src="/images/Logo.webp"
-            alt="Onmyoji Logo"
+            alt="Onmyoji Logo" 
             class="max-w-[200px] h-auto mx-auto"
           />
         </div>
