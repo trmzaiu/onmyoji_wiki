@@ -6,7 +6,7 @@
         <div class="row-span-3 flex items-center p-2">
           <img
             src="/images/Logo.webp"
-            alt="Onmyoji Logo" 
+            alt="Onmyoji Logo"
             class="max-w-[200px] h-auto mx-auto"
           />
         </div>
@@ -58,6 +58,21 @@
       </div>
     </header>
 
+    <div
+      v-show="showStickyNav"
+      class="sticky-nav fixed top-0 left-0 w-full bg-[#891727] text-white shadow-md z-[2000] transition-all duration-300"
+    >
+      <div class="max-w-1200 mx-auto flex items-center justify-between px-6 py-3">
+        <img src="/images/Logo.webp" alt="Logo" style="height: 50px; padding-left: 20px;" />
+        <nav class="flex space-x-3 text-sm font-semibold uppercase">
+          <NuxtLink to="/" class="hover:text-gray-200">Explore</NuxtLink>
+          <NuxtLink to="/shikigami" class="hover:text-gray-200">Shikigami</NuxtLink>
+          <NuxtLink to="/souls" class="hover:text-gray-200">Souls</NuxtLink>
+          <NuxtLink to="/pets" class="hover:text-gray-200">Pets</NuxtLink>
+        </nav>
+      </div>
+    </div>
+
     <main>
       <slot />
     </main>
@@ -68,37 +83,18 @@
 export default {
   data() {
     return {
-      isDropdownOpen: false,
-      activeSubmenu: null,
-      submenuTimer: null,
+      showStickyNav: false,
     };
   },
+  mounted() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.handleScroll);
+  },
   methods: {
-    openDropdown() {
-      this.isDropdownOpen = true;
-    },
-    closeDropdown() {
-      // Delay closing to allow for submenu navigation
-      setTimeout(() => {
-        this.isDropdownOpen = false;
-        this.activeSubmenu = null;
-      }, 100);
-    },
-    toggleDropdown() {
-      this.isDropdownOpen = !this.isDropdownOpen;
-    },
-    openSubmenu(submenu) {
-      if (this.submenuTimer) {
-        clearTimeout(this.submenuTimer);
-      }
-      this.activeSubmenu = submenu;
-    },
-    closeSubmenu(submenu) {
-      this.submenuTimer = setTimeout(() => {
-        if (this.activeSubmenu === submenu) {
-          this.activeSubmenu = null;
-        }
-      }, 200);
+    handleScroll() {
+      this.showStickyNav = window.scrollY > 150; // khi cuộn quá 150px thì hiện nav
     },
   },
 };
