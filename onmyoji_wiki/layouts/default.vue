@@ -62,13 +62,48 @@
       v-show="showStickyNav"
       class="sticky-nav fixed top-0 left-0 w-full bg-[#891727] text-white shadow-md z-[2000] transition-all duration-300"
     >
-      <div class="max-w-1200 mx-auto flex items-center justify-between px-6 py-3">
-        <img src="/images/Logo.webp" alt="Logo" style="height: 50px; padding-left: 20px;" />
-        <nav class="flex space-x-3 text-sm font-semibold uppercase">
-          <NuxtLink to="/" class="hover:text-gray-200">Explore</NuxtLink>
-          <NuxtLink to="/shikigami" class="hover:text-gray-200">Shikigami</NuxtLink>
-          <NuxtLink to="/souls" class="hover:text-gray-200">Souls</NuxtLink>
-          <NuxtLink to="/pets" class="hover:text-gray-200">Pets</NuxtLink>
+      <div class="max-w-[1200px] mx-auto flex items-center px-6 py-3">
+        <img
+          src="/images/Logo.webp"
+          alt="Logo"
+          style="height: 50px; padding-left: 20px; padding-right: 20px"
+        />
+
+        <nav class="flex flex-1 text-sm font-semibold uppercase">
+          <div class="nav-menu flex space-x-6">
+            <NuxtLink to="/" class="hover:text-gray-200">Explore</NuxtLink>
+            <div class="dropdown" @mouseleave="closeDropdown">
+              <button
+                class="hover:text-gray-200 cursor-pointer dropdown-toggle"
+                @mouseenter="openDropdown"
+                @click="toggleDropdown"
+              >
+                ONMYOJI
+                <span class="dropdown-arrow">▼</span>
+              </button>
+
+              <div class="dropdown-menu" :class="{ active: isDropdownOpen }">
+                <!-- Factions -->
+                <div class="dropdown-item">
+                  <NuxtLink to="/onmyoji/Seimei" class="submenu-label">Seimei</NuxtLink>
+                  <NuxtLink to="/onmyoji/Kagura" class="submenu-label">Kagura</NuxtLink>
+                  <NuxtLink to="/onmyoji/Hiromasa" class="submenu-label"
+                    >Hiromasa</NuxtLink
+                  >
+                  <NuxtLink to="/onmyoji/Yao_Bikuni" class="submenu-label"
+                    >Yao Bikuni</NuxtLink
+                  >
+                  <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label"
+                    >Yorimitsu</NuxtLink
+                  >
+                </div>
+              </div>
+            </div>
+
+            <NuxtLink to="/shikigami" class="hc">Shikigami</NuxtLink>
+            <NuxtLink to="/souls" class="hover:text-gray-200">Souls</NuxtLink>
+            <NuxtLink to="/pets" class="hover:text-gray-200">Pets</NuxtLink>
+          </div>
         </nav>
       </div>
     </div>
@@ -83,6 +118,7 @@
 export default {
   data() {
     return {
+      isDropdownOpen: false,
       showStickyNav: false,
     };
   },
@@ -94,7 +130,19 @@ export default {
   },
   methods: {
     handleScroll() {
-      this.showStickyNav = window.scrollY > 150; // khi cuộn quá 150px thì hiện nav
+      this.showStickyNav = window.scrollY > 150;
+    },
+    openDropdown() {
+      this.isDropdownOpen = true;
+    },
+    closeDropdown() {
+      setTimeout(() => {
+        this.isDropdownOpen = false;
+        this.activeSubmenu = null;
+      }, 100);
+    },
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen;
     },
   },
 };

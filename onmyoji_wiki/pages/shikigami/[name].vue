@@ -597,11 +597,12 @@ watch(isEnglish, async () => {
               <tr v-if="shikigami.version !== null" class="h-[100px]">
                 <td class="border border-red" colspan="4">
                   <div class="flex flex-col items-center justify-center">
-                    <img
-                      :src="shikigami.version.image"
-                      :alt="shikigami.version.name"
-                      class="max-h-16 max-w-16 object-contain mb-1"
-                    />
+                    <a :href="`/shikigami/${shikigami.version.name.replace(/ /g, '_')}`">
+                      <img
+                        :src="shikigami.version.image"
+                        :alt="shikigami.version.name"
+                        class="max-h-16 max-w-16 object-contain mb-1"
+                    /></a>
                     <router-link
                       :to="`/shikigami/${shikigami.version.name.replace(/ /g, '_')}`"
                       class="text-black font-bold hover:text-[#a51919]"
@@ -1429,7 +1430,7 @@ watch(isEnglish, async () => {
           <img
             :src="shikigami.images.image"
             :alt="shikigami.name.jp[1]"
-            class="w-full h-70 object-cover hover:scale-110 transition-transform duration-300"
+            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300"
           />
           <p
             class="mt-4 text-center font-medium text-black"
@@ -1446,7 +1447,7 @@ watch(isEnglish, async () => {
           <img
             :src="shikigami.images.image_evo"
             :alt="shikigami.name.jp[1]"
-            class="w-full h-70 object-cover hover:scale-110 transition-transform duration-300"
+            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300"
           />
           <p class="mt-4 text-center font-medium text-black">
             {{ isEnglish ? "Evolution" : "Thức tỉnh" }}
@@ -1461,7 +1462,7 @@ watch(isEnglish, async () => {
           <img
             :src="skin.image"
             :alt="skin.name.en || skin.name.cn"
-            class="w-full h-70 object-cover hover:scale-110 transition-transform duration-300 overflow-visible"
+            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
           />
           <p class="mt-4 text-center font-medium text-black">
             {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
