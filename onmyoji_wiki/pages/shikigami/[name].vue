@@ -1,5 +1,6 @@
 <script setup>
 import { useSupabase } from "@/utils/useSupabase.ts";
+import { useTags } from "@/utils/useTags";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -20,6 +21,8 @@ const activeTab = ref("default");
 const activeSkillIndex = ref(0);
 
 const formattedName = route.params.name.replace(/_/g, " ");
+
+const { tags, tagMap, loadTags } = useTags();
 
 /* ---------------------- RANK + IMAGE ---------------------- */
 // S: 144 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: ? -> ?
@@ -246,28 +249,34 @@ const processBoldC = (text) => {
 };
 
 const matchedSubNotes = computed(() => {
-  if (!tooltipData.value || !shikigami.value?.skills) return [];
+  if (!tooltipData.value || !shikigami.value?.skills || !effects.value) return [];
 
   const desc = tooltipData.value.description || "";
   const tooltipName = tooltipData.value.name?.toLowerCase();
 
+  const effectById = new Map(effects.value.map((e) => [e.id, e]));
+
   let result = [];
 
   shikigami.value.skills.forEach((skill) => {
-    if (!skill.notes) return;
+    if (!skill.notes?.length) return;
 
-    const notes = Array.isArray(skill.notes) ? skill.notes : [skill.notes];
+    skill.notes.forEach((noteId) => {
+      const note = effectById.get(noteId);
+      if (!note) return;
 
-    notes.forEach((noteItem) => {
-      const noteNameEn = noteItem.name?.en?.toLowerCase() || "";
-      const noteNameVn = noteItem.name?.vn?.toLowerCase() || "";
+      const noteNameEn = note.name?.en?.toLowerCase() || "";
+      const noteNameVn = note.name?.vn?.toLowerCase() || "";
 
       // Chỉ lấy note trùng với tooltip
       if (tooltipName !== noteNameEn && tooltipName !== noteNameVn) return;
 
-      if (!noteItem.subNotes) return;
+      if (!note.subs?.length) return;
 
-      noteItem.subNotes.forEach((sub) => {
+      note.subs.forEach((subId) => {
+        const sub = effectById.get(subId);
+        if (!sub) return;
+
         const subNameEn = sub.name?.en || "";
         const subNameVn = sub.name?.vn || "";
 
@@ -426,6 +435,7 @@ onMounted(async () => {
   await fetchAllEffects();
   await fetchAllShikigami();
   await fetchShikigami();
+  await loadTags();
   subscribeRealtime();
 });
 
@@ -1000,7 +1010,7 @@ watch(isEnglish, async () => {
       </h2>
       <div class="flex border-b border-gray-300 mb-4">
         <button
-          v-for="(skill, index) in shikigami.skills"
+          v-for="(skill, index) in shikigami.skills.slice(0, 3)"
           :key="index"
           @click="activeSkillIndex = index"
           :class="[
@@ -1014,10 +1024,10 @@ watch(isEnglish, async () => {
         </button>
         <button
           v-if="shikigami.rarity !== 'SP'"
-          @click="activeSkillIndex = shikigami.skills.length"
+          @click="activeSkillIndex = 3"
           :class="[
             'px-4 py-2',
-            activeSkillIndex === shikigami.skills.length
+            activeSkillIndex === 3
               ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
               : 'text-[#a3a3a3] cursor-pointer',
           ]"
@@ -1025,7 +1035,7 @@ watch(isEnglish, async () => {
           Evolution Effect
         </button>
       </div>
-      <div v-if="activeSkillIndex < shikigami.skills.length">
+      <div v-if="activeSkillIndex < 3">
         <div>
           <div style="position: relative; padding-left: 40px; margin-bottom: 20px">
             <!-- Skill icon + title -->
@@ -1085,32 +1095,43 @@ watch(isEnglish, async () => {
             </div>
 
             <!-- Skill description -->
-            <div style="padding: 10px 25px; border: 1px solid #a51919">
+            <div style="padding: 10px 20px; border: 1px solid #a51919">
               <div class="text-black pb-5 skill-header">
                 <div class="skill-info flex">
-                  <span style="margin-left: 45px; font-size: smaller">
+                  <span style="margin-left: 25px; font-size: smaller">
                     <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
                     {{ shikigami.skills[activeSkillIndex].type }}
                   </span>
-                  <span class="flex" style="margin-left: 45px; font-size: smaller">
+                  <span class="flex" style="margin-left: 40px; font-size: smaller">
                     <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                    <img src="https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Onibi.webp" alt="Onibi" />
+                    <img
+                      src="https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Onibi.webp"
+                      alt="Onibi"
+                    />
                     {{ shikigami.skills[activeSkillIndex].onibi }}
                   </span>
-                  <span style="margin-left: 45px; font-size: smaller">
+                  <span style="margin-left: 40px; font-size: smaller">
                     <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
                     {{ shikigami.skills[activeSkillIndex].cooldown }}
                   </span>
                 </div>
-                <div class="skill-badges">
-                  <span
-                    v-for="tag in shikigami.skills[activeSkillIndex].tags"
-                    :key="tag.name"
-                    class="badge"
-                    :class="'badge-' + tag.color"
+                <div class="skill-badges flex flex-wrap gap-2">
+                  <div
+                    v-for="tagId in shikigami.skills[activeSkillIndex].tags"
+                    :key="tagId"
+                    class="relative inline-flex items-center justify-center w-20 h-6 overflow-hidden rounded-md"
                   >
-                    {{ tag.name }}
-                  </span>
+                    <!-- brush nền -->
+                    <div
+                      class="absolute inset-0 tint-base"
+                      :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
+                    ></div>
+
+                    <!-- chữ đè lên -->
+                    <span class="relative z-10 text-xs text-white">
+                      {{ tagMap?.[tagId]?.name }}
+                    </span>
+                  </div>
                 </div>
               </div>
               <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
@@ -1187,7 +1208,11 @@ watch(isEnglish, async () => {
           </div>
 
           <div
-            v-if="shikigami.skills[activeSkillIndex].skill"
+            v-if="shikigami.skills.length > 3"
+            v-for="(skill, index) in shikigami.skills.filter(
+              (s, i) => i >= 3 && s?.tab === activeSkillIndex + 1
+            )"
+            :key="'extra-' + index"
             style="
               position: relative;
               padding-left: 40px;
@@ -1214,10 +1239,7 @@ watch(isEnglish, async () => {
                   padding: 5px;
                 "
               >
-                <img
-                  :src="shikigami.skills[activeSkillIndex].skill.image"
-                  :alt="shikigami.skills[activeSkillIndex].skill.name.en"
-                />
+                <img :src="skill.image" :alt="skill.name.en" />
               </span>
               <span
                 style="
@@ -1236,16 +1258,10 @@ watch(isEnglish, async () => {
                     class="name"
                     :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
                   >
-                    {{
-                      isEnglish
-                        ? shikigami.skills[activeSkillIndex].skill.name.en
-                        : shikigami.skills[activeSkillIndex].skill.name.vn
-                    }}
+                    {{ isEnglish ? skill.name.en : skill.name.vn }}
                   </span>
                   <span class="sub-name">
-                    ({{ shikigami.skills[activeSkillIndex].skill.name.cn }}/{{
-                      shikigami.skills[activeSkillIndex].skill.name.jp
-                    }})
+                    ({{ skill.name.cn }}/{{ skill.name.jp }})
                   </span>
                 </div>
               </span>
@@ -1257,36 +1273,38 @@ watch(isEnglish, async () => {
                 <div class="skill-info flex">
                   <span style="margin-left: 45px; font-size: smaller">
                     <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
-                    {{ shikigami.skills[activeSkillIndex].skill.type }}
+                    {{ skill.type }}
                   </span>
                   <span class="flex" style="margin-left: 45px; font-size: smaller">
                     <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
                     <img src="/assets/Onibi.webp" alt="Onibi" />
-                    {{ shikigami.skills[activeSkillIndex].skill.onibi }}
+                    {{ skill.onibi }}
                   </span>
                   <span style="margin-left: 45px; font-size: smaller">
                     <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
-                    {{ shikigami.skills[activeSkillIndex].skill.cooldown }}
+                    {{ skill.cooldown }}
                   </span>
                 </div>
-                <div class="skill-badges">
-                  <span
-                    v-for="tag in shikigami.skills[activeSkillIndex].skill.tags"
-                    :key="tag.name"
-                    class="badge"
-                    :class="'badge-' + tag.color"
+                <div class="skill-badges flex flex-wrap gap-2">
+                  <div
+                    v-for="tagId in skill.tags"
+                    :key="tagId"
+                    class="relative inline-flex items-center justify-center w-20 h-6 overflow-hidden rounded-md"
                   >
-                    {{ tag.name }}
-                  </span>
+                    <!-- brush nền -->
+                    <div
+                      class="absolute inset-0 tint-base"
+                      :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
+                    ></div>
+
+                    <!-- chữ đè lên -->
+                    <span class="relative z-10 text-xs text-white">
+                      {{ tagMap?.[tagId]?.name }}
+                    </span>
+                  </div>
                 </div>
               </div>
               <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-              <p
-                class="text-center italic text-[#a3a3a3]"
-                v-if="shikigami.skills[activeSkillIndex].skill.voice"
-              >
-                "{{ shikigami.skills[activeSkillIndex].skill.voice }}"
-              </p>
               <p
                 class="whitespace-pre-line text-justify"
                 style="
@@ -1298,22 +1316,14 @@ watch(isEnglish, async () => {
                 "
                 v-html="
                   processTextWithTooltips(
-                    isEnglish
-                      ? shikigami.skills[activeSkillIndex].skill.description.en
-                      : shikigami.skills[activeSkillIndex].skill.description.vn
+                    isEnglish ? skill.description.en : skill.description.vn
                   )
                 "
               ></p>
               <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
               <table
                 style="width: 100%; border-collapse: collapse; font-size: 14px"
-                v-if="
-                  Array.isArray(
-                    isEnglish
-                      ? shikigami.skills[activeSkillIndex].skill.levels.en
-                      : shikigami.skills[activeSkillIndex].skill.levels.vn
-                  )
-                "
+                v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)"
               >
                 <tbody>
                   <tr style="color: #a51919; font-weight: bold">
@@ -1325,9 +1335,7 @@ watch(isEnglish, async () => {
                     </th>
                   </tr>
                   <tr
-                    v-for="lvl in isEnglish
-                      ? shikigami.skills[activeSkillIndex].skill.levels.en
-                      : shikigami.skills[activeSkillIndex].skill.levels.vn"
+                    v-for="lvl in isEnglish ? skill.levels.en : skill.levels.vn"
                     :key="lvl.level"
                     style="color: #444"
                   >
@@ -1345,9 +1353,7 @@ watch(isEnglish, async () => {
                   class="no-level"
                   v-html="
                     processTextWithTooltips(
-                      isEnglish
-                        ? shikigami.skills[activeSkillIndex].skill.levels.en
-                        : shikigami.skills[activeSkillIndex].skill.levels.vn
+                      isEnglish ? skill.levels.en : skill.levels.vn
                     )
                   "
                 ></p>
@@ -1818,12 +1824,13 @@ watch(isEnglish, async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 25px;
+  padding: 8px 20px;
 }
 
 .skill-info span {
   margin-left: 45px;
   font-size: smaller;
+  text-align: center;
 }
 
 .skill-badges {
@@ -1831,27 +1838,31 @@ watch(isEnglish, async () => {
   gap: 8px;
 }
 
-.badge {
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: smaller;
-  font-weight: bold;
-  color: white;
+.tint-base {
+  -webkit-mask-image: url("/brush.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: cover;
+  -webkit-mask-position: center;
+  mask-image: url("/brush.svg");
+  mask-repeat: no-repeat;
+  mask-size: cover;
+  mask-position: center;
 }
 
-.badge-red {
+/* Các màu tint */
+.tint-red {
   background-color: #a63f37;
 }
 
-.badge-blue {
+.tint-blue {
   background-color: #4994d4;
 }
 
-.badge-grey {
+.tint-grey {
   background-color: #959494;
 }
 
-.badge-yellow {
+.tint-yellow {
   background-color: #c07b2a;
 }
 
