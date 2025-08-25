@@ -104,7 +104,7 @@
               </div>
             </div>
 
-            <NuxtLink to="/shikigami" class="hc">Shikigami</NuxtLink>
+            <NuxtLink to="/shikigami" class="hover:text-gray-200">Shikigami</NuxtLink>
             <NuxtLink to="/souls" class="hover:text-gray-200">Souls</NuxtLink>
             <NuxtLink to="/pets" class="hover:text-gray-200">Pets</NuxtLink>
           </div>
@@ -313,6 +313,22 @@ html {
 
 .dropdown-item:hover {
   color: #3a3a3a;
+}
+
+.submenu-label {
+  display: block;
+  padding: 8px;
+  color: #3a3a3a;
+  text-decoration: none;
+}
+
+.submenu-label:last-child {
+  border-bottom: none;
+}
+
+.submenu-label:hover {
+  color: #3a3a3a;
+  padding-left: 10px;
 }
 
 /* Active Link Styles */
