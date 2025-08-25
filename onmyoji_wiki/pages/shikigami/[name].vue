@@ -143,6 +143,7 @@ const processTextWithTooltips = (text) => {
   if (!text || !shikigami.value?.skills || !effects.value.length) return text;
 
   let processedText = text;
+  const effectMap = new Map();
 
   // Map id -> effect cho lookup nhanh
   const effectById = new Map(effects.value.map((e) => [e.id, e]));
@@ -152,8 +153,6 @@ const processTextWithTooltips = (text) => {
 
     // Lọc effect của skill này
     const skillEffects = skill.notes.map((id) => effectById.get(id)).filter(Boolean);
-
-    const effectMap = new Map();
 
     // Build map từ tên effect -> effect object
     skillEffects.forEach((effect) => {
@@ -203,6 +202,36 @@ const processTextWithTooltips = (text) => {
         style="color:${color}"
       >${keyword}</span>`;
     });
+  });
+
+  // Replace <a>keyword</a> thành highlight link
+  const regexAnchor = /<a>(.*?)<\/a>/g;
+  processedText = processedText.replace(regexAnchor, (match, keyword) => {
+    const note = effectMap.get(keyword.toLowerCase());
+    if (!note) return match;
+
+    let noteDesc = "";
+    if (note.description) {
+      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
+    }
+
+    const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
+    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
+
+    return `<span
+      class="effect-highlight"
+      data-name="${keyword}"
+      data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+      data-img="${note.image || ""}"
+      data-color="${color}"
+      style="color:${color}"
+    >${keyword}</span>`;
+  });
+
+  // Replace <c>keyword</c> thành bold
+  const regexCnchor = /<c>(.*?)<\/c>/g;
+  processedText = processedText.replace(regexCnchor, (match, keyword) => {
+    return `<strong>${keyword}</strong>`;
   });
 
   return processedText;
