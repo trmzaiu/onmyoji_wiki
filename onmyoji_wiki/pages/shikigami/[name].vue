@@ -140,71 +140,71 @@ const getCritImage = (crit) => {
 
 /* ---------------------- TOOLTIP ---------------------- */
 const processTextWithTooltips = (text) => {
-  if (!text || !shikigami.value?.skills || !effects.value.length) return text;
+  if (!text || !shikigami.value?.skills) return text;
 
   let processedText = text;
+  const effectById = new Map(effects.value.map((e) => [e.id, e]));
   const effectMap = new Map();
 
-  // Map id -> effect cho lookup nhanh
-  const effectById = new Map(effects.value.map((e) => [e.id, e]));
-
   shikigami.value.skills.forEach((skill) => {
-    if (!skill.notes?.length) return;
+    if (!skill.notes) return;
 
-    // Lọc effect của skill này
-    const skillEffects = skill.notes.map((id) => effectById.get(id)).filter(Boolean);
+    skill.notes.forEach((id) => {
+      const note = effectById.get(id);
+      if (!note) return;
 
-    // Build map từ tên effect -> effect object
-    skillEffects.forEach((effect) => {
       const names = [];
-      if (effect.name?.en) names.push(effect.name.en);
-      if (effect.name?.vn && effect.name.vn !== effect.name.en)
-        names.push(effect.name.vn);
+      if (note.name?.en) names.push(note.name.en);
+      if (note.name?.vn && note.name.vn !== note.name.en) names.push(note.name.vn);
 
       names.forEach((name) => {
-        effectMap.set(name.toLowerCase(), effect);
+        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), note);
       });
 
-      // handle subNotes
-      if (effect.subNotes?.length) {
-        effect.subNotes.forEach((subId) => {
-          const subEffect = effectById.get(subId);
-          if (!subEffect) return;
+      // ✅ thêm subNotes vào map
+      if (note.subs?.length) {
+        note.subs.forEach((subId) => {
+          const sub = effectById.get(subId);
+          if (!sub) return;
           const subNames = [];
-          if (subEffect.name?.en) subNames.push(subEffect.name.en);
-          if (subEffect.name?.vn && subEffect.name.vn !== subEffect.name.en)
-            subNames.push(subEffect.name.vn);
-          subNames.forEach((subName) => effectMap.set(subName.toLowerCase(), subEffect));
+          if (sub.name?.en) subNames.push(sub.name.en);
+          if (sub.name?.vn && sub.name.vn !== sub.name.en) subNames.push(sub.name.vn);
+          subNames.forEach((subName) => {
+            if (!effectMap.has(subName.toLowerCase()))
+              effectMap.set(subName.toLowerCase(), sub);
+          });
         });
       }
     });
-
-    // Replace <b>keyword</b> với tooltip nếu keyword trùng effect
-    const regexBold = /<b>(.*?)<\/b>/g;
-    processedText = processedText.replace(regexBold, (match, keyword) => {
-      const note = effectMap.get(keyword.toLowerCase());
-      if (!note) return match;
-
-      let noteDesc = "";
-      if (note.description) {
-        noteDesc = isEnglish.value ? note.description.en : note.description.vn;
-      }
-
-      const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
-      const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
-
-      return `<span
-        class="effect-tooltip"
-        data-name="${keyword}"
-        data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-        data-img="${note.image || ""}"
-        data-color="${color}"
-        style="color:${color}"
-      >${keyword}</span>`;
-    });
   });
 
-  // Replace <a>keyword</a> thành highlight link
+  const regexBold = /<b>(.*?)<\/b>/g;
+  processedText = processedText.replace(regexBold, (match, keyword) => {
+    const note = effectMap.get(keyword.toLowerCase());
+    if (!note) return match;
+
+    let noteDesc = "";
+    if (note.description) {
+      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
+    }
+
+    const colorMap = {
+      red: "#a63f37",
+      blue: "#4994d4",
+      yellow: "#c07b2a",
+    };
+    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
+
+    return `<span
+    class="effect-tooltip"
+    data-name="${keyword}"
+    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+    data-img="${note.image || ""}"
+    data-color="${color}"
+    style="color:${color}"
+  >${keyword}</span>`;
+  });
+
   const regexAnchor = /<a>(.*?)<\/a>/g;
   processedText = processedText.replace(regexAnchor, (match, keyword) => {
     const note = effectMap.get(keyword.toLowerCase());
@@ -215,20 +215,23 @@ const processTextWithTooltips = (text) => {
       noteDesc = isEnglish.value ? note.description.en : note.description.vn;
     }
 
-    const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
+    const colorMap = {
+      red: "#a63f37",
+      blue: "#4994d4",
+      yellow: "#c07b2a",
+    };
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
     return `<span
-      class="effect-highlight"
-      data-name="${keyword}"
-      data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-      data-img="${note.image || ""}"
-      data-color="${color}"
-      style="color:${color}"
-    >${keyword}</span>`;
+    class="effect-highlight"
+    data-name="${keyword}"
+    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+    data-img="${note.image || ""}"
+    data-color="${color}"
+    style="color:${color}"
+  >${keyword}</span>`;
   });
 
-  // Replace <c>keyword</c> thành bold
   const regexCnchor = /<c>(.*?)<\/c>/g;
   processedText = processedText.replace(regexCnchor, (match, keyword) => {
     return `<strong>${keyword}</strong>`;
@@ -291,6 +294,7 @@ const highlightNoteText = (bio, isEnglish) => {
   const escapedNote = noteName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(${escapedNote})`, "gi");
 
+  // tìm shikigami (không phân biệt hoa thường + check cả en/vn/cn/jp)
   const targetShikigami = shikigamiList.value.find((s) => {
     const n = s.name || {};
     if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
@@ -1090,7 +1094,7 @@ watch(isEnglish, async () => {
                   </span>
                   <span class="flex" style="margin-left: 45px; font-size: smaller">
                     <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                    <img src="/assets/Onibi.webp" alt="Onibi" />
+                    <img src="https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Onibi.webp" alt="Onibi" />
                     {{ shikigami.skills[activeSkillIndex].onibi }}
                   </span>
                   <span style="margin-left: 45px; font-size: smaller">
@@ -1610,14 +1614,6 @@ watch(isEnglish, async () => {
 </template>
 
 <style>
-.main-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  gap: 30px;
-}
-
 .content-section {
   background: #fff;
   border-radius: 8px;
