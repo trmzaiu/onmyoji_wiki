@@ -9,6 +9,7 @@ const supabase = useSupabase();
 /* ---------------------- STATE ---------------------- */
 const shikigami = ref(null);
 const shikigamiList = ref([]);
+const effects = ref([]);
 const isEnglish = ref(true);
 
 const tooltipData = ref(null);
@@ -19,9 +20,6 @@ const activeTab = ref("default");
 const activeSkillIndex = ref(0);
 
 const formattedName = route.params.name.replace(/_/g, " ");
-
-/* ---------------------- UTILS ---------------------- */
-const between = (val, min, max) => val >= min && val <= max;
 
 /* ---------------------- RANK + IMAGE ---------------------- */
 // S: 144 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: ? -> ?
@@ -142,103 +140,69 @@ const getCritImage = (crit) => {
 
 /* ---------------------- TOOLTIP ---------------------- */
 const processTextWithTooltips = (text) => {
-  if (!text || !shikigami.value?.skills) return text;
+  if (!text || !shikigami.value?.skills || !effects.value.length) return text;
 
   let processedText = text;
-  const effectMap = new Map();
+
+  // Map id -> effect cho lookup nhanh
+  const effectById = new Map(effects.value.map((e) => [e.id, e]));
 
   shikigami.value.skills.forEach((skill) => {
-    if (!skill.notes) return;
+    if (!skill.notes?.length) return;
 
-    const notes = Array.isArray(skill.notes) ? skill.notes : [skill.notes];
-    notes.forEach((noteItem) => {
-      if (noteItem.name) {
-        const names = [];
-        if (noteItem.name.en) names.push(noteItem.name.en);
-        if (noteItem.name.vn && noteItem.name.vn !== noteItem.name.en)
-          names.push(noteItem.name.vn);
+    // Lọc effect của skill này
+    const skillEffects = skill.notes.map((id) => effectById.get(id)).filter(Boolean);
 
-        names.forEach((name) => {
-          if (!effectMap.has(name.toLowerCase())) {
-            effectMap.set(name.toLowerCase(), noteItem);
-          }
-        });
-      }
+    const effectMap = new Map();
 
-      // ✅ thêm subNotes vào map
-      if (noteItem.subNotes) {
-        noteItem.subNotes.forEach((sub) => {
+    // Build map từ tên effect -> effect object
+    skillEffects.forEach((effect) => {
+      const names = [];
+      if (effect.name?.en) names.push(effect.name.en);
+      if (effect.name?.vn && effect.name.vn !== effect.name.en)
+        names.push(effect.name.vn);
+
+      names.forEach((name) => {
+        effectMap.set(name.toLowerCase(), effect);
+      });
+
+      // handle subNotes
+      if (effect.subNotes?.length) {
+        effect.subNotes.forEach((subId) => {
+          const subEffect = effectById.get(subId);
+          if (!subEffect) return;
           const subNames = [];
-          if (sub.name?.en) subNames.push(sub.name.en);
-          if (sub.name?.vn && sub.name.vn !== sub.name.en) subNames.push(sub.name.vn);
-
-          subNames.forEach((subName) => {
-            if (!effectMap.has(subName.toLowerCase())) {
-              effectMap.set(subName.toLowerCase(), sub);
-            }
-          });
+          if (subEffect.name?.en) subNames.push(subEffect.name.en);
+          if (subEffect.name?.vn && subEffect.name.vn !== subEffect.name.en)
+            subNames.push(subEffect.name.vn);
+          subNames.forEach((subName) => effectMap.set(subName.toLowerCase(), subEffect));
         });
       }
     });
-  });
 
-  const regexBold = /<b>(.*?)<\/b>/g;
-  processedText = processedText.replace(regexBold, (match, keyword) => {
-    const note = effectMap.get(keyword.toLowerCase());
-    if (!note) return match;
+    // Replace <b>keyword</b> với tooltip nếu keyword trùng effect
+    const regexBold = /<b>(.*?)<\/b>/g;
+    processedText = processedText.replace(regexBold, (match, keyword) => {
+      const note = effectMap.get(keyword.toLowerCase());
+      if (!note) return match;
 
-    let noteDesc = "";
-    if (note.description) {
-      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
-    }
+      let noteDesc = "";
+      if (note.description) {
+        noteDesc = isEnglish.value ? note.description.en : note.description.vn;
+      }
 
-    const colorMap = {
-      red: "#a63f37",
-      blue: "#4994d4",
-      yellow: "#c07b2a",
-    };
-    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
+      const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
+      const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    return `<span
-    class="effect-tooltip"
-    data-name="${keyword}"
-    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-    data-img="${note.image || ""}"
-    data-color="${color}"
-    style="color:${color}"
-  >${keyword}</span>`;
-  });
-
-  const regexAnchor = /<a>(.*?)<\/a>/g;
-  processedText = processedText.replace(regexAnchor, (match, keyword) => {
-    const note = effectMap.get(keyword.toLowerCase());
-    if (!note) return match;
-
-    let noteDesc = "";
-    if (note.description) {
-      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
-    }
-
-    const colorMap = {
-      red: "#a63f37",
-      blue: "#4994d4",
-      yellow: "#c07b2a",
-    };
-    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
-
-    return `<span
-    class="effect-highlight"
-    data-name="${keyword}"
-    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-    data-img="${note.image || ""}"
-    data-color="${color}"
-    style="color:${color}"
-  >${keyword}</span>`;
-  });
-
-  const regexCnchor = /<c>(.*?)<\/c>/g;
-  processedText = processedText.replace(regexCnchor, (match, keyword) => {
-    return `<strong>${keyword}</strong>`;
+      return `<span
+        class="effect-tooltip"
+        data-name="${keyword}"
+        data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+        data-img="${note.image || ""}"
+        data-color="${color}"
+        style="color:${color}"
+      >${keyword}</span>`;
+    });
   });
 
   return processedText;
@@ -298,7 +262,6 @@ const highlightNoteText = (bio, isEnglish) => {
   const escapedNote = noteName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(${escapedNote})`, "gi");
 
-  // tìm shikigami (không phân biệt hoa thường + check cả en/vn/cn/jp)
   const targetShikigami = shikigamiList.value.find((s) => {
     const n = s.name || {};
     if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
@@ -376,6 +339,15 @@ function removeTooltipListeners() {
 }
 
 /* ---------------------- FETCH DATA + REALTIME ---------------------- */
+async function fetchAllEffects() {
+  const { data, error } = await supabase
+    .from("Effect")
+    .select("*")
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching effects:", error);
+  else effects.value = data;
+}
+
 async function fetchAllShikigami() {
   const { data, error } = await supabase
     .from("Shikigami")
@@ -418,6 +390,7 @@ function subscribeRealtime() {
 /* ---------------------- LIFECYCLE ---------------------- */
 onMounted(async () => {
   document.title = `Shikigami - ${formattedName}`;
+  await fetchAllEffects();
   await fetchAllShikigami();
   await fetchShikigami();
   subscribeRealtime();
@@ -437,7 +410,7 @@ watch(isEnglish, async () => {
 </script>
 
 <template>
-  <div class="main-container" v-if="shikigami">
+  <div v-if="shikigami">
     <div class="content-section flex flex-col gap-4">
       <div class="header-row">
         <div class="character-title">{{ shikigami.name.jp[1] }}</div>
