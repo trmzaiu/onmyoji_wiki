@@ -22,7 +22,7 @@ const activeSkillIndex = ref(0);
 
 const formattedName = route.params.name.replace(/_/g, " ");
 
-const { tags, tagMap, loadTags } = useTags();
+const { tagMap, loadTags } = useTags();
 
 /* ---------------------- RANK + IMAGE ---------------------- */
 // S: 144 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: ? -> ?
@@ -564,6 +564,14 @@ watch(isEnglish, async () => {
                 </td>
                 <td class="px-4 py-2" colspan="3">
                   <div>{{ shikigami.name.vn }}</div>
+                </td>
+              </tr>
+              <tr class="border border-red text-black min-h-[40px] max-h-[60px]">
+                <td class="px-4">
+                  <strong>VA</strong>
+                </td>
+                <td class="px-4 py-2" colspan="3">
+                  <div>{{ shikigami.va }}</div>
                 </td>
               </tr>
               <tr v-if="shikigami.rarity !== 'SP'">

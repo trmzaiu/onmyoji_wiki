@@ -1,5 +1,6 @@
 <script setup>
 import { useSupabase } from "@/utils/useSupabase.ts";
+import { useTags } from "@/utils/useTags";
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
@@ -7,48 +8,54 @@ const route = useRoute();
 const supabase = useSupabase();
 
 const onmyoji = ref(null);
+
+const effects = ref([]);
 const isEnglish = ref(true);
+
 const tooltipData = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 const showTooltip = ref(false);
 
+const activeTab = ref(route.params.name.replace(/_/g, " ").toLowerCase());
+const activeSkinTab = ref(route.params.name.replace(/_/g, " ").toLowerCase());
+
 const formattedName = route.params.name.replace(/_/g, " ");
+
+const { tagMap, loadTags } = useTags();
 
 const processTextWithTooltips = (text) => {
   if (!text || !onmyoji.value?.skills) return text;
 
   let processedText = text;
+  const effectById = new Map(effects.value.map((e) => [e.id, e]));
   const effectMap = new Map();
 
   onmyoji.value.skills.forEach((skill) => {
     if (!skill.notes) return;
 
-    const notes = Array.isArray(skill.notes) ? skill.notes : [skill.notes];
-    notes.forEach((noteItem) => {
-      if (noteItem.name) {
-        const names = [];
-        if (noteItem.name.en) names.push(noteItem.name.en);
-        if (noteItem.name.vn && noteItem.name.vn !== noteItem.name.en)
-          names.push(noteItem.name.vn);
+    skill.notes.forEach((id) => {
+      const note = effectById.get(id);
+      if (!note) return;
 
-        names.forEach((name) => {
-          if (!effectMap.has(name.toLowerCase())) {
-            effectMap.set(name.toLowerCase(), noteItem);
-          }
-        });
-      }
+      const names = [];
+      if (note.name?.en) names.push(note.name.en);
+      if (note.name?.vn && note.name.vn !== note.name.en) names.push(note.name.vn);
+
+      names.forEach((name) => {
+        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), note);
+      });
 
       // ✅ thêm subNotes vào map
-      if (noteItem.subNotes) {
-        noteItem.subNotes.forEach((sub) => {
+      if (note.subs?.length) {
+        note.subs.forEach((subId) => {
+          const sub = effectById.get(subId);
+          if (!sub) return;
           const subNames = [];
           if (sub.name?.en) subNames.push(sub.name.en);
           if (sub.name?.vn && sub.name.vn !== sub.name.en) subNames.push(sub.name.vn);
-
           subNames.forEach((subName) => {
-            if (!effectMap.has(subName.toLowerCase())) {
+            if (!effectMap.has(subName.toLowerCase()))
               effectMap.set(subName.toLowerCase(), sub);
-            }
           });
         });
       }
@@ -118,21 +125,34 @@ const processTextWithTooltips = (text) => {
 };
 
 const matchedSubNotes = computed(() => {
-  if (!tooltipData.value || !onmyoji.value?.skills) return [];
+  if (!tooltipData.value || !onmyoji.value?.skills || !effects.value) return [];
 
   const desc = tooltipData.value.description || "";
+  const tooltipName = tooltipData.value.name?.toLowerCase();
+
+  const effectById = new Map(effects.value.map((e) => [e.id, e]));
 
   let result = [];
 
   onmyoji.value.skills.forEach((skill) => {
-    if (!skill.notes) return;
+    if (!skill.notes?.length) return;
 
-    const notes = Array.isArray(skill.notes) ? skill.notes : [skill.notes];
+    skill.notes.forEach((noteId) => {
+      const note = effectById.get(noteId);
+      if (!note) return;
 
-    notes.forEach((noteItem) => {
-      if (!noteItem.subNotes) return;
+      const noteNameEn = note.name?.en?.toLowerCase() || "";
+      const noteNameVn = note.name?.vn?.toLowerCase() || "";
 
-      noteItem.subNotes.forEach((sub) => {
+      // Chỉ lấy note trùng với tooltip
+      if (tooltipName !== noteNameEn && tooltipName !== noteNameVn) return;
+
+      if (!note.subs?.length) return;
+
+      note.subs.forEach((subId) => {
+        const sub = effectById.get(subId);
+        if (!sub) return;
+
         const subNameEn = sub.name?.en || "";
         const subNameVn = sub.name?.vn || "";
 
@@ -199,6 +219,15 @@ const removeTooltipListeners = () => {
   });
 };
 
+async function fetchAllEffects() {
+  const { data, error } = await supabase
+    .from("Effect")
+    .select("*")
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching effects:", error);
+  else effects.value = data;
+}
+
 async function fetchOnmyoji() {
   const { data, error } = await supabase
     .from("Onmyoji")
@@ -217,7 +246,9 @@ async function fetchOnmyoji() {
 
 onMounted(async () => {
   document.title = `Onmyoji - ${formattedName}`;
+  await fetchAllEffects();
   await fetchOnmyoji();
+  await loadTags();
 });
 
 watch(tooltipData, (val) => {
@@ -233,7 +264,7 @@ watch(isEnglish, async () => {
 </script>
 
 <template>
-  <div class="main-container" v-if="onmyoji">
+  <div v-if="onmyoji">
     <div class="content-section flex flex-col gap-4">
       <!-- Hàng 1: Tiêu đề -->
       <div class="header-row">
@@ -252,7 +283,9 @@ watch(isEnglish, async () => {
       <!-- Hàng 2: 2 cột -->
       <div class="flex gap-6">
         <!-- Cột trái: Hình -->
-        <div class="flex justify-center w-1/2">
+        <div
+          class="flex justify-center w-2/3 hover:scale-115 transition-transform duration-200"
+        >
           <img
             :src="onmyoji.images.image"
             :alt="onmyoji.name.en"
@@ -261,7 +294,7 @@ watch(isEnglish, async () => {
         </div>
 
         <!-- Cột phải: Table -->
-        <div class="flex justify-end w-1/2">
+        <div class="flex justify-end w-1/3 max-h-[300px]">
           <table class="border border-gray-400 text-sm w-full max-w-[300px]">
             <thead>
               <tr>
@@ -271,38 +304,46 @@ watch(isEnglish, async () => {
               </tr>
             </thead>
             <tbody>
-              <tr class="border border-red text-black">
+              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
                 <td class="px-4">
                   <strong>CN</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ onmyoji.name.cn[0] }}</div>
                   <div>{{ onmyoji.name.cn[1] }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black">
+              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
                 <td class="px-4">
                   <strong>JP</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ onmyoji.name.jp[0] }}</div>
                   <div>{{ onmyoji.name.jp[1] }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black">
+              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
                 <td class="px-4">
                   <strong>GL</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ onmyoji.name.en }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black">
+              <tr class="border border-red text-black min-h-[40px] max-h-[60px]">
                 <td class="px-4">
                   <strong>VN</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ onmyoji.name.vn }}</div>
+                </td>
+              </tr>
+              <tr class="border border-red text-black min-h-[40px] max-h-[60px]">
+                <td class="px-4">
+                  <strong>VA</strong>
+                </td>
+                <td class="px-4 py-2" colspan="3">
+                  <div>{{ onmyoji.va }}</div>
                 </td>
               </tr>
             </tbody>
@@ -394,7 +435,7 @@ watch(isEnglish, async () => {
               <th class="label-cell">
                 <img src="/assets/stats/HP.webp" alt="HP" />
                 HP
-              </th> 
+              </th>
               <td class="centered-number">{{ onmyoji.stats.HP[0] }}</td>
               <td class="centered-number">{{ onmyoji.stats.HP[1] }}</td>
               <td>+{{ onmyoji.stats.HP[1] - onmyoji.stats.HP[0] }}</td>
@@ -512,27 +553,36 @@ watch(isEnglish, async () => {
         <div style="padding: 10px 25px; border: 1px solid #a51919">
           <div class="text-black pb-5 skill-header">
             <div class="skill-info">
-              <span style="margin-left: 45px; font-size: smaller">
+              <span style="margin-left: 25px; font-size: smaller">
                 <b>{{ isEnglish ? "Type" : "Loại" }}:</b> {{ skill.type }}
               </span>
-              <span style="margin-left: 45px; font-size: smaller">
+              <span style="margin-left: 25px; font-size: smaller">
                 <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
                 {{ skill.cooldown }}
               </span>
             </div>
-            <div class="skill-badges">
-              <span
-                v-for="tag in skill.tags"
-                :key="tag.name"
-                class="badge"
-                :class="'badge-' + tag.color"
+            <div class="skill-badges flex flex-wrap gap-2">
+              <div
+                v-for="tagId in skill.tags"
+                :key="tagId"
+                class="relative inline-flex items-center justify-center w-20 h-8 overflow-visible rounded-md text-center"
               >
-                {{ tag.name }}
-              </span>
+                <!-- brush nền -->
+                <div
+                  class="absolute inset-0 tint-base"
+                  :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
+                ></div>
+
+                <!-- chữ đè lên -->
+                <span class="relative z-10 text-xs text-white break-words" style="line-height: 10px;">
+                  {{ tagMap?.[tagId]?.name }}
+                </span>
+              </div>
             </div>
           </div>
           <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-          <p class="text-justify"
+          <p
+            class="text-justify"
             style="
               margin: 0;
               font-size: 15px;
@@ -584,6 +634,246 @@ watch(isEnglish, async () => {
           </div>
         </div>
       </div>
+
+      <h2
+        class="session-title mt-5"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+      >
+        {{ isEnglish ? "Skins" : "Ngoại hình" }}
+      </h2>
+
+      <div class="w-full">
+        <div class="flex border-b border-gray-300 mb-4">
+          <button
+            class="flex py-2 px-4 text-center"
+            :class="
+              activeTab === onmyoji.name.en.toLowerCase()
+                ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                : 'text-[#a3a3a3] cursor-pointer'
+            "
+            @click="activeTab = onmyoji.name.en.toLowerCase()"
+          >
+            {{ onmyoji.name.en }}
+          </button>
+          <button
+            class="flex py-2 px-4 text-center"
+            :class="
+              activeTab === onmyoji.totem[0].name.en.toLowerCase()
+                ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                : 'text-[#a3a3a3] cursor-pointer'
+            "
+            @click="activeTab = onmyoji.totem[0].name.en.toLowerCase()"
+          >
+            {{ onmyoji.totem[0].name.en }}
+          </button>
+        </div>
+      </div>
+
+      <div
+        v-show="activeTab === onmyoji.name.en.toLowerCase()"
+        class="grid grid-cols-3 gap-5 mt-4"
+        :class="activeTab === onmyoji.name.en.toLowerCase() ? 'opacity-100' : 'opacity-0'"
+      >
+        <div class="flex flex-col items-center" title="Default">
+          <img
+            :src="onmyoji.images.image"
+            :alt="onmyoji.name.jp[1]"
+            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300"
+          />
+          <p
+            class="mt-4 text-center font-medium text-black"
+            :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+          >
+            {{ isEnglish ? "Default" : "Mặc định" }}
+          </p>
+        </div>
+        <div
+          v-for="(skin, index) in onmyoji.skins.slice(0, -1)"
+          :key="index"
+          class="flex flex-col items-center"
+          :title="skin.name.en || skin.name.cn"
+        >
+          <img
+            :src="skin.image"
+            :alt="skin.name.en || skin.name.cn"
+            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
+          />
+          <p class="mt-4 text-center font-medium text-black">
+            {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
+          </p>
+        </div>
+      </div>
+
+      <div
+        v-show="activeTab === onmyoji.totem[0].name.en.toLowerCase()"
+        class="grid grid-cols-3 gap-5 mt-4"
+        :class="
+          activeTab === onmyoji.totem[0].name.en.toLowerCase()
+            ? 'opacity-100'
+            : 'opacity-0'
+        "
+      >
+        <div
+          v-for="(skin, index) in onmyoji.totem"
+          :key="index"
+          class="flex flex-col items-center"
+          :title="skin.name.en || skin.name.cn"
+        >
+          <img
+            :src="skin.image"
+            :alt="skin.name.en || skin.name.cn"
+            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
+          />
+          <p class="mt-4 text-center font-medium text-black">
+            {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
+          </p>
+        </div>
+      </div>
+
+      <h2
+        class="session-title mt-5"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+      >
+        {{ isEnglish ? "Skins Info" : "Thông tin ngoại hình" }}
+      </h2>
+
+      <div class="w-full">
+        <div class="flex border-b border-gray-300 mb-4">
+          <button
+            class="flex py-2 px-4 text-center"
+            :class="
+              activeSkinTab === onmyoji.name.en.toLowerCase()
+                ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                : 'text-[#a3a3a3] cursor-pointer'
+            "
+            @click="activeSkinTab = onmyoji.name.en.toLowerCase()"
+          >
+            {{ onmyoji.name.en }}
+          </button>
+          <button
+            class="flex py-2 px-4 text-center"
+            :class="
+              activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()
+                ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                : 'text-[#a3a3a3] cursor-pointer'
+            "
+            @click="activeSkinTab = onmyoji.totem[0].name.en.toLowerCase()"
+          >
+            {{ onmyoji.totem[0].name.en }}
+          </button>
+        </div>
+      </div>
+
+      <table
+        v-show="activeSkinTab === onmyoji.name.en.toLowerCase()"
+        class="w-full"
+        :class="
+          activeSkinTab === onmyoji.name.en.toLowerCase() ? 'opacity-100' : 'opacity-0'
+        "
+        style="border: 1px solid #a51919"
+      >
+        <thead>
+          <tr style="background-color: #a51919; font-weight: bold">
+            <th class="px-2 py-1 cursor-pointer">
+              {{ isEnglish ? "Image" : "Ảnh" }}
+            </th>
+            <th class="px-2 py-1 cursor-pointer">
+              {{ isEnglish ? "Name" : "Tên" }}
+            </th>
+            <th class="px-2 py-1 cursor-pointer">
+              {{ isEnglish ? "Artist" : "Họa sĩ" }}
+            </th>
+            <th class="px-2 py-1 cursor-pointer">
+              {{ isEnglish ? "Obtained" : "Cách nhận" }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-black">
+            <td class="w-26 h-26 px-2 py-1 text-center" style="border: 1px solid #a51919">
+              <img
+                :src="onmyoji.images.image_skin"
+                alt="Default Skin"
+                class="w-24 h-24 object-contain mx-auto"
+              />
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              Default
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              {{ onmyoji.skins[onmyoji.skins.length - 1].artist || "" }}
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919"></td>
+          </tr>
+          <tr
+            class="text-black"
+            v-for="(skin, index) in onmyoji.skins.slice(0, -1)"
+            :key="index"
+          >
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              <img
+                :src="skin.image_info"
+                :alt="skin.name.en || skin.name.cn"
+                class="w-24 h-24 object-contain mx-auto"
+              />
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              <div>{{ skin.name.en }}</div>
+              <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              {{ skin.artist }}
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              {{ skin.obtained }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table v-show="activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()" class="w-full" :class="
+          activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()
+            ? 'opacity-100'
+            : 'opacity-0'"
+            style="border: 1px solid #a51919">
+        <thead>
+          <tr style="background-color: #a51919; font-weight: bold">
+            <th class="px-2 py-1 cursor-pointer">
+              {{ isEnglish ? "Image" : "Ảnh" }}
+            </th>
+            <th class="px-2 py-1 cursor-pointer">
+              {{ isEnglish ? "Name" : "Tên" }}
+            </th>
+            <th class="px-2 py-1 cursor-pointer">
+              {{ isEnglish ? "Artist" : "Họa sĩ" }}
+            </th>
+            <th class="px-2 py-1 cursor-pointer">
+              {{ isEnglish ? "Obtained" : "Cách nhận" }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-black" v-for="(skin, index) in onmyoji.totem" :key="index">
+            <td class="px-2 py-1 text-center w-26" style="border: 1px solid #a51919">
+              <img
+                :src="skin.image_info"
+                :alt="skin.name.en || skin.name.cn"
+                class="w-24 h-24 object-contain mx-auto"
+              />
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              <div>{{ skin.name.en }}</div>
+              <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              {{ skin.artist }}
+            </td>
+            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              {{ skin.obtained }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- Tooltip -->
@@ -621,14 +911,15 @@ watch(isEnglish, async () => {
             <div class="subnote-title">
               {{ isEnglish ? sub.name.en : sub.name.vn }}
             </div>
-            <div
-              class="subnote-description"
-              v-html="
-                processTextWithTooltips(
-                  isEnglish ? sub.description.en : sub.description.vn
-                )
-              "
-            ></div>
+            <img
+              v-if="sub.image"
+              :src="'/assets/effects/' + sub.image"
+              :alt="tooltipData.image"
+              style="width: 32px; height: 32px; margin-bottom: 8px"
+            />
+            <div class="subnote-description">
+              {{ isEnglish ? sub.description.en : sub.description.vn }}
+            </div>
           </div>
         </div>
       </div>
@@ -853,27 +1144,31 @@ watch(isEnglish, async () => {
   gap: 8px;
 }
 
-.badge {
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: smaller;
-  font-weight: bold;
-  color: white;
+.tint-base {
+  -webkit-mask-image: url("/brush.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: cover;
+  -webkit-mask-position: center;
+  mask-image: url("/brush.svg");
+  mask-repeat: no-repeat;
+  mask-size: cover;
+  mask-position: center;
 }
 
-.badge-red {
+/* Các màu tint */
+.tint-red {
   background-color: #a63f37;
 }
 
-.badge-blue {
+.tint-blue {
   background-color: #4994d4;
 }
 
-.badge-grey {
+.tint-grey {
   background-color: #959494;
 }
 
-.badge-yellow {
+.tint-yellow {
   background-color: #c07b2a;
 }
 
