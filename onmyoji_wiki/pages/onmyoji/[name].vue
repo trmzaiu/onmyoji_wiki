@@ -305,7 +305,7 @@ watch(isEnglish, async () => {
             </thead>
             <tbody>
               <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
-                <td class="px-4">
+                <td class="px-4 py-2">
                   <strong>CN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
@@ -314,7 +314,7 @@ watch(isEnglish, async () => {
                 </td>
               </tr>
               <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
-                <td class="px-4">
+                <td class="px-4 py-2">
                   <strong>JP</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
@@ -323,7 +323,7 @@ watch(isEnglish, async () => {
                 </td>
               </tr>
               <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
-                <td class="px-4">
+                <td class="px-4 py-2">
                   <strong>GL</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
@@ -331,16 +331,25 @@ watch(isEnglish, async () => {
                 </td>
               </tr>
               <tr class="border border-red text-black min-h-[40px] max-h-[60px]">
-                <td class="px-4">
+                <td class="px-4 py-2">
                   <strong>VN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
                   <div>{{ onmyoji.name.vn }}</div>
                 </td>
               </tr>
+              <tr>
+                <td
+                  class="border border-red p-2 h-10"
+                  colspan="4"
+                  style="background-color: #a51919; text-align: center; font-weight: 600"
+                >
+                  Voice Actor
+                </td>
+              </tr>
               <tr class="border border-red text-black min-h-[40px] max-h-[60px]">
-                <td class="px-4">
-                  <strong>VA</strong>
+                <td class="px-4 py-2">
+                  <strong>JP</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
                   <div>{{ onmyoji.va }}</div>
