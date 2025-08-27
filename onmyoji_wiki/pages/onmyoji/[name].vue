@@ -17,6 +17,7 @@ const tooltipPosition = ref({ x: 0, y: 0 });
 const showTooltip = ref(false);
 
 const activeTab = ref(route.params.name.replace(/_/g, " ").toLowerCase());
+const activeMainTab = ref("main");
 const activeSkinTab = ref(route.params.name.replace(/_/g, " ").toLowerCase());
 
 const formattedName = route.params.name.replace(/_/g, " ");
@@ -83,7 +84,7 @@ const processTextWithTooltips = (text) => {
     class="effect-tooltip"
     data-name="${keyword}"
     data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-    data-img="${note.image || ""}"
+    data-img='${JSON.stringify(note.images || [])}'
     data-color="${color}"
     style="color:${color}"
   >${keyword}</span>`;
@@ -110,7 +111,7 @@ const processTextWithTooltips = (text) => {
     class="effect-highlight"
     data-name="${keyword}"
     data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-    data-img="${note.image || ""}"
+    data-img='${JSON.stringify(note.images || [])}'
     data-color="${color}"
     style="color:${color}"
   >${keyword}</span>`;
@@ -123,6 +124,8 @@ const processTextWithTooltips = (text) => {
 
   return processedText;
 };
+
+const imgs = computed(() => tooltipData.value?.images || []);
 
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !onmyoji.value?.skills || !effects.value) return [];
@@ -169,15 +172,17 @@ const matchedSubNotes = computed(() => {
 });
 
 // Mouse event handlers for tooltip
-const handleMouseEnter = (event) => {
-  const target = event.currentTarget;
+const handleMouseEnter = (e) => {
+  const target = e.currentTarget;
   tooltipData.value = {
     name: target.getAttribute("data-name"),
     description: target.getAttribute("data-desc"),
-    image: target.getAttribute("data-img"),
+    images: target.getAttribute("data-img")
+      ? JSON.parse(target.getAttribute("data-img"))
+      : [],
     color: target.getAttribute("data-color"),
   };
-  updateTooltipPosition(event);
+  updateTooltipPosition(e);
   showTooltip.value = true;
 };
 
@@ -266,10 +271,9 @@ watch(isEnglish, async () => {
 <template>
   <div v-if="onmyoji">
     <div class="content-section flex flex-col gap-4">
-      <!-- Hàng 1: Tiêu đề -->
+      <!-- Name -->
       <div class="header-row">
         <div class="character-title">{{ onmyoji.name.en }}</div>
-
         <label class="toggle-switch" title="Switch Language">
           <input type="checkbox" v-model="isEnglish" />
           <span class="slider"></span>
@@ -280,9 +284,9 @@ watch(isEnglish, async () => {
         </label>
       </div>
 
-      <!-- Hàng 2: 2 cột -->
+      <!-- Image + Name -->
       <div class="flex gap-6">
-        <!-- Cột trái: Hình -->
+        <!-- Image -->
         <div
           class="flex justify-center w-2/3 hover:scale-115 transition-transform duration-200"
         >
@@ -293,18 +297,18 @@ watch(isEnglish, async () => {
           />
         </div>
 
-        <!-- Cột phải: Table -->
-        <div class="flex justify-end w-1/3 max-h-[300px]">
-          <table class="border border-gray-400 text-sm w-full max-w-[300px]">
+        <!-- Name -->
+        <div class="flex justify-end w-1/3 max-h-[400px]">
+          <table class="w-full">
             <thead>
-              <tr>
-                <th class="border border-red table-title p-2" colspan="4">
+              <tr class="table-title">
+                <th class="p-2" colspan="4">
                   {{ onmyoji.name.jp[1] }}
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
+              <tr class="table-row table-row-limit-long">
                 <td class="px-4 py-2">
                   <strong>CN</strong>
                 </td>
@@ -313,7 +317,7 @@ watch(isEnglish, async () => {
                   <div>{{ onmyoji.name.cn[1] }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
+              <tr class="table-row table-row-limit-long">
                 <td class="px-4 py-2">
                   <strong>JP</strong>
                 </td>
@@ -322,7 +326,7 @@ watch(isEnglish, async () => {
                   <div>{{ onmyoji.name.jp[1] }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black min-h-[60px] max-h-[80px]">
+              <tr class="table-row table-row-limit">
                 <td class="px-4 py-2">
                   <strong>GL</strong>
                 </td>
@@ -330,7 +334,7 @@ watch(isEnglish, async () => {
                   <div>{{ onmyoji.name.en }}</div>
                 </td>
               </tr>
-              <tr class="border border-red text-black min-h-[40px] max-h-[60px]">
+              <tr class="table-row table-row-limit">
                 <td class="px-4 py-2">
                   <strong>VN</strong>
                 </td>
@@ -339,15 +343,9 @@ watch(isEnglish, async () => {
                 </td>
               </tr>
               <tr>
-                <td
-                  class="border border-red p-2 h-10"
-                  colspan="4"
-                  style="background-color: #a51919; text-align: center; font-weight: 600"
-                >
-                  Voice Actor
-                </td>
+                <td class="table-title-row text-xs p-2 h-10" colspan="4">Voice Actor</td>
               </tr>
-              <tr class="border border-red text-black min-h-[40px] max-h-[60px]">
+              <tr class="table-row table-row-limit">
                 <td class="px-4 py-2">
                   <strong>JP</strong>
                 </td>
@@ -360,529 +358,591 @@ watch(isEnglish, async () => {
         </div>
       </div>
 
-      <h2
-        class="session-title mt-5"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? "Stats" : "Chỉ số" }}
-      </h2>
+      <div class="flex border-b border-gray-300 mt-5">
+        <button
+          class="flex py-2 px-4 text-center"
+          :class="
+            activeMainTab === 'main'
+              ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+              : 'text-[#a3a3a3] cursor-pointer'
+          "
+          @click="activeMainTab = 'main'"
+        >
+          {{ isEnglish ? "Main" : "Chính Điện" }}
+        </button>
+        <button
+          class="flex py-2 px-4 text-center"
+          :class="
+            activeMainTab === 'gallery'
+              ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+              : 'text-[#a3a3a3] cursor-pointer'
+          "
+          @click="activeMainTab = 'gallery'"
+        >
+          {{ isEnglish ? "Gallery" : "Hoạ Phòng" }}
+        </button>
+      </div>
+
       <div
-        style="
-          display: block;
-          border: 1px solid #a51919;
-          padding: 0 20px;
-          margin-top: 80px;
-        "
+        class="w-full"
+        v-show="activeMainTab === 'main'"
+        :class="activeMainTab === 'main' ? 'opacity-100' : 'opacity-0'"
       >
-        <table class="stats">
+        <!-- Stats -->
+        <h2
+          class="session-title"
+          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+        >
+          {{ isEnglish ? "Stats" : "Chỉ số" }}
+        </h2>
+        <div
+          style="
+            display: block;
+            border: 1px solid #a51919;
+            padding: 0 20px;
+            margin-top: 80px;
+          "
+        >
+          <table class="stats">
+            <tbody>
+              <tr class="image-icon" style="color: #a51919">
+                <th></th>
+                <th rowspan="9">&nbsp;</th>
+                <th>
+                  <figure class="icon-img" style="position: relative">
+                    <img
+                      :src="onmyoji.images.image_icon"
+                      :alt="onmyoji.name.en"
+                      style="object-fit: contain"
+                      width="90"
+                    />
+                    <div
+                      style="
+                        color: #a51919;
+                        font-weight: bold;
+                        position: absolute;
+                        top: -50px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        width: 100%;
+                      "
+                    >
+                      <br />
+                      Level 60
+                    </div>
+                  </figure>
+                </th>
+                <th rowspan="9">&nbsp;</th>
+                <th style="padding: 0; margin: 0">
+                  <figure class="icon-img" style="position: relative">
+                    <img
+                      :src="onmyoji.images.image_icon_totem"
+                      :alt="onmyoji.name.en"
+                      style="object-fit: contain"
+                      width="90"
+                    />
+                    <div
+                      style="
+                        color: #a51919;
+                        font-weight: bold;
+                        position: absolute;
+                        top: -50px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        width: 100%;
+                      "
+                    >
+                      With Level <br />
+                      40 Totem
+                    </div>
+                  </figure>
+                </th>
+                <th></th>
+                <th rowspan="9">&nbsp;</th>
+              </tr>
+              <tr>
+                <th class="label-cell">
+                  <img src="/assets/stats/ATK.webp" alt="ATK" />
+                  ATK
+                </th>
+                <td class="centered-number">{{ onmyoji.stats.ATK[0] }}</td>
+                <td class="centered-number">{{ onmyoji.stats.ATK[1] }}</td>
+                <td>+{{ onmyoji.stats.ATK[1] - onmyoji.stats.ATK[0] }}</td>
+              </tr>
+              <tr>
+                <th class="label-cell">
+                  <img src="/assets/stats/HP.webp" alt="HP" />
+                  HP
+                </th>
+                <td class="centered-number">{{ onmyoji.stats.HP[0] }}</td>
+                <td class="centered-number">{{ onmyoji.stats.HP[1] }}</td>
+                <td>+{{ onmyoji.stats.HP[1] - onmyoji.stats.HP[0] }}</td>
+              </tr>
+              <tr>
+                <th class="label-cell">
+                  <img src="/assets/stats/DEF.webp" alt="DEF" />
+                  DEF
+                </th>
+                <td class="centered-number">{{ onmyoji.stats.DEF[0] }}</td>
+                <td class="centered-number">{{ onmyoji.stats.DEF[1] }}</td>
+                <td>+{{ onmyoji.stats.DEF[1] - onmyoji.stats.DEF[0] }}</td>
+              </tr>
+              <tr>
+                <th class="label-cell">
+                  <img src="/assets/stats/SPD.webp" alt="SPD" />
+                  SPD
+                </th>
+                <td class="centered-number">{{ onmyoji.stats.SPD[0] }}</td>
+                <td class="centered-number">{{ onmyoji.stats.SPD[1] }}</td>
+                <td>+{{ onmyoji.stats.SPD[1] - onmyoji.stats.SPD[0] }}</td>
+              </tr>
+              <tr>
+                <th class="label-cell">
+                  <img src="/assets/stats/CRIT.webp" alt="CRIT" />
+                  Crit
+                </th>
+                <td class="centered-number">{{ onmyoji.stats.Crit[0] }}%</td>
+                <td class="centered-number">{{ onmyoji.stats.Crit[1] }}%</td>
+                <td>+{{ onmyoji.stats.Crit[1] - onmyoji.stats.Crit[0] }}%</td>
+              </tr>
+              <tr>
+                <th class="label-cell">
+                  <img src="/assets/stats/CDMG.webp" alt="CDMG" />
+                  Crit DMG
+                </th>
+                <td class="centered-number">150%</td>
+                <td class="centered-number">150%</td>
+                <td>+0%</td>
+              </tr>
+              <tr>
+                <th class="label-cell">
+                  <img src="/assets/stats/HIT.webp" alt="HIT" />
+                  Effects HIT
+                </th>
+                <td class="centered-number">0%</td>
+                <td class="centered-number">0%</td>
+                <td>+0%</td>
+              </tr>
+              <tr>
+                <th class="label-cell">
+                  <img src="/assets/stats/RES.webp" alt="RES" />
+                  Effects RES
+                </th>
+                <td class="centered-number">0%</td>
+                <td class="centered-number">0%</td>
+                <td>+0%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Skill -->
+        <h2
+          class="session-title mt-5"
+          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+        >
+          {{ isEnglish ? "Skills" : "Kĩ năng" }}
+        </h2>
+        <div
+          v-for="(skill, index) in onmyoji.skills"
+          :key="index"
+          style="
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+            margin-top: 20px;
+          "
+        >
+          <div>
+            <span
+              style="
+                background-color: #fff;
+                overflow: hidden;
+                border-radius: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 95px;
+                height: 95px;
+                border: 1px solid #a51919;
+                padding: 5px;
+              "
+              class="skill-icon"
+            >
+              <img :src="skill.image" :alt="skill.name.en" />
+            </span>
+            <span
+              style="
+                display: table-cell;
+                vertical-align: bottom;
+                font-weight: 900;
+                font-size: 20px;
+                color: #a51919;
+                height: 65px;
+                text-indent: 70px;
+                padding-bottom: 5px;
+              "
+            >
+              <div class="skill-title">
+                <span
+                  class="name"
+                  :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+                >
+                  {{ isEnglish ? skill.name.en : skill.name.vn }}
+                </span>
+                <span class="sub-name"> ({{ skill.name.cn }}/{{ skill.name.jp }}) </span>
+              </div>
+            </span>
+          </div>
+          <div style="padding: 10px 25px; border: 1px solid #a51919">
+            <div class="text-black pb-5 skill-header">
+              <div class="skill-info">
+                <span style="margin-left: 25px; font-size: smaller">
+                  <b>{{ isEnglish ? "Type" : "Loại" }}:</b> {{ skill.type }}
+                </span>
+                <span style="margin-left: 25px; font-size: smaller">
+                  <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
+                  {{ skill.cooldown }}
+                </span>
+              </div>
+              <div class="skill-badges flex flex-wrap gap-2">
+                <div
+                  v-for="tagId in skill.tags"
+                  :key="tagId"
+                  class="relative inline-flex items-center justify-center w-20 h-8 overflow-visible rounded-md text-center"
+                >
+                  <!-- brush nền -->
+                  <div
+                    class="absolute inset-0 tint-base"
+                    :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
+                  ></div>
+
+                  <!-- chữ đè lên -->
+                  <span
+                    class="relative z-10 text-xs text-white break-words"
+                    style="line-height: 10px"
+                  >
+                    {{ tagMap?.[tagId]?.name }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+            <p
+              class="text-justify"
+              style="
+                margin: 0;
+                font-size: 15px;
+                line-height: 1.5;
+                color: #444;
+                padding: 10px 0;
+              "
+              v-html="
+                processTextWithTooltips(
+                  isEnglish ? skill.description.en : skill.description.vn
+                )
+              "
+            ></p>
+            <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+            <table
+              style="width: 100%; border-collapse: collapse; font-size: 14px"
+              v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)"
+            >
+              <tbody>
+                <tr style="color: #a51919; font-weight: bold">
+                  <th style="padding: 6px; text-align: left; width: 70px">
+                    {{ isEnglish ? "Level" : "Cấp" }}
+                  </th>
+                  <th style="padding: 6px 10px; text-align: left">
+                    {{ isEnglish ? "Effect" : "Hiệu ứng" }}
+                  </th>
+                </tr>
+                <tr
+                  v-for="lvl in isEnglish ? skill.levels.en : skill.levels.vn"
+                  :key="lvl.level"
+                  style="color: #444"
+                >
+                  <td style="padding: 6px 10px">{{ lvl.level }}</td>
+                  <td
+                    style="padding: 6px 10px"
+                    v-html="processTextWithTooltips(lvl.effect)"
+                  ></td>
+                </tr>
+              </tbody>
+            </table>
+            <div v-else>
+              <p
+                style="color: #a3a3a3"
+                class="no-level"
+                v-html="
+                  processTextWithTooltips(isEnglish ? skill.levels.en : skill.levels.vn)
+                "
+              ></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="w-full"
+        v-show="activeMainTab === 'gallery'"
+        :class="activeMainTab === 'gallery' ? 'opacity-100' : 'opacity-0'"
+      >
+        <!-- Skins -->
+        <h2
+          class="session-title"
+          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+        >
+          {{ isEnglish ? "Skins" : "Ngoại hình" }}
+        </h2>
+
+        <div class="w-full">
+          <div class="flex border-b border-gray-300 mb-4 mt-2">
+            <button
+              class="flex py-2 px-4 text-center"
+              :class="
+                activeTab === onmyoji.name.en.toLowerCase()
+                  ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                  : 'text-[#a3a3a3] cursor-pointer'
+              "
+              @click="activeTab = onmyoji.name.en.toLowerCase()"
+            >
+              {{ onmyoji.name.en }}
+            </button>
+            <button
+              class="flex py-2 px-4 text-center"
+              :class="
+                activeTab === onmyoji.totem[0].name.en.toLowerCase()
+                  ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                  : 'text-[#a3a3a3] cursor-pointer'
+              "
+              @click="activeTab = onmyoji.totem[0].name.en.toLowerCase()"
+            >
+              {{ onmyoji.totem[0].name.en }}
+            </button>
+          </div>
+        </div>
+
+        <div
+          v-show="activeTab === onmyoji.name.en.toLowerCase()"
+          class="grid grid-cols-3 gap-5 mt-4"
+          :class="
+            activeTab === onmyoji.name.en.toLowerCase() ? 'opacity-100' : 'opacity-0'
+          "
+        >
+          <div class="flex flex-col items-center" title="Default">
+            <img
+              :src="onmyoji.images.image"
+              :alt="onmyoji.name.jp[1]"
+              class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300"
+            />
+            <p
+              class="mt-4 text-center font-medium text-black"
+              :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+            >
+              {{ isEnglish ? "Default" : "Mặc định" }}
+            </p>
+          </div>
+          <div
+            v-for="(skin, index) in onmyoji.skins.slice(0, -1)"
+            :key="index"
+            class="flex flex-col items-center"
+            :title="skin.name.en || skin.name.cn"
+          >
+            <img
+              :src="skin.image"
+              :alt="skin.name.en || skin.name.cn"
+              class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
+            />
+            <p class="mt-4 text-center font-medium text-black">
+              {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
+            </p>
+          </div>
+        </div>
+
+        <div
+          v-show="activeTab === onmyoji.totem[0].name.en.toLowerCase()"
+          class="grid grid-cols-3 gap-5 mt-4"
+          :class="
+            activeTab === onmyoji.totem[0].name.en.toLowerCase()
+              ? 'opacity-100'
+              : 'opacity-0'
+          "
+        >
+          <div
+            v-for="(skin, index) in onmyoji.totem"
+            :key="index"
+            class="flex flex-col items-center"
+            :title="skin.name.en || skin.name.cn"
+          >
+            <img
+              :src="skin.image"
+              :alt="skin.name.en || skin.name.cn"
+              class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
+            />
+            <p class="mt-4 text-center font-medium text-black">
+              {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Skins Info -->
+        <h2
+          class="session-title mt-5"
+          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+        >
+          {{ isEnglish ? "Skins Info" : "Thông tin ngoại hình" }}
+        </h2>
+
+        <div class="w-full">
+          <div class="flex border-b border-gray-300 mb-4 mt-2">
+            <button
+              class="flex py-2 px-4 text-center"
+              :class="
+                activeSkinTab === onmyoji.name.en.toLowerCase()
+                  ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                  : 'text-[#a3a3a3] cursor-pointer'
+              "
+              @click="activeSkinTab = onmyoji.name.en.toLowerCase()"
+            >
+              {{ onmyoji.name.en }}
+            </button>
+            <button
+              class="flex py-2 px-4 text-center"
+              :class="
+                activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()
+                  ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+                  : 'text-[#a3a3a3] cursor-pointer'
+              "
+              @click="activeSkinTab = onmyoji.totem[0].name.en.toLowerCase()"
+            >
+              {{ onmyoji.totem[0].name.en }}
+            </button>
+          </div>
+        </div>
+
+        <table
+          v-show="activeSkinTab === onmyoji.name.en.toLowerCase()"
+          class="w-full"
+          :class="
+            activeSkinTab === onmyoji.name.en.toLowerCase() ? 'opacity-100' : 'opacity-0'
+          "
+          style="border: 1px solid #a51919"
+        >
+          <thead>
+            <tr style="background-color: #a51919; font-weight: bold">
+              <th class="px-2 py-1 cursor-pointer">
+                {{ isEnglish ? "Image" : "Ảnh" }}
+              </th>
+              <th class="px-2 py-1 cursor-pointer">
+                {{ isEnglish ? "Name" : "Tên" }}
+              </th>
+              <th class="px-2 py-1 cursor-pointer">
+                {{ isEnglish ? "Artist" : "Họa sĩ" }}
+              </th>
+              <th class="px-2 py-1 cursor-pointer">
+                {{ isEnglish ? "Obtained" : "Cách nhận" }}
+              </th>
+            </tr>
+          </thead>
           <tbody>
-            <tr class="image-icon" style="color: #a51919">
-              <th></th>
-              <th rowspan="9">&nbsp;</th>
-              <th>
-                <figure class="icon-img" style="position: relative">
-                  <img
-                    :src="onmyoji.images.image_icon"
-                    :alt="onmyoji.name.en"
-                    style="object-fit: contain"
-                    width="90"
-                  />
-                  <div
-                    style="
-                      color: #a51919;
-                      font-weight: bold;
-                      position: absolute;
-                      top: -50px;
-                      left: 50%;
-                      transform: translateX(-50%);
-                      width: 100%;
-                    "
-                  >
-                    <br />
-                    Level 60
-                  </div>
-                </figure>
-              </th>
-              <th rowspan="9">&nbsp;</th>
-              <th style="padding: 0; margin: 0">
-                <figure class="icon-img" style="position: relative">
-                  <img
-                    :src="onmyoji.images.image_icon_totem"
-                    :alt="onmyoji.name.en"
-                    style="object-fit: contain"
-                    width="90"
-                  />
-                  <div
-                    style="
-                      color: #a51919;
-                      font-weight: bold;
-                      position: absolute;
-                      top: -50px;
-                      left: 50%;
-                      transform: translateX(-50%);
-                      width: 100%;
-                    "
-                  >
-                    With Level <br />
-                    40 Totem
-                  </div>
-                </figure>
-              </th>
-              <th></th>
-              <th rowspan="9">&nbsp;</th>
+            <tr class="text-black">
+              <td
+                class="w-26 h-26 px-2 py-1 text-center"
+                style="border: 1px solid #a51919"
+              >
+                <img
+                  :src="onmyoji.images.image_skin"
+                  alt="Default Skin"
+                  class="w-24 h-24 object-contain mx-auto"
+                />
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                Default
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                {{ onmyoji.skins[onmyoji.skins.length - 1].artist || "" }}
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919"></td>
             </tr>
-            <tr>
-              <th class="label-cell">
-                <img src="/assets/stats/ATK.webp" alt="ATK" />
-                ATK
-              </th>
-              <td class="centered-number">{{ onmyoji.stats.ATK[0] }}</td>
-              <td class="centered-number">{{ onmyoji.stats.ATK[1] }}</td>
-              <td>+{{ onmyoji.stats.ATK[1] - onmyoji.stats.ATK[0] }}</td>
+            <tr
+              class="text-black"
+              v-for="(skin, index) in onmyoji.skins.slice(0, -1)"
+              :key="index"
+            >
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                <img
+                  :src="skin.image_info"
+                  :alt="skin.name.en || skin.name.cn"
+                  class="w-24 h-24 object-contain mx-auto"
+                />
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                <div>{{ skin.name.en }}</div>
+                <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                {{ skin.artist }}
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                {{ skin.obtained }}
+              </td>
             </tr>
-            <tr>
-              <th class="label-cell">
-                <img src="/assets/stats/HP.webp" alt="HP" />
-                HP
+          </tbody>
+        </table>
+
+        <table
+          v-show="activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()"
+          class="w-full"
+          :class="
+            activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()
+              ? 'opacity-100'
+              : 'opacity-0'
+          "
+          style="border: 1px solid #a51919"
+        >
+          <thead>
+            <tr style="background-color: #a51919; font-weight: bold">
+              <th class="px-2 py-1 cursor-pointer">
+                {{ isEnglish ? "Image" : "Ảnh" }}
               </th>
-              <td class="centered-number">{{ onmyoji.stats.HP[0] }}</td>
-              <td class="centered-number">{{ onmyoji.stats.HP[1] }}</td>
-              <td>+{{ onmyoji.stats.HP[1] - onmyoji.stats.HP[0] }}</td>
+              <th class="px-2 py-1 cursor-pointer">
+                {{ isEnglish ? "Name" : "Tên" }}
+              </th>
+              <th class="px-2 py-1 cursor-pointer">
+                {{ isEnglish ? "Artist" : "Họa sĩ" }}
+              </th>
+              <th class="px-2 py-1 cursor-pointer">
+                {{ isEnglish ? "Obtained" : "Cách nhận" }}
+              </th>
             </tr>
-            <tr>
-              <th class="label-cell">
-                <img src="/assets/stats/DEF.webp" alt="DEF" />
-                DEF
-              </th>
-              <td class="centered-number">{{ onmyoji.stats.DEF[0] }}</td>
-              <td class="centered-number">{{ onmyoji.stats.DEF[1] }}</td>
-              <td>+{{ onmyoji.stats.DEF[1] - onmyoji.stats.DEF[0] }}</td>
-            </tr>
-            <tr>
-              <th class="label-cell">
-                <img src="/assets/stats/SPD.webp" alt="SPD" />
-                SPD
-              </th>
-              <td class="centered-number">{{ onmyoji.stats.SPD[0] }}</td>
-              <td class="centered-number">{{ onmyoji.stats.SPD[1] }}</td>
-              <td>+{{ onmyoji.stats.SPD[1] - onmyoji.stats.SPD[0] }}</td>
-            </tr>
-            <tr>
-              <th class="label-cell">
-                <img src="/assets/stats/CRIT.webp" alt="CRIT" />
-                Crit
-              </th>
-              <td class="centered-number">{{ onmyoji.stats.Crit[0] }}%</td>
-              <td class="centered-number">{{ onmyoji.stats.Crit[1] }}%</td>
-              <td>+{{ onmyoji.stats.Crit[1] - onmyoji.stats.Crit[0] }}%</td>
-            </tr>
-            <tr>
-              <th class="label-cell">
-                <img src="/assets/stats/CDMG.webp" alt="CDMG" />
-                Crit DMG
-              </th>
-              <td class="centered-number">150%</td>
-              <td class="centered-number">150%</td>
-              <td>+0%</td>
-            </tr>
-            <tr>
-              <th class="label-cell">
-                <img src="/assets/stats/HIT.webp" alt="HIT" />
-                Effects HIT
-              </th>
-              <td class="centered-number">0%</td>
-              <td class="centered-number">0%</td>
-              <td>+0%</td>
-            </tr>
-            <tr>
-              <th class="label-cell">
-                <img src="/assets/stats/RES.webp" alt="RES" />
-                Effects RES
-              </th>
-              <td class="centered-number">0%</td>
-              <td class="centered-number">0%</td>
-              <td>+0%</td>
+          </thead>
+          <tbody>
+            <tr class="text-black" v-for="(skin, index) in onmyoji.totem" :key="index">
+              <td class="px-2 py-1 text-center w-26" style="border: 1px solid #a51919">
+                <img
+                  :src="skin.image_info"
+                  :alt="skin.name.en || skin.name.cn"
+                  class="w-24 h-24 object-contain mx-auto"
+                />
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                <div>{{ skin.name.en }}</div>
+                <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                {{ skin.artist }}
+              </td>
+              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+                {{ skin.obtained }}
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <h2
-        class="session-title mt-5"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? "Skills" : "Kĩ năng" }}
-      </h2>
-      <div
-        v-for="(skill, index) in onmyoji.skills"
-        :key="index"
-        style="position: relative; padding-left: 40px; margin-bottom: 20px"
-      >
-        <div>
-          <span
-            style="
-              background-color: #fff;
-              overflow: hidden;
-              border-radius: 100%;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 95px;
-              height: 95px;
-              border: 1px solid #a51919;
-              padding: 5px;
-            "
-            class="skill-icon"
-          >
-            <img :src="skill.image" :alt="skill.name.en" />
-          </span>
-          <span
-            style="
-              display: table-cell;
-              vertical-align: bottom;
-              font-weight: 900;
-              font-size: 20px;
-              color: #a51919;
-              height: 65px;
-              text-indent: 70px;
-              padding-bottom: 5px;
-            "
-          >
-            <div class="skill-title">
-              <span class="name" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
-                {{ isEnglish ? skill.name.en : skill.name.vn }}
-              </span>
-              <span class="sub-name"> ({{ skill.name.cn }}/{{ skill.name.jp }}) </span>
-            </div>
-          </span>
-        </div>
-        <div style="padding: 10px 25px; border: 1px solid #a51919">
-          <div class="text-black pb-5 skill-header">
-            <div class="skill-info">
-              <span style="margin-left: 25px; font-size: smaller">
-                <b>{{ isEnglish ? "Type" : "Loại" }}:</b> {{ skill.type }}
-              </span>
-              <span style="margin-left: 25px; font-size: smaller">
-                <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
-                {{ skill.cooldown }}
-              </span>
-            </div>
-            <div class="skill-badges flex flex-wrap gap-2">
-              <div
-                v-for="tagId in skill.tags"
-                :key="tagId"
-                class="relative inline-flex items-center justify-center w-20 h-8 overflow-visible rounded-md text-center"
-              >
-                <!-- brush nền -->
-                <div
-                  class="absolute inset-0 tint-base"
-                  :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
-                ></div>
-
-                <!-- chữ đè lên -->
-                <span class="relative z-10 text-xs text-white break-words" style="line-height: 10px;">
-                  {{ tagMap?.[tagId]?.name }}
-                </span>
-              </div>
-            </div>
-          </div>
-          <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-          <p
-            class="text-justify"
-            style="
-              margin: 0;
-              font-size: 15px;
-              line-height: 1.5;
-              color: #444;
-              padding: 10px 0;
-            "
-            v-html="
-              processTextWithTooltips(
-                isEnglish ? skill.description.en : skill.description.vn
-              )
-            "
-          ></p>
-          <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-          <table
-            style="width: 100%; border-collapse: collapse; font-size: 14px"
-            v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)"
-          >
-            <tbody>
-              <tr style="color: #a51919; font-weight: bold">
-                <th style="padding: 6px; text-align: left; width: 70px">
-                  {{ isEnglish ? "Level" : "Cấp" }}
-                </th>
-                <th style="padding: 6px 10px; text-align: left">
-                  {{ isEnglish ? "Effect" : "Hiệu ứng" }}
-                </th>
-              </tr>
-              <tr
-                v-for="lvl in isEnglish ? skill.levels.en : skill.levels.vn"
-                :key="lvl.level"
-                style="color: #444"
-              >
-                <td style="padding: 6px 10px">{{ lvl.level }}</td>
-                <td
-                  style="padding: 6px 10px"
-                  v-html="processTextWithTooltips(lvl.effect)"
-                ></td>
-              </tr>
-            </tbody>
-          </table>
-          <div v-else>
-            <p
-              style="color: #a3a3a3"
-              class="no-level"
-              v-html="
-                processTextWithTooltips(isEnglish ? skill.levels.en : skill.levels.vn)
-              "
-            ></p>
-          </div>
-        </div>
-      </div>
-
-      <h2
-        class="session-title mt-5"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? "Skins" : "Ngoại hình" }}
-      </h2>
-
-      <div class="w-full">
-        <div class="flex border-b border-gray-300 mb-4">
-          <button
-            class="flex py-2 px-4 text-center"
-            :class="
-              activeTab === onmyoji.name.en.toLowerCase()
-                ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-                : 'text-[#a3a3a3] cursor-pointer'
-            "
-            @click="activeTab = onmyoji.name.en.toLowerCase()"
-          >
-            {{ onmyoji.name.en }}
-          </button>
-          <button
-            class="flex py-2 px-4 text-center"
-            :class="
-              activeTab === onmyoji.totem[0].name.en.toLowerCase()
-                ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-                : 'text-[#a3a3a3] cursor-pointer'
-            "
-            @click="activeTab = onmyoji.totem[0].name.en.toLowerCase()"
-          >
-            {{ onmyoji.totem[0].name.en }}
-          </button>
-        </div>
-      </div>
-
-      <div
-        v-show="activeTab === onmyoji.name.en.toLowerCase()"
-        class="grid grid-cols-3 gap-5 mt-4"
-        :class="activeTab === onmyoji.name.en.toLowerCase() ? 'opacity-100' : 'opacity-0'"
-      >
-        <div class="flex flex-col items-center" title="Default">
-          <img
-            :src="onmyoji.images.image"
-            :alt="onmyoji.name.jp[1]"
-            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300"
-          />
-          <p
-            class="mt-4 text-center font-medium text-black"
-            :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-          >
-            {{ isEnglish ? "Default" : "Mặc định" }}
-          </p>
-        </div>
-        <div
-          v-for="(skin, index) in onmyoji.skins.slice(0, -1)"
-          :key="index"
-          class="flex flex-col items-center"
-          :title="skin.name.en || skin.name.cn"
-        >
-          <img
-            :src="skin.image"
-            :alt="skin.name.en || skin.name.cn"
-            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
-          />
-          <p class="mt-4 text-center font-medium text-black">
-            {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
-          </p>
-        </div>
-      </div>
-
-      <div
-        v-show="activeTab === onmyoji.totem[0].name.en.toLowerCase()"
-        class="grid grid-cols-3 gap-5 mt-4"
-        :class="
-          activeTab === onmyoji.totem[0].name.en.toLowerCase()
-            ? 'opacity-100'
-            : 'opacity-0'
-        "
-      >
-        <div
-          v-for="(skin, index) in onmyoji.totem"
-          :key="index"
-          class="flex flex-col items-center"
-          :title="skin.name.en || skin.name.cn"
-        >
-          <img
-            :src="skin.image"
-            :alt="skin.name.en || skin.name.cn"
-            class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
-          />
-          <p class="mt-4 text-center font-medium text-black">
-            {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
-          </p>
-        </div>
-      </div>
-
-      <h2
-        class="session-title mt-5"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? "Skins Info" : "Thông tin ngoại hình" }}
-      </h2>
-
-      <div class="w-full">
-        <div class="flex border-b border-gray-300 mb-4">
-          <button
-            class="flex py-2 px-4 text-center"
-            :class="
-              activeSkinTab === onmyoji.name.en.toLowerCase()
-                ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-                : 'text-[#a3a3a3] cursor-pointer'
-            "
-            @click="activeSkinTab = onmyoji.name.en.toLowerCase()"
-          >
-            {{ onmyoji.name.en }}
-          </button>
-          <button
-            class="flex py-2 px-4 text-center"
-            :class="
-              activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()
-                ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-                : 'text-[#a3a3a3] cursor-pointer'
-            "
-            @click="activeSkinTab = onmyoji.totem[0].name.en.toLowerCase()"
-          >
-            {{ onmyoji.totem[0].name.en }}
-          </button>
-        </div>
-      </div>
-
-      <table
-        v-show="activeSkinTab === onmyoji.name.en.toLowerCase()"
-        class="w-full"
-        :class="
-          activeSkinTab === onmyoji.name.en.toLowerCase() ? 'opacity-100' : 'opacity-0'
-        "
-        style="border: 1px solid #a51919"
-      >
-        <thead>
-          <tr style="background-color: #a51919; font-weight: bold">
-            <th class="px-2 py-1 cursor-pointer">
-              {{ isEnglish ? "Image" : "Ảnh" }}
-            </th>
-            <th class="px-2 py-1 cursor-pointer">
-              {{ isEnglish ? "Name" : "Tên" }}
-            </th>
-            <th class="px-2 py-1 cursor-pointer">
-              {{ isEnglish ? "Artist" : "Họa sĩ" }}
-            </th>
-            <th class="px-2 py-1 cursor-pointer">
-              {{ isEnglish ? "Obtained" : "Cách nhận" }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="text-black">
-            <td class="w-26 h-26 px-2 py-1 text-center" style="border: 1px solid #a51919">
-              <img
-                :src="onmyoji.images.image_skin"
-                alt="Default Skin"
-                class="w-24 h-24 object-contain mx-auto"
-              />
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              Default
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              {{ onmyoji.skins[onmyoji.skins.length - 1].artist || "" }}
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919"></td>
-          </tr>
-          <tr
-            class="text-black"
-            v-for="(skin, index) in onmyoji.skins.slice(0, -1)"
-            :key="index"
-          >
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              <img
-                :src="skin.image_info"
-                :alt="skin.name.en || skin.name.cn"
-                class="w-24 h-24 object-contain mx-auto"
-              />
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              <div>{{ skin.name.en }}</div>
-              <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              {{ skin.artist }}
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              {{ skin.obtained }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table v-show="activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()" class="w-full" :class="
-          activeSkinTab === onmyoji.totem[0].name.en.toLowerCase()
-            ? 'opacity-100'
-            : 'opacity-0'"
-            style="border: 1px solid #a51919">
-        <thead>
-          <tr style="background-color: #a51919; font-weight: bold">
-            <th class="px-2 py-1 cursor-pointer">
-              {{ isEnglish ? "Image" : "Ảnh" }}
-            </th>
-            <th class="px-2 py-1 cursor-pointer">
-              {{ isEnglish ? "Name" : "Tên" }}
-            </th>
-            <th class="px-2 py-1 cursor-pointer">
-              {{ isEnglish ? "Artist" : "Họa sĩ" }}
-            </th>
-            <th class="px-2 py-1 cursor-pointer">
-              {{ isEnglish ? "Obtained" : "Cách nhận" }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="text-black" v-for="(skin, index) in onmyoji.totem" :key="index">
-            <td class="px-2 py-1 text-center w-26" style="border: 1px solid #a51919">
-              <img
-                :src="skin.image_info"
-                :alt="skin.name.en || skin.name.cn"
-                class="w-24 h-24 object-contain mx-auto"
-              />
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              <div>{{ skin.name.en }}</div>
-              <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              {{ skin.artist }}
-            </td>
-            <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              {{ skin.obtained }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </div>
 
     <!-- Tooltip -->
@@ -901,12 +961,16 @@ watch(isEnglish, async () => {
       <div class="tooltip-title" :style="{ color: tooltipData.color }">
         {{ tooltipData.name }}
       </div>
-      <img
-        v-if="tooltipData.image"
-        :src="'/assets/effects/' + tooltipData.image"
-        :alt="tooltipData.image"
-        style="width: 32px; height: 32px; margin-bottom: 8px"
-      />
+      <div v-if="imgs.length" class="tooltip-images pb-1">
+        <img
+          v-for="(img, i) in imgs"
+          :key="i"
+          :src="'/assets/effects/' + img"
+          :alt="img"
+          class="tooltip-img"
+        />
+      </div>
+
       <div
         class="tooltip-description"
         v-html="processTextWithTooltips(tooltipData.description)"
@@ -921,14 +985,17 @@ watch(isEnglish, async () => {
               {{ isEnglish ? sub.name.en : sub.name.vn }}
             </div>
             <img
-              v-if="sub.image"
-              :src="'/assets/effects/' + sub.image"
-              :alt="tooltipData.image"
+              v-if="sub.images"
+              v-for="(img, i) in sub.images"
+              :key="i"
+              :src="'/assets/effects/' + img"
+              :alt="img"
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />
-            <div class="subnote-description">
-              {{ isEnglish ? sub.description.en : sub.description.vn }}
-            </div>
+            <div
+              class="subnote-description"
+              v-html="processBoldC(isEnglish ? sub.description.en : sub.description.vn)"
+            ></div>
           </div>
         </div>
       </div>
@@ -1029,17 +1096,38 @@ watch(isEnglish, async () => {
   user-select: none;
 }
 
-.border-red {
-  border-color: #a51919;
-}
-
 .table-title {
-  font-size: 24px;
   font-weight: bold;
   color: #f4f1e8;
   text-align: center;
   padding: 8px;
   background-color: #a51919;
+  border: 1px solid #a51919;
+}
+
+.table-title-row {
+  font-weight: bold;
+  font-size: 16px;
+  color: #f4f1e8;
+  text-align: center;
+  padding: 8px;
+  background-color: #a51919;
+  border: 1px solid #a51919;
+}
+
+.table-row {
+  border: 1px solid #a51919;
+  color: #333;
+}
+
+.table-row-limit {
+  max-height: 60px;
+  min-height: 40px;
+}
+
+.table-row-limit-long {
+  max-height: 80px;
+  min-height: 60px;
 }
 
 .text-vn {
@@ -1212,6 +1300,17 @@ watch(isEnglish, async () => {
   margin-bottom: 6px;
   border-bottom: 1px solid #e5e7eb;
   padding-bottom: 4px;
+}
+
+.tooltip-images {
+  display: flex;
+  gap: 8px; /* khoảng cách giữa ảnh */
+  flex-wrap: wrap; /* nếu nhiều quá thì tự xuống hàng */
+}
+
+.tooltip-img {
+  width: 32px;
+  height: 32px;
 }
 
 .tooltip-description {
