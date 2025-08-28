@@ -9,7 +9,6 @@ const supabase = useSupabase();
 
 /* ---------------------- STATE ---------------------- */
 const shikigami = ref(null);
-const shikigamiList = ref([]);
 const effects = ref([]);
 const isEnglish = ref(true);
 
@@ -140,24 +139,6 @@ const getCritImage = (crit) => {
   const rank = getCritRank(crit);
   return `/assets/stats/${rank}.webp`;
 };
-
-/* ---------------------- HELPERS ---------------------- */
-// escape JSON trước khi nhét vào attribute
-function serializeImages(images) {
-  return JSON.stringify(images || []).replace(/"/g, "&quot;");
-}
-
-// parse JSON từ attribute dataset
-function deserializeImages(attr) {
-  if (!attr) return [];
-  try {
-    const decoded = attr.replace(/&quot;/g, '"');
-    return JSON.parse(decoded);
-  } catch (e) {
-    console.warn("Parse images failed:", e);
-    return [];
-  }
-}
 
 /* ---------------------- TOOLTIP ---------------------- */
 const processTextWithTooltips = (text) => {
@@ -303,56 +284,19 @@ const highlightNoteText = (bio, isEnglish) => {
   if (!bio.note) return text;
 
   const noteName = isEnglish ? bio.note.en : bio.note.vn;
-  if (!noteName || !shikigamiList.value?.length) return text;
+  if (!noteName) return text;
 
-  // escape regex
   const escapedNote = noteName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(${escapedNote})`, "gi");
 
-  // tìm shikigami (không phân biệt hoa thường + check cả en/vn/cn/jp)
-  const targetShikigami = shikigamiList.value.find((s) => {
-    const n = s.name || {};
-    if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
-    if (n.vn?.toLowerCase() === noteName.toLowerCase()) return true;
-    if (
-      Array.isArray(n.cn) &&
-      n.cn.some((c) => c.toLowerCase() === noteName.toLowerCase())
-    )
-      return true;
-    if (
-      Array.isArray(n.jp) &&
-      n.jp.some((j) => j.toLowerCase() === noteName.toLowerCase())
-    )
-      return true;
-    if (typeof n.jp === "string" && n.jp.toLowerCase() === noteName.toLowerCase())
-      return true;
-
-    return false;
-  });
-
-  let jpName = noteName;
-  if (targetShikigami) {
-    const n = targetShikigami.name;
-    if (Array.isArray(n.jp)) {
-      jpName = n.jp[1] || n.jp[0] || noteName;
-    } else if (typeof n.jp === "string") {
-      jpName = n.jp;
-    }
-  }
-  jpName = jpName.replace(/\s+/g, "_");
-
-  // debug log
-  console.log("NoteName:", noteName);
-  console.log("Target:", targetShikigami);
-  console.log("Final jpName:", jpName);
+  const link = bio.link ? `/${bio.link}` : "#";
 
   return text.replace(
     regex,
-    `<a href="/shikigami/${encodeURIComponent(
-      jpName
-    )}" class="text-[#891727] font-bold">$1</a>`
+    `<a href="${link}" class="text-[#891727] font-bold">$1</a>`
   );
 };
+
 
 /* ---------------------- TOOLTIP EVENTS ---------------------- */
 const handleMouseEnter = (e) => {
@@ -371,7 +315,7 @@ const handleMouseEnter = (e) => {
 const handleMouseLeave = () => (showTooltip.value = false);
 const handleMouseMove = (e) => showTooltip.value && updateTooltipPosition(e);
 const updateTooltipPosition = (e) =>
-  (tooltipPosition.value = { x: e.clientX + 10, y: e.clientY + 10 });
+  (tooltipPosition.value = { x: e.clientX, y: e.clientY + 10 });
 
 function addTooltipListeners() {
   document.querySelectorAll(".effect-tooltip").forEach((span) => {
@@ -398,15 +342,6 @@ async function fetchAllEffects() {
   else effects.value = data;
 }
 
-async function fetchAllShikigami() {
-  const { data, error } = await supabase
-    .from("Shikigami")
-    .select("*")
-    .order("id", { ascending: true });
-  if (error) console.error("Error fetching shikigami:", error);
-  else shikigamiList.value = data;
-}
-
 async function fetchShikigami() {
   const { data, error } = await supabase
     .from("Shikigami")
@@ -430,7 +365,6 @@ function subscribeRealtime() {
       "postgres_changes",
       { event: "*", schema: "public", table: "Shikigami" },
       async () => {
-        await fetchAllShikigami();
         await fetchShikigami();
       }
     )
@@ -439,11 +373,12 @@ function subscribeRealtime() {
 
 /* ---------------------- LIFECYCLE ---------------------- */
 onMounted(async () => {
-  document.title = `Shikigami - ${formattedName}`;
-  await fetchAllEffects();
-  await fetchAllShikigami();
-  await fetchShikigami();
-  await loadTags();
+  document.title = `${formattedName}`;
+  await Promise.all([
+    fetchAllEffects(),
+    fetchShikigami(),
+    loadTags(),
+  ]);
   subscribeRealtime();
 });
 
@@ -490,7 +425,7 @@ watch(isEnglish, async () => {
           </div>
         </div>
 
-         <!-- Name -->
+        <!-- Name -->
         <div class="flex justify-end w-1/3 max-h-[450px]">
           <table class="w-full">
             <thead>
@@ -541,12 +476,7 @@ watch(isEnglish, async () => {
                 </td>
               </tr>
               <tr>
-                <td
-                  class="table-title-row"
-                  colspan="4"
-                >
-                  Voice Actor
-                </td>
+                <td class="table-title-row" colspan="4">Voice Actor</td>
               </tr>
               <tr class="table-row text-sm">
                 <td class="px-4 py-2">
@@ -557,16 +487,9 @@ watch(isEnglish, async () => {
                 </td>
               </tr>
               <tr v-if="shikigami.rarity !== 'SP'">
-                <td
-                  class="table-title-row"
-                  colspan="4"
-                >
-                  Evo Materials
-                </td>
+                <td class="table-title-row" colspan="4">Evo Materials</td>
               </tr>
-              <tr
-                v-if="shikigami.materials && shikigami.materials.length"
-              >
+              <tr v-if="shikigami.materials && shikigami.materials.length">
                 <td
                   class="table-cell p-2"
                   v-for="material in shikigami.materials"
@@ -591,12 +514,7 @@ watch(isEnglish, async () => {
                 </td>
               </tr>
               <tr v-if="shikigami.version !== null">
-                <td
-                  class="table-title-row"
-                  colspan="4"
-                >
-                  Other Version
-                </td>
+                <td class="table-title-row" colspan="4">Other Version</td>
               </tr>
               <tr v-if="shikigami.version !== null" class="table-row">
                 <td colspan="4" class="p-2">
@@ -1540,9 +1458,7 @@ watch(isEnglish, async () => {
           </thead>
           <tbody>
             <tr class="text-black">
-              <td
-                class="w-26 h-26 px-2 py-1 text-center table-cell"
-              >
+              <td class="w-26 h-26 px-2 py-1 text-center table-cell">
                 <img
                   :src="shikigami.images.image_skin"
                   alt="Default Skin"

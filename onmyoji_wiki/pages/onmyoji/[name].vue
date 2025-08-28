@@ -250,7 +250,7 @@ async function fetchOnmyoji() {
 }
 
 onMounted(async () => {
-  document.title = `Onmyoji - ${formattedName}`;
+  document.title = `${formattedName}`;
   await fetchAllEffects();
   await fetchOnmyoji();
   await loadTags();
