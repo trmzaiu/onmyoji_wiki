@@ -9,6 +9,8 @@ const supabase = useSupabase();
 
 /* ---------------------- STATE ---------------------- */
 const shikigami = ref(null);
+const shikigamiList = ref([]);
+const onmyojiList = ref(null);
 const effects = ref([]);
 const isEnglish = ref(true);
 
@@ -284,19 +286,87 @@ const highlightNoteText = (bio, isEnglish) => {
   if (!bio.note) return text;
 
   const noteName = isEnglish ? bio.note.en : bio.note.vn;
-  if (!noteName) return text;
+  if (!noteName || !shikigamiList.value?.length) return text;
 
+  // escape regex
   const escapedNote = noteName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(`(${escapedNote})`, "gi");
 
-  const link = bio.link ? `/${bio.link}` : "#";
+  let targetType = null;
+  let targetData = null;
 
-  return text.replace(
-    regex,
-    `<a href="${link}" class="text-[#891727] font-bold">$1</a>`
-  );
+  // check Shikigami
+  const targetShikigami = shikigamiList.value.find((s) => {
+    const n = s.name || {};
+    if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
+    if (n.vn?.toLowerCase() === noteName.toLowerCase()) return true;
+    if (
+      Array.isArray(n.cn) &&
+      n.cn.some((c) => c.toLowerCase() === noteName.toLowerCase())
+    )
+      return true;
+    if (
+      Array.isArray(n.jp) &&
+      n.jp.some((j) => j.toLowerCase() === noteName.toLowerCase())
+    )
+      return true;
+    if (typeof n.jp === "string" && n.jp.toLowerCase() === noteName.toLowerCase())
+      return true;
+    return false;
+  });
+  if (targetShikigami) {
+    targetType = "shikigami";
+    targetData = targetShikigami;
+  }
+
+  // check Onmyoji (nếu chưa tìm thấy)
+  if (!targetData && onmyojiList?.value?.length) {
+    const targetOnmyoji = onmyojiList.value.find((o) => {
+      const n = o.name || {};
+      if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
+      if (n.vn?.toLowerCase() === noteName.toLowerCase()) return true;
+      if (Array.isArray(n.cn) && n.cn.some((c) => c.toLowerCase() === noteName.toLowerCase())) return true;
+      if (Array.isArray(n.jp) && n.jp.some((j) => j.toLowerCase() === noteName.toLowerCase())) return true;
+      if (typeof n.jp === "string" && n.jp.toLowerCase() === noteName.toLowerCase()) return true;
+      return false;
+    });
+    if (targetOnmyoji) {
+      targetType = "onmyoji";
+      targetData = targetOnmyoji;
+    }
+  }
+
+  let finalName = noteName;
+
+  if (targetType === "shikigami") {
+    const n = targetData.name;
+    if (Array.isArray(n.jp)) {
+      finalName = n.jp[1] || n.jp[0] || noteName;
+    } else if (typeof n.jp === "string") {
+      finalName = n.jp;
+    }
+  } else if (targetType === "onmyoji") {
+    finalName = targetData.name.en || noteName;
+  }
+
+  finalName = finalName.replace(/\s+/g, "_");
+
+  console.log("NoteName:", noteName);
+  console.log("TargetType:", targetType);
+  console.log("TargetData:", targetData);
+  console.log("Final Name:", finalName);
+
+  if (targetType) {
+    return text.replace(
+      regex,
+      `<a href="/${targetType}/${encodeURIComponent(
+        finalName
+      )}" class="text-[#891727] font-bold">$1</a>`
+    );
+  }
+
+  return text;
 };
-
 
 /* ---------------------- TOOLTIP EVENTS ---------------------- */
 const handleMouseEnter = (e) => {
@@ -342,6 +412,24 @@ async function fetchAllEffects() {
   else effects.value = data;
 }
 
+async function fetchAllOnmyoji() {
+  const { data, error } = await supabase
+    .from("Onmyoji")
+    .select("id, name")
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching onmyoji:", error);
+  else onmyojiList.value = data;
+}
+
+async function fetchAllShikigami() {
+  const { data, error } = await supabase
+    .from("Shikigami")
+    .select("id, name")
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching shikigami:", error);
+  else shikigamiList.value = data;
+}
+
 async function fetchShikigami() {
   const { data, error } = await supabase
     .from("Shikigami")
@@ -365,7 +453,9 @@ function subscribeRealtime() {
       "postgres_changes",
       { event: "*", schema: "public", table: "Shikigami" },
       async () => {
+        await fetchAllShikigami();
         await fetchShikigami();
+        await fetchAllOnmyoji();
       }
     )
     .subscribe();
@@ -376,7 +466,9 @@ onMounted(async () => {
   document.title = `${formattedName}`;
   await Promise.all([
     fetchAllEffects(),
+    fetchAllShikigami(),
     fetchShikigami(),
+    fetchAllOnmyoji(),
     loadTags(),
   ]);
   subscribeRealtime();
