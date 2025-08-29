@@ -179,7 +179,7 @@ html {
 }
 
 #app {
-  font-family: "Rubik", "Long Cang", "National Park", "Yuji Syuku", sans-serif;
+  font-family: "Rubik", "Ma Shan Zheng", "National Park", "Yuji Syuku", sans-serif;
   background: #891727;
   color: #f4f1e8;
   min-height: 100vh;
