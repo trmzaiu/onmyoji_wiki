@@ -1,12 +1,14 @@
 <script setup>
 import { useSupabase } from "@/utils/useSupabase.ts";
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 
 const supabase = useSupabase();
 
 // ===== STATE =====
 const shikigamiList = ref([]);
 const isEnglish = ref(true);
+
+const listRef = ref(null);
 
 // ===== SORTING =====
 const sort = ref({ key: "id", asc: true });
@@ -137,7 +139,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="main-container" v-if="shikigamiList.length">
+  <div class="main-container" v-if="shikigamiList.length" ref="listRef">
     <div class="content-section flex flex-col gap-4">
       <!-- Hàng 1: Tiêu đề -->
       <div class="header-row">
@@ -223,7 +225,10 @@ onMounted(async () => {
                 /></a>
               </td>
 
-              <td class="px-2 py-1 text-center max-w-[300px]" style="border-left: 1px solid #e0e0e0">
+              <td
+                class="px-2 py-1 text-center max-w-[300px]"
+                style="border-left: 1px solid #e0e0e0"
+              >
                 <div class="text-red hover:text-red-500 font-semibold">
                   <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">{{
                     shiki.name.jp[1]

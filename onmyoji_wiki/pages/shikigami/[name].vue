@@ -1702,8 +1702,8 @@ watch(isEnglish, async () => {
             v-for="(dialog, index) in shikigami.dialogue"
             :key="index"
           >
-            <h2 class="text-[#a51919] font-bold">Bio {{ dialog.no }}</h2>
-            <p class="text-black whitespace-pre-line">{{ dialog.jp }}</p>
+            <h2 class="text-[#a51919] font-bold mb-2 text-[18px]">Bio {{ dialog.no }}</h2>
+            <p class="text-black whitespace-pre-line h-[300px] overflow-y-auto scroll-hide text-justify">{{ dialog.jp }}</p>
           </div>
         </div>
 
@@ -2036,7 +2036,7 @@ watch(isEnglish, async () => {
 
 .dialogue-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 card mỗi hàng */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 3 card mỗi hàng */
   gap: 16px; /* khoảng cách giữa các card */
 }
 
@@ -2058,6 +2058,14 @@ watch(isEnglish, async () => {
   font-weight: bold;
   margin-bottom: 8px;
 }
+
+.scroll-hide {
+  scrollbar-width: none;
+}
+.scroll-hide::-webkit-scrollbar {
+  display: none;
+}
+
 
 .voice-list {
   display: flex;
@@ -2096,7 +2104,6 @@ watch(isEnglish, async () => {
 .voice-btn:hover {
   transform: scale(1.1);
 }
-
 
 /* Tooltip Styles */
 .effect-tooltip {
