@@ -26,13 +26,13 @@ const formattedName = route.params.name.replace(/_/g, " ");
 const { tagMap, loadTags } = useTags();
 
 /* ---------------------- RANK + IMAGE ---------------------- */
-// S: 144 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 98 -> ?
+// S: 144 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 79 -> 98
 const getATKRank = (atk) => {
   if (atk >= 144 && atk <= 165) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 123 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 103) return "C";
-  else if (atk >= 98 && atk <= 98) return "D";
+  else if (atk >= 79 && atk <= 98) return "D";
   else return "E";
 };
 
@@ -41,13 +41,14 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 3002 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2305 -> 2385, D: ? -> ?
+// S: 3002 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2305 -> 2385, D: 1822 -> ?
 const getATKEvoRank = (atk) => {
   if (atk >= 3002 && atk <= 3484) return "S";
   else if (atk >= 2894 && atk <= 2975) return "A";
   else if (atk >= 2386 && atk <= 2386) return "B";
   else if (atk >= 2305 && atk <= 2385) return "C";
-  else return "D";
+  else if (atk >= 1822 && atk <= 1822) return "D";
+  else return "E";
 };
 
 const getATKEvoImage = (atk) => {
@@ -55,9 +56,9 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 1174 -> ?, A: 1078 -> 1120, B: 960 -> 1056, C: 864 -> 939, D: 843 -> ?
+// S: 1174 -> 1227, A: 1078 -> 1120, B: 960 -> 1056, C: 864 -> 939, D: 843 -> ?
 const getHPRank = (hp) => {
-  if (hp >= 1174 && hp <= 1323) return "S";
+  if (hp >= 1174 && hp <= 1227) return "S";
   else if (hp >= 1078 && hp <= 1120) return "A";
   else if (hp >= 960 && hp <= 1056) return "B";
   else if (hp >= 864 && hp <= 939) return "C";
@@ -70,9 +71,9 @@ const getHPImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 12646 -> 13785, A: 11963 -> 12532, B: 10254 -> 11279, C: 9684 -> 10026, D: ? -> ?
+// S: 12646 -> 14241, A: 11963 -> 12532, B: 10254 -> 11279, C: 9684 -> 10026, D: ? -> ?
 const getHPEvoRank = (hp) => {
-  if (hp >= 12646 && hp <= 13785) return "S";
+  if (hp >= 12646 && hp <= 14241) return "S";
   else if (hp >= 11963 && hp <= 12532) return "A";
   else if (hp >= 10254 && hp <= 11279) return "B";
   else if (hp >= 9684 && hp <= 10026) return "C";
@@ -84,11 +85,11 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: 75 -> 76, B: 72 -> ?, C: 61 -> 67, D: 58 -> ?
+// S: ? -> ?, A: 75 -> 76, B: 72 -> 73, C: 61 -> 67, D: 58 -> ?
 const getDEFRank = (def) => {
   if (def >= 8134 && def <= 8171) return "S";
   else if (def >= 75 && def <= 76) return "A";
-  else if (def >= 72 && def <= 72) return "B";
+  else if (def >= 72 && def <= 73) return "B";
   else if (def >= 61 && def <= 67) return "C";
   else if (def >= 58 && def <= 60) return "D";
   else return "E";
@@ -99,10 +100,10 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 490 -> ?, A: 445 -> 467, B: 397 -> 437, C: 375 -> 384, D: ? -> ?
+// S: 490 -> ?, A: 445 -> 472, B: 397 -> 437, C: 375 -> 384, D: ? -> ?
 const getDEFEvoRank = (def) => {
   if (def >= 490 && def <= 490) return "S";
-  else if (def >= 445 && def <= 467) return "A";
+  else if (def >= 445 && def <= 472) return "A";
   else if (def >= 397 && def <= 437) return "B";
   else if (def >= 375 && def <= 384) return "C";
   else return "D";
@@ -325,9 +326,18 @@ const highlightNoteText = (bio, isEnglish) => {
       const n = o.name || {};
       if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
       if (n.vn?.toLowerCase() === noteName.toLowerCase()) return true;
-      if (Array.isArray(n.cn) && n.cn.some((c) => c.toLowerCase() === noteName.toLowerCase())) return true;
-      if (Array.isArray(n.jp) && n.jp.some((j) => j.toLowerCase() === noteName.toLowerCase())) return true;
-      if (typeof n.jp === "string" && n.jp.toLowerCase() === noteName.toLowerCase()) return true;
+      if (
+        Array.isArray(n.cn) &&
+        n.cn.some((c) => c.toLowerCase() === noteName.toLowerCase())
+      )
+        return true;
+      if (
+        Array.isArray(n.jp) &&
+        n.jp.some((j) => j.toLowerCase() === noteName.toLowerCase())
+      )
+        return true;
+      if (typeof n.jp === "string" && n.jp.toLowerCase() === noteName.toLowerCase())
+        return true;
       return false;
     });
     if (targetOnmyoji) {
@@ -659,6 +669,17 @@ watch(isEnglish, async () => {
           @click="activeTab = 'gallery'"
         >
           {{ isEnglish ? "Gallery" : "Hoạ Phòng" }}
+        </button>
+        <button
+          class="flex py-2 px-4 text-center"
+          :class="
+            activeTab === 'dialogue'
+              ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+              : 'text-[#a3a3a3] cursor-pointer'
+          "
+          @click="activeTab = 'dialogue'"
+        >
+          {{ isEnglish ? "Dialogue" : "Đối Thoại" }}
         </button>
       </div>
 
@@ -1662,6 +1683,44 @@ watch(isEnglish, async () => {
           </tbody>
         </table>
       </div>
+
+      <div
+        class="w-full"
+        v-show="activeTab === 'dialogue'"
+        :class="activeTab === 'dialogue' ? 'opacity-100' : 'opacity-0'"
+      >
+        <!-- Bios -->
+        <h2
+          class="session-title mb-5"
+          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+        >
+          {{ isEnglish ? "Bios" : "Tiểu Sử" }}
+        </h2>
+        <div class="dialogue-grid" v-if="shikigami.dialogue && shikigami.dialogue.length">
+          <div
+            class="dialogue-card"
+            v-for="(dialog, index) in shikigami.dialogue"
+            :key="index"
+          >
+            <h2 class="text-[#a51919] font-bold">Bio {{ dialog.no }}</h2>
+            <p class="text-black whitespace-pre-line">{{ dialog.jp }}</p>
+          </div>
+        </div>
+
+        <h2
+          class="session-title mt-5"
+          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+        >
+          {{ isEnglish ? "Voice Lines" : "Lời Thoại" }}
+        </h2>
+
+        <div class="voice-list mt-5">
+          <div v-for="(line, index) in shikigami.voices" :key="index" class="voice-item">
+            <div class="voice-type">{{ line.type }}</div>
+            <div class="voice-text">{{ line.voice }}</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Tooltip -->
@@ -1691,7 +1750,7 @@ watch(isEnglish, async () => {
       </div>
 
       <div
-        class="tooltip-description"
+        class="tooltip-description whitespace-pre-line"
         v-html="processTextWithTooltips(tooltipData.description)"
       ></div>
 
@@ -1712,7 +1771,7 @@ watch(isEnglish, async () => {
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />
             <div
-              class="subnote-description"
+              class="subnote-description whitespace-pre-line"
               v-html="processBoldC(isEnglish ? sub.description.en : sub.description.vn)"
             ></div>
           </div>
@@ -1974,6 +2033,70 @@ watch(isEnglish, async () => {
 .tint-yellow {
   background-color: #c07b2a;
 }
+
+.dialogue-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 card mỗi hàng */
+  gap: 16px; /* khoảng cách giữa các card */
+}
+
+.dialogue-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid #a51919;
+  transition: transform 0.2s;
+}
+
+.dialogue-card:hover {
+  transform: translateY(-4px);
+}
+
+.dialog-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.voice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.voice-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 6px rgba(122, 6, 6, 0.08);
+}
+
+.voice-type {
+  min-width: 120px;
+  font-weight: bold;
+  color: #a51919;
+}
+
+.voice-text {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.voice-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+.voice-btn:hover {
+  transform: scale(1.1);
+}
+
 
 /* Tooltip Styles */
 .effect-tooltip {
