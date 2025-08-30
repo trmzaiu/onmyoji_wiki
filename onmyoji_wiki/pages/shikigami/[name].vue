@@ -670,17 +670,6 @@ watch(isEnglish, async () => {
         >
           {{ isEnglish ? "Gallery" : "Hoạ Phòng" }}
         </button>
-        <button
-          class="flex py-2 px-4 text-center"
-          :class="
-            activeTab === 'dialogue'
-              ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-              : 'text-[#a3a3a3] cursor-pointer'
-          "
-          @click="activeTab = 'dialogue'"
-        >
-          {{ isEnglish ? "Dialogue" : "Đối Thoại" }}
-        </button>
       </div>
 
       <!-- Main Tab -->
@@ -1631,48 +1620,6 @@ watch(isEnglish, async () => {
           </tbody>
         </table>
       </div>
-
-      <div
-        class="w-full"
-        v-show="activeTab === 'dialogue'"
-        :class="activeTab === 'dialogue' ? 'opacity-100' : 'opacity-0'"
-      >
-        <!-- Bios -->
-        <h2
-          class="session-title mb-5"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-        >
-          {{ isEnglish ? "Bios" : "Tiểu Sử" }}
-        </h2>
-        <div class="dialogue-grid" v-if="shikigami.dialogue && shikigami.dialogue.length">
-          <div
-            class="dialogue-card"
-            v-for="(dialog, index) in shikigami.dialogue"
-            :key="index"
-          >
-            <h2 class="text-[#a51919] dialog-title">Bio {{ dialog.no }}</h2>
-            <p
-              class="text-black whitespace-pre-line h-[250px] overflow-y-auto scroll-hide text-justify"
-            >
-              {{ isEnglish ? dialog.jp : dialog.vn }}
-            </p>
-          </div>
-        </div>
-
-        <h2
-          class="session-title mt-5"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-        >
-          {{ isEnglish ? "Voice Lines" : "Lời Thoại" }}
-        </h2>
-
-        <div class="voice-list mt-5">
-          <div v-for="(line, index) in shikigami.voices" :key="index" class="voice-item">
-            <div class="voice-type">{{ line.type }}</div>
-            <div class="voice-text">{{ line.voice }}</div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Tooltip -->
@@ -1992,31 +1939,6 @@ watch(isEnglish, async () => {
 
 .tint-yellow {
   background-color: #c07b2a;
-}
-
-.dialogue-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 3 card mỗi hàng */
-  gap: 16px; /* khoảng cách giữa các card */
-}
-
-.dialogue-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  border: 2px solid #a51919;
-  transition: transform 0.2s;
-}
-
-.dialogue-card:hover {
-  transform: translateY(-4px);
-}
-
-.dialog-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 8px;
 }
 
 .scroll-hide {
