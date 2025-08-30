@@ -1500,35 +1500,8 @@ watch(isEnglish, async () => {
           {{ isEnglish ? "Skins" : "Ngoại hình" }}
         </h2>
         <div class="grid grid-cols-3 gap-5 mt-4">
-          <div class="flex flex-col items-center" title="Default">
-            <img
-              :src="shikigami.images.image"
-              :alt="shikigami.name.jp[1]"
-              class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300"
-            />
-            <p
-              class="mt-4 text-center font-medium text-black"
-              :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-            >
-              {{ isEnglish ? "Default" : "Mặc định" }}
-            </p>
-          </div>
           <div
-            class="flex flex-col items-center"
-            title="Evolution"
-            v-if="shikigami.rarity !== 'SP'"
-          >
-            <img
-              :src="shikigami.images.image_evo"
-              :alt="shikigami.name.jp[1]"
-              class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300"
-            />
-            <p class="mt-4 text-center font-medium text-black">
-              {{ isEnglish ? "Evolution" : "Thức tỉnh" }}
-            </p>
-          </div>
-          <div
-            v-for="(skin, index) in shikigami.skins.slice(0, -2)"
+            v-for="(skin, index) in shikigami.skins"
             :key="index"
             class="flex flex-col items-center"
             :title="skin.name.en || skin.name.cn"
@@ -1569,50 +1542,26 @@ watch(isEnglish, async () => {
             </tr>
           </thead>
           <tbody>
-            <tr class="text-black">
-              <td class="w-26 h-26 px-2 py-1 text-center table-cell">
-                <img
-                  :src="shikigami.images.image_skin"
-                  alt="Default Skin"
-                  class="w-24 h-24 object-contain mx-auto"
-                />
-              </td>
-              <td class="px-2 py-1 text-center table-cell">Default</td>
-              <td class="px-2 py-1 text-center table-cell">
-                {{ shikigami.skins[shikigami.skins.length - 2].artist || "" }}
-              </td>
-              <td class="px-2 py-1 text-center table-cell"></td>
-            </tr>
-            <tr class="text-black" v-if="shikigami.rarity !== 'SP'">
-              <td class="px-2 py-1 text-center table-cell">
-                <img
-                  :src="shikigami.images.image_skin_evo"
-                  alt="Evolution Skin"
-                  class="w-24 h-24 object-contain mx-auto"
-                />
-              </td>
-              <td class="px-2 py-1 text-center table-cell">Evolution</td>
-              <td class="px-2 py-1 text-center table-cell">
-                {{ shikigami.skins[shikigami.skins.length - 1].artist }}
-              </td>
-              <td class="px-2 py-1 text-center table-cell">After evolution</td>
-            </tr>
-            <tr
-              class="text-black"
-              v-for="(skin, index) in shikigami.skins.slice(0, -2)"
-              :key="index"
-            >
-              <td class="px-2 py-1 text-center table-cell">
+            <tr class="text-black" v-for="(skin, index) in shikigami.skins" :key="index">
+              <td class="px-2 py-1 text-center table-cell w-[105px]">
                 <img
                   :src="skin.image_info"
                   :alt="skin.name.en || skin.name.cn"
                   class="w-24 h-24 object-contain mx-auto"
                 />
               </td>
-              <td class="px-2 py-1 text-center table-cell">
+              <td
+                class="px-2 py-1 text-center table-cell"
+                v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'"
+              >
+                <div>{{ isEnglish ? skin.name.en : skin.name.vn }}</div>
+              </td>
+
+              <td class="px-2 py-1 text-center table-cell" v-else>
                 <div>{{ skin.name.en }}</div>
                 <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
               </td>
+
               <td class="px-2 py-1 text-center table-cell">
                 {{ skin.artist }}
               </td>
@@ -1702,7 +1651,11 @@ watch(isEnglish, async () => {
             :key="index"
           >
             <h2 class="text-[#a51919] dialog-title">Bio {{ dialog.no }}</h2>
-            <p class="text-black whitespace-pre-line h-[250px] overflow-y-auto scroll-hide text-justify">{{ isEnglish ? dialog.jp : dialog.vn }}</p>
+            <p
+              class="text-black whitespace-pre-line h-[250px] overflow-y-auto scroll-hide text-justify"
+            >
+              {{ isEnglish ? dialog.jp : dialog.vn }}
+            </p>
           </div>
         </div>
 
@@ -2072,7 +2025,6 @@ watch(isEnglish, async () => {
 .scroll-hide::-webkit-scrollbar {
   display: none;
 }
-
 
 .voice-list {
   display: flex;
