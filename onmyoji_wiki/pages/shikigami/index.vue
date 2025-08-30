@@ -241,7 +241,7 @@ onMounted(async () => {
                       : shiki.name.cn[0] + " — " + shiki.name.jp[0]
                   }}
                   {{ shiki.name.en === shiki.name.jp[1] ? "" : "— " + shiki.name.en }} —
-                  {{ shiki.name.vn }}
+                  <span class="lang-vn">{{ shiki.name.vn }}</span>
                 </div>
               </td>
 

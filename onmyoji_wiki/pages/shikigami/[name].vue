@@ -85,11 +85,11 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: 75 -> 76, B: 72 -> 73, C: 61 -> 67, D: 58 -> ?
+// S: ? -> ?, A: 75 -> 76, B: 71 -> 73, C: 61 -> 67, D: 58 -> ?
 const getDEFRank = (def) => {
   if (def >= 8134 && def <= 8171) return "S";
   else if (def >= 75 && def <= 76) return "A";
-  else if (def >= 72 && def <= 73) return "B";
+  else if (def >= 71 && def <= 73) return "B";
   else if (def >= 61 && def <= 67) return "C";
   else if (def >= 58 && def <= 60) return "D";
   else return "E";
@@ -585,7 +585,7 @@ watch(isEnglish, async () => {
                   <strong>JP</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ shikigami.va }}</div>
+                  <div>{{ shikigami.name.va }}</div>
                 </td>
               </tr>
               <tr v-if="shikigami.rarity !== 'SP'">
@@ -1132,7 +1132,7 @@ watch(isEnglish, async () => {
                 >
                   <div class="skill-title">
                     <span
-                      class="name"
+                      class="skill-name"
                       :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
                     >
                       {{
@@ -1141,7 +1141,7 @@ watch(isEnglish, async () => {
                           : shikigami.skills[activeSkillIndex].name.vn
                       }}
                     </span>
-                    <span class="sub-name">
+                    <span class="skill-sub-name">
                       ({{ shikigami.skills[activeSkillIndex].name.cn }}/{{
                         shikigami.skills[activeSkillIndex].name.jp
                       }})
@@ -1301,7 +1301,6 @@ watch(isEnglish, async () => {
                   style="
                     display: table-cell;
                     vertical-align: bottom;
-                    font-weight: 900;
                     font-size: 20px;
                     color: #a51919;
                     height: 65px;
@@ -1311,12 +1310,12 @@ watch(isEnglish, async () => {
                 >
                   <div class="skill-title">
                     <span
-                      class="name"
+                      class="skill-name"
                       :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
                     >
                       {{ isEnglish ? skill.name.en : skill.name.vn }}
                     </span>
-                    <span class="sub-name">
+                    <span class="skill-sub-name">
                       ({{ skill.name.cn }}/{{ skill.name.jp }})
                     </span>
                   </div>
@@ -1702,8 +1701,8 @@ watch(isEnglish, async () => {
             v-for="(dialog, index) in shikigami.dialogue"
             :key="index"
           >
-            <h2 class="text-[#a51919] font-bold mb-2 text-[18px]">Bio {{ dialog.no }}</h2>
-            <p class="text-black whitespace-pre-line h-[300px] overflow-y-auto scroll-hide text-justify">{{ dialog.jp }}</p>
+            <h2 class="text-[#a51919] dialog-title">Bio {{ dialog.no }}</h2>
+            <p class="text-black whitespace-pre-line h-[250px] overflow-y-auto scroll-hide text-justify">{{ isEnglish ? dialog.jp : dialog.vn }}</p>
           </div>
         </div>
 
@@ -1986,6 +1985,14 @@ watch(isEnglish, async () => {
 
 .stats td {
   border: none;
+}
+
+.skill-name {
+  font-weight: 900;
+}
+
+.skill-sub-name {
+  font-weight: 600;
 }
 
 .skill-header {

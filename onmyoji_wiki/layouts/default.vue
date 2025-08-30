@@ -179,7 +179,7 @@ html {
 }
 
 #app {
-  font-family: "Rubik", "Ma Shan Zheng", "National Park", "Yuji Syuku", sans-serif;
+  font-family: "Rubik", "Chiron GoRound TC", sans-serif, "Noto Serif SC", "Shippori Mincho", serif;
   background: #891727;
   color: #f4f1e8;
   min-height: 100vh;
