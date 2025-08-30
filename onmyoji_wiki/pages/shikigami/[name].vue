@@ -26,9 +26,9 @@ const formattedName = route.params.name.replace(/_/g, " ");
 const { tagMap, loadTags } = useTags();
 
 /* ---------------------- RANK + IMAGE ---------------------- */
-// S: 142 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 79 -> 98
+// S: 140 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 79 -> 98
 const getATKRank = (atk) => {
-  if (atk >= 142 && atk <= 165) return "S";
+  if (atk >= 140 && atk <= 165) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 123 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 103) return "C";
@@ -56,12 +56,12 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 1174 -> 1227, A: 1078 -> 1120, B: 960 -> 1056, C: 864 -> 939, D: 843 -> ?
+// S: 1174 -> 1227, A: 1078 -> 1120, B: 960 -> 1056, C: 854 -> 939, D: 843 -> ?
 const getHPRank = (hp) => {
   if (hp >= 1174 && hp <= 1227) return "S";
   else if (hp >= 1078 && hp <= 1120) return "A";
   else if (hp >= 960 && hp <= 1056) return "B";
-  else if (hp >= 864 && hp <= 939) return "C";
+  else if (hp >= 854 && hp <= 939) return "C";
   else if (hp >= 843 && hp <= 843) return "D";
   else return "E";
 };
@@ -85,12 +85,12 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: 75 -> 76, B: 71 -> 73, C: 61 -> 67, D: 58 -> ?
+// S: ? -> ?, A: 75 -> 76, B: 71 -> 73, C: 61 -> 69, D: 58 -> ?
 const getDEFRank = (def) => {
   if (def >= 8134 && def <= 8171) return "S";
   else if (def >= 75 && def <= 76) return "A";
   else if (def >= 71 && def <= 73) return "B";
-  else if (def >= 61 && def <= 67) return "C";
+  else if (def >= 61 && def <= 69) return "C";
   else if (def >= 58 && def <= 60) return "D";
   else return "E";
 };
