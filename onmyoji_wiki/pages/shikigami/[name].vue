@@ -26,9 +26,9 @@ const formattedName = route.params.name.replace(/_/g, " ");
 const { tagMap, loadTags } = useTags();
 
 /* ---------------------- RANK + IMAGE ---------------------- */
-// S: 144 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 79 -> 98
+// S: 142 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 79 -> 98
 const getATKRank = (atk) => {
-  if (atk >= 144 && atk <= 165) return "S";
+  if (atk >= 142 && atk <= 165) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 123 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 103) return "C";
@@ -100,10 +100,10 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 490 -> ?, A: 445 -> 472, B: 397 -> 437, C: 375 -> 384, D: ? -> ?
+// S: 490 -> ?, A: 441 -> 472, B: 397 -> 437, C: 375 -> 384, D: ? -> ?
 const getDEFEvoRank = (def) => {
   if (def >= 490 && def <= 490) return "S";
-  else if (def >= 445 && def <= 472) return "A";
+  else if (def >= 441 && def <= 472) return "A";
   else if (def >= 397 && def <= 437) return "B";
   else if (def >= 375 && def <= 384) return "C";
   else return "D";
