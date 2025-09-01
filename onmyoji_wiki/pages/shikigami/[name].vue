@@ -362,26 +362,26 @@ const highlightNoteText = (bio, isEnglish) => {
   finalName = finalName.replace(/\s+/g, "_");
 
   if (targetType) {
-  // Nếu có <b>...</b> thì chỉ replace trong phần đó
-  if (/<b>.*?<\/b>/.test(text)) {
-    return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
-      return `<b>${inner.replace(
-        regex,
-        `<a href="/${targetType}/${encodeURIComponent(
-          finalName
-        )}" class="text-[#891727] font-bold">$1</a>`
-      )}</b>`;
-    });
-  }
+    // Nếu có <b>...</b> thì chỉ replace trong phần đó
+    if (/<b>.*?<\/b>/.test(text)) {
+      return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
+        return `<b>${inner.replace(
+          regex,
+          `<a href="/${targetType}/${encodeURIComponent(
+            finalName
+          )}" class="text-[#891727] font-bold">$1</a>`
+        )}</b>`;
+      });
+    }
 
-  // Nếu không có <b> thì replace như cũ
-  return text.replace(
-    regex,
-    `<a href="/${targetType}/${encodeURIComponent(
-      finalName
-    )}" class="text-[#891727] font-bold">$1</a>`
-  );
-}
+    // Nếu không có <b> thì replace như cũ
+    return text.replace(
+      regex,
+      `<a href="/${targetType}/${encodeURIComponent(
+        finalName
+      )}" class="text-[#891727] font-bold">$1</a>`
+    );
+  }
 
   return text;
 };
@@ -477,6 +477,73 @@ function subscribeRealtime() {
       }
     )
     .subscribe();
+}
+
+/* ---------------------- EDIT ---------------------- */
+const showEditModal = ref(false);
+const editingSkill = ref(null);
+const tagsInput = ref("");
+const notesInput = ref("");
+
+const editSkill = (skill) => {
+  editingSkill.value = {
+    ...skill,
+    tags: [...(skill.tags || [])],
+    notes: [...(skill.notes || [])],
+  };
+  showEditModal.value = true;
+  tagsInput.value = (editingSkill.value.tags || []).join(",");
+  notesInput.value = (editingSkill.value.notes || []).join(",");
+};
+
+const closeEditModal = () => {
+  showEditModal.value = false;
+  editingSkill.value = null;
+};
+
+const saveSkill = async () => {
+  if (!editingSkill.value) return;
+
+  updateTags();
+  updateNotes();
+
+  // Update local
+  Object.assign(
+    shikigami.value.skills.find((s) => s.id === editingSkill.value.id),
+    editingSkill.value
+  );
+
+  // Update DB
+  const { data, error } = await supabase
+    .from("Shikigami")
+    .update({
+      skills: shikigami.value.skills,
+    })
+    .eq("id", shikigami.value.id);
+
+  if (error) {
+    console.error("Error updating skill:", error);
+    alert("Update failed!");
+  } else {
+    console.log("Skill updated:", data);
+    closeEditModal();
+  }
+};
+
+function updateTags() {
+  editingSkill.tags = tagsInput.value
+    .split(",")
+    .map((x) => x.trim())
+    .filter((x) => x !== "" && !isNaN(x))
+    .map(Number);
+}
+
+function updateNotes() {
+  editingSkill.notes = notesInput.value
+    .split(",")
+    .map((x) => x.trim())
+    .filter((x) => x !== "" && !isNaN(x))
+    .map(Number);
 }
 
 /* ---------------------- LIFECYCLE ---------------------- */
@@ -650,7 +717,10 @@ watch(isEnglish, async () => {
       </div>
 
       <!-- Profile -->
-      <div class="text-black text-justify mt-2 whitespace-pre-line" v-if="shikigami.profile !== null">
+      <div
+        class="text-black text-justify mt-2 whitespace-pre-line"
+        v-if="shikigami.profile !== null"
+      >
         {{ isEnglish ? shikigami.profile.en : shikigami.profile.vn }}
       </div>
 
@@ -1143,6 +1213,13 @@ watch(isEnglish, async () => {
                         shikigami.skills[activeSkillIndex].name.jp
                       }})
                     </span>
+                    <button
+                      class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
+                      @click="editSkill(shikigami.skills[activeSkillIndex])"
+                    >
+                      <i class="fas fa-edit"></i>
+                      <!-- dùng font-awesome -->
+                    </button>
                   </div>
                 </span>
               </div>
@@ -1151,11 +1228,11 @@ watch(isEnglish, async () => {
               <div style="padding: 10px 20px; border: 1px solid #a51919">
                 <div class="text-black pb-5 skill-header">
                   <div class="skill-info flex">
-                    <span style="margin-left: 25px; font-size: smaller">
+                    <span style="margin-left: 25px">
                       <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
                       {{ shikigami.skills[activeSkillIndex].type }}
                     </span>
-                    <span class="flex" style="margin-left: 40px; font-size: smaller">
+                    <span class="flex" style="margin-left: 40px">
                       <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
                       <img
                         src="https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Onibi.webp"
@@ -1163,7 +1240,7 @@ watch(isEnglish, async () => {
                       />
                       {{ shikigami.skills[activeSkillIndex].onibi }}
                     </span>
-                    <span style="margin-left: 40px; font-size: smaller">
+                    <span style="margin-left: 40px">
                       <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
                       {{ shikigami.skills[activeSkillIndex].cooldown }}
                     </span>
@@ -1196,7 +1273,7 @@ watch(isEnglish, async () => {
                   class="whitespace-pre-line text-justify"
                   style="
                     margin: 0;
-                    font-size: 15px;
+                    font-size: 16px;
                     line-height: 1.5;
                     color: #444;
                     padding: 10px 0;
@@ -1211,7 +1288,7 @@ watch(isEnglish, async () => {
                 ></p>
                 <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
                 <table
-                  style="width: 100%; border-collapse: collapse; font-size: 14px"
+                  style="width: 100%; border-collapse: collapse; font-size: 16px"
                   v-if="
                     Array.isArray(
                       isEnglish
@@ -1323,16 +1400,16 @@ watch(isEnglish, async () => {
               <div style="padding: 10px 25px; border: 1px solid #a51919">
                 <div class="text-black pb-5 skill-header">
                   <div class="skill-info flex">
-                    <span style="margin-left: 45px; font-size: smaller">
+                    <span style="margin-left: 45px">
                       <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
                       {{ skill.type }}
                     </span>
-                    <span class="flex" style="margin-left: 45px; font-size: smaller">
+                    <span class="flex" style="margin-left: 45px">
                       <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
                       <img src="/assets/Onibi.webp" alt="Onibi" />
                       {{ skill.onibi }}
                     </span>
-                    <span style="margin-left: 45px; font-size: smaller">
+                    <span style="margin-left: 45px">
                       <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
                       {{ skill.cooldown }}
                     </span>
@@ -1343,13 +1420,11 @@ watch(isEnglish, async () => {
                       :key="tagId"
                       class="relative inline-flex items-center justify-center w-20 h-6 overflow-hidden rounded-md"
                     >
-                      <!-- brush nền -->
                       <div
                         class="absolute inset-0 tint-base"
                         :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
                       ></div>
 
-                      <!-- chữ đè lên -->
                       <span class="relative z-10 text-xs text-white">
                         {{ tagMap?.[tagId]?.name }}
                       </span>
@@ -1361,7 +1436,7 @@ watch(isEnglish, async () => {
                   class="whitespace-pre-line text-justify"
                   style="
                     margin: 0;
-                    font-size: 15px;
+                    font-size: 16px;
                     line-height: 1.5;
                     color: #444;
                     padding: 10px 0;
@@ -1374,7 +1449,7 @@ watch(isEnglish, async () => {
                 ></p>
                 <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
                 <table
-                  style="width: 100%; border-collapse: collapse; font-size: 14px"
+                  style="width: 100%; border-collapse: collapse; font-size: 16px"
                   v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)"
                 >
                   <tbody>
@@ -1685,6 +1760,194 @@ watch(isEnglish, async () => {
         </div>
       </div>
     </div>
+
+    <!-- Modal -->
+    <div
+      v-if="showEditModal"
+      class="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+    >
+      <div
+        class="bg-white rounded-2xl p-6 w-[800px] max-h-[90vh] shadow-xl flex flex-col"
+      >
+        <h2 class="text-xl font-bold mb-4 text-[#a51919]">Edit Skill</h2>
+        <div div class="overflow-y-auto flex-1">
+          <h3 class="text-md font-bold text-black">Skill Names</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-black">EN</label>
+              <input
+                v-model="editingSkill.name.en"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black">VN</label>
+              <input
+                v-model="editingSkill.name.vn"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black">CN</label>
+              <input
+                v-model="editingSkill.name.cn"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black">JP</label>
+              <input
+                v-model="editingSkill.name.jp"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+              />
+            </div>
+          </div>
+
+          <h3 class="text-md font-bold mt-5 text-black">Skill Info</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-black">Type</label>
+              <input
+                v-model="editingSkill.type"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black">Onibi</label>
+              <input
+                v-model="editingSkill.onibi"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black">Cooldown</label>
+              <input
+                v-model="editingSkill.cooldown"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h3 class="text-md font-bold mt-5 text-black">Skill Tags</h3>
+              <div class="gap-4">
+                <input
+                  v-model="tagsInput"
+                  @input="updateTags"
+                  class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-md font-bold mt-5 text-black">Skill Notes</h3>
+              <div class="gap-4">
+                <input
+                  v-model="notesInput"
+                  @input="updateNotes"
+                  class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+                />
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-md font-bold mt-5 text-black">Skill Voice</h3>
+          <div class="gap-4">
+            <input
+              v-model="editingSkill.voice"
+              class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+            />
+          </div>
+
+          <h3 class="text-md font-bold mt-5 text-black">Skill Description</h3>
+          <div class="gap-4">
+            <div>
+              <label class="block text-sm font-medium text-black">EN</label>
+              <textarea
+                v-model="editingSkill.description.en"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1"
+                rows="4"
+              ></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-black mt-2">VN</label>
+              <textarea
+                v-model="editingSkill.description.vn"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 pt-1"
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
+
+          <h3 class="text-md font-bold mt-5 text-black">Skill Levels</h3>
+          <div
+            class="gap-4 grid grid-cols-2"
+            v-if="Array.isArray(editingSkill.levels.en)"
+          >
+            <div class="gap-1 grid grid-cols-1">
+              <div
+                v-for="(lvl, index) in editingSkill.levels.en"
+                :key="index"
+               
+              >
+                <label class="block text-sm font-medium mb-1 text-black"
+                  >Level {{ lvl.level }}</label
+                >
+                <textarea
+                  v-model="lvl.effect"
+                  class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="gap-1 grid grid-cols-1">
+              <div
+                v-for="(lvl, index) in editingSkill.levels.vn"
+                :key="index"
+                
+              >
+                <label class="block text-sm font-medium mb-1 text-black"
+                  >Level {{ lvl.level }}</label
+                >
+                <textarea
+                  v-model="lvl.effect"
+                  class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          <div v-else class="gap-4 grid grid-cols-2">
+            <div>
+              <textarea
+                v-model="editingSkill.levels.en"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2"
+              ></textarea>
+            </div>
+            <div>
+              <textarea
+                v-model="editingSkill.levels.vn"
+                class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-5">
+          <button
+            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 rounded-md text-black"
+            @click="closeEditModal"
+          >
+            Cancel
+          </button>
+          <button
+            class="px-3 py-1 rounded bg-[#a51919] text-white hover:bg-[#891727] rounded-md"
+            @click="saveSkill"
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1911,8 +2174,8 @@ watch(isEnglish, async () => {
 }
 
 .skill-info span {
-  margin-left: 45px;
   font-size: smaller;
+  margin-left: 45px;
   text-align: center;
 }
 
