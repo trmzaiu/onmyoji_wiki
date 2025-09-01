@@ -41,9 +41,9 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 3002 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2305 -> 2385, D: 1822 -> ?
+// S: 2948 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2305 -> 2385, D: 1822 -> ?
 const getATKEvoRank = (atk) => {
-  if (atk >= 3002 && atk <= 3484) return "S";
+  if (atk >= 2948 && atk <= 3484) return "S";
   else if (atk >= 2894 && atk <= 2975) return "A";
   else if (atk >= 2386 && atk <= 2386) return "B";
   else if (atk >= 2305 && atk <= 2385) return "C";
@@ -56,10 +56,10 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 1174 -> 1227, A: 1078 -> 1120, B: 960 -> 1056, C: 854 -> 939, D: 843 -> ?
+// S: 1174 -> 1270, A: 1067 -> 1163, B: 960 -> 1056, C: 854 -> 939, D: 843 -> ?
 const getHPRank = (hp) => {
-  if (hp >= 1174 && hp <= 1227) return "S";
-  else if (hp >= 1078 && hp <= 1120) return "A";
+  if (hp >= 1174 && hp <= 1270) return "S";
+  else if (hp >= 1067 && hp <= 1163) return "A";
   else if (hp >= 960 && hp <= 1056) return "B";
   else if (hp >= 854 && hp <= 939) return "C";
   else if (hp >= 843 && hp <= 843) return "D";
@@ -71,10 +71,10 @@ const getHPImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 12646 -> 14241, A: 11963 -> 12532, B: 10254 -> 11279, C: 9684 -> 10026, D: ? -> ?
+// S: 12646 -> 14241, A: 11393 -> 12532, B: 10254 -> 11279, C: 9684 -> 10026, D: ? -> ?
 const getHPEvoRank = (hp) => {
   if (hp >= 12646 && hp <= 14241) return "S";
-  else if (hp >= 11963 && hp <= 12532) return "A";
+  else if (hp >= 11393 && hp <= 12532) return "A";
   else if (hp >= 10254 && hp <= 11279) return "B";
   else if (hp >= 9684 && hp <= 10026) return "C";
   else return "D";
@@ -85,12 +85,12 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: 75 -> 76, B: 71 -> 73, C: 61 -> 69, D: 58 -> ?
+// S: ? -> ?, A: 75 -> 82, B: 71 -> 73, C: 60 -> 69, D: 58 -> ?
 const getDEFRank = (def) => {
   if (def >= 8134 && def <= 8171) return "S";
-  else if (def >= 75 && def <= 76) return "A";
+  else if (def >= 75 && def <= 82) return "A";
   else if (def >= 71 && def <= 73) return "B";
-  else if (def >= 61 && def <= 69) return "C";
+  else if (def >= 60 && def <= 69) return "C";
   else if (def >= 58 && def <= 60) return "D";
   else return "E";
 };
@@ -100,12 +100,12 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 490 -> ?, A: 441 -> 472, B: 397 -> 437, C: 375 -> 384, D: ? -> ?
+// S: 490 -> ?, A: 441 -> 481, B: 397 -> 437, C: 370 -> 388, D: ? -> ?
 const getDEFEvoRank = (def) => {
   if (def >= 490 && def <= 490) return "S";
-  else if (def >= 441 && def <= 472) return "A";
+  else if (def >= 441 && def <= 481) return "A";
   else if (def >= 397 && def <= 437) return "B";
-  else if (def >= 375 && def <= 384) return "C";
+  else if (def >= 370 && def <= 388) return "C";
   else return "D";
 };
 
@@ -361,19 +361,27 @@ const highlightNoteText = (bio, isEnglish) => {
 
   finalName = finalName.replace(/\s+/g, "_");
 
-  console.log("NoteName:", noteName);
-  console.log("TargetType:", targetType);
-  console.log("TargetData:", targetData);
-  console.log("Final Name:", finalName);
-
   if (targetType) {
-    return text.replace(
-      regex,
-      `<a href="/${targetType}/${encodeURIComponent(
-        finalName
-      )}" class="text-[#891727] font-bold">$1</a>`
-    );
+  // Nếu có <b>...</b> thì chỉ replace trong phần đó
+  if (/<b>.*?<\/b>/.test(text)) {
+    return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
+      return `<b>${inner.replace(
+        regex,
+        `<a href="/${targetType}/${encodeURIComponent(
+          finalName
+        )}" class="text-[#891727] font-bold">$1</a>`
+      )}</b>`;
+    });
   }
+
+  // Nếu không có <b> thì replace như cũ
+  return text.replace(
+    regex,
+    `<a href="/${targetType}/${encodeURIComponent(
+      finalName
+    )}" class="text-[#891727] font-bold">$1</a>`
+  );
+}
 
   return text;
 };
@@ -642,7 +650,7 @@ watch(isEnglish, async () => {
       </div>
 
       <!-- Profile -->
-      <div class="text-black text-justify mt-2" v-if="shikigami.profile !== null">
+      <div class="text-black text-justify mt-2 whitespace-pre-line" v-if="shikigami.profile !== null">
         {{ isEnglish ? shikigami.profile.en : shikigami.profile.vn }}
       </div>
 
@@ -1450,11 +1458,11 @@ watch(isEnglish, async () => {
               <td class="text-black table-cell text-center w-[50px]">
                 {{ bio.no }}
               </td>
-              <td class="text-black table-cell px-3 py-2">
+              <td class="text-black table-cell px-3">
                 <span v-html="highlightNoteText(bio, isEnglish)"></span>
               </td>
 
-              <td class="text-black table-cell w-[100px]">
+              <td class="py-1 text-black table-cell w-[100px]">
                 <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
                   <img
                     :src="bio.image"

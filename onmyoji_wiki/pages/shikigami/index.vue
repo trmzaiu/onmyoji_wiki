@@ -215,8 +215,8 @@ onMounted(async () => {
           </thead>
           <tbody>
             <tr v-for="shiki in sortedShikigami" :key="shiki.id" class="shikigami-row">
-              <td class="px-2 py-1 text-center text-black">{{ shiki.id }}</td>
-              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0">
+              <td class="px-2 py-1 text-center text-black w-[75px]">{{ shiki.id }}</td>
+              <td class="px-2 py-1 text-center w-[160px]" style="border-left: 1px solid #e0e0e0">
                 <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`"
                   ><img
                     :src="shiki.images.image_shard"
@@ -226,7 +226,7 @@ onMounted(async () => {
               </td>
 
               <td
-                class="px-2 py-1 text-center max-w-[300px]"
+                class="px-2 py-1 text-center"
                 style="border-left: 1px solid #e0e0e0"
               >
                 <div class="text-red hover:text-red-500 font-semibold">
@@ -245,7 +245,7 @@ onMounted(async () => {
                 </div>
               </td>
 
-              <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0">
+              <td class="px-2 py-1 text-center w-[150px]" style="border-left: 1px solid #e0e0e0">
                 <img
                   :src="`/assets/rarity/${shiki.rarity}.webp`"
                   :alt="shiki.rarity"
