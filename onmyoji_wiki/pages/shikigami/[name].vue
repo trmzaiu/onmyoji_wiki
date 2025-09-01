@@ -153,25 +153,32 @@ const processTextWithTooltips = (text) => {
 
   // build effectMap theo name để vẫn hỗ trợ chữ
   effects.value.forEach((note) => {
-    const names = [];
-    if (note.name?.en) names.push(note.name.en);
-    if (note.name?.vn && note.name.vn !== note.name.en) names.push(note.name.vn);
-    names.forEach((name) => {
-      if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), note);
-    });
+    const addToMap = (n) => {
+      const names = [];
+      if (n.name?.en) names.push(n.name.en);
+      if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
+      names.forEach((name) => {
+        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), n);
+      });
+    };
+    addToMap(note);
+
+    if (note.subs?.length) {
+      note.subs.forEach((subId) => {
+        const sub = effectById.get(subId);
+        if (sub) addToMap(sub);
+      });
+    }
   });
 
   const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
-  // hàm thay thế chung cho <b> và <a>
   const replaceWithTooltip = (match, content, type) => {
     let note = null;
 
-    // nếu content là số → tìm theo id
     if (/^\d+$/.test(content)) {
       note = effectById.get(content);
     } else {
-      // nếu là chữ → tìm theo tên
       note = effectMap.get(content.toLowerCase());
     }
 
@@ -191,6 +198,11 @@ const processTextWithTooltips = (text) => {
               style="color:${color}">${keyword}</span>`;
   };
 
+  // <d>...</d>
+  processedText = processedText.replace(/<d>(.*?)<\/d>/g, (_, keyword) => (
+    `<strong class="text-[#c07b2a]">${keyword}</strong>`
+  ));
+
   // <b>...</b>
   processedText = processedText.replace(/<b>(.*?)<\/b>/g, (m, c) =>
     replaceWithTooltip(m, c, "b")
@@ -201,14 +213,12 @@ const processTextWithTooltips = (text) => {
     replaceWithTooltip(m, c, "a")
   );
 
-  // <c>...</c> (chỉ in đậm, không tooltip)
-  // trong processTextWithTooltips
+  // <c>...</c>
   processedText = processedText.replace(
     /<c>(.*?)<\/c>/g,
     (_, keyword) =>
       `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
   );
-
 
   return processedText;
 };
@@ -217,53 +227,43 @@ const imgs = computed(() => tooltipData.value?.images || []);
 
 const processBoldC = (text) => {
   if (!text) return "";
-  return text.replace(/<c>(.*?)<\/c>/g, (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`);
+  return text.replace(
+    /<c>(.*?)<\/c>/g,
+    (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
+  );
 };
 
 const matchedSubNotes = computed(() => {
-  if (!tooltipData.value || !shikigami.value?.skills || !effects.value) return [];
+  if (!tooltipData.value || !effects.value?.length) return [];
 
   const desc = tooltipData.value.description || "";
-  const tooltipName = tooltipData.value.name?.toLowerCase();
-
   const effectById = new Map(effects.value.map((e) => [e.id, e]));
   const seen = new Set();
   let result = [];
 
-  shikigami.value.skills.forEach((skill) => {
-    if (!skill.notes?.length) return;
+  // tìm tất cả <b>...</b>
+  const bMatches = desc.match(/<b>(.*?)<\/b>/g) || [];
 
-    skill.notes.forEach((noteId) => {
-      const note = effectById.get(noteId);
-      if (!note) return;
-
-      const noteNameEn = note.name?.en?.toLowerCase() || "";
-      const noteNameVn = note.name?.vn?.toLowerCase() || "";
-
-      if (tooltipName !== noteNameEn && tooltipName !== noteNameVn) return;
-      if (!note.subs?.length) return;
-
-      note.subs.forEach((subId) => {
-        const sub = effectById.get(subId);
-        if (!sub) return;
-
-        const subNameEn = sub.name?.en || "";
-        const subNameVn = sub.name?.vn || "";
-
-        const matched =
-          (subNameEn && desc.toLowerCase().includes(subNameEn.toLowerCase())) ||
-          (subNameVn && desc.toLowerCase().includes(subNameVn.toLowerCase()));
-
-        if (matched && !seen.has(sub.id)) {
-          seen.add(sub.id);
-          result.push(sub);
+  bMatches.forEach(bTag => {
+    // lấy inner text
+    const inner = bTag.replace(/<b>|<\/b>/g, "");
+    // lấy tất cả số trong inner
+    const nums = inner.match(/\d+/g) || [];
+    nums.forEach(numStr => {
+      const id = Number(numStr);
+      if (!seen.has(id)) {
+        const note = effectById.get(id);
+        if (note) {
+          seen.add(id);
+          result.push(note);
         }
-      });
+      }
     });
   });
 
   return result;
 });
+
 
 const highlightNoteText = (bio, isEnglish) => {
   const text = isEnglish ? bio.condition.en : bio.condition.vn;
@@ -575,7 +575,6 @@ watch(
   () => [shikigami.value, activeSkillIndex.value, isEnglish.value],
   () => addCKeywordListeners()
 );
-
 </script>
 
 <template>
@@ -732,7 +731,10 @@ watch(
       </div>
 
       <!-- Content -->
-      <div class="flex border-b border-gray-300 mt-5" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
+      <div
+        class="flex border-b border-gray-300 mt-5"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+      >
         <button
           class="flex py-2 px-4 text-center"
           :class="
@@ -1563,8 +1565,6 @@ watch(
         <h2 class="session-title mt-5">
           {{ isEnglish ? "Build" : "Định hướng" }}
         </h2>
-
-        <h3>Role:</h3>
       </div>
 
       <!-- Gallery Tab -->
@@ -1636,7 +1636,9 @@ watch(
 
               <td class="px-2 py-1 text-center table-cell" v-else>
                 <div>{{ skin.name.en }}</div>
-                <div>{{ skin.name.cn }} - <span class="lang-vi">{{ skin.name.vn }}</span></div>
+                <div>
+                  {{ skin.name.cn }} - <span class="lang-vi">{{ skin.name.vn }}</span>
+                </div>
               </td>
 
               <td class="px-2 py-1 text-center table-cell">
