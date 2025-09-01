@@ -167,22 +167,24 @@ export default {
 };
 </script>
 
-<style scoped>
-html {
-  scroll-behavior: smooth;
-}
-/* Global Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+<style>
 #app {
-  font-family: "Rubik", "Chiron GoRound TC", sans-serif, "Noto Serif SC", "Shippori Mincho", serif;
+  font-family: "Rubik", "Nunito", "Noto Sans TC", sans-serif;
   background: #891727;
   color: #f4f1e8;
   min-height: 100vh;
+}
+
+#app.lang-en {
+  font-family: "Rubik", sans-serif;
+}
+
+#app.lang-vi {
+  font-family: "Nunito", sans-serif;
+}
+
+#app.lang-zh {
+  font-family: "Noto Sans TC", sans-serif;
 }
 
 /* Header Styles */

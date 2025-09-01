@@ -145,87 +145,70 @@ const getCritImage = (crit) => {
 
 /* ---------------------- TOOLTIP ---------------------- */
 const processTextWithTooltips = (text) => {
-  if (!text || !shikigami.value?.skills) return text;
+  if (!text || !effects.value?.length) return text;
 
   let processedText = text;
-  const effectById = new Map(effects.value.map((e) => [e.id, e]));
+  const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
   const effectMap = new Map();
 
-  shikigami.value.skills.forEach((skill) => {
-    if (!skill.notes) return;
-
-    skill.notes.forEach((id) => {
-      const note = effectById.get(id);
-      if (!note) return;
-
-      const names = [];
-      if (note.name?.en) names.push(note.name.en);
-      if (note.name?.vn && note.name.vn !== note.name.en) names.push(note.name.vn);
-
-      names.forEach((name) => {
-        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), note);
-      });
-
-      // ✅ thêm subNotes vào map
-      if (note.subs?.length) {
-        note.subs.forEach((subId) => {
-          const sub = effectById.get(subId);
-          if (!sub) return;
-          const subNames = [];
-          if (sub.name?.en) subNames.push(sub.name.en);
-          if (sub.name?.vn && sub.name.vn !== sub.name.en) subNames.push(sub.name.vn);
-          subNames.forEach((subName) => {
-            if (!effectMap.has(subName.toLowerCase()))
-              effectMap.set(subName.toLowerCase(), sub);
-          });
-        });
-      }
+  // build effectMap theo name để vẫn hỗ trợ chữ
+  effects.value.forEach((note) => {
+    const names = [];
+    if (note.name?.en) names.push(note.name.en);
+    if (note.name?.vn && note.name.vn !== note.name.en) names.push(note.name.vn);
+    names.forEach((name) => {
+      if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), note);
     });
   });
 
-  const regexBold = /<b>(.*?)<\/b>/g;
-  processedText = processedText.replace(regexBold, (match, keyword) => {
-    const note = effectMap.get(keyword.toLowerCase());
+  const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
+
+  // hàm thay thế chung cho <b> và <a>
+  const replaceWithTooltip = (match, content, type) => {
+    let note = null;
+
+    // nếu content là số → tìm theo id
+    if (/^\d+$/.test(content)) {
+      note = effectById.get(content);
+    } else {
+      // nếu là chữ → tìm theo tên
+      note = effectMap.get(content.toLowerCase());
+    }
+
     if (!note) return match;
 
+    const keyword = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
-    const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    return `<span
-      class="effect-tooltip"
-      data-name="${keyword}"
-      data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-      data-img='${JSON.stringify(note.images || [])}'
-      data-color="${color}"
-      style="color:${color}"
-    >${keyword}</span>`;
-  });
+    const className = type === "b" ? "effect-tooltip" : "effect-highlight";
 
-  const regexAnchor = /<a>(.*?)<\/a>/g;
-  processedText = processedText.replace(regexAnchor, (match, keyword) => {
-    const note = effectMap.get(keyword.toLowerCase());
-    if (!note) return match;
+    return `<span class="${className}"
+              data-name="${keyword}"
+              data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+              data-img='${JSON.stringify(note.images || [])}'
+              data-color="${color}"
+              style="color:${color}">${keyword}</span>`;
+  };
 
-    const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
-    const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
-    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
-
-    return `<span
-      class="effect-highlight"
-      data-name="${keyword}"
-      data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-      data-img='${JSON.stringify(note.images || [])}'
-      data-color="${color}"
-      style="color:${color}"
-    >${keyword}</span>`;
-  });
-
-  const regexCnchor = /<c>(.*?)<\/c>/g;
-  processedText = processedText.replace(
-    regexCnchor,
-    (_, keyword) => `<strong>${keyword}</strong>`
+  // <b>...</b>
+  processedText = processedText.replace(/<b>(.*?)<\/b>/g, (m, c) =>
+    replaceWithTooltip(m, c, "b")
   );
+
+  // <a>...</a>
+  processedText = processedText.replace(/<a>(.*?)<\/a>/g, (m, c) =>
+    replaceWithTooltip(m, c, "a")
+  );
+
+  // <c>...</c> (chỉ in đậm, không tooltip)
+  // trong processTextWithTooltips
+  processedText = processedText.replace(
+    /<c>(.*?)<\/c>/g,
+    (_, keyword) =>
+      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
+  );
+
 
   return processedText;
 };
@@ -234,7 +217,7 @@ const imgs = computed(() => tooltipData.value?.images || []);
 
 const processBoldC = (text) => {
   if (!text) return "";
-  return text.replace(/<c>(.*?)<\/c>/g, (_, keyword) => `<strong>${keyword}</strong>`);
+  return text.replace(/<c>(.*?)<\/c>/g, (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`);
 };
 
 const matchedSubNotes = computed(() => {
@@ -485,13 +468,13 @@ const editingSkill = ref(null);
 const tagsInput = ref("");
 const notesInput = ref("");
 
-const editSkill = (skill) => {
-  editingSkill.value = {
-    ...skill,
-    tags: [...(skill.tags || [])],
-    notes: [...(skill.notes || [])],
-  };
+const editingSkillIndex = ref(-1);
+
+const editSkill = (skill, index) => {
+  editingSkill.value = { ...skill }; // shallow clone ok nếu chỉ đổi property trên skill
+  editingSkillIndex.value = index;
   showEditModal.value = true;
+
   tagsInput.value = (editingSkill.value.tags || []).join(",");
   notesInput.value = (editingSkill.value.notes || []).join(",");
 };
@@ -502,23 +485,26 @@ const closeEditModal = () => {
 };
 
 const saveSkill = async () => {
-  if (!editingSkill.value) return;
+  if (editingSkillIndex.value === -1) return;
 
   updateTags();
   updateNotes();
 
-  // Update local
-  Object.assign(
-    shikigami.value.skills.find((s) => s.id === editingSkill.value.id),
-    editingSkill.value
-  );
+  // update đúng index trong mảng skills
+  shikigami.value.skills[editingSkillIndex.value] = {
+    ...editingSkill.value,
+    // loại bỏ id
+    levels: {
+      en: editingSkill.value.levels.en.map((l) => ({ ...l })),
+      vn: editingSkill.value.levels.vn.map((l) => ({ ...l })),
+    },
+    tags: editingSkill.value.tags ? [...editingSkill.value.tags] : [],
+    notes: editingSkill.value.notes ? [...editingSkill.value.notes] : [],
+  };
 
-  // Update DB
   const { data, error } = await supabase
     .from("Shikigami")
-    .update({
-      skills: shikigami.value.skills,
-    })
+    .update({ skills: shikigami.value.skills })
     .eq("id", shikigami.value.id);
 
   if (error) {
@@ -570,6 +556,26 @@ watch(isEnglish, async () => {
   removeTooltipListeners();
   addTooltipListeners();
 });
+
+const addCKeywordListeners = () => {
+  nextTick(() => {
+    document.querySelectorAll(".c-keyword").forEach((el) => {
+      el.onclick = () => {
+        const keyword = el.dataset.keyword;
+        const index = shikigami.value.skills.findIndex(
+          (s) => s.name.en === keyword || s.name.vn === keyword
+        );
+        if (index !== -1) activeSkillIndex.value = index;
+      };
+    });
+  });
+};
+
+watch(
+  () => [shikigami.value, activeSkillIndex.value, isEnglish.value],
+  () => addCKeywordListeners()
+);
+
 </script>
 
 <template>
@@ -649,7 +655,7 @@ watch(isEnglish, async () => {
                   <strong>VN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ shikigami.name.vn }}</div>
+                  <div class="lang-vi">{{ shikigami.name.vn }}</div>
                 </td>
               </tr>
               <tr>
@@ -720,12 +726,13 @@ watch(isEnglish, async () => {
       <div
         class="text-black text-justify mt-2 whitespace-pre-line"
         v-if="shikigami.profile !== null"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
       >
         {{ isEnglish ? shikigami.profile.en : shikigami.profile.vn }}
       </div>
 
       <!-- Content -->
-      <div class="flex border-b border-gray-300 mt-5">
+      <div class="flex border-b border-gray-300 mt-5" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <button
           class="flex py-2 px-4 text-center"
           :class="
@@ -754,13 +761,13 @@ watch(isEnglish, async () => {
       <div
         class="w-full"
         v-show="activeTab === 'main'"
-        :class="activeTab === 'main' ? 'opacity-100' : 'opacity-0'"
+        :class="[
+          activeTab === 'main' ? 'opacity-100' : 'opacity-0',
+          isEnglish ? 'lang-en' : 'lang-vi',
+        ]"
       >
         <!-- Stats -->
-        <h2
-          class="session-title"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-        >
+        <h2 class="session-title">
           {{ isEnglish ? "Stats" : "Chỉ số" }}
         </h2>
         <div
@@ -1124,10 +1131,7 @@ watch(isEnglish, async () => {
         </div>
 
         <!-- Skills -->
-        <h2
-          class="session-title mt-5"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-        >
+        <h2 class="session-title mt-5">
           {{ isEnglish ? "Skills" : "Kĩ năng" }}
         </h2>
         <div class="flex border-b border-gray-300 mb-4 mt-2">
@@ -1198,10 +1202,7 @@ watch(isEnglish, async () => {
                   "
                 >
                   <div class="skill-title">
-                    <span
-                      class="skill-name"
-                      :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-                    >
+                    <span class="skill-name">
                       {{
                         isEnglish
                           ? shikigami.skills[activeSkillIndex].name.en
@@ -1383,15 +1384,19 @@ watch(isEnglish, async () => {
                   "
                 >
                   <div class="skill-title">
-                    <span
-                      class="skill-name"
-                      :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-                    >
+                    <span class="skill-name">
                       {{ isEnglish ? skill.name.en : skill.name.vn }}
                     </span>
                     <span class="skill-sub-name">
                       ({{ skill.name.cn }}/{{ skill.name.jp }})
                     </span>
+                    <button
+                      class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
+                      @click="editSkill(skill)"
+                    >
+                      <i class="fas fa-edit"></i>
+                      <!-- dùng font-awesome -->
+                    </button>
                   </div>
                 </span>
               </div>
@@ -1510,10 +1515,7 @@ watch(isEnglish, async () => {
         </div>
 
         <!-- Biography Unlock -->
-        <h2
-          class="session-title mt-5"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-        >
+        <h2 class="session-title mt-5">
           {{ isEnglish ? "Biography Unlock" : "Mở khoá Tiểu sử" }}
         </h2>
         <table class="w-full mt-4" style="border: 1px solid #a51919">
@@ -1557,18 +1559,24 @@ watch(isEnglish, async () => {
             </tr>
           </tbody>
         </table>
+
+        <h2 class="session-title mt-5">
+          {{ isEnglish ? "Build" : "Định hướng" }}
+        </h2>
+
+        <h3>Role:</h3>
       </div>
 
       <!-- Gallery Tab -->
       <div
         v-show="activeTab === 'gallery'"
-        :class="activeTab === 'gallery' ? 'opacity-100' : 'opacity-0'"
+        :class="[
+          activeTab === 'gallery' ? 'opacity-100' : 'opacity-0',
+          isEnglish ? 'lang-en' : 'lang-vi',
+        ]"
       >
         <!-- Skins -->
-        <h2
-          class="session-title mt-5"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-        >
+        <h2 class="session-title mt-5">
           {{ isEnglish ? "Skins" : "Ngoại hình" }}
         </h2>
         <div class="grid grid-cols-3 gap-5 mt-4">
@@ -1590,10 +1598,7 @@ watch(isEnglish, async () => {
         </div>
 
         <!-- Skins Info -->
-        <h2
-          class="session-title mt-5"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-        >
+        <h2 class="session-title mt-5">
           {{ isEnglish ? "Skins Info" : "Thông tin ngoại hình" }}
         </h2>
         <table class="w-full mt-4" style="border: 1px solid #a51919">
@@ -1631,7 +1636,7 @@ watch(isEnglish, async () => {
 
               <td class="px-2 py-1 text-center table-cell" v-else>
                 <div>{{ skin.name.en }}</div>
-                <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
+                <div>{{ skin.name.cn }} - <span class="lang-vi">{{ skin.name.vn }}</span></div>
               </td>
 
               <td class="px-2 py-1 text-center table-cell">
@@ -1648,7 +1653,6 @@ watch(isEnglish, async () => {
         <h2
           v-if="shikigami.accessories && shikigami.accessories.length"
           class="session-title mt-5"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
         >
           {{ isEnglish ? "Biography Accessories" : "Phụ kiện Tiểu sử" }}
         </h2>
@@ -1886,11 +1890,7 @@ watch(isEnglish, async () => {
             v-if="Array.isArray(editingSkill.levels.en)"
           >
             <div class="gap-1 grid grid-cols-1">
-              <div
-                v-for="(lvl, index) in editingSkill.levels.en"
-                :key="index"
-               
-              >
+              <div v-for="(lvl, index) in editingSkill.levels.en" :key="index">
                 <label class="block text-sm font-medium mb-1 text-black"
                   >Level {{ lvl.level }}</label
                 >
@@ -1902,11 +1902,7 @@ watch(isEnglish, async () => {
             </div>
 
             <div class="gap-1 grid grid-cols-1">
-              <div
-                v-for="(lvl, index) in editingSkill.levels.vn"
-                :key="index"
-                
-              >
+              <div v-for="(lvl, index) in editingSkill.levels.vn" :key="index">
                 <label class="block text-sm font-medium mb-1 text-black"
                   >Level {{ lvl.level }}</label
                 >
@@ -1934,13 +1930,13 @@ watch(isEnglish, async () => {
         </div>
         <div class="flex justify-end gap-2 mt-5">
           <button
-            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 rounded-md text-black"
+            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 rounded-md text-black cursor-pointer"
             @click="closeEditModal"
           >
             Cancel
           </button>
           <button
-            class="px-3 py-1 rounded bg-[#a51919] text-white hover:bg-[#891727] rounded-md"
+            class="px-3 py-1 rounded bg-[#a51919] text-white hover:bg-[#891727] rounded-md cursor-pointer"
             @click="saveSkill"
           >
             Save
@@ -2064,10 +2060,6 @@ watch(isEnglish, async () => {
   border: 1px solid #a51919;
 }
 
-.text-vn {
-  font-family: "Nunito", sans-serif;
-}
-
 .session-title {
   color: #3a3a3a;
   font-size: 24px;
@@ -2077,11 +2069,11 @@ watch(isEnglish, async () => {
   border-bottom: 0.5px solid #9c9c9c;
 }
 
-.lang-en .session-title {
+.lang-en {
   font-family: "Rubik", sans-serif;
 }
-.lang-vi .session-title {
-  font-family: "Nunito", sans-serif;
+.lang-vi {
+  font-family: "Nunito", serif;
 }
 
 .image-icon {
@@ -2259,7 +2251,7 @@ watch(isEnglish, async () => {
 
 /* Tooltip Styles */
 .effect-tooltip {
-  font-weight: bold;
+  font-weight: bold !important;
   cursor: pointer !important;
   text-decoration: none !important;
   border-bottom: none;
