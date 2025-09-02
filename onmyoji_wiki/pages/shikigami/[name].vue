@@ -198,6 +198,13 @@ const processTextWithTooltips = (text) => {
               style="color:${color}">${keyword}</span>`;
   };
 
+  // <e>...</e>
+  processedText = processedText.replace(
+    /<e>(.*?)<\/e>/g,
+    (_, keyword) =>
+      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom" />`
+  );
+
   // <d>...</d>
   processedText = processedText.replace(
     /<d>(.*?)<\/d>/g,
@@ -243,13 +250,10 @@ const matchedSubNotes = computed(() => {
   const seen = new Set();
   let result = [];
 
-  // tìm tất cả <b>...</b>
+  // --- <b> tags ---
   const bMatches = desc.match(/<b>(.*?)<\/b>/g) || [];
-
   bMatches.forEach((bTag) => {
-    // lấy inner text
     const inner = bTag.replace(/<b>|<\/b>/g, "");
-    // lấy tất cả số trong inner
     const nums = inner.match(/\d+/g) || [];
     nums.forEach((numStr) => {
       const id = Number(numStr);

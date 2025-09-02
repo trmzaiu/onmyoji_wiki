@@ -25,102 +25,88 @@ const formattedName = route.params.name.replace(/_/g, " ");
 const { tagMap, loadTags } = useTags();
 
 const processTextWithTooltips = (text) => {
-  if (!text || !onmyoji.value?.skills) return text;
+  if (!text || !effects.value?.length) return text;
 
   let processedText = text;
-  const effectById = new Map(effects.value.map((e) => [e.id, e]));
+  const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
   const effectMap = new Map();
 
-  onmyoji.value.skills.forEach((skill) => {
-    if (!skill.notes) return;
-
-    skill.notes.forEach((id) => {
-      const note = effectById.get(id);
-      if (!note) return;
-
+  // build effectMap theo name để vẫn hỗ trợ chữ
+  effects.value.forEach((note) => {
+    const addToMap = (n) => {
       const names = [];
-      if (note.name?.en) names.push(note.name.en);
-      if (note.name?.vn && note.name.vn !== note.name.en) names.push(note.name.vn);
-
+      if (n.name?.en) names.push(n.name.en);
+      if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
       names.forEach((name) => {
-        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), note);
+        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), n);
       });
+    };
+    addToMap(note);
 
-      // ✅ thêm subNotes vào map
-      if (note.subs?.length) {
-        note.subs.forEach((subId) => {
-          const sub = effectById.get(subId);
-          if (!sub) return;
-          const subNames = [];
-          if (sub.name?.en) subNames.push(sub.name.en);
-          if (sub.name?.vn && sub.name.vn !== sub.name.en) subNames.push(sub.name.vn);
-          subNames.forEach((subName) => {
-            if (!effectMap.has(subName.toLowerCase()))
-              effectMap.set(subName.toLowerCase(), sub);
-          });
-        });
-      }
-    });
+    if (note.subs?.length) {
+      note.subs.forEach((subId) => {
+        const sub = effectById.get(subId);
+        if (sub) addToMap(sub);
+      });
+    }
   });
 
-  const regexBold = /<b>(.*?)<\/b>/g;
-  processedText = processedText.replace(regexBold, (match, keyword) => {
-    const note = effectMap.get(keyword.toLowerCase());
-    if (!note) return match;
+  const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
-    let noteDesc = "";
-    if (note.description) {
-      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
+  const replaceWithTooltip = (match, content, type) => {
+    let note = null;
+
+    if (/^\d+$/.test(content)) {
+      note = effectById.get(content);
+    } else {
+      note = effectMap.get(content.toLowerCase());
     }
 
-    const colorMap = {
-      red: "#a63f37",
-      blue: "#4994d4",
-      yellow: "#c07b2a",
-    };
-    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
-
-    return `<span
-    class="effect-tooltip"
-    data-name="${keyword}"
-    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-    data-img='${JSON.stringify(note.images || [])}'
-    data-color="${color}"
-    style="color:${color}"
-  >${keyword}</span>`;
-  });
-
-  const regexAnchor = /<a>(.*?)<\/a>/g;
-  processedText = processedText.replace(regexAnchor, (match, keyword) => {
-    const note = effectMap.get(keyword.toLowerCase());
     if (!note) return match;
 
-    let noteDesc = "";
-    if (note.description) {
-      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
-    }
-
-    const colorMap = {
-      red: "#a63f37",
-      blue: "#4994d4",
-      yellow: "#c07b2a",
-    };
+    const keyword = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
+    const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    return `<span
-    class="effect-highlight"
-    data-name="${keyword}"
-    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-    data-img='${JSON.stringify(note.images || [])}'
-    data-color="${color}"
-    style="color:${color}"
-  >${keyword}</span>`;
-  });
+    const className = type === "b" ? "effect-tooltip" : "effect-highlight";
 
-  const regexCnchor = /<c>(.*?)<\/c>/g;
-  processedText = processedText.replace(regexCnchor, (match, keyword) => {
-    return `<strong>${keyword}</strong>`;
-  });
+    return `<span class="${className}"
+              data-name="${keyword}"
+              data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+              data-img='${JSON.stringify(note.images || [])}'
+              data-color="${color}"
+              style="color:${color}">${keyword}</span>`;
+  };
+
+   // <e>...</e>
+  processedText = processedText.replace(
+    /<e>(.*?)<\/e>/g,
+    (_, keyword) =>
+      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom" />`
+  );
+
+  // <d>...</d>
+  processedText = processedText.replace(
+    /<d>(.*?)<\/d>/g,
+    (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
+  );
+
+  // <b>...</b>
+  processedText = processedText.replace(/<b>(.*?)<\/b>/g, (m, c) =>
+    replaceWithTooltip(m, c, "b")
+  );
+
+  // <a>...</a>
+  processedText = processedText.replace(/<a>(.*?)<\/a>/g, (m, c) =>
+    replaceWithTooltip(m, c, "a")
+  );
+
+  // <c>...</c>
+  processedText = processedText.replace(
+    /<c>(.*?)<\/c>/g,
+    (_, keyword) =>
+      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
+  );
 
   return processedText;
 };
@@ -128,43 +114,30 @@ const processTextWithTooltips = (text) => {
 const imgs = computed(() => tooltipData.value?.images || []);
 
 const matchedSubNotes = computed(() => {
-  if (!tooltipData.value || !onmyoji.value?.skills || !effects.value) return [];
+  if (!tooltipData.value || !effects.value?.length) return [];
 
   const desc = tooltipData.value.description || "";
-  const tooltipName = tooltipData.value.name?.toLowerCase();
-
   const effectById = new Map(effects.value.map((e) => [e.id, e]));
-
+  const seen = new Set();
   let result = [];
 
-  onmyoji.value.skills.forEach((skill) => {
-    if (!skill.notes?.length) return;
+  // tìm tất cả <b>...</b>
+  const bMatches = desc.match(/<b>(.*?)<\/b>/g) || [];
 
-    skill.notes.forEach((noteId) => {
-      const note = effectById.get(noteId);
-      if (!note) return;
-
-      const noteNameEn = note.name?.en?.toLowerCase() || "";
-      const noteNameVn = note.name?.vn?.toLowerCase() || "";
-
-      // Chỉ lấy note trùng với tooltip
-      if (tooltipName !== noteNameEn && tooltipName !== noteNameVn) return;
-
-      if (!note.subs?.length) return;
-
-      note.subs.forEach((subId) => {
-        const sub = effectById.get(subId);
-        if (!sub) return;
-
-        const subNameEn = sub.name?.en || "";
-        const subNameVn = sub.name?.vn || "";
-
-        const matched =
-          (subNameEn && desc.toLowerCase().includes(subNameEn.toLowerCase())) ||
-          (subNameVn && desc.toLowerCase().includes(subNameVn.toLowerCase()));
-
-        if (matched) result.push(sub);
-      });
+  bMatches.forEach((bTag) => {
+    // lấy inner text
+    const inner = bTag.replace(/<b>|<\/b>/g, "");
+    // lấy tất cả số trong inner
+    const nums = inner.match(/\d+/g) || [];
+    nums.forEach((numStr) => {
+      const id = Number(numStr);
+      if (!seen.has(id)) {
+        const note = effectById.get(id);
+        if (note) {
+          seen.add(id);
+          result.push(note);
+        }
+      }
     });
   });
 
@@ -632,7 +605,7 @@ watch(isEnglish, async () => {
             </div>
             <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
             <p
-              class="text-justify"
+              class="text-justify whitespace-pre-line"
               style="
                 margin: 0;
                 font-size: 15px;
