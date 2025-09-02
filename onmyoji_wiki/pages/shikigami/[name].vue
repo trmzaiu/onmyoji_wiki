@@ -199,9 +199,10 @@ const processTextWithTooltips = (text) => {
   };
 
   // <d>...</d>
-  processedText = processedText.replace(/<d>(.*?)<\/d>/g, (_, keyword) => (
-    `<strong class="text-[#c07b2a]">${keyword}</strong>`
-  ));
+  processedText = processedText.replace(
+    /<d>(.*?)<\/d>/g,
+    (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
+  );
 
   // <b>...</b>
   processedText = processedText.replace(/<b>(.*?)<\/b>/g, (m, c) =>
@@ -229,7 +230,8 @@ const processBoldC = (text) => {
   if (!text) return "";
   return text.replace(
     /<c>(.*?)<\/c>/g,
-    (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
+    (_, keyword) =>
+      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
   );
 };
 
@@ -244,12 +246,12 @@ const matchedSubNotes = computed(() => {
   // tìm tất cả <b>...</b>
   const bMatches = desc.match(/<b>(.*?)<\/b>/g) || [];
 
-  bMatches.forEach(bTag => {
+  bMatches.forEach((bTag) => {
     // lấy inner text
     const inner = bTag.replace(/<b>|<\/b>/g, "");
     // lấy tất cả số trong inner
     const nums = inner.match(/\d+/g) || [];
-    nums.forEach(numStr => {
+    nums.forEach((numStr) => {
       const id = Number(numStr);
       if (!seen.has(id)) {
         const note = effectById.get(id);
@@ -264,110 +266,102 @@ const matchedSubNotes = computed(() => {
   return result;
 });
 
+const highlightNoteText = (bio) => {
+  if (!bio) return "";
+  const text = isEnglish.value ? bio.condition.en : bio.condition.vn;
+  if (!text) return "";
 
-const highlightNoteText = (bio, isEnglish) => {
-  const text = isEnglish ? bio.condition.en : bio.condition.vn;
-  if (!bio.note) return text;
+  return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
+    const keyword = inner.trim();
+    if (!keyword) return match;
 
-  const noteName = isEnglish ? bio.note.en : bio.note.vn;
-  if (!noteName || !shikigamiList.value?.length) return text;
+    let targetType = null;
+    let finalName = keyword;
 
-  // escape regex
-  const escapedNote = noteName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(`(${escapedNote})`, "gi");
-
-  let targetType = null;
-  let targetData = null;
-
-  // check Shikigami
-  const targetShikigami = shikigamiList.value.find((s) => {
-    const n = s.name || {};
-    if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
-    if (n.vn?.toLowerCase() === noteName.toLowerCase()) return true;
-    if (
-      Array.isArray(n.cn) &&
-      n.cn.some((c) => c.toLowerCase() === noteName.toLowerCase())
-    )
-      return true;
-    if (
-      Array.isArray(n.jp) &&
-      n.jp.some((j) => j.toLowerCase() === noteName.toLowerCase())
-    )
-      return true;
-    if (typeof n.jp === "string" && n.jp.toLowerCase() === noteName.toLowerCase())
-      return true;
-    return false;
-  });
-  if (targetShikigami) {
-    targetType = "shikigami";
-    targetData = targetShikigami;
-  }
-
-  // check Onmyoji (nếu chưa tìm thấy)
-  if (!targetData && onmyojiList?.value?.length) {
-    const targetOnmyoji = onmyojiList.value.find((o) => {
-      const n = o.name || {};
-      if (n.en?.toLowerCase() === noteName.toLowerCase()) return true;
-      if (n.vn?.toLowerCase() === noteName.toLowerCase()) return true;
-      if (
-        Array.isArray(n.cn) &&
-        n.cn.some((c) => c.toLowerCase() === noteName.toLowerCase())
-      )
-        return true;
-      if (
-        Array.isArray(n.jp) &&
-        n.jp.some((j) => j.toLowerCase() === noteName.toLowerCase())
-      )
-        return true;
-      if (typeof n.jp === "string" && n.jp.toLowerCase() === noteName.toLowerCase())
-        return true;
-      return false;
+    // check shikigami
+    const targetShikigami = shikigamiList.value?.find((s) => {
+      const n = s.name || {};
+      return [n.en, n.vn, n.jp]
+        .flatMap(v => Array.isArray(v) ? v : [v])
+        .some(name => name?.toLowerCase() === keyword.toLowerCase());
     });
-    if (targetOnmyoji) {
-      targetType = "onmyoji";
-      targetData = targetOnmyoji;
-    }
-  }
 
-  let finalName = noteName;
-
-  if (targetType === "shikigami") {
-    const n = targetData.name;
-    if (Array.isArray(n.jp)) {
-      finalName = n.jp[1] || n.jp[0] || noteName;
-    } else if (typeof n.jp === "string") {
-      finalName = n.jp;
-    }
-  } else if (targetType === "onmyoji") {
-    finalName = targetData.name.en || noteName;
-  }
-
-  finalName = finalName.replace(/\s+/g, "_");
-
-  if (targetType) {
-    // Nếu có <b>...</b> thì chỉ replace trong phần đó
-    if (/<b>.*?<\/b>/.test(text)) {
-      return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
-        return `<b>${inner.replace(
-          regex,
-          `<a href="/${targetType}/${encodeURIComponent(
-            finalName
-          )}" class="text-[#891727] font-bold">$1</a>`
-        )}</b>`;
+    if (targetShikigami) {
+      targetType = "shikigami";
+      const n = targetShikigami.name;
+      finalName = Array.isArray(n.jp) ? n.jp[1] || n.jp[0] : n.jp || keyword;
+    } else if (onmyojiList.value?.length) {
+      // check onmyoji
+      const targetOnmyoji = onmyojiList.value.find((o) => {
+        const n = o.name || {};
+        return [n.en, n.vn, n.jp]
+          .flatMap(v => Array.isArray(v) ? v : [v])
+          .some(name => name?.toLowerCase() === keyword.toLowerCase());
       });
+      if (targetOnmyoji) {
+        targetType = "onmyoji";
+        finalName = targetOnmyoji.name.en || keyword;
+      }
     }
 
-    // Nếu không có <b> thì replace như cũ
-    return text.replace(
-      regex,
-      `<a href="/${targetType}/${encodeURIComponent(
-        finalName
-      )}" class="text-[#891727] font-bold">$1</a>`
-    );
-  }
+    finalName = finalName.replace(/\s+/g, "_");
 
-  return text;
+    if (targetType) {
+      return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
+    }
+
+    return match;
+  });
 };
+
+const highlightBioText = (profile) => {
+  if (!profile) return "";
+  const text = isEnglish.value ? profile.en : profile.vn;
+  if (!text) return "";
+
+  // tìm tất cả <b>...</b>
+  return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
+    const keyword = inner.trim();
+    if (!keyword) return match;
+
+    let targetType = null;
+    let finalName = keyword;
+
+    // check shikigami
+    const targetShikigami = shikigamiList.value?.find((s) => {
+      const n = s.name || {};
+      return [n.en, n.vn, n.jp]
+        .flatMap(v => Array.isArray(v) ? v : [v])
+        .some(name => name?.toLowerCase() === keyword.toLowerCase());
+    });
+
+    if (targetShikigami) {
+      targetType = "shikigami";
+      const n = targetShikigami.name;
+      finalName = Array.isArray(n.jp) ? n.jp[1] || n.jp[0] : n.jp || keyword;
+    } else if (onmyojiList.value?.length) {
+      // check onmyoji
+      const targetOnmyoji = onmyojiList.value.find((o) => {
+        const n = o.name || {};
+        return [n.en, n.vn, n.jp]
+          .flatMap(v => Array.isArray(v) ? v : [v])
+          .some(name => name?.toLowerCase() === keyword.toLowerCase());
+      });
+      if (targetOnmyoji) {
+        targetType = "onmyoji";
+        finalName = targetOnmyoji.name.en || keyword;
+      }
+    }
+
+    finalName = finalName.replace(/\s+/g, "_");
+
+    if (targetType) {
+      return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
+    }
+    return match; // giữ nguyên nếu không tìm thấy
+  });
+};
+
 
 /* ---------------------- TOOLTIP EVENTS ---------------------- */
 const handleMouseEnter = (e) => {
@@ -449,14 +443,20 @@ async function fetchShikigami() {
 // realtime subscribe
 function subscribeRealtime() {
   supabase
-    .channel("shikigami-changes")
+    .channel("main-changes")
     .on(
       "postgres_changes",
       { event: "*", schema: "public", table: "Shikigami" },
       async () => {
         await fetchAllShikigami();
         await fetchShikigami();
-        await fetchAllOnmyoji();
+      }
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "Effect" },
+      async () => {
+        await fetchAllEffects();
       }
     )
     .subscribe();
@@ -471,7 +471,7 @@ const notesInput = ref("");
 const editingSkillIndex = ref(-1);
 
 const editSkill = (skill, index) => {
-  editingSkill.value = { ...skill }; // shallow clone ok nếu chỉ đổi property trên skill
+  editingSkill.value = { ...skill }; 
   editingSkillIndex.value = index;
   showEditModal.value = true;
 
@@ -490,10 +490,8 @@ const saveSkill = async () => {
   updateTags();
   updateNotes();
 
-  // update đúng index trong mảng skills
   shikigami.value.skills[editingSkillIndex.value] = {
     ...editingSkill.value,
-    // loại bỏ id
     levels: {
       en: editingSkill.value.levels.en.map((l) => ({ ...l })),
       vn: editingSkill.value.levels.vn.map((l) => ({ ...l })),
@@ -726,8 +724,7 @@ watch(
         class="text-black text-justify mt-2 whitespace-pre-line"
         v-if="shikigami.profile !== null"
         :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? shikigami.profile.en : shikigami.profile.vn }}
+        v-html="highlightBioText(shikigami.profile, isEnglish)"
       </div>
 
       <!-- Content -->
@@ -1538,7 +1535,7 @@ watch(
                 {{ bio.no }}
               </td>
               <td class="text-black table-cell px-3">
-                <span v-html="highlightNoteText(bio, isEnglish)"></span>
+                <span v-html="highlightNoteText(bio)"></span>
               </td>
 
               <td class="py-1 text-black table-cell w-[100px]">
@@ -1722,6 +1719,7 @@ watch(
         boxShadow: '0 0 12px ' + tooltipData.color,
         '--tooltip-color': tooltipData.color,
       }"
+      :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
     >
       <!-- Note chính -->
       <div class="tooltip-title" :style="{ color: tooltipData.color }">
