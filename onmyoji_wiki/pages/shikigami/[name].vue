@@ -441,25 +441,52 @@ async function fetchShikigami() {
 }
 
 // realtime subscribe
+let shikigamiChannel = null;
+let effectChannel = null;
+
 function subscribeRealtime() {
-  supabase
-    .channel("main-changes")
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "Shikigami" },
-      async () => {
-        await fetchAllShikigami();
-        await fetchShikigami();
-      }
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "Effect" },
-      async () => {
-        await fetchAllEffects();
-      }
-    )
-    .subscribe();
+  // --- Channel Shikigami ---
+  if (!shikigamiChannel) {
+    shikigamiChannel = supabase
+      .channel("shikigami-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Shikigami" },
+        async () => {
+          console.log("Shikigami table changed!");
+          await fetchAllShikigami();
+          await fetchShikigami();
+        }
+      )
+      .subscribe();
+  }
+
+  // --- Channel Effect ---
+  if (!effectChannel) {
+    effectChannel = supabase
+      .channel("effect-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Effect" },
+        async () => {
+          console.log("Effect table changed!");
+          await fetchAllEffects();
+        }
+      )
+      .subscribe();
+  }
+}
+
+// Nếu cần unsubscribe (ví dụ khi rời component)
+function unsubscribeRealtime() {
+  if (shikigamiChannel) {
+    shikigamiChannel.unsubscribe();
+    shikigamiChannel = null;
+  }
+  if (effectChannel) {
+    effectChannel.unsubscribe();
+    effectChannel = null;
+  }
 }
 
 /* ---------------------- EDIT ---------------------- */
@@ -543,6 +570,10 @@ onMounted(async () => {
   subscribeRealtime();
 });
 
+onUnmounted(() => {
+  unsubscribeRealtime();
+});
+
 watch(activeSkillIndex, async () => {
   await nextTick();
   removeTooltipListeners();
@@ -560,10 +591,28 @@ const addCKeywordListeners = () => {
     document.querySelectorAll(".c-keyword").forEach((el) => {
       el.onclick = () => {
         const keyword = el.dataset.keyword;
-        const index = shikigami.value.skills.findIndex(
+        console.log("Clicked keyword:", keyword);
+
+        // tìm skill thường trước
+        let index = shikigami.value.skills.findIndex(
           (s) => s.name.en === keyword || s.name.vn === keyword
         );
-        if (index !== -1) activeSkillIndex.value = index;
+
+        // nếu index >= 3, là extra skill → dùng skill.tab
+        if (index >= 3 || index === -1) {
+          const extraSkill = shikigami.value.skills.find(
+            (s) => s.name.en === keyword || s.name.vn === keyword
+          );
+          if (extraSkill && extraSkill.tab != null) {
+            // skill.tab = 1 → index 0, skill.tab = 2 → index 1, ...
+            index = extraSkill.tab - 1;
+          }
+        }
+
+        if (index !== -1) {
+          console.log("Switching to skill index:", index);
+          activeSkillIndex.value = index;
+        }
       };
     });
   });
