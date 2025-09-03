@@ -606,6 +606,7 @@ watch(isEnglish, async () => {
             <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
             <p
               class="text-justify whitespace-pre-line"
+              
               style="
                 margin: 0;
                 font-size: 15px;

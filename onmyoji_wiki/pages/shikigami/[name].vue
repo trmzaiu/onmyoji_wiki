@@ -245,30 +245,47 @@ const processBoldC = (text) => {
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
-  const desc = tooltipData.value.description || "";
   const effectById = new Map(effects.value.map((e) => [e.id, e]));
-  const seen = new Set();
-  let result = [];
 
-  // --- <b> tags ---
-  const bMatches = desc.match(/<b>(.*?)<\/b>/g) || [];
-  bMatches.forEach((bTag) => {
-    const inner = bTag.replace(/<b>|<\/b>/g, "");
-    const nums = inner.match(/\d+/g) || [];
-    nums.forEach((numStr) => {
-      const id = Number(numStr);
-      if (!seen.has(id)) {
+  const findNotes = (descObj) => {
+    const result = [];
+    const text = typeof descObj === "string"
+      ? descObj
+      : isEnglish.value
+        ? descObj?.en || ""
+        : descObj?.vn || "";
+
+    const bMatches = text.match(/<b>(.*?)<\/b>/g) || [];
+    bMatches.forEach((bTag) => {
+      const inner = bTag.replace(/<b>|<\/b>/g, "");
+      const nums = inner.match(/\d+/g) || [];
+      nums.forEach((numStr) => {
+        const id = Number(numStr);
         const note = effectById.get(id);
         if (note) {
-          seen.add(id);
-          result.push(note);
+          result.push({ ...note });
         }
-      }
+      });
     });
+
+    return result;
+  };
+
+  // subNotes của tooltip chính
+  const subs = findNotes(tooltipData.value.description);
+
+  // sub-subNotes của mỗi sub
+  subs.forEach((sub, i) => {
+    subs[i].subNotes = findNotes(sub.description);
   });
 
-  return result;
+  return subs;
 });
+
+watchEffect(() => {
+  console.log("Matched SubNotes:", matchedSubNotes.value);
+});
+
 
 const highlightNoteText = (bio) => {
   if (!bio) return "";
@@ -572,6 +589,7 @@ onMounted(async () => {
     loadTags(),
   ]);
   subscribeRealtime();
+  addTooltipListeners();
 });
 
 onUnmounted(() => {
@@ -1810,12 +1828,34 @@ watch(
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />
             <div
-              class="subnote-description whitespace-pre-line"
-              v-html="processBoldC(isEnglish ? sub.description.en : sub.description.vn)"
+              class="subnote-description"
+              v-html="processTextWithTooltips(isEnglish ? sub.description.en : sub.description.vn)"
             ></div>
+
+            <!-- Sub-SubNotes -->
+            <div v-if="sub.subNotes && sub.subNotes.length" class="mt-2">
+              <div v-for="(subsub, j) in sub.subNotes" :key="j" class="subnote-block">
+                <div class="subnote-title">
+                  {{ isEnglish ? subsub.name.en : subsub.name.vn }}
+                </div>
+                <img
+                  v-if="subsub.images"
+                  v-for="(img, k) in subsub.images"
+                  :key="k"
+                  :src="'/assets/effects/' + img"
+                  :alt="img"
+                  style="width: 32px; height: 32px; margin-bottom: 8px"
+                />
+                <div
+                  class="subnote-description"
+                  v-html="processBoldC(isEnglish ? subsub.description.en : subsub.description.vn)"
+                ></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- Modal -->

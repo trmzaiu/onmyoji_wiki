@@ -228,7 +228,7 @@ onMounted(async () => {
         }}
       </p>
 
-      <table style="border: 1px solid #a51919; width: 60%; margin: 0 auto">
+      <table style="border: 1px solid #a51919; width: 65%; margin: 0 auto">
         <thead>
           <tr style="background-color: #a51919; font-weight: bold">
             <th colspan="2" class="px-2 py-1 text-center">

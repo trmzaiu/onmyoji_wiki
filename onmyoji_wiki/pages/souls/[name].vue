@@ -7,6 +7,7 @@ const route = useRoute();
 const supabase = useSupabase();
 
 const soul = ref(null);
+const effects = ref([]);
 const isEnglish = ref(true);
 const tooltipData = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
@@ -15,150 +16,156 @@ const showTooltip = ref(false);
 const formattedName = route.params.name.replace(/_/g, " ");
 
 const processTextWithTooltips = (text) => {
-  if (!text || !soul.value?.effects) return text;
+  if (!text || !effects.value?.length) return text;
 
   let processedText = text;
-  const effect = soul.value.effects;
+  const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
   const effectMap = new Map();
 
-  if (effect.notes) {
-    const notes = Array.isArray(effect.notes) ? effect.notes : [effect.notes];
-    notes.forEach((noteItem) => {
-      if (noteItem.name) {
-        const names = [];
-        if (noteItem.name.en) names.push(noteItem.name.en);
-        if (noteItem.name.vn && noteItem.name.vn !== noteItem.name.en)
-          names.push(noteItem.name.vn);
+  // build effectMap theo name để vẫn hỗ trợ chữ
+  effects.value.forEach((note) => {
+    const addToMap = (n) => {
+      const names = [];
+      if (n.name?.en) names.push(n.name.en);
+      if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
+      names.forEach((name) => {
+        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), n);
+      });
+    };
+    addToMap(note);
 
-        names.forEach((name) => {
-          if (!effectMap.has(name.toLowerCase())) {
-            effectMap.set(name.toLowerCase(), noteItem);
-          }
-        });
-      }
+    if (note.subs?.length) {
+      note.subs.forEach((subId) => {
+        const sub = effectById.get(subId);
+        if (sub) addToMap(sub);
+      });
+    }
+  });
 
-      // ✅ thêm subNotes vào map
-      if (noteItem.subNotes) {
-        noteItem.subNotes.forEach((sub) => {
-          const subNames = [];
-          if (sub.name?.en) subNames.push(sub.name.en);
-          if (sub.name?.vn && sub.name.vn !== sub.name.en) subNames.push(sub.name.vn);
+  const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
-          subNames.forEach((subName) => {
-            if (!effectMap.has(subName.toLowerCase())) {
-              effectMap.set(subName.toLowerCase(), sub);
-            }
-          });
-        });
-      }
-    });
-  }
+  const replaceWithTooltip = (match, content, type) => {
+    let note = null;
 
-  const regexBold = /<b>(.*?)<\/b>/g;
-  processedText = processedText.replace(regexBold, (match, keyword) => {
-    const note = effectMap.get(keyword.toLowerCase());
-    if (!note) return match;
-
-    let noteDesc = "";
-    if (note.description) {
-      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
+    if (/^\d+$/.test(content)) {
+      note = effectById.get(content);
+    } else {
+      note = effectMap.get(content.toLowerCase());
     }
 
-    const colorMap = {
-      red: "#a63f37",
-      blue: "#4994d4",
-      yellow: "#c07b2a",
-    };
-    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
-
-    return `<span
-    class="effect-tooltip"
-    data-name="${keyword}"
-    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-    data-img="${note.image || ""}"
-    data-color="${color}"
-    style="color:${color}"
-  >${keyword}</span>`;
-  });
-
-  const regexAnchor = /<a>(.*?)<\/a>/g;
-  processedText = processedText.replace(regexAnchor, (match, keyword) => {
-    const note = effectMap.get(keyword.toLowerCase());
     if (!note) return match;
 
-    let noteDesc = "";
-    if (note.description) {
-      noteDesc = isEnglish.value ? note.description.en : note.description.vn;
-    }
-
-    const colorMap = {
-      red: "#a63f37",
-      blue: "#4994d4",
-      yellow: "#c07b2a",
-    };
+    const keyword = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
+    const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    return `<span
-    class="effect-highlight"
-    data-name="${keyword}"
-    data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-    data-img="${note.image || ""}"
-    data-color="${color}"
-    style="color:${color}"
-  >${keyword}</span>`;
-  });
+    const className = type === "b" ? "effect-tooltip" : "effect-highlight";
 
-  const regexCnchor = /<c>(.*?)<\/c>/g;
-  processedText = processedText.replace(regexCnchor, (match, keyword) => {
-    return `<strong>${keyword}</strong>`;
-  });
+    return `<span class="${className}"
+              data-name="${keyword}"
+              data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+              data-img='${JSON.stringify(note.images || [])}'
+              data-color="${color}"
+              style="color:${color}">${keyword}</span>`;
+  };
+
+  // <e>...</e>
+  processedText = processedText.replace(
+    /<e>(.*?)<\/e>/g,
+    (_, keyword) =>
+      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom" />`
+  );
+
+  // <d>...</d>
+  processedText = processedText.replace(
+    /<d>(.*?)<\/d>/g,
+    (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
+  );
+
+  // <b>...</b>
+  processedText = processedText.replace(/<b>(.*?)<\/b>/g, (m, c) =>
+    replaceWithTooltip(m, c, "b")
+  );
+
+  // <a>...</a>
+  processedText = processedText.replace(/<a>(.*?)<\/a>/g, (m, c) =>
+    replaceWithTooltip(m, c, "a")
+  );
+
+  // <c>...</c>
+  processedText = processedText.replace(
+    /<c>(.*?)<\/c>/g,
+    (_, keyword) =>
+      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
+  );
 
   return processedText;
 };
 
+const imgs = computed(() => tooltipData.value?.images || []);
+
+const processBoldC = (text) => {
+  if (!text) return "";
+  return text.replace(
+    /<c>(.*?)<\/c>/g,
+    (_, keyword) =>
+      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
+  );
+};
+
 const matchedSubNotes = computed(() => {
-  if (!tooltipData.value || !soul.value?.effects) return [];
+  if (!tooltipData.value || !effects.value?.length) return [];
 
-  const desc = tooltipData.value.description || "";
-  const tooltipName = tooltipData.value.name?.toLowerCase();
-  let result = [];
+  const effectById = new Map(effects.value.map((e) => [e.id, e]));
 
-  const notes = Array.isArray(soul.value.effects.notes) ? soul.value.effects.notes : [];
+  const findNotes = (descObj) => {
+    const result = [];
+    const text =
+      typeof descObj === "string"
+        ? descObj
+        : isEnglish.value
+        ? descObj?.en || ""
+        : descObj?.vn || "";
 
-  notes.forEach((noteItem) => {
-    const noteNameEn = noteItem.name?.en?.toLowerCase() || "";
-    const noteNameVn = noteItem.name?.vn?.toLowerCase() || "";
-
-    // Chỉ lấy note trùng với tooltip
-    if (tooltipName !== noteNameEn && tooltipName !== noteNameVn) return;
-
-    if (!noteItem.subNotes) return;
-
-    noteItem.subNotes.forEach((sub) => {
-      const subNameEn = sub.name?.en || "";
-      const subNameVn = sub.name?.vn || "";
-
-      const matched =
-        (subNameEn && desc.toLowerCase().includes(subNameEn.toLowerCase())) ||
-        (subNameVn && desc.toLowerCase().includes(subNameVn.toLowerCase()));
-
-      if (matched) result.push(sub);
+    const bMatches = text.match(/<b>(.*?)<\/b>/g) || [];
+    bMatches.forEach((bTag) => {
+      const inner = bTag.replace(/<b>|<\/b>/g, "");
+      const nums = inner.match(/\d+/g) || [];
+      nums.forEach((numStr) => {
+        const id = Number(numStr);
+        const note = effectById.get(id);
+        if (note) {
+          result.push({ ...note });
+        }
+      });
     });
+
+    return result;
+  };
+
+  // subNotes của tooltip chính
+  const subs = findNotes(tooltipData.value.description);
+
+  // sub-subNotes của mỗi sub
+  subs.forEach((sub, i) => {
+    subs[i].subNotes = findNotes(sub.description);
   });
 
-  return result;
+  return subs;
 });
 
 // Mouse event handlers for tooltip
-const handleMouseEnter = (event) => {
-  const target = event.currentTarget;
+const handleMouseEnter = (e) => {
+  const target = e.currentTarget;
   tooltipData.value = {
     name: target.getAttribute("data-name"),
     description: target.getAttribute("data-desc"),
-    image: target.getAttribute("data-img"),
+    images: target.getAttribute("data-img")
+      ? JSON.parse(target.getAttribute("data-img"))
+      : [],
     color: target.getAttribute("data-color"),
   };
-  updateTooltipPosition(event);
+  updateTooltipPosition(e);
   showTooltip.value = true;
 };
 
@@ -175,7 +182,7 @@ const handleMouseMove = (event) => {
 
 const updateTooltipPosition = (event) => {
   tooltipPosition.value = {
-    x: event.clientX + 10,
+    x: event.clientX,
     y: event.clientY + 10,
   };
 };
@@ -200,6 +207,15 @@ const removeTooltipListeners = () => {
   });
 };
 
+async function fetchAllEffects() {
+  const { data, error } = await supabase
+    .from("Effect")
+    .select("*")
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching effects:", error);
+  else effects.value = data;
+}
+
 async function fetchSoul() {
   const { data, error } = await supabase
     .from("Soul")
@@ -219,6 +235,9 @@ async function fetchSoul() {
 onMounted(async () => {
   document.title = `Soul - ${formattedName}`;
   await fetchSoul();
+  await fetchAllEffects();
+  await nextTick();
+  addTooltipListeners();
 });
 
 watch(tooltipData, (val) => {
@@ -234,7 +253,7 @@ watch(isEnglish, async () => {
 </script>
 
 <template>
-  <div class="main-container" v-if="soul">
+  <div v-if="soul">
     <div class="content-section flex flex-col gap-4">
       <div class="header-row">
         <div class="character-title">{{ soul.name.en }}</div>
@@ -271,36 +290,36 @@ watch(isEnglish, async () => {
             </thead>
             <tbody>
               <tr class="border border-red text-black">
-                <td class="px-4">
+                <td class="px-4 py-2">
                   <strong>CN</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ soul.name.cn[0] }}</div>
                   <div>{{ soul.name.cn[1] }}</div>
                 </td>
               </tr>
               <tr class="border border-red text-black">
-                <td class="px-4">
+                <td class="px-4 py-2">
                   <strong>JP</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ soul.name.jp[0] }}</div>
                   <div>{{ soul.name.jp[1] }}</div>
                 </td>
               </tr>
               <tr class="border border-red text-black">
-                <td class="px-4">
+                <td class="px-4 py-2">
                   <strong>GL</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ soul.name.en }}</div>
                 </td>
               </tr>
               <tr class="border border-red text-black">
-                <td class="px-4">
+                <td class="px-4 py-2">
                   <strong>VN</strong>
                 </td>
-                <td class="px-4" colspan="3">
+                <td class="px-4 py-2" colspan="3">
                   <div>{{ soul.name.vn }}</div>
                 </td>
               </tr>
@@ -317,9 +336,7 @@ watch(isEnglish, async () => {
       </h2>
 
       <div v-if="soul.effects.fixed">
-        <h3 class="px-3 text-red">
-          {{ isEnglish ? "Fixed Stat" : "Chỉ số cố định" }}:
-        </h3>
+        <h3 class="px-3 text-red">{{ isEnglish ? "Fixed Stat" : "Chỉ số cố định" }}:</h3>
         <p class="px-3 text-black">
           {{ isEnglish ? soul.effects.fixed.en : soul.effects.fixed.vn }}
         </p>
@@ -376,19 +393,24 @@ watch(isEnglish, async () => {
         boxShadow: '0 0 12px ' + tooltipData.color,
         '--tooltip-color': tooltipData.color,
       }"
+      :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
     >
       <!-- Note chính -->
       <div class="tooltip-title" :style="{ color: tooltipData.color }">
         {{ tooltipData.name }}
       </div>
-      <img
-        v-if="tooltipData.image"
-        :src="'/assets/effects/' + tooltipData.image"
-        :alt="tooltipData.image"
-        style="width: 32px; height: 32px; margin-bottom: 8px"
-      />
+      <div v-if="imgs.length" class="tooltip-images pb-1">
+        <img
+          v-for="(img, i) in imgs"
+          :key="i"
+          :src="'/assets/effects/' + img"
+          :alt="img"
+          class="tooltip-img"
+        />
+      </div>
+
       <div
-        class="tooltip-description"
+        class="tooltip-description whitespace-pre-line"
         v-html="processTextWithTooltips(tooltipData.description)"
       ></div>
 
@@ -401,30 +423,47 @@ watch(isEnglish, async () => {
               {{ isEnglish ? sub.name.en : sub.name.vn }}
             </div>
             <img
-              v-if="sub.image"
-              :src="'/assets/effects/' + sub.image"
-              :alt="tooltipData.image"
+              v-if="sub.images"
+              v-for="(img, i) in sub.images"
+              :key="i"
+              :src="'/assets/effects/' + img"
+              :alt="img"
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />
-            <div class="subnote-description">
-              {{ isEnglish ? sub.description.en : sub.description.vn }}
+            <div
+              class="subnote-description"
+              v-html="processTextWithTooltips(isEnglish ? sub.description.en : sub.description.vn)"
+            ></div>
+
+            <!-- Sub-SubNotes -->
+            <div v-if="sub.subNotes && sub.subNotes.length" class="mt-2">
+              <div v-for="(subsub, j) in sub.subNotes" :key="j" class="subnote-block">
+                <div class="subnote-title">
+                  {{ isEnglish ? subsub.name.en : subsub.name.vn }}
+                </div>
+                <img
+                  v-if="subsub.images"
+                  v-for="(img, k) in subsub.images"
+                  :key="k"
+                  :src="'/assets/effects/' + img"
+                  :alt="img"
+                  style="width: 32px; height: 32px; margin-bottom: 8px"
+                />
+                <div
+                  class="subnote-description"
+                  v-html="processBoldC(isEnglish ? subsub.description.en : subsub.description.vn)"
+                ></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>
 
 <style>
-.main-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  gap: 30px;
-}
-
 .content-section {
   background: #fff;
   border-radius: 8px;
