@@ -157,10 +157,16 @@ const processTextWithTooltips = (text) => {
       const names = [];
       if (n.name?.en) names.push(n.name.en);
       if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
+      if (n.name?.cn && n.name.cn !== n.name.en && n.name.cn !== n.name.vn) {
+        names.push(n.name.cn);
+      }
       names.forEach((name) => {
-        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), n);
+        if (!effectMap.has(name.toLowerCase())) {
+          effectMap.set(name.toLowerCase(), n);
+        }
       });
     };
+
     addToMap(note);
 
     if (note.subs?.length) {
@@ -192,6 +198,7 @@ const processTextWithTooltips = (text) => {
 
     return `<span class="${className}"
               data-name="${keyword}"
+              data-name-cn="${note.name?.cn || ""}"
               data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
               data-img='${JSON.stringify(note.images || [])}'
               data-color="${color}"
@@ -394,6 +401,7 @@ const handleMouseEnter = (e) => {
       ? JSON.parse(target.getAttribute("data-img"))
       : [],
     color: target.getAttribute("data-color"),
+    cn: target.getAttribute("data-name-cn"), 
   };
   updateTooltipPosition(e);
   showTooltip.value = true;
@@ -1803,7 +1811,7 @@ watch(
     >
       <!-- Note chính -->
       <div class="tooltip-title" :style="{ color: tooltipData.color }">
-        {{ tooltipData.name }}
+        {{ tooltipData.name }} <span class="lang-zh" v-if="tooltipData.cn">({{ tooltipData.cn }})</span>
       </div>
       <div v-if="imgs.length" class="tooltip-images pb-1">
         <img
@@ -1826,7 +1834,7 @@ watch(
         <div class="subnotes-container">
           <div v-for="(sub, idx) in matchedSubNotes" :key="idx" class="subnote-block">
             <div class="subnote-title">
-              {{ isEnglish ? sub.name.en : sub.name.vn }}
+              {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn }})</span>
             </div>
             <img
               v-if="sub.images"
@@ -1845,7 +1853,7 @@ watch(
             <div v-if="sub.subNotes && sub.subNotes.length" class="mt-2">
               <div v-for="(subsub, j) in sub.subNotes" :key="j" class="subnote-block">
                 <div class="subnote-title">
-                  {{ isEnglish ? subsub.name.en : subsub.name.vn }}
+                  {{ isEnglish ? subsub.name.en : subsub.name.vn }} <span class="lang-zh" v-if="subsub.name.cn">({{ subsub.name.cn }})</span>
                 </div>
                 <img
                   v-if="subsub.images"

@@ -368,7 +368,6 @@ onMounted(async () => {
 <style scoped>
 .lang-zh {
   font-family: "stkaiti", sans-serif;
-  font-size: 16px;
 }
 .lang-en {
   font-family: "Rubik", sans-serif;
