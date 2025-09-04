@@ -570,7 +570,9 @@ watch(isEnglish, async () => {
                 >
                   {{ isEnglish ? skill.name.en : skill.name.vn }}
                 </span>
-                <span class="sub-name lang-zh"> ({{ skill.name.cn }}/{{ skill.name.jp }}) </span>
+                <span class="sub-name lang-zh">
+                  ({{ skill.name.cn }}/{{ skill.name.jp }})
+                </span>
               </div>
             </span>
           </div>
@@ -745,7 +747,9 @@ watch(isEnglish, async () => {
           v-show="activeTab === onmyoji.totem[0].name.en.toLowerCase()"
           class="grid grid-cols-3 gap-5 mt-4"
           :class="[
-            activeTab === onmyoji.totem[0].name.en.toLowerCase() ? 'opacity-100' : 'opacity-0',
+            activeTab === onmyoji.totem[0].name.en.toLowerCase()
+              ? 'opacity-100'
+              : 'opacity-0',
             isEnglish ? 'lang-en' : 'lang-vi',
           ]"
         >
@@ -760,7 +764,10 @@ watch(isEnglish, async () => {
               :alt="skin.name.en || skin.name.cn"
               class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
             />
-            <p class="mt-4 text-center font-medium text-black">
+            <p
+              class="mt-4 text-center font-medium text-black"
+              :class="{ 'lang-zh': isEnglish ? !skin.name.en && skin.name.cn : false }"
+            >
               {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
             </p>
           </div>
@@ -859,10 +866,10 @@ watch(isEnglish, async () => {
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 <div>{{ skin.name.en }}</div>
-                <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
+                <div><span class="lang-zh">{{ skin.name.cn }}</span> - <span class="lang-vi">{{ skin.name.vn }}</span></div>
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-                {{ skin.artist }}
+                <span class="lang-zh">{{ skin.artist }}</span>
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 {{ skin.obtained }}
@@ -908,10 +915,10 @@ watch(isEnglish, async () => {
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 <div>{{ skin.name.en }}</div>
-                <div>{{ skin.name.cn }} - {{ skin.name.vn }}</div>
+                <div><span class="lang-zh">{{ skin.name.cn }}</span> - <span class="lang-vi">{{ skin.name.vn }}</span></div>
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-                {{ skin.artist }}
+                <span class="lang-zh">{{ skin.artist }}</span>
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 {{ skin.obtained }}

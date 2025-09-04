@@ -1668,7 +1668,7 @@ watch(
               :alt="skin.name.en || skin.name.cn"
               class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
             />
-            <p class="mt-4 text-center font-medium text-black">
+            <p class="mt-4 text-center font-medium text-black" :class="{ 'lang-zh': isEnglish ? !skin.name.en && skin.name.cn : false }">
               {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
             </p>
           </div>
@@ -1714,12 +1714,12 @@ watch(
               <td class="px-2 py-1 text-center table-cell" v-else>
                 <div>{{ skin.name.en }}</div>
                 <div>
-                  {{ skin.name.cn }} - <span class="lang-vi">{{ skin.name.vn }}</span>
+                  <span class="lang-zh">{{ skin.name.cn }}</span> - <span class="lang-vi">{{ skin.name.vn }}</span>
                 </div>
               </td>
 
               <td class="px-2 py-1 text-center table-cell">
-                {{ skin.artist }}
+                <span class="lang-zh">{{ skin.artist }}</span>
               </td>
               <td class="px-2 py-1 text-center table-cell">
                 {{ skin.obtained }}
