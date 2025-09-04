@@ -1216,7 +1216,16 @@ watch(
                 : 'text-[#a3a3a3] cursor-pointer',
             ]"
           >
-            {{ skill.type }}
+            <template v-if="index === 1 && shikigami.skills[3]?.tab === 2">
+              {{
+                shikigami.skills[1].type !== shikigami.skills[3].type
+                  ? `${shikigami.skills[1].type} / ${shikigami.skills[3].type}`
+                  : shikigami.skills[1].type
+              }}
+            </template>
+            <template v-else>
+              {{ skill.type }}
+            </template>
           </button>
           <button
             v-if="shikigami.rarity !== 'SP'"
