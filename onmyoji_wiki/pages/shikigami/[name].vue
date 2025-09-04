@@ -379,7 +379,7 @@ const highlightBioText = (profile) => {
     if (targetType) {
       return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
     }
-    return match; // giữ nguyên nếu không tìm thấy
+    return match;
   });
 };
 
@@ -697,7 +697,7 @@ watch(
                   <strong>CN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ shikigami.name.cn[0] }}</div>
+                  <div class="lang-zh">{{ shikigami.name.cn[0] }}</div>
                   <div>{{ shikigami.name.cn[1] }}</div>
                 </td>
               </tr>
@@ -706,7 +706,7 @@ watch(
                   <strong>JP</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ shikigami.name.jp[0] }}</div>
+                  <div class="lang-zh">{{ shikigami.name.jp[0] }}</div>
                   <div>{{ shikigami.name.jp[1] }}</div>
                 </td>
               </tr>
@@ -723,7 +723,7 @@ watch(
                   <strong>VN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div class="lang-vi">{{ shikigami.name.vn }}</div>
+                  <div class="lang-vi font-[500]">{{ shikigami.name.vn }}</div>
                 </td>
               </tr>
               <tr>
@@ -1273,9 +1273,9 @@ watch(
                     display: table-cell;
                     vertical-align: bottom;
                     font-weight: 900;
-                    font-size: 20px;
+                    font-size: 24px;
                     color: #a51919;
-                    height: 65px;
+                    height: 70px;
                     text-indent: 70px;
                     padding-bottom: 5px;
                   "
@@ -1288,7 +1288,7 @@ watch(
                           : shikigami.skills[activeSkillIndex].name.vn
                       }}
                     </span>
-                    <span class="skill-sub-name">
+                    <span class="skill-sub-name lang-zh">
                       ({{ shikigami.skills[activeSkillIndex].name.cn }}/{{
                         shikigami.skills[activeSkillIndex].name.jp
                       }})
@@ -1346,7 +1346,7 @@ watch(
                 </div>
                 <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
 
-                <p class="text-center italic text-[#a3a3a3]">
+                <p class="text-center text-[#a3a3a3] voice-font">
                   "{{ shikigami.skills[activeSkillIndex].voice }}"
                 </p>
                 <p
@@ -2050,6 +2050,16 @@ watch(
 </template>
 
 <style>
+
+.lang-zh {
+  font-family: "stkaiti", sans-serif;
+}
+
+.voice-font {
+  font-family: "Inconsolata", monospace;
+  letter-spacing: 2px;
+}
+
 .content-section {
   background: #fff;
   border-radius: 8px;

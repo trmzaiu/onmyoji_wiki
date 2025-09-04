@@ -169,7 +169,7 @@ export default {
 
 <style>
 #app {
-  font-family: "Rubik", "Nunito", "Noto Sans TC", sans-serif;
+  font-family: "Rubik", "Nunito", "Noto Sans TC", "stkaiti", sans-serif;
   background: #891727;
   color: #f4f1e8;
   min-height: 100vh;
@@ -186,6 +186,7 @@ export default {
 #app.lang-zh {
   font-family: "Noto Sans TC", sans-serif;
 }
+
 
 /* Header Styles */
 .header {

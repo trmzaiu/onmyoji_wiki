@@ -294,7 +294,7 @@ watch(isEnglish, async () => {
                   <strong>CN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ soul.name.cn[0] }}</div>
+                  <div class="lang-zh">{{ soul.name.cn[0] }}</div>
                   <div>{{ soul.name.cn[1] }}</div>
                 </td>
               </tr>
@@ -303,7 +303,7 @@ watch(isEnglish, async () => {
                   <strong>JP</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ soul.name.jp[0] }}</div>
+                  <div class="lang-zh">{{ soul.name.jp[0] }}</div>
                   <div>{{ soul.name.jp[1] }}</div>
                 </td>
               </tr>
@@ -320,7 +320,7 @@ watch(isEnglish, async () => {
                   <strong>VN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ soul.name.vn }}</div>
+                  <div class="lang-vi">{{ soul.name.vn }}</div>
                 </td>
               </tr>
             </tbody>
@@ -335,14 +335,14 @@ watch(isEnglish, async () => {
         {{ isEnglish ? "Effects" : "Hiệu ứng" }}
       </h2>
 
-      <div v-if="soul.effects.fixed">
+      <div v-if="soul.effects.fixed" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <h3 class="px-3 text-red">{{ isEnglish ? "Fixed Stat" : "Chỉ số cố định" }}:</h3>
         <p class="px-3 text-black">
           {{ isEnglish ? soul.effects.fixed.en : soul.effects.fixed.vn }}
         </p>
       </div>
 
-      <div v-if="soul.effects.piece2">
+      <div v-if="soul.effects.piece2" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <h3 class="px-3 text-red">
           {{ isEnglish ? "2-Piece Set Effect" : "Hiệu ứng 2 mảnh" }}:
         </h3>
@@ -351,7 +351,7 @@ watch(isEnglish, async () => {
         </p>
       </div>
 
-      <div v-if="soul.effects.piece4">
+      <div v-if="soul.effects.piece4" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <h3 class="px-3 text-red">
           {{ isEnglish ? "4-Piece Set Effect" : "Hiệu ứng 4 mảnh" }}:
         </h3>
@@ -372,7 +372,7 @@ watch(isEnglish, async () => {
         {{ isEnglish ? "Obtainable" : "Có thể nhận" }}
       </h2>
 
-      <ul class="px-3 list-disc pl-6 text-black">
+      <ul class="px-3 list-disc pl-6 text-black" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <li
           v-for="(item, index) in isEnglish ? soul.obtainable.en : soul.obtainable.vn"
           :key="index"
@@ -464,6 +464,17 @@ watch(isEnglish, async () => {
 </template>
 
 <style>
+.lang-zh {
+  font-family: "stkaiti", sans-serif;
+  font-size: 16px;
+}
+.lang-en {
+  font-family: "Rubik", sans-serif;
+}
+.lang-vi {
+  font-family: "Nunito", serif;
+}
+
 .content-section {
   background: #fff;
   border-radius: 8px;

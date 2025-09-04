@@ -78,7 +78,7 @@ const processTextWithTooltips = (text) => {
               style="color:${color}">${keyword}</span>`;
   };
 
-   // <e>...</e>
+  // <e>...</e>
   processedText = processedText.replace(
     /<e>(.*?)<\/e>/g,
     (_, keyword) =>
@@ -286,7 +286,7 @@ watch(isEnglish, async () => {
                   <strong>CN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ onmyoji.name.cn[0] }}</div>
+                  <div class="lang-zh">{{ onmyoji.name.cn[0] }}</div>
                   <div>{{ onmyoji.name.cn[1] }}</div>
                 </td>
               </tr>
@@ -295,7 +295,7 @@ watch(isEnglish, async () => {
                   <strong>JP</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ onmyoji.name.jp[0] }}</div>
+                  <div class="lang-zh">{{ onmyoji.name.jp[0] }}</div>
                   <div>{{ onmyoji.name.jp[1] }}</div>
                 </td>
               </tr>
@@ -312,7 +312,7 @@ watch(isEnglish, async () => {
                   <strong>VN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ onmyoji.name.vn }}</div>
+                  <div class="lang-vi">{{ onmyoji.name.vn }}</div>
                 </td>
               </tr>
               <tr>
@@ -331,7 +331,10 @@ watch(isEnglish, async () => {
         </div>
       </div>
 
-      <div class="flex border-b border-gray-300 mt-5">
+      <div
+        class="flex border-b border-gray-300 mt-5"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+      >
         <button
           class="flex py-2 px-4 text-center"
           :class="
@@ -525,6 +528,7 @@ watch(isEnglish, async () => {
             margin-bottom: 20px;
             margin-top: 20px;
           "
+          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
         >
           <div>
             <span
@@ -566,7 +570,7 @@ watch(isEnglish, async () => {
                 >
                   {{ isEnglish ? skill.name.en : skill.name.vn }}
                 </span>
-                <span class="sub-name"> ({{ skill.name.cn }}/{{ skill.name.jp }}) </span>
+                <span class="sub-name lang-zh"> ({{ skill.name.cn }}/{{ skill.name.jp }}) </span>
               </div>
             </span>
           </div>
@@ -606,7 +610,6 @@ watch(isEnglish, async () => {
             <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
             <p
               class="text-justify whitespace-pre-line"
-              
               style="
                 margin: 0;
                 font-size: 15px;
@@ -703,9 +706,10 @@ watch(isEnglish, async () => {
         <div
           v-show="activeTab === onmyoji.name.en.toLowerCase()"
           class="grid grid-cols-3 gap-5 mt-4"
-          :class="
-            activeTab === onmyoji.name.en.toLowerCase() ? 'opacity-100' : 'opacity-0'
-          "
+          :class="[
+            activeTab === onmyoji.name.en.toLowerCase() ? 'opacity-100' : 'opacity-0',
+            isEnglish ? 'lang-en' : 'lang-vi',
+          ]"
         >
           <div class="flex flex-col items-center" title="Default">
             <img
@@ -740,11 +744,10 @@ watch(isEnglish, async () => {
         <div
           v-show="activeTab === onmyoji.totem[0].name.en.toLowerCase()"
           class="grid grid-cols-3 gap-5 mt-4"
-          :class="
-            activeTab === onmyoji.totem[0].name.en.toLowerCase()
-              ? 'opacity-100'
-              : 'opacity-0'
-          "
+          :class="[
+            activeTab === onmyoji.totem[0].name.en.toLowerCase() ? 'opacity-100' : 'opacity-0',
+            isEnglish ? 'lang-en' : 'lang-vi',
+          ]"
         >
           <div
             v-for="(skin, index) in onmyoji.totem"
@@ -978,12 +981,14 @@ watch(isEnglish, async () => {
 </template>
 
 <style>
-.main-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  gap: 30px;
+.lang-zh {
+  font-family: "stkaiti", sans-serif;
+}
+.lang-en {
+  font-family: "Rubik", sans-serif;
+}
+.lang-vi {
+  font-family: "Nunito", serif;
 }
 
 .content-section {
@@ -1104,10 +1109,6 @@ watch(isEnglish, async () => {
   min-height: 60px;
 }
 
-.text-vn {
-  font-family: "Nunito", sans-serif;
-}
-
 .session-title {
   color: #3a3a3a;
   font-size: 24px;
@@ -1115,13 +1116,6 @@ watch(isEnglish, async () => {
   overflow: auto;
   padding: 6px 0;
   border-bottom: 0.5px solid #9c9c9c;
-}
-
-.lang-en .session-title {
-  font-family: "Rubik", sans-serif;
-}
-.lang-vi .session-title {
-  font-family: "Nunito", sans-serif;
 }
 
 .image-icon {

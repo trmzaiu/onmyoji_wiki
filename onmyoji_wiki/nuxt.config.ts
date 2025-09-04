@@ -28,4 +28,7 @@ export default defineNuxtConfig({
       supabaseKey: process.env.SUPABASE_KEY,
     },
   },
+  css: [
+    '/public/assets/css/fonts.css'
+  ],
 });

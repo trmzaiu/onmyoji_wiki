@@ -235,13 +235,13 @@ onMounted(async () => {
                   }}</a>
                 </div>
                 <div class="text-black text-sm">
-                  {{
+                  <span class="stkaiti">{{
                     shiki.name.cn[0] === shiki.name.jp[0]
                       ? shiki.name.cn[0]
                       : shiki.name.cn[0] + " — " + shiki.name.jp[0]
-                  }}
+                  }}</span>
                   {{ shiki.name.en === shiki.name.jp[1] ? "" : "— " + shiki.name.en }} —
-                  <span class="lang-vn">{{ shiki.name.vn }}</span>
+                  <span class="lang-vi">{{ shiki.name.vn }}</span>
                 </div>
               </td>
 
@@ -261,6 +261,17 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+
+.stkaiti {
+  font-family: "stkaiti", serif;
+  font-size: 16px;
+}
+
+.lang-vi {
+  font-family: "Nunito", serif;
+  font-weight: 600;
+}
+
 .main-container {
   max-width: 1200px;
   margin: 0 auto;

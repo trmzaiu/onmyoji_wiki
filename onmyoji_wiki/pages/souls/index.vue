@@ -127,7 +127,7 @@ onMounted(async () => {
         >.
       </p>
 
-      <table style="border: 1px solid #a51919; width: 80%; margin: 0 auto">
+      <table style="border: 1px solid #a51919; width: 85%; margin: 0 auto" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <tbody>
           <tr style="background-color: #a51919; font-weight: bold">
             <td class="px-2 py-1 text-center" colspan="4">
@@ -136,16 +136,16 @@ onMounted(async () => {
           </tr>
           <tr class="text-black">
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              ATK<br />攻击 / 攻撃力
+              ATK<br /><span class="lang-zh">攻击 / 攻撃力</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              ATK Bonus / ATK%<br />攻击加成 / 追加攻撃力
+              ATK Bonus / ATK%<br /><span class="lang-zh">攻击加成 / 追加攻撃力</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              Crit<br />暴击 / 会心率
+              Crit<br /><span class="lang-zh">暴击 / 会心率</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              Crit DMG<br />暴击伤害 / 会心DMG
+              Crit DMG<br /><span class="lang-zh">暴击伤害 / 会心DMG</span>
             </td>
           </tr>
           <tr style="background-color: #a51919; font-weight: bold">
@@ -155,16 +155,16 @@ onMounted(async () => {
           </tr>
           <tr class="text-black">
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              HP<br />生命 / HP
+              HP<br /><span class="lang-zh">生命 / HP</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              HP Bonus / HP%<br />生命加成 / 追加HP
+              HP Bonus / HP%<br /><span class="lang-zh">生命加成 / 追加HP</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              DEF<br />防御 / 防御力
+              DEF<br /><span class="lang-zh">防御 / 防御力</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              DEF Bonus / DEF%<br />防御加成 / 追加防御力
+              DEF Bonus / DEF%<br /><span class="lang-zh">防御加成 / 追加防御力</span>
             </td>
           </tr>
           <tr style="background-color: #a51919; font-weight: bold">
@@ -174,13 +174,13 @@ onMounted(async () => {
           </tr>
           <tr class="text-black">
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              Effect RES<br />效果抵抗 / 効果抵抗
+              Effect RES<br /><span class="lang-zh">效果抵抗 / 効果抵抗</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              Effect HIT<br />效果命中 / 効果命中
+              Effect HIT<br /><span class="lang-zh">效果命中 / 効果命中</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-              SPD<br />速度 / 素早さ
+              SPD<br /><span class="lang-zh">速度 / 素早さ</span>
             </td>
             <td class="px-2 py-1 text-center" style="border: 1px solid #a51919"></td>
           </tr>
@@ -342,12 +342,12 @@ onMounted(async () => {
                   }}</a>
                 </div>
                 <div class="text-black text-sm">
-                  {{
+                  <span class="lang-zh">{{
                     soul.name.cn[0] === soul.name.jp[0]
                       ? soul.name.cn[0]
                       : soul.name.cn[0] + " - " + soul.name.jp[0]
-                  }}
-                  - {{ soul.name.vn }}
+                  }}</span>
+                  - <span class="lang-vi">{{ soul.name.vn }}</span>
                 </div>
               </td>
 
@@ -366,12 +366,15 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.main-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  gap: 30px;
+.lang-zh {
+  font-family: "stkaiti", sans-serif;
+  font-size: 16px;
+}
+.lang-en {
+  font-family: "Rubik", sans-serif;
+}
+.lang-vi {
+  font-family: "Nunito", serif;
 }
 
 .content-section {
