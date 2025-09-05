@@ -1639,10 +1639,10 @@ const playAudio = (audioUrl) => {
             <source :src="shikigami.voice.summon" type="video/mp4" />
           </video>
 
-          <h2 class="session-title">
+          <h2 class="session-title" >
             {{ isEnglish ? "Bios" : "Tiểu Sử" }}
           </h2>
-          <div class="shikigami-profile mt-5 flex relative">
+          <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios">
             <!-- Left panel: CV -->
             <div class="left-panel">
               <div class="cv-box">
