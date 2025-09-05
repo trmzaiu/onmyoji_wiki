@@ -124,6 +124,64 @@
     <main>
       <div class="main-container"><slot /></div>
     </main>
+
+    <footer class="footer bg-[#891727] text-white py-10 mt-20">
+      <div class="max-w-[1200px] mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Logo & Info -->
+        <div class="footer-logo flex flex-col items-start space-y-3">
+          <img src="/images/Logo.webp" alt="Onmyoji Logo" class="h-16 w-auto" />
+          <p class="text-sm">
+            Onmyoji Wiki – Thế giới đầy bí ẩn của Onmyoji và Shikigami.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-links">
+          <h3 class="font-bold mb-3">Quick Links</h3>
+          <ul class="space-y-2">
+            <li><NuxtLink to="/" class="hover:underline">Explore</NuxtLink></li>
+            <li><NuxtLink to="/onmyoji" class="hover:underline">Onmyoji</NuxtLink></li>
+            <li>
+              <NuxtLink to="/shikigami" class="hover:underline">Shikigami</NuxtLink>
+            </li>
+            <li><NuxtLink to="/souls" class="hover:underline">Souls</NuxtLink></li>
+            <li><NuxtLink to="/pets" class="hover:underline">Pets</NuxtLink></li>
+          </ul>
+        </div>
+
+        <!-- Social Media -->
+        <div class="footer-social">
+          <h3 class="font-bold mb-3">Follow Us</h3>
+          <div class="flex space-x-4">
+            <a
+              href="#"
+              class="hover:text-gray-300"
+              target="_blank"
+              rel="noopener noreferrer"
+              >🐦 Twitter</a
+            >
+            <a
+              href="#"
+              class="hover:text-gray-300"
+              target="_blank"
+              rel="noopener noreferrer"
+              >📘 Facebook</a
+            >
+            <a
+              href="#"
+              class="hover:text-gray-300"
+              target="_blank"
+              rel="noopener noreferrer"
+              >📸 Instagram</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center text-sm text-gray-300">
+        &copy; 2025 Onmyoji Wiki. All rights reserved.
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -187,6 +245,12 @@ export default {
   font-family: "Noto Sans TC", sans-serif;
 }
 
+.footer a {
+  transition: color 0.3s ease;
+}
+.footer a:hover {
+  color: #d0d0d0;
+}
 
 /* Header Styles */
 .header {
@@ -213,7 +277,7 @@ export default {
 }
 
 .nav-container {
-  width: 1200px; /* Giới hạn độ rộng */
+  width: 950px; /* Giới hạn độ rộng */
   margin: 0 auto; /* Nằm giữa màn hình */
   display: flex;
   justify-content: flex-start; /* Cho nội dung canh trái */
@@ -424,18 +488,10 @@ export default {
 }
 
 .main-container {
-  max-width: 1200px;
+  max-width: 950px;
   margin: 0 auto;
   padding: 20px;
   display: grid;
   gap: 30px;
-}
-
-.content-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid #3a3a3a4d;
 }
 </style>
