@@ -1632,7 +1632,7 @@ const playAudio = (audioUrl) => {
 
           <!-- Animation -->
           <h2 class="session-title" v-if="shikigami.voice.summon">
-            {{ isEnglish ? "Animiation Summon" : "Hoạt cảnh Triệu hồi" }}
+            {{ isEnglish ? "Animation Summon" : "Hoạt cảnh Triệu hồi" }}
           </h2>
 
           <video controls class="w-full h-auto my-5" v-if="shikigami.voice.summon">
