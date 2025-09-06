@@ -62,10 +62,10 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 1174 -> 1270, A: 1067 -> 1163, B: 960 -> 1056, C: 854 -> 939, D: 843 -> ?
+// S: 1174 -> 1270, A: 1064 -> 1163, B: 960 -> 1056, C: 854 -> 939, D: 843 -> ?
 const getHPRank = (hp) => {
   if (hp >= 1174 && hp <= 1270) return "S";
-  else if (hp >= 1067 && hp <= 1163) return "A";
+  else if (hp >= 1064 && hp <= 1163) return "A";
   else if (hp >= 960 && hp <= 1056) return "B";
   else if (hp >= 854 && hp <= 939) return "C";
   else if (hp >= 843 && hp <= 843) return "D";
@@ -91,9 +91,9 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: ? -> ?, A: 75 -> 82, B: 71 -> 73, C: 60 -> 69, D: 58 -> ?
+// S: 83 -> ?, A: 75 -> 82, B: 71 -> 73, C: 60 -> 69, D: 58 -> ?
 const getDEFRank = (def) => {
-  if (def >= 8134 && def <= 8171) return "S";
+  if (def >= 83 && def <= 83) return "S";
   else if (def >= 75 && def <= 82) return "A";
   else if (def >= 71 && def <= 73) return "B";
   else if (def >= 60 && def <= 69) return "C";
@@ -106,9 +106,9 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 490 -> ?, A: 441 -> 481, B: 397 -> 437, C: 370 -> 388, D: ? -> ?
+// S: 490 -> 490, A: 441 -> 481, B: 397 -> 437, C: 370 -> 388, D: ? -> ?
 const getDEFEvoRank = (def) => {
-  if (def >= 490 && def <= 490) return "S";
+  if (def >= 485 && def <= 490) return "S";
   else if (def >= 441 && def <= 481) return "A";
   else if (def >= 397 && def <= 437) return "B";
   else if (def >= 370 && def <= 388) return "C";
@@ -495,6 +495,7 @@ async function fetchIllustrations(shikiId) {
 // realtime subscribe
 let shikigamiChannel = null;
 let effectChannel = null;
+let illustrationChannel = null;
 
 function subscribeRealtime() {
   // --- Channel Shikigami ---
@@ -508,6 +509,20 @@ function subscribeRealtime() {
           console.log("Shikigami table changed!");
           await fetchAllShikigami();
           await fetchShikigami();
+        }
+      )
+      .subscribe();
+  }
+
+  if (!illustrationChannel) {
+    illustrationChannel = supabase
+      .channel("illustration-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Illustration" },
+        async () => {
+          console.log("Illustration table changed!");
+          await fetchIllustrations(shikigami.id);
         }
       )
       .subscribe();
