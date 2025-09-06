@@ -12,6 +12,7 @@ const shikigami = ref(null);
 const shikigamiList = ref([]);
 const onmyojiList = ref(null);
 const effects = ref([]);
+const illutrations = ref([]);
 const isEnglish = ref(true);
 
 const tooltipData = ref(null);
@@ -428,6 +429,16 @@ function removeTooltipListeners() {
 }
 
 /* ---------------------- FETCH DATA + REALTIME ---------------------- */
+async function fetchIllustrations() {
+  const { data, error } = await supabase
+    .from("Illustration")
+    .select("*")
+    .contains("shiki", [shikigami.id])
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching illustrations:", error);
+  else illutrations.value = data;
+}
+
 async function fetchAllEffects() {
   const { data, error } = await supabase
     .from("Effect")
@@ -595,6 +606,7 @@ onMounted(async () => {
     fetchAllShikigami(),
     fetchShikigami(),
     fetchAllOnmyoji(),
+    fetchAllIllutrations(),
     loadTags(),
   ]);
   subscribeRealtime();
@@ -1630,7 +1642,7 @@ const playAudio = (audioUrl) => {
             {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-            <div v-for="(img, index) in shikigami.illustrations" :key="index" class="overflow-hidden rounded-xl shadow-md">
+            <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden rounded-xl shadow-md">
               <img :src="img.image" alt="Illustration" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-300" :title="img.name"/>
             </div>
           </div>
