@@ -27,6 +27,10 @@ const formattedName = route.params.name.replace(/_/g, " ");
 
 const { tagMap, loadTags } = useTags();
 
+const getImgUrl = (name) => {
+  return `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/_/g, ' ')}.jpg`
+}
+
 /* ---------------------- RANK + IMAGE ---------------------- */
 // S: 140 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 79 -> 98
 const getATKRank = (atk) => {
@@ -606,7 +610,7 @@ onMounted(async () => {
     fetchAllShikigami(),
     fetchShikigami(),
     fetchAllOnmyoji(),
-    fetchAllIllutrations(),
+    fetchIllutrations(),
     loadTags(),
   ]);
   subscribeRealtime();
@@ -1643,7 +1647,7 @@ const playAudio = (audioUrl) => {
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
             <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden rounded-xl shadow-md">
-              <img :src="img.image" alt="Illustration" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-300" :title="img.name"/>
+              <img :src="getImgUrl(img.name)" alt="Illustration" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-300" :title="img.name"/>
             </div>
           </div>
         </div>
