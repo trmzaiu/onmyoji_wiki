@@ -1631,18 +1631,18 @@ const playAudio = (audioUrl) => {
         ]">
 
           <!-- Animation -->
-          <h2 class="session-title" v-if="shikigami.voice.summon">
+          <h2 class="session-title" v-if="shikigami.voice">
             {{ isEnglish ? "Animation Summon" : "Hoạt cảnh Triệu hồi" }}
           </h2>
 
-          <video controls class="w-full h-auto my-5" v-if="shikigami.voice.summon">
+          <video controls class="w-full h-auto my-5" v-if="shikigami.voice">
             <source :src="shikigami.voice.summon" type="video/mp4" />
           </video>
 
           <h2 class="session-title" >
             {{ isEnglish ? "Bios" : "Tiểu Sử" }}
           </h2>
-          <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios">
+          <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios && shikigami.voice">
             <!-- Left panel: CV -->
             <div class="left-panel">
               <div class="cv-box">
