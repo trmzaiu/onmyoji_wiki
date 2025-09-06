@@ -1624,6 +1624,16 @@ const playAudio = (audioUrl) => {
               </tr>
             </tbody>
           </table>
+
+          <!-- Illustrations -->
+          <h2 class="session-title mt-5">
+            {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
+          </h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+            <div v-for="(img, index) in shikigami.illustrations" :key="index" class="overflow-hidden rounded-xl shadow-md">
+              <img :src="img.image" alt="Illustration" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-300" :title="img.name"/>
+            </div>
+          </div>
         </div>
 
         <!-- Dialogue Tab -->
