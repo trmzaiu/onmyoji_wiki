@@ -1987,7 +1987,7 @@ p              <div class="subnote-description"
 
 .voice-font {
   font-family: "Inconsolata", monospace;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
 .content-section {
@@ -2244,51 +2244,6 @@ p              <div class="subnote-description"
 
 .tint-yellow {
   background-color: #c07b2a;
-}
-
-.scroll-hide {
-  scrollbar-width: none;
-}
-.scroll-hide::-webkit-scrollbar {
-  display: none;
-}
-
-.voice-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.voice-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #f9f9f9;
-  border-radius: 12px;
-  padding: 10px 14px;
-  box-shadow: 0 2px 6px rgba(122, 6, 6, 0.08);
-}
-
-.voice-type {
-  min-width: 120px;
-  font-weight: bold;
-  color: #a51919;
-}
-
-.voice-text {
-  flex: 1;
-  font-size: 0.95rem;
-  color: #333;
-}
-
-.voice-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-.voice-btn:hover {
-  transform: scale(1.1);
 }
 
 /* Tooltip Styles */
