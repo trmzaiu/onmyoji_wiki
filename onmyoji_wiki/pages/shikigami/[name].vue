@@ -1715,7 +1715,7 @@ const playAudio = (audioUrl) => {
               </div>
               <img v-if="sub.images" v-for="(img, i) in sub.images" :key="i" :src="'/assets/effects/' + img" :alt="img"
                 style="width: 32px; height: 32px; margin-bottom: 8px" />
-p              <div class="subnote-description"
+              <div class="subnote-description"
                 v-html="processTextWithTooltips(isEnglish ? sub.description.en : sub.description.vn)"></div>
 
               <!-- Sub-SubNotes -->
