@@ -1271,7 +1271,7 @@ const playAudio = (audioUrl) => {
                   </div>
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
 
-                  <div class="w-[80%]">
+                  <div class="w-[80%] mx-auto">
                     <p class="text-center text-[#a3a3a3] voice-font">
                       "{{ shikigami.skills[activeSkillIndex].voice }}"
                     </p>
@@ -1641,7 +1641,7 @@ const playAudio = (audioUrl) => {
             <source :src="shikigami.voice.summon" type="video/mp4" />
           </video>
 
-          <h2 class="session-title" >
+          <h2 class="session-title">
             {{ isEnglish ? "Bios" : "Tiểu Sử" }}
           </h2>
           <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios && shikigami.voice">
@@ -1654,8 +1654,8 @@ const playAudio = (audioUrl) => {
                     CV<span class="lang-zh">{{ shikigami.voice.cv }}</span>
                   </div>
                   <div class="mt-5"><button class="cv-audio" @click="playAudio(shikigami.voice.audio)">
-                    <i class="fa-solid fa-volume-high"></i>
-                  </button></div>
+                      <i class="fa-solid fa-volume-high"></i>
+                    </button></div>
                 </div>
               </div>
             </div>
@@ -1673,15 +1673,14 @@ const playAudio = (audioUrl) => {
             <div class="right-panel">
               <div class="tabs text-black">
                 <div class="tab-name lang-zh mb-5 pb-3 text-[18px]">{{ shikigami.name.cn[0] }}</div>
-                <div class="mt-2" v-for="(tab, i) in shikigami.bios" :key="i" 
-                    :class="['tab', { active: activeBioTab===i }]" 
-                    @click="activeBioTab=i">
+                <div class="mt-2" v-for="(tab, i) in shikigami.bios" :key="i"
+                  :class="['tab', { active: activeBioTab===i }]" @click="activeBioTab=i">
                   {{ '传记 ' + (tab.no) }}
                 </div>
               </div>
             </div>
             <div class="absolute left-0 bottom-0 w-32 h-auto z-10">
-              <img src="/public/assets/Paperdoll.webp" class="object-contain"/>
+              <img src="/public/assets/Paperdoll.webp" class="object-contain" />
             </div>
           </div>
         </div>
