@@ -610,7 +610,7 @@ onMounted(async () => {
     fetchAllShikigami(),
     fetchShikigami(),
     fetchAllOnmyoji(),
-    fetchIllutrations(),
+    fetchIllustrations(),
     loadTags(),
   ]);
   subscribeRealtime();
