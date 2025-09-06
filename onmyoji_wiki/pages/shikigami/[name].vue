@@ -12,7 +12,7 @@ const shikigami = ref(null);
 const shikigamiList = ref([]);
 const onmyojiList = ref(null);
 const effects = ref([]);
-const illutrations = ref([]);
+const illustrations = ref([]);
 const isEnglish = ref(true);
 
 const tooltipData = ref(null);
@@ -28,7 +28,7 @@ const formattedName = route.params.name.replace(/_/g, " ");
 const { tagMap, loadTags } = useTags();
 
 const getImgUrl = (name) => {
-  return `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/_/g, ' ')}.jpg`
+  return `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, '_')}.jpg`
 }
 
 /* ---------------------- RANK + IMAGE ---------------------- */
@@ -433,16 +433,6 @@ function removeTooltipListeners() {
 }
 
 /* ---------------------- FETCH DATA + REALTIME ---------------------- */
-async function fetchIllustrations() {
-  const { data, error } = await supabase
-    .from("Illustration")
-    .select("*")
-    .contains("shiki", [shikigami.id])
-    .order("id", { ascending: true });
-  if (error) console.error("Error fetching illustrations:", error);
-  else illutrations.value = data;
-}
-
 async function fetchAllEffects() {
   const { data, error } = await supabase
     .from("Effect")
@@ -480,8 +470,25 @@ async function fetchShikigami() {
   if (error) console.error("Error fetching shikigami:", error);
   else {
     shikigami.value = data;
+    console.log("Data: ", data);
+    await fetchIllustrations(data.id);
     await nextTick();
     addTooltipListeners();
+  }
+}
+
+async function fetchIllustrations(shikiId) {
+  const { data, error } = await supabase
+    .from("Illustration")
+    .select("*")
+    .contains("shiki", [shikiId])
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching illustrations:", error);
+  } else {
+    illustrations.value = data;
+    console.log("Data: ", data);
   }
 }
 
@@ -605,21 +612,18 @@ function updateNotes() {
 /* ---------------------- LIFECYCLE ---------------------- */
 onMounted(async () => {
   document.title = `${formattedName}`;
+
   await Promise.all([
     fetchAllEffects(),
     fetchAllShikigami(),
     fetchShikigami(),
     fetchAllOnmyoji(),
-    fetchIllustrations(),
     loadTags(),
   ]);
   subscribeRealtime();
   addTooltipListeners();
 });
 
-onUnmounted(() => {
-  unsubscribeRealtime();
-});
 
 watch(activeSkillIndex, async () => {
   await nextTick();
@@ -1645,9 +1649,13 @@ const playAudio = (audioUrl) => {
           <h2 class="session-title mt-5">
             {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
           </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-            <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden rounded-xl shadow-md">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mt-4">
+            <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden shadow-md relative">
               <img :src="getImgUrl(img.name)" alt="Illustration" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-300" :title="img.name"/>
+              <div 
+                class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md">
+                {{ img.name }}
+              </div>
             </div>
           </div>
         </div>
