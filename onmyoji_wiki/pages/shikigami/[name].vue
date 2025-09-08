@@ -2065,6 +2065,7 @@ onBeforeUnmount(() => {
   font-weight: bold;
   margin-bottom: 12px;
   letter-spacing: 2px;
+  color: #a51919;
 }
 .tab {
   writing-mode: vertical-rl;
