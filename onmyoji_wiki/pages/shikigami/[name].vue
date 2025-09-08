@@ -635,6 +635,7 @@ onMounted(async () => {
     fetchAllOnmyoji(),
     loadTags(),
   ]);
+  
   subscribeRealtime();
   addTooltipListeners();
 });
@@ -1711,11 +1712,13 @@ const playAudio = (audioUrl) => {
 
             <!-- Middle panel: Bio -->
             <div class="bio-panel flex-1 text-left"> <!-- flex-1 để chiếm phần giữa -->
-              <p v-if="shikigami.bios[activeBioTab]" class="bio-text-vertical lang-zh text-black">
-                <span v-for="(line, idx) in shikigami.bios[activeBioTab].brief.cn.split('\n')" :key="idx">
-                  {{ line }}
-                </span>
-              </p>
+              <div class="bio-panel-text">
+                <p v-if="shikigami.bios[activeBioTab]" class="bio-text-vertical lang-zh text-black">
+                  <span v-for="(line, idx) in shikigami.bios[activeBioTab].brief.cn.split('\n')" :key="idx">
+                    {{ line }}
+                  </span>
+                </p>
+              </div>
             </div>
 
             <!-- Right panel: Tabs -->
@@ -1978,8 +1981,15 @@ const playAudio = (audioUrl) => {
   display: flex;
   justify-content: flex-end;
   align-items: flex-start; /* Đã có align-items: flex-start */
-  padding: 20px 20px 30px 20px;
+  padding: 20px;
+  max-width: 700px;   /* giới hạn khung giữa */
 }
+
+.bio-panel-text {
+  overflow-x: auto;
+  direction: rtl;
+}
+
 .bio-text-vertical {
   writing-mode: vertical-rl;
   text-orientation: upright;
@@ -1987,7 +1997,9 @@ const playAudio = (audioUrl) => {
   line-height: 3;
   letter-spacing: 1.2px;
   margin: 0; /* Thêm margin: 0 để loại bỏ margin mặc định */
-  padding: 0; /* Thêm padding: 0 để loại bỏ padding mặc định */
+  padding: 0 0 5px 0; /* Thêm padding: 0 để loại bỏ padding mặc định */
+  display: inline-block; /* 🔑 giữ nguyên chiều ngang theo nội dung */
+  white-space: nowrap;
 }
 .bio-text-vertical span {
   display: block;
