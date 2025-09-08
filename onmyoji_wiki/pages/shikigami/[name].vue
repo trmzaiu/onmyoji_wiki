@@ -1,7 +1,7 @@
 <script setup>
 import { useSupabase } from "@/utils/useSupabase.ts";
 import { useTags } from "@/utils/useTags";
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -691,21 +691,48 @@ watch(
 );
 
 const audioPlayer = ref(null)
+const isPlaying = ref(false)
 
 const playAudio = (audioUrl) => {
   if (!audioUrl) return
 
-  // Nếu đã có Audio đang chơi thì dừng trước
+  // Nếu có audio đang phát
   if (audioPlayer.value) {
-    audioPlayer.value.pause()
-    audioPlayer.value.currentTime = 0
+    if (!audioPlayer.value.paused) {
+      // Đang phát → dừng
+      audioPlayer.value.pause()
+      audioPlayer.value.currentTime = 0 // reset về đầu luôn
+      isPlaying.value = false
+      return
+    } else {
+      // Đang pause → phát lại từ đầu
+      audioPlayer.value.currentTime = 0
+      audioPlayer.value.play()
+      isPlaying.value = true
+      return
+    }
   }
 
-  // Tạo audio mới
+  // Chưa có → tạo audio mới
   audioPlayer.value = new Audio(audioUrl)
   audioPlayer.value.play()
+    .then(() => isPlaying.value = true)
     .catch(err => console.error('Audio play error:', err))
+
+  // Reset khi phát xong
+  audioPlayer.value.addEventListener('ended', () => {
+    isPlaying.value = false
+    audioPlayer.value = null
+  })
 }
+
+onBeforeUnmount(() => {
+  if (audioPlayer.value) {
+    audioPlayer.value.pause()
+    audioPlayer.value = null
+    isPlaying.value = false
+  }
+})
 </script>
 
 <template>
@@ -1703,17 +1730,19 @@ const playAudio = (audioUrl) => {
                   <div class="cv-text text-center">
                     CV<span class="lang-zh">{{ shikigami.voice.cv }}</span>
                   </div>
-                  <div class="mt-5"><button class="cv-audio" @click="playAudio(shikigami.voice.audio)">
-                      <i class="fa-solid fa-volume-high"></i>
-                    </button></div>
+                  <div class="mt-5">
+                    <button class="cv-audio" @click="playAudio(shikigami.voice.audio)">
+                      <i :class="isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-volume-high'"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Middle panel: Bio -->
-            <div class="bio-panel flex-1 text-left"> <!-- flex-1 để chiếm phần giữa -->
+            <div class="bio-panel flex-1 text-start"> 
               <div class="bio-panel-text">
-                <p v-if="shikigami.bios[activeBioTab]" class="bio-text-vertical lang-zh text-black">
+                <p v-if="shikigami.bios[activeBioTab]" class="bio-text-vertical text-black">
                   <span v-for="(line, idx) in shikigami.bios[activeBioTab].brief.cn.split('\n')" :key="idx">
                     {{ line }}
                   </span>
@@ -1958,7 +1987,7 @@ const playAudio = (audioUrl) => {
 .cv-text {
   writing-mode: vertical-rl;
   text-orientation: upright;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
 }
 .cv-audio {
@@ -1966,7 +1995,7 @@ const playAudio = (audioUrl) => {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.75rem;
   color: white;
   transition: transform 0.2s ease, color 0.2s ease;
 }
@@ -1987,7 +2016,6 @@ const playAudio = (audioUrl) => {
 
 .bio-panel-text {
   overflow-x: auto;
-  direction: rtl;
 }
 
 .bio-text-vertical {
@@ -1995,7 +2023,7 @@ const playAudio = (audioUrl) => {
   text-orientation: upright;
   font-size: 14px;
   line-height: 3;
-  letter-spacing: 1.2px;
+  letter-spacing: 2.5px;
   margin: 0; /* Thêm margin: 0 để loại bỏ margin mặc định */
   padding: 0 0 5px 0; /* Thêm padding: 0 để loại bỏ padding mặc định */
   display: inline-block; /* 🔑 giữ nguyên chiều ngang theo nội dung */
@@ -2007,6 +2035,12 @@ const playAudio = (audioUrl) => {
   padding-left: 6px;
   margin-left: 6px;
 }
+
+.bio-text-vertical span.punct {
+  padding-top: 2px; /* chỉnh khoảng hở dọc */
+  display: inline-block;
+}
+
 .bio-text-vertical:first-child{
   border-right: 2px solid #929191;
   padding-right: 6px;
@@ -2030,6 +2064,7 @@ const playAudio = (audioUrl) => {
   text-orientation: upright;
   font-weight: bold;
   margin-bottom: 12px;
+  letter-spacing: 2px;
 }
 .tab {
   writing-mode: vertical-rl;
