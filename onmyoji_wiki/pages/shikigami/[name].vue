@@ -1334,7 +1334,7 @@ onBeforeUnmount(() => {
                   </div>
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
 
-                  <div class="w-[80%] align-self-center">
+                  <div class="w-[80%] mx-auto">
                     <p class="text-center text-[#a3a3a3] voice-font">
                       "{{ shikigami.skills[activeSkillIndex].voice }}"
                     </p>
