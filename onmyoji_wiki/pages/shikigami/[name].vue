@@ -1740,7 +1740,7 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- Middle panel: Bio -->
-            <div class="bio-panel flex-1 text-start"> 
+            <div class="bio-panel flex-1"> 
               <div class="bio-panel-text">
                 <p v-if="shikigami.bios[activeBioTab]" class="bio-text-vertical text-black">
                   <span v-for="(line, idx) in shikigami.bios[activeBioTab].brief.cn.split('\n')" :key="idx">
@@ -2010,7 +2010,7 @@ onBeforeUnmount(() => {
 .bio-panel {
   flex: 1;
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: flex-start;
   padding: 20px 6px 20px 20px;
   max-width: 680px;
