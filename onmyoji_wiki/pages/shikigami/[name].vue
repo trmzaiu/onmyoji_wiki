@@ -1,7 +1,7 @@
 <script setup>
 import { useSupabase } from "@/utils/useSupabase.ts";
 import { useTags } from "@/utils/useTags";
-import { computed, nextTick, onMounted, ref, watch, onBeforeUnmount } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -1723,7 +1723,7 @@ onBeforeUnmount(() => {
           </h2>
           <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios && shikigami.voice">
             <!-- Left panel: CV -->
-            <div class="left-panel">
+            <div class="left-panel mr-auto">
               <div class="cv-box">
                 <img src="/assets/blue_btn.webp" class="cv-bg">
                 <div class="cv-content">
@@ -1752,16 +1752,27 @@ onBeforeUnmount(() => {
 
             <!-- Right panel: Tabs -->
             <div class="right-panel">
-              <div class="right-container">
-                <div class="tabs text-black">
-                  <div class="tab-name lang-zh mb-5 pb-3">{{ shikigami.name.cn[0] }}</div>
-                  <div class="mt-2" v-for="(tab, i) in shikigami.bios" :key="i"
-                    :class="['tab', { active: activeBioTab===i }]" @click="activeBioTab=i">
-                    {{ '传记 ' + (tab.no) }}
+              <div class="right-container text-black flex flex-col">
+                <!-- Tab name cố định -->
+                <div class="tab-name lang-zh mb-5 pb-3">
+                  {{ shikigami.name.cn[0] }}
+                </div>
+
+                <!-- Tab list scroll -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar">
+                  <div class="tabs">
+                    <div class="mt-2" 
+                        v-for="(tab, i) in shikigami.bios" 
+                        :key="i"
+                        :class="['tab', { active: activeBioTab===i }]" 
+                        @click="activeBioTab=i">
+                      {{ '传记 ' + (tab.no) }}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
             <div class="absolute left-0 bottom-0 w-32 h-auto z-10">
               <img src="/public/assets/Paperdoll.webp" class="object-contain" />
             </div>
@@ -1959,6 +1970,16 @@ onBeforeUnmount(() => {
   min-height: 400px;
   background: #fff;
   align-items: stretch; /* Đảm bảo tất cả panel có cùng chiều cao */
+  max-height: 475px;
+  width: 840px;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE, Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
 }
 
 /* Left panel */
@@ -2013,7 +2034,7 @@ onBeforeUnmount(() => {
   justify-content: flex-end;
   align-items: flex-start;
   padding: 20px 6px 20px 20px;
-  max-width: 680px;
+  max-width: 640px;
 }
 
 .bio-panel-text {
@@ -2047,12 +2068,12 @@ onBeforeUnmount(() => {
   line-height: 3;
   letter-spacing: 2.5px;
   margin: 0;
-  padding: 0 0 5px 0; 
   display: inline-block; 
   white-space: nowrap;
   direction: ltr;
 }
 .bio-text-vertical span {
+  height: 430px;
   display: block;
   border-left: 1px dashed #929191; 
   padding-left: 6px;
@@ -2081,6 +2102,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: center; 
+  max-width: 475px;
 }
 .tab-name {
   writing-mode: vertical-rl;
