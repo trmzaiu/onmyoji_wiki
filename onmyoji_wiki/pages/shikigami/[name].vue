@@ -1728,7 +1728,7 @@ onBeforeUnmount(() => {
                 <img src="/assets/blue_btn.webp" class="cv-bg">
                 <div class="cv-content">
                   <div class="cv-text text-center">
-                    CV<span class="lang-zh">{{ shikigami.voice.cv }}</span>
+                    CV<span>{{ shikigami.voice.cv }}</span>
                   </div>
                   <div class="mt-5">
                     <button class="cv-audio" @click="playAudio(shikigami.voice.audio)">
