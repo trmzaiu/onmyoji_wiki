@@ -2075,7 +2075,7 @@ onBeforeUnmount(() => {
   transition: color 0.2s, font-weight 0.2s;
 }
 .tab.active {
-  color: #c33;
+  color: #4994d4;
   font-weight: bold;
 }
 
