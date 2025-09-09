@@ -1752,11 +1752,13 @@ onBeforeUnmount(() => {
 
             <!-- Right panel: Tabs -->
             <div class="right-panel">
-              <div class="tabs text-black">
-                <div class="tab-name lang-zh mb-5 pb-3 text-[18px]">{{ shikigami.name.cn[0] }}</div>
-                <div class="mt-2" v-for="(tab, i) in shikigami.bios" :key="i"
-                  :class="['tab', { active: activeBioTab===i }]" @click="activeBioTab=i">
-                  {{ '传记 ' + (tab.no) }}
+              <div class="right-container">
+                <div class="tabs text-black">
+                  <div class="tab-name lang-zh mb-5 pb-3">{{ shikigami.name.cn[0] }}</div>
+                  <div class="mt-2" v-for="(tab, i) in shikigami.bios" :key="i"
+                    :class="['tab', { active: activeBioTab===i }]" @click="activeBioTab=i">
+                    {{ '传记 ' + (tab.no) }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -2008,42 +2010,58 @@ onBeforeUnmount(() => {
 .bio-panel {
   flex: 1;
   display: flex;
-  justify-content: flex-end;
-  align-items: flex-start; /* Đã có align-items: flex-start */
-  padding: 20px;
-  max-width: 700px;   /* giới hạn khung giữa */
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 20px 6px 20px 20px;
+  max-width: 680px;
 }
 
 .bio-panel-text {
   overflow-x: auto;
+  direction: rtl; /* Đưa scroll về bên phải */
+  text-align: left; /* Căn text về bên phải */
 }
 
+/* Tùy chỉnh scroll bar (tùy chọn) */
+.bio-panel-text::-webkit-scrollbar {
+  height: 8px;
+}
+
+.bio-panel-text::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.bio-panel-text::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.bio-panel-text::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
 .bio-text-vertical {
   writing-mode: vertical-rl;
   text-orientation: upright;
   font-size: 14px;
   line-height: 3;
   letter-spacing: 2.5px;
-  margin: 0; /* Thêm margin: 0 để loại bỏ margin mặc định */
-  padding: 0 0 5px 0; /* Thêm padding: 0 để loại bỏ padding mặc định */
-  display: inline-block; /* 🔑 giữ nguyên chiều ngang theo nội dung */
+  margin: 0;
+  padding: 0 0 5px 0; 
+  display: inline-block; 
   white-space: nowrap;
+  direction: ltr;
 }
 .bio-text-vertical span {
   display: block;
-  border-left: 1px dashed #929191; /* gạch đứt giữa các dòng */
+  border-left: 1px dashed #929191; 
   padding-left: 6px;
   margin-left: 6px;
 }
 
 .bio-text-vertical span.punct {
-  padding-top: 2px; /* chỉnh khoảng hở dọc */
+  padding-top: 2px; 
   display: inline-block;
-}
-
-.bio-text-vertical:first-child{
-  border-right: 2px solid #929191;
-  padding-right: 6px;
 }
 
 /* Right panel */
@@ -2052,12 +2070,17 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  padding: 20px 20px 20px 0px;
+  padding: 20px 20px 20px 0;
+}
+.right-container {
+  height: 100%;
+  border-left: 2px solid #aaa;
+  padding-left: 20px;
 }
 .tabs {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; 
 }
 .tab-name {
   writing-mode: vertical-rl;
@@ -2066,6 +2089,7 @@ onBeforeUnmount(() => {
   margin-bottom: 12px;
   letter-spacing: 2px;
   color: #a51919;
+  font-size: 20px;
 }
 .tab {
   writing-mode: vertical-rl;
