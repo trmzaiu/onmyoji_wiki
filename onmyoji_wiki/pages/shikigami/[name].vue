@@ -756,7 +756,7 @@ onBeforeUnmount(() => {
         <!-- Image -->
         <div class="w-2/3 mx-auto">
           <!-- Images -->
-          <div class="flex justify-center h-[600px]">
+          <div class="flex justify-center h-[630px]">
             <img :src="shikigami.images.image" :alt="shikigami.name.jp[1]"
               class="h-full object-contain transition-opacity hover:scale-115 transition-transform duration-300" />
           </div>
@@ -839,16 +839,29 @@ onBeforeUnmount(() => {
                 <td class="table-title-row" colspan="4">Other Version</td>
               </tr>
               <tr v-if="shikigami.version !== null" class="table-row">
-                <td colspan="4" class="p-2">
+                <td colspan="4" class="p-1">
                   <div class="flex flex-col items-center justify-center">
                     <a :href="`/shikigami/${shikigami.version.name.replace(/ /g, '_')}`">
                       <img :src="shikigami.version.image" :alt="shikigami.version.name"
                         class="h-16 w-16 object-contain mb-1" /></a>
                     <router-link :to="`/shikigami/${shikigami.version.name.replace(/ /g, '_')}`"
-                      class="text-black font-bold hover:text-[#a51919]">
+                      class="text-black font-bold hover:text-[#a51919] font-[14px]">
                       {{ shikigami.version.name }}
                     </router-link>
                   </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="table-title-row" colspan="4">Release Date</td>
+              </tr>
+              <tr class="table-row text-sm">
+                <td class="px-4 py-2">
+                  <p>CN</p>
+                  <p>GL</p>
+                </td>
+                <td class="px-4 py-2" colspan="3">
+                  <div class="font-[500]">{{ shikigami.date.cn }}</div>
+                  <div class="font-[500]">{{ shikigami.date.en }}</div>
                 </td>
               </tr>
             </tbody>
@@ -2229,10 +2242,10 @@ onBeforeUnmount(() => {
 
 .table-title-row {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 14px !important;
   color: #f4f1e8;
   text-align: center;
-  padding: 8px;
+  padding: 5px !important;
   background-color: #a51919;
   border: 1px solid #a51919;
 }
