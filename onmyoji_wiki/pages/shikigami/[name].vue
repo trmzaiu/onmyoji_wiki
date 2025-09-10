@@ -857,11 +857,11 @@ onBeforeUnmount(() => {
               <tr class="table-row text-sm">
                 <td class="px-4 py-2">
                   <p>CN</p>
-                  <p>GL</p>
+                  <p v-if="shikigami.date.en">GL</p>
                 </td>
                 <td class="px-4 py-2" colspan="3">
                   <div class="font-[500]">{{ shikigami.date.cn }}</div>
-                  <div class="font-[500]">{{ shikigami.date.en }}</div>
+                  <div v-if="shikigami.date.en" class="font-[500]">{{ shikigami.date.en }}</div>
                 </td>
               </tr>
             </tbody>
