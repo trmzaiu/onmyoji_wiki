@@ -758,7 +758,7 @@ onBeforeUnmount(() => {
           <!-- Images -->
           <div class="flex justify-center h-[630px]">
             <img :src="shikigami.images.image" :alt="shikigami.name.jp[1]"
-              class="h-full object-contain transition-opacity hover:scale-115 transition-transform duration-300" />
+              class="h-full object-cover transition-opacity hover:scale-115 transition-transform duration-300" />
           </div>
         </div>
 
