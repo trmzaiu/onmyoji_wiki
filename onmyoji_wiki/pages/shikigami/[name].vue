@@ -1676,7 +1676,7 @@ onBeforeUnmount(() => {
                 </td>
                 <td class="px-2 py-1 text-center table-cell">
                   <div>{{ bio.name.en }}</div>
-                  <div>{{ bio.name.cn }} - {{ bio.name.vn }}</div>
+                  <div><span class="lang-zh">{{ bio.name.cn }}</span> - {{ bio.name.vn }}</div>
                 </td>
                 <td class="px-2 py-1 text-center table-cell">
                   {{ bio.type }}
