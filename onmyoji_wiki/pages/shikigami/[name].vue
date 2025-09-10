@@ -91,11 +91,11 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 83 -> ?, A: 75 -> 82, B: 71 -> 73, C: 60 -> 69, D: 58 -> ?
+// S: 83 -> ?, A: 75 -> 82, B: 70 -> 73, C: 60 -> 69, D: 58 -> ?
 const getDEFRank = (def) => {
   if (def >= 83 && def <= 83) return "S";
   else if (def >= 75 && def <= 82) return "A";
-  else if (def >= 71 && def <= 73) return "B";
+  else if (def >= 70 && def <= 73) return "B";
   else if (def >= 60 && def <= 69) return "C";
   else if (def >= 58 && def <= 60) return "D";
   else return "E";
