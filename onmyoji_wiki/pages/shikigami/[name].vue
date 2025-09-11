@@ -1704,7 +1704,7 @@ onBeforeUnmount(() => {
           </h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mt-4">
             <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden shadow-md relative aspect-video">
-              <img :src="getImgUrl(img.name)" alt="Illustration" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-300" :title="img.name"/>
+              <img :src="getImgUrl(img.name)" alt="Illustration" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" :title="img.name"/>
               <div 
                 class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md">
                 {{ img.name }}
@@ -1724,7 +1724,7 @@ onBeforeUnmount(() => {
             {{ isEnglish ? "Animation Summon" : "Hoạt cảnh Triệu hồi" }}
           </h2>
 
-          <video controls class="w-full h-auto my-5" v-if="shikigami.voice.summon">
+          <video controls class="w-full h-auto my-5" v-if="shikigami.voice.summon !== null">
             <source :src="shikigami.voice.summon" type="video/mp4" />
           </video>
 
