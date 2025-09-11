@@ -660,18 +660,15 @@ const addCKeywordListeners = () => {
         const keyword = el.dataset.keyword;
         console.log("Clicked keyword:", keyword);
 
-        // tìm skill thường trước
         let index = shikigami.value.skills.findIndex(
           (s) => s.name.en === keyword || s.name.vn === keyword
         );
 
-        // nếu index >= 3, là extra skill → dùng skill.tab
         if (index >= 3 || index === -1) {
           const extraSkill = shikigami.value.skills.find(
             (s) => s.name.en === keyword || s.name.vn === keyword
           );
           if (extraSkill && extraSkill.tab != null) {
-            // skill.tab = 1 → index 0, skill.tab = 2 → index 1, ...
             index = extraSkill.tab - 1;
           }
         }
@@ -1283,7 +1280,7 @@ onBeforeUnmount(() => {
                     display: table-cell;
                     vertical-align: bottom;
                     font-weight: 900;
-                    font-size: 24px;
+                    font-size: 20px;
                     color: #a51919;
                     height: 70px;
                     text-indent: 70px;
