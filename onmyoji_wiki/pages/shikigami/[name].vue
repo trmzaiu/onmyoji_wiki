@@ -32,9 +32,10 @@ const getImgUrl = (name) => {
 }
 
 /* ---------------------- RANK + IMAGE ---------------------- */
-// S: 140 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 79 -> 98
+// SS: 174 -> 174, S: 140 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 103, D: 79 -> 98
 const getATKRank = (atk) => {
-  if (atk >= 140 && atk <= 165) return "S";
+  if (atk >= 174 && atk <= 174) return "SS";
+  else if (atk >= 140 && atk <= 165) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 123 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 103) return "C";
@@ -47,9 +48,10 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 2948 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2305 -> 2385, D: 1822 -> ?
+// SS: 3672 -> 3672, S: 2948 -> 3484, A: 2894 -> 2975, B: ? -> ?, C: 2305 -> 2385, D: 1822 -> ?
 const getATKEvoRank = (atk) => {
-  if (atk >= 2948 && atk <= 3484) return "S";
+  if (atk >= 3672 && atk <= 3672) return "S";
+  else if (atk >= 2948 && atk <= 3484) return "S";
   else if (atk >= 2894 && atk <= 2975) return "A";
   else if (atk >= 2386 && atk <= 2386) return "B";
   else if (atk >= 2305 && atk <= 2385) return "C";
@@ -91,11 +93,11 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 83 -> ?, A: 75 -> 82, B: 70 -> 73, C: 60 -> 69, D: 58 -> ?
+// S: 83 -> ?, A: 75 -> 82, B: 70 -> 74, C: 60 -> 69, D: 58 -> ?
 const getDEFRank = (def) => {
   if (def >= 83 && def <= 83) return "S";
   else if (def >= 75 && def <= 82) return "A";
-  else if (def >= 70 && def <= 73) return "B";
+  else if (def >= 70 && def <= 74) return "B";
   else if (def >= 60 && def <= 69) return "C";
   else if (def >= 58 && def <= 60) return "D";
   else return "E";
