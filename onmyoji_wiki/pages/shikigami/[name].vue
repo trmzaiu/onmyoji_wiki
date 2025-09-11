@@ -50,7 +50,7 @@ const getATKImage = (atk) => {
 
 // SS: 3672 -> 3672, S: 2948 -> 3484, A: 2894 -> 2975, B: 2466 -> ?, C: 2144 -> 2385, D: 1822 -> ?
 const getATKEvoRank = (atk) => {
-  if (atk >= 3672 && atk <= 3672) return "S";
+  if (atk >= 3672 && atk <= 3672) return "SS";
   else if (atk >= 2948 && atk <= 3484) return "S";
   else if (atk >= 2894 && atk <= 2975) return "A";
   else if (atk >= 2466 && atk <= 2466) return "B";
