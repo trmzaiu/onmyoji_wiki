@@ -218,7 +218,7 @@ const processTextWithTooltips = (text) => {
   processedText = processedText.replace(
     /<e>(.*?)<\/e>/g,
     (_, keyword) =>
-      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom" />`
+      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-sm" />`
   );
 
   // <d>...</d>
