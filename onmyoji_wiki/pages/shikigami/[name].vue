@@ -184,56 +184,60 @@ const renderBioText = (bio) => {
     const targetShiki = shikigamiList.value.find(s => s.id === bio.shiki)
     if (targetShiki) {
       const shikiName = isEnglish.value ? targetShiki.name.en : targetShiki.name.vn
-      replacements.shiki = makeHighlight(shikiName)
+      replacements.shiki = makeHighlight(shikiName, "shikigami")
     } else {
       console.warn("Không tìm thấy shikigami cho id =", bio.shiki)
       replacements.shiki = ""
     }
   }
 
-  return text.replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? "")
-}
-
-const makeHighlight = (keyword) => {
-  if (!keyword) return "";
-
-  let targetType = null;
-  let finalName = keyword;
-
-  // check shikigami
-  const targetShikigami = shikigamiList.value?.find((s) => {
-    const n = s.name || {};
-    return [n.en, n.vn, n.jp]
-      .flatMap(v => Array.isArray(v) ? v : [v])
-      .some(name => name?.toLowerCase() === keyword.toLowerCase());
-  });
-
-  if (targetShikigami) {
-    targetType = "shikigami";
-    const n = targetShikigami.name;
-    finalName = Array.isArray(n.jp) ? n.jp[1] || n.jp[0] : n.jp || keyword;
-  } else if (onmyojiList.value?.length) {
-    // check onmyoji
-    const targetOnmyoji = onmyojiList.value.find((o) => {
-      const n = o.name || {};
-      return [n.en, n.vn, n.jp]
-        .flatMap(v => Array.isArray(v) ? v : [v])
-        .some(name => name?.toLowerCase() === keyword.toLowerCase());
-    });
+  if (bio.onmyoji) {
+    const targetOnmyoji = onmyojiList.value.find(o => o.id === bio.onmyoji)
     if (targetOnmyoji) {
-      targetType = "onmyoji";
-      finalName = targetOnmyoji.name.en || keyword;
+      const onmyojiName = isEnglish.value ? targetOnmyoji.name.en : targetOnmyoji.name.vn
+      replacements.onmyoji = makeHighlight(onmyojiName, "onmyoji")
+    } else {
+      console.warn("Không tìm thấy onmyoji cho id =", bio.onmyoji)
+      replacements.onmyoji = ""
     }
   }
 
-  finalName = finalName.replace(/\s+/g, "_");
+  return text.replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? "")
+}
 
-  if (targetType) {
-    return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
+const makeHighlight = (keyword, type) => {
+  if (!keyword || !type) return keyword || ""
+
+  let finalName = keyword
+
+  if (type === "shikigami") {
+    const targetShikigami = shikigamiList.value?.find(s =>
+      [s.name.en, s.name.vn, ...(Array.isArray(s.name.jp) ? s.name.jp : [s.name.jp])]
+        .filter(Boolean)
+        .some(n => n.toLowerCase() === keyword.toLowerCase())
+    )
+    if (targetShikigami) {
+      const n = targetShikigami.name
+      finalName = Array.isArray(n.jp) ? n.jp[1] || n.jp[0] : n.jp || keyword
+    }
   }
 
-  return `<b class="text-[#a51919] font-bold">${keyword}</b>`;
-};
+  if (type === "onmyoji") {
+    const targetOnmyoji = onmyojiList.value?.find(o =>
+      [o.name.en, o.name.vn, ...(Array.isArray(o.name.jp) ? o.name.jp : [o.name.jp])]
+        .filter(Boolean)
+        .some(n => n.toLowerCase() === keyword.toLowerCase())
+    )
+    if (targetOnmyoji) {
+      finalName = targetOnmyoji.name.en || keyword
+    }
+  }
+
+  finalName = finalName.replace(/\s+/g, "_")
+
+  return `<b><a href="/${type}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`
+}
+
 /* ---------------------- TOOLTIP ---------------------- */
 const imgs = computed(() => tooltipData.value?.images || []);
 
