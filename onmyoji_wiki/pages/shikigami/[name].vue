@@ -184,8 +184,14 @@ const renderBioText = (bio) => {
   if (bio.level) replacements.level = bio.level
   if (bio.shard) replacements.shard = bio.shard
   if (bio.shiki) {
-    const shikiName = isEnglish.value ? bio.shiki.en : bio.shiki.vn;
-    replacements.shiki = makeHighlight(shikiName, "shiki");
+    const targetShiki = shikigamiList.value.find(s => s.id === bio.shiki)
+    if (targetShiki) {
+      const shikiName = isEnglish.value ? targetShiki.name.en : targetShiki.name.vn
+      replacements.shiki = makeHighlight(shikiName)
+    } else {
+      console.warn("Không tìm thấy shikigami cho id =", bio.shiki)
+      replacements.shiki = ""
+    }
   }
 
   return text.replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? "")
