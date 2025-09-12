@@ -12,13 +12,6 @@
             />
           </div>
 
-          <button
-            class="md:hidden text-black text-2xl"
-            @click="isMobileOpen = !isMobileOpen"
-          >
-            ☰
-          </button>
-
           <!-- Text -->
           <div class="p-2">&nbsp;</div>
           <div>
@@ -65,26 +58,6 @@
               <NuxtLink to="/pets" class="nav-item">Pets</NuxtLink>
             </div>
           </nav>
-
-          <div
-            class="md:hidden flex flex-col space-y-2 px-4 pb-4 text-black font-semibold uppercase"
-            v-if="isMobileOpen"
-          >
-            <NuxtLink to="/" class="nav-item">Explore</NuxtLink>
-            <details>
-              <summary class="cursor-pointer">Onmyoji</summary>
-              <div class="ml-4 flex flex-col space-y-1">
-                <NuxtLink to="/onmyoji/Seimei" class="submenu-label">Seimei</NuxtLink>
-                <NuxtLink to="/onmyoji/Kagura" class="submenu-label">Kagura</NuxtLink>
-                <NuxtLink to="/onmyoji/Hiromasa" class="submenu-label">Hiromasa</NuxtLink>
-                <NuxtLink to="/onmyoji/Yao_Bikuni" class="submenu-label">Yao Bikuni</NuxtLink>
-                <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label">Yorimitsu</NuxtLink>
-              </div>
-            </details>
-            <NuxtLink to="/shikigami" class="nav-item">Shikigami</NuxtLink>
-            <NuxtLink to="/souls" class="nav-item">Souls</NuxtLink>
-            <NuxtLink to="/pets" class="nav-item">Pets</NuxtLink>
-          </div>
         </div>
       </div>
     </header>

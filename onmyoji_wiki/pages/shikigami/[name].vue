@@ -4,8 +4,12 @@ import { useTags } from "@/utils/useTags";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-const route = useRoute();
+/* ---------------------- GLOBAL ---------------------- */
 const supabase = useSupabase();
+const route = useRoute();
+const { tagMap, loadTags } = useTags();
+
+const formattedName = route.params.name.replace(/_/g, " ");
 
 /* ---------------------- STATE ---------------------- */
 const shikigami = ref(null);
@@ -13,8 +17,10 @@ const shikigamiList = ref([]);
 const onmyojiList = ref(null);
 const effects = ref([]);
 const illustrations = ref([]);
+const conditions = ref([]);
 const isEnglish = ref(true);
 
+// UI
 const tooltipData = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 const showTooltip = ref(false);
@@ -23,15 +29,20 @@ const activeTab = ref("main");
 const activeSkillIndex = ref(0);
 const activeBioTab = ref(0);
 
-const formattedName = route.params.name.replace(/_/g, " ");
+const showEditModal = ref(false);
+const editingSkill = ref(null);
+const editingSkillIndex = ref(-1);
 
-const { tagMap, loadTags } = useTags();
+const tagsInput = ref("");
+const notesInput = ref("");
 
-const getImgUrl = (name) => {
-  return `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, '_')}.jpg`
-}
+const audioPlayer = ref(null);
+const isPlaying = ref(false);
 
-/* ---------------------- RANK + IMAGE ---------------------- */
+/* ---------------------- HELPERS ---------------------- */
+const getImgUrl = (name) =>
+  `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, "_")}.jpg`;
+
 // SS: 174 -> 174, S: 140 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 104, D: 79 -> 98
 const getATKRank = (atk) => {
   if (atk >= 174 && atk <= 174) return "SS";
@@ -152,7 +163,77 @@ const getCritImage = (crit) => {
   return `/assets/stats/${rank}.webp`;
 };
 
+/* ---------------------- BIO RENDER ---------------------- */
+const renderBioText = (bio) => {
+  const bioTemplate = conditions.value.find(b => b.id === bio.no)
+  if (!bioTemplate) {
+    console.warn("Không tìm thấy template cho bio.no =", bio.no)
+    return ""
+  }
+  if (!bioTemplate) return ""
+
+  let text = isEnglish.value ? bioTemplate.text.en : bioTemplate.text.vn
+  if (!text) return ""
+
+  const name = isEnglish.value ? shikigami.value.name.en : shikigami.value.name.vn
+
+  const replacements = { name }
+
+  if (bio.count) replacements.count = bio.count
+  if (bio.stage) replacements.stage = bio.stage
+  if (bio.level) replacements.level = bio.level
+  if (bio.shard) replacements.shard = bio.shard
+  if (bio.shiki) {
+    const shikiName = isEnglish.value ? bio.shiki.en : bio.shiki.vn;
+    replacements.shiki = makeHighlight(shikiName, "shiki");
+  }
+
+  return text.replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? "")
+}
+
+const makeHighlight = (keyword) => {
+  if (!keyword) return "";
+
+  let targetType = null;
+  let finalName = keyword;
+
+  // check shikigami
+  const targetShikigami = shikigamiList.value?.find((s) => {
+    const n = s.name || {};
+    return [n.en, n.vn, n.jp]
+      .flatMap(v => Array.isArray(v) ? v : [v])
+      .some(name => name?.toLowerCase() === keyword.toLowerCase());
+  });
+
+  if (targetShikigami) {
+    targetType = "shikigami";
+    const n = targetShikigami.name;
+    finalName = Array.isArray(n.jp) ? n.jp[1] || n.jp[0] : n.jp || keyword;
+  } else if (onmyojiList.value?.length) {
+    // check onmyoji
+    const targetOnmyoji = onmyojiList.value.find((o) => {
+      const n = o.name || {};
+      return [n.en, n.vn, n.jp]
+        .flatMap(v => Array.isArray(v) ? v : [v])
+        .some(name => name?.toLowerCase() === keyword.toLowerCase());
+    });
+    if (targetOnmyoji) {
+      targetType = "onmyoji";
+      finalName = targetOnmyoji.name.en || keyword;
+    }
+  }
+
+  finalName = finalName.replace(/\s+/g, "_");
+
+  if (targetType) {
+    return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
+  }
+
+  return `<b class="text-[#a51919] font-bold">${keyword}</b>`;
+};
 /* ---------------------- TOOLTIP ---------------------- */
+const imgs = computed(() => tooltipData.value?.images || []);
+
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
 
@@ -247,9 +328,7 @@ const processTextWithTooltips = (text) => {
   return processedText;
 };
 
-const imgs = computed(() => tooltipData.value?.images || []);
-
-const processBoldC = (text) => {
+const highlightWord = (text) => {
   if (!text) return "";
   return text.replace(
     /<c>(.*?)<\/c>/g,
@@ -297,59 +376,6 @@ const matchedSubNotes = computed(() => {
 
   return subs;
 });
-
-watchEffect(() => {
-  console.log("Matched SubNotes:", matchedSubNotes.value);
-});
-
-
-const highlightNoteText = (bio) => {
-  if (!bio) return "";
-  const text = isEnglish.value ? bio.condition.en : bio.condition.vn;
-  if (!text) return "";
-
-  return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
-    const keyword = inner.trim();
-    if (!keyword) return match;
-
-    let targetType = null;
-    let finalName = keyword;
-
-    // check shikigami
-    const targetShikigami = shikigamiList.value?.find((s) => {
-      const n = s.name || {};
-      return [n.en, n.vn, n.jp]
-        .flatMap(v => Array.isArray(v) ? v : [v])
-        .some(name => name?.toLowerCase() === keyword.toLowerCase());
-    });
-
-    if (targetShikigami) {
-      targetType = "shikigami";
-      const n = targetShikigami.name;
-      finalName = Array.isArray(n.jp) ? n.jp[1] || n.jp[0] : n.jp || keyword;
-    } else if (onmyojiList.value?.length) {
-      // check onmyoji
-      const targetOnmyoji = onmyojiList.value.find((o) => {
-        const n = o.name || {};
-        return [n.en, n.vn, n.jp]
-          .flatMap(v => Array.isArray(v) ? v : [v])
-          .some(name => name?.toLowerCase() === keyword.toLowerCase());
-      });
-      if (targetOnmyoji) {
-        targetType = "onmyoji";
-        finalName = targetOnmyoji.name.en || keyword;
-      }
-    }
-
-    finalName = finalName.replace(/\s+/g, "_");
-
-    if (targetType) {
-      return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
-    }
-
-    return match;
-  });
-};
 
 const highlightBioText = (profile) => {
   if (!profile) return "";
@@ -399,7 +425,6 @@ const highlightBioText = (profile) => {
   });
 };
 
-
 /* ---------------------- TOOLTIP EVENTS ---------------------- */
 const handleMouseEnter = (e) => {
   const target = e.currentTarget;
@@ -435,7 +460,7 @@ function removeTooltipListeners() {
   });
 }
 
-/* ---------------------- FETCH DATA + REALTIME ---------------------- */
+/* ---------------------- DATA FETCHING ---------------------- */
 async function fetchAllEffects() {
   const { data, error } = await supabase
     .from("Effect")
@@ -443,6 +468,16 @@ async function fetchAllEffects() {
     .order("id", { ascending: true });
   if (error) console.error("Error fetching effects:", error);
   else effects.value = data;
+}
+
+async function fetchConditions() {
+  const { data, error } = await supabase
+    .from("Bio")
+    .select("*")
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching conditions:", error);
+  else conditions.value = data;
+  console.log("Conditions:", conditions.value);
 }
 
 async function fetchAllOnmyoji() {
@@ -473,7 +508,6 @@ async function fetchShikigami() {
   if (error) console.error("Error fetching shikigami:", error);
   else {
     shikigami.value = data;
-    console.log("Data: ", data);
     await fetchIllustrations(data.id);
     await nextTick();
     addTooltipListeners();
@@ -491,11 +525,10 @@ async function fetchIllustrations(shikiId) {
     console.error("Error fetching illustrations:", error);
   } else {
     illustrations.value = data;
-    console.log("Data: ", data);
   }
 }
 
-// realtime subscribe
+/* ---------------------- REALTIME ---------------------- */
 let shikigamiChannel = null;
 let effectChannel = null;
 let illustrationChannel = null;
@@ -525,7 +558,7 @@ function subscribeRealtime() {
         { event: "*", schema: "public", table: "Illustration" },
         async () => {
           console.log("Illustration table changed!");
-          await fetchIllustrations(shikigami.id);
+          await fetchIllustrations(shikigami.value?.id);
         }
       )
       .subscribe();
@@ -559,14 +592,7 @@ function unsubscribeRealtime() {
   }
 }
 
-/* ---------------------- EDIT ---------------------- */
-const showEditModal = ref(false);
-const editingSkill = ref(null);
-const tagsInput = ref("");
-const notesInput = ref("");
-
-const editingSkillIndex = ref(-1);
-
+/* ---------------------- EDIT MODAL ---------------------- */
 const editSkill = (skill, index) => {
   editingSkill.value = { ...skill }; 
   editingSkillIndex.value = index;
@@ -627,6 +653,48 @@ function updateNotes() {
     .map(Number);
 }
 
+/* ---------------------- AUDIO ---------------------- */
+const playAudio = (audioUrl) => {
+  if (!audioUrl) return
+
+  // Nếu có audio đang phát
+  if (audioPlayer.value) {
+    if (!audioPlayer.value.paused) {
+      // Đang phát → dừng
+      audioPlayer.value.pause()
+      audioPlayer.value.currentTime = 0 // reset về đầu luôn
+      isPlaying.value = false
+      return
+    } else {
+      // Đang pause → phát lại từ đầu
+      audioPlayer.value.currentTime = 0
+      audioPlayer.value.play()
+      isPlaying.value = true
+      return
+    }
+  }
+
+  // Chưa có → tạo audio mới
+  audioPlayer.value = new Audio(audioUrl)
+  audioPlayer.value.play()
+    .then(() => isPlaying.value = true)
+    .catch(err => console.error('Audio play error:', err))
+
+  // Reset khi phát xong
+  audioPlayer.value.addEventListener('ended', () => {
+    isPlaying.value = false
+    audioPlayer.value = null
+  })
+}
+
+onBeforeUnmount(() => {
+  if (audioPlayer.value) {
+    audioPlayer.value.pause()
+    audioPlayer.value = null
+    isPlaying.value = false
+  }
+})
+
 /* ---------------------- LIFECYCLE ---------------------- */
 onMounted(async () => {
   document.title = `${formattedName}`;
@@ -636,13 +704,13 @@ onMounted(async () => {
     fetchAllShikigami(),
     fetchShikigami(),
     fetchAllOnmyoji(),
+    fetchConditions(),
     loadTags(),
   ]);
   
   subscribeRealtime();
   addTooltipListeners();
 });
-
 
 watch(activeSkillIndex, async () => {
   await nextTick();
@@ -685,54 +753,6 @@ const addCKeywordListeners = () => {
   });
 };
 
-watch(
-  () => [shikigami.value, activeSkillIndex.value, isEnglish.value],
-  () => addCKeywordListeners()
-);
-
-const audioPlayer = ref(null)
-const isPlaying = ref(false)
-
-const playAudio = (audioUrl) => {
-  if (!audioUrl) return
-
-  // Nếu có audio đang phát
-  if (audioPlayer.value) {
-    if (!audioPlayer.value.paused) {
-      // Đang phát → dừng
-      audioPlayer.value.pause()
-      audioPlayer.value.currentTime = 0 // reset về đầu luôn
-      isPlaying.value = false
-      return
-    } else {
-      // Đang pause → phát lại từ đầu
-      audioPlayer.value.currentTime = 0
-      audioPlayer.value.play()
-      isPlaying.value = true
-      return
-    }
-  }
-
-  // Chưa có → tạo audio mới
-  audioPlayer.value = new Audio(audioUrl)
-  audioPlayer.value.play()
-    .then(() => isPlaying.value = true)
-    .catch(err => console.error('Audio play error:', err))
-
-  // Reset khi phát xong
-  audioPlayer.value.addEventListener('ended', () => {
-    isPlaying.value = false
-    audioPlayer.value = null
-  })
-}
-
-onBeforeUnmount(() => {
-  if (audioPlayer.value) {
-    audioPlayer.value.pause()
-    audioPlayer.value = null
-    isPlaying.value = false
-  }
-})
 </script>
 
 <template>
@@ -1536,11 +1556,7 @@ onBeforeUnmount(() => {
                 line-height: 1.5;
                 color: #444;
                 padding: 10px 0;
-              " v-html="
-                isEnglish
-                  ? processBoldC(shikigami.evolution.en)
-                  : processBoldC(shikigami.evolution.vn)
-              "></p>
+              " v-html="highlightWord(isEnglish ? shikigami.evolution.en : shikigami.evolution.vn)"></p>
             </div>
           </div>
 
@@ -1561,21 +1577,59 @@ onBeforeUnmount(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(bio, index) in shikigami.bio" :key="index">
+              <tr>
                 <td class="text-black table-cell text-center w-[50px]">
-                  {{ bio.no }}
+                  1
                 </td>
                 <td class="text-black table-cell px-3">
-                  <span v-html="highlightNoteText(bio)"></span>
+                  <span v-html="renderBioText(shikigami.bio[0])"></span>
                 </td>
 
                 <td class="py-1 text-black table-cell w-[100px]">
                   <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
-                    <img :src="bio.image" :alt="bio.no" class="max-h-full max-w-full object-contain" />
+                    <img src="/assets/Gold.webp" alt="Gold" class="max-h-full max-w-full object-contain" />
                     <span class="absolute bottom-0 right-0 text-white font-bold" style="
                       text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                         1px 1px 0 #000;
-                    ">{{ bio.reward }}</span>
+                    ">5000</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="text-black table-cell text-center w-[50px]">
+                  2
+                </td>
+                <td class="text-black table-cell px-3">
+                  <span v-html="renderBioText(shikigami.bio[1])"></span>
+                </td>
+
+                <td class="py-1 text-black table-cell w-[100px]">
+                  <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
+                    <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Shards/${route.params.name}_Shard.webp`" :alt="shikigami.name.jp" class="max-h-full max-w-full object-contain" />
+                    <span class="absolute bottom-0 right-0 text-white font-bold" style="
+                      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+                        1px 1px 0 #000;
+                    ">10</span>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td class="text-black table-cell text-center w-[50px]">
+                  3
+                </td>
+                <td class="text-black table-cell px-3">
+                  <span v-html="renderBioText(shikigami.bio[2])"></span>
+                </td>
+
+                <td class="py-1 text-black table-cell w-[100px]">
+                  <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
+                    <img src="/assets/Jade.webp" alt="Jade" class="max-h-full max-w-full object-contain" />
+                    <span class="absolute bottom-0 right-0 text-white font-bold" style="
+                      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+                        1px 1px 0 #000;
+                    ">10</span>
                   </div>
                 </td>
               </tr>
@@ -1836,7 +1890,7 @@ onBeforeUnmount(() => {
                   <img v-if="subsub.images" v-for="(img, k) in subsub.images" :key="k" :src="'/assets/effects/' + img"
                     :alt="img" class="rounded rounded-sm" style="width: 32px; height: 32px; margin-bottom: 8px" />
                   <div class="subnote-description"
-                    v-html="processBoldC(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
+                    v-html="highlightWord(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
                 </div>
               </div>
             </div>
