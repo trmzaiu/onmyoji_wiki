@@ -1806,7 +1806,7 @@ onBeforeUnmount(() => {
           {{ tooltipData.name }} <span class="lang-zh" v-if="tooltipData.cn">({{ tooltipData.cn }})</span>
         </div>
         <div v-if="imgs.length" class="tooltip-images pb-1">
-          <img v-for="(img, i) in imgs" :key="i" :src="'/assets/effects/' + img" :alt="img" class="tooltip-img" />
+          <img v-for="(img, i) in imgs" :key="i" :src="'/assets/effects/' + img" :alt="img" class="tooltip-img rounded rounded-sm" />
         </div>
 
         <div class="tooltip-description whitespace-pre-line" v-html="processTextWithTooltips(tooltipData.description)">
@@ -1834,7 +1834,7 @@ onBeforeUnmount(() => {
                       subsub.name.cn }})</span>
                   </div>
                   <img v-if="subsub.images" v-for="(img, k) in subsub.images" :key="k" :src="'/assets/effects/' + img"
-                    :alt="img" style="width: 32px; height: 32px; margin-bottom: 8px" />
+                    :alt="img" class="rounded rounded-sm" style="width: 32px; height: 32px; margin-bottom: 8px" />
                   <div class="subnote-description"
                     v-html="processBoldC(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
                 </div>
