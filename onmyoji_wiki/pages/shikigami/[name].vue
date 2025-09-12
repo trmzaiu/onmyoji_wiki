@@ -180,9 +180,6 @@ const renderBioText = (bio) => {
   const replacements = { name }
 
   if (bio.count) replacements.count = bio.count
-  if (bio.stage) replacements.stage = bio.stage
-  if (bio.level) replacements.level = bio.level
-  if (bio.shard) replacements.shard = bio.shard
   if (bio.shiki) {
     const targetShiki = shikigamiList.value.find(s => s.id === bio.shiki)
     if (targetShiki) {
