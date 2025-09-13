@@ -1793,9 +1793,11 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Animation Summon" : "Hoạt cảnh Triệu hồi" }}
           </h2>
 
-          <video controls class="w-full h-auto my-5" v-if="shikigami.voice.summon !== null">
-            <source :src="shikigami.voice.summon" type="video/mp4" />
-          </video>
+          <div v-if="shikigami.voice.summon">
+            <video controls class="w-full h-auto my-5">
+              <source :src="shikigami.voice.summon" type="video/mp4" />
+            </video>
+          </div>
 
           <h2 class="session-title">
             {{ isEnglish ? "Bios" : "Tiểu Sử" }}
