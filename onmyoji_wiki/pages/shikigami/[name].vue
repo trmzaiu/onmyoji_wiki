@@ -731,6 +731,11 @@ watch(isEnglish, async () => {
   addTooltipListeners();
 });
 
+watch(
+  () => [shikigami.value, activeSkillIndex.value, isEnglish.value],
+  () => addCKeywordListeners()
+);
+
 const addCKeywordListeners = () => {
   nextTick(() => {
     document.querySelectorAll(".c-keyword").forEach((el) => {
