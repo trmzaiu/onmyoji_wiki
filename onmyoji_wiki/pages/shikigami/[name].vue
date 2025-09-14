@@ -1330,7 +1330,7 @@ const addCKeywordListeners = () => {
                         }}
                       </span>
                       <span class="skill-sub-name lang-zh">
-                        ({{ shikigami.skills[activeSkillIndex].name.cn === shikigami.skills[activeSkillIndex].name.jp ? shikigami.skills[activeSkillIndex].name.cn[0] : shikigami.skills[activeSkillIndex].name.cn + ' / ' + shikigami.skills[activeSkillIndex].name.jp }})
+                        ({{ shikigami.skills[activeSkillIndex].name.cn === shikigami.skills[activeSkillIndex].name.jp ? shikigami.skills[activeSkillIndex].name.cn : shikigami.skills[activeSkillIndex].name.cn + ' / ' + shikigami.skills[activeSkillIndex].name.jp }})
                       </span>
                       <button class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
                         @click="editSkill(shikigami.skills[activeSkillIndex])">
