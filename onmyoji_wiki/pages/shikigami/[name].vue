@@ -1639,7 +1639,7 @@ const addCKeywordListeners = () => {
                     <span class="absolute bottom-0 right-0 text-white font-bold" style="
                       text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                         1px 1px 0 #000;
-                    ">10</span>
+                    ">{{ (shikigami.id >= 201 && shikigami.id <= 217) ? 2 : 10 }}</span>
                   </div>
                 </td>
               </tr>
