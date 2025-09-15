@@ -1695,9 +1695,11 @@ const addCKeywordListeners = () => {
             </thead>
             <tbody>
               <tr class="text-black" v-for="(skin, index) in shikigami.skins" :key="index">
-                <td class="px-2 py-1 text-center table-cell w-[105px]">
-                  <img :src="skin.image_info" :alt="skin.name.en || skin.name.cn"
-                    class="w-24 h-24 object-contain mx-auto" />
+                <td class="px-2 py-2 text-center table-cell w-[105px]">
+                  <div class="w-24 h-24 overflow-hidden">
+                    <img :src="skin.image_info" :alt="skin.name.en || skin.name.cn"
+                      class="w-full h-full object-contain" :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''" />
+                  </div>
                 </td>
                 <td class="px-2 py-1 text-center table-cell"
                   v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
