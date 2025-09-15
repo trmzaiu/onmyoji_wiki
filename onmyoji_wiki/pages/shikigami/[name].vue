@@ -43,12 +43,12 @@ const isPlaying = ref(false);
 const getImgUrl = (name) =>
   `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, "_")}.jpg`;
 
-// SS: 174 -> 174, S: 140 -> 165, A: 127 -> 133, B: 123 -> 124, C: 102 -> 104, D: 79 -> 98
+// SS: 174 -> 174, S: 140 -> 165, A: 127 -> 133, B: 116 -> 124, C: 102 -> 104, D: 79 -> 98
 const getATKRank = (atk) => {
   if (atk >= 174 && atk <= 174) return "SS";
   else if (atk >= 140 && atk <= 165) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
-  else if (atk >= 123 && atk <= 124) return "B";
+  else if (atk >= 116 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 104) return "C";
   else if (atk >= 79 && atk <= 98) return "D";
   else return "E";
@@ -75,12 +75,12 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 1174 -> 1335, A: 1064 -> 1163, B: 960 -> 1056, C: 854 -> 939, D: 843 -> ?
+// S: 1174 -> 1335, A: 1064 -> 1163, B: 960 -> 1056, C: 854 -> 950, D: 843 -> ?
 const getHPRank = (hp) => {
   if (hp >= 1174 && hp <= 1335) return "S";
   else if (hp >= 1064 && hp <= 1163) return "A";
   else if (hp >= 960 && hp <= 1056) return "B";
-  else if (hp >= 854 && hp <= 939) return "C";
+  else if (hp >= 854 && hp <= 950) return "C";
   else if (hp >= 843 && hp <= 843) return "D";
   else return "E";
 };
@@ -105,7 +105,7 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 83 -> ?, A: 75 -> 82, B: 70 -> 74, C: 60 -> 69, D: 58 -> 59
+// S: 83 -> ?, A: 75 -> 82, B: 68 -> 74, C: 60 -> 67, D: 58 -> 59
 const getDEFRank = (def) => {
   if (def >= 83 && def <= 83) return "S";
   else if (def >= 75 && def <= 82) return "A";
@@ -852,7 +852,7 @@ const addCKeywordListeners = () => {
                   <div class="whitespace-pre-line">{{ shikigami.name.va }}</div>
                 </td>
               </tr>
-              <tr v-if="shikigami.rarity !== 'SP'">
+              <tr v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'">
                 <td class="table-title-row" colspan="4">Evo Materials</td>
               </tr>
               <tr v-if="shikigami.materials && shikigami.materials.length">
@@ -965,7 +965,7 @@ const addCKeywordListeners = () => {
                         width: 100%;
                       ">
                         {{
-                        shikigami.rarity !== "SP"
+                        shikigami.rarity !== "SP" && shikigami.rarity !== 'N'
                         ? isEnglish
                         ? "Unevolved"
                         : "Cơ bản"
