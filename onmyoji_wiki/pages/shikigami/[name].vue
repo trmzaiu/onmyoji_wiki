@@ -980,7 +980,7 @@ const addCKeywordListeners = () => {
                   <th colspan="2">
                     <figure class="icon-img" style="position: relative">
                       <img :src="
-                        shikigami.rarity !== 'SP'
+                        shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'
                           ? shikigami.images.image_icon_evo
                           : shikigami.images.image_icon
                       " :alt="shikigami.name.jp[1]" style="object-fit: contain" width="90" />
@@ -1278,7 +1278,7 @@ const addCKeywordListeners = () => {
                 {{ skill.type }}
               </template>
             </button>
-            <button v-if="shikigami.rarity !== 'SP'" @click="activeSkillIndex = 3" :class="[
+            <button v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'" @click="activeSkillIndex = 3" :class="[
               'px-4 py-2',
               activeSkillIndex === 3
                 ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
