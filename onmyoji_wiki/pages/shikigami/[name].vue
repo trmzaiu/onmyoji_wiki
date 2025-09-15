@@ -1809,7 +1809,7 @@ const addCKeywordListeners = () => {
                   <div class="cv-text text-center">
                     CV<span>{{ shikigami.voice.cv }}</span>
                   </div>
-                  <div class="mt-5">
+                  <div class="mt-5" v-if="shikigami.voice.audio">
                     <button class="cv-audio" @click="playAudio(shikigami.voice.audio)">
                       <i :class="isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-volume-high'"></i>
                     </button>
