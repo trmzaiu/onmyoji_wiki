@@ -994,7 +994,7 @@ const addCKeywordListeners = () => {
                         width: 100%;
                       ">
                         {{
-                        shikigami.rarity !== "SP"
+                        shikigami.rarity !== "SP" && shikigami.rarity !== "N"
                         ? isEnglish
                         ? "Evolved"
                         : "Thức tỉnh"
