@@ -90,12 +90,12 @@ const getHPImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// SS: 15392 -> 15392, S: 11806 -> 14241, A: 11393 -> 12532, B: 10254 -> 11279, C: 9684 -> 10026, D: ? -> ?
+// SS: 15392 -> 15392, S: 11806 -> 14241, A: 11393 -> 12532, B: 10140 -> 11279, C: 9684 -> 10026, D: ? -> ?
 const getHPEvoRank = (hp) => {
   if (hp >= 15392 && hp <= 15392) return "SS";
   else if (hp >= 11806 && hp <= 14241) return "S";
   else if (hp >= 11393 && hp <= 12532) return "A";
-  else if (hp >= 10254 && hp <= 11279) return "B";
+  else if (hp >= 10140 && hp <= 11279) return "B";
   else if (hp >= 9684 && hp <= 10026) return "C";
   else return "D";
 };
