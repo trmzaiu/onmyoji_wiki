@@ -43,15 +43,14 @@ const isPlaying = ref(false);
 const getImgUrl = (name) =>
   `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, "_")}.jpg`;
 
-// SS: 174 -> 174, S: 140 -> 165, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 79 -> 98
+// SS: 174 -> 174, S: 140 -> 166, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 79 -> 98
 const getATKRank = (atk) => {
   if (atk >= 174 && atk <= 174) return "SS";
-  else if (atk >= 140 && atk <= 165) return "S";
+  else if (atk >= 140 && atk <= 166) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 114 && atk <= 124) return "B";
-  else if (atk >= 102 && atk <= 109) return "C";
-  else if (atk >= 79 && atk <= 98) return "D";
-  else return "E";
+  else if (atk >= 102 && atk <= 104) return "C";
+  else return "D";
 };
 
 const getATKImage = (atk) => {
@@ -59,15 +58,14 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// SS: 3672 -> 3672, S: 2948 -> 3484, A: 2894 -> 2975, B: 2385 -> 2466, C: 2144 -> 2385, D: 1822 -> ?
+// SS: 3672 -> 3672, S: 2948 -> 3511, A: 2894 -> 2921, B: 2412 -> 2466, C: 2144 -> 2385, D: 1822 -> 1822
 const getATKEvoRank = (atk) => {
   if (atk >= 3672 && atk <= 3672) return "SS";
-  else if (atk >= 2948 && atk <= 3484) return "S";
-  else if (atk >= 2894 && atk <= 2975) return "A";
-  else if (atk >= 2385 && atk <= 2466) return "B";
+  else if (atk >= 2948 && atk <= 3511) return "S";
+  else if (atk >= 2894 && atk <= 2921) return "A";
+  else if (atk >= 2412 && atk <= 2466) return "B";
   else if (atk >= 2144 && atk <= 2385) return "C";
-  else if (atk >= 1822 && atk <= 1822) return "D";
-  else return "E";
+  else return "D";
 };
 
 const getATKEvoImage = (atk) => {
@@ -75,14 +73,13 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 1174 -> 1335, A: 1064 -> 1163, B: 960 -> 1056, C: 854 -> 950, D: 843 -> ?
+// S: 1163 -> 1335, A: 1064 -> 1131, B: 960 -> 1056, C: 854 -> 950, D: 843 -> 843
 const getHPRank = (hp) => {
-  if (hp >= 1174 && hp <= 1335) return "S";
-  else if (hp >= 1064 && hp <= 1163) return "A";
+  if (hp >= 1163 && hp <= 1335) return "S";
+  else if (hp >= 1064 && hp <= 1120) return "A";
   else if (hp >= 960 && hp <= 1056) return "B";
   else if (hp >= 854 && hp <= 950) return "C";
-  else if (hp >= 843 && hp <= 843) return "D";
-  else return "E";
+  else return "D";
 };
 
 const getHPImage = (hp) => {
@@ -90,13 +87,13 @@ const getHPImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// SS: 15392 -> 15392, S: 11806 -> 14241, A: 11393 -> 12532, B: 10140 -> 11279, C: 9684 -> 10026, D: ? -> ?
+// SS: 15392 -> 15392, S: 12532 -> 14241, A: 11393 -> 12418, B: 10254 -> 11279, C: 9684 -> 10140, D: 0 -> 0
 const getHPEvoRank = (hp) => {
   if (hp >= 15392 && hp <= 15392) return "SS";
-  else if (hp >= 11806 && hp <= 14241) return "S";
-  else if (hp >= 11393 && hp <= 12532) return "A";
-  else if (hp >= 10140 && hp <= 11279) return "B";
-  else if (hp >= 9684 && hp <= 10026) return "C";
+  else if (hp >= 12532 && hp <= 14241) return "S";
+  else if (hp >= 11393 && hp <= 12418) return "A";
+  else if (hp >= 10254 && hp <= 11279) return "B";
+  else if (hp >= 9684 && hp <= 10140) return "C";
   else return "D";
 };
 
@@ -105,14 +102,13 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 83 -> ?, A: 75 -> 82, B: 68 -> 74, C: 60 -> 67, D: 58 -> 59
+// S: 83 -> 83, A: 75 -> 82, B: 68 -> 74, C: 60 -> 67, D: 54 -> 59
 const getDEFRank = (def) => {
   if (def >= 83 && def <= 83) return "S";
   else if (def >= 75 && def <= 82) return "A";
-  else if (def >= 70 && def <= 74) return "B";
-  else if (def >= 60 && def <= 69) return "C";
-  else if (def >= 58 && def <= 59) return "D";
-  else return "E";
+  else if (def >= 68 && def <= 74) return "B";
+  else if (def >= 60 && def <= 67) return "C";
+  else return "D";
 };
 
 const getDEFImage = (def) => {
@@ -120,12 +116,12 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 490 -> 490, A: 441 -> 481, B: 397 -> 437, C: 370 -> 388, D: ? -> ?
+// S: 485 -> 490, A: 441 -> 481, B: 397 -> 437, C: 353 -> 388, D: 0 -> 0
 const getDEFEvoRank = (def) => {
   if (def >= 485 && def <= 490) return "S";
   else if (def >= 441 && def <= 481) return "A";
   else if (def >= 397 && def <= 437) return "B";
-  else if (def >= 370 && def <= 388) return "C";
+  else if (def >= 353 && def <= 388) return "C";
   else return "D";
 };
 
@@ -139,8 +135,7 @@ const getSPDRank = (spd) => {
   else if (spd >= 105 && spd <= 109) return "A";
   else if (spd >= 100 && spd <= 104) return "B";
   else if (spd >= 95 && spd <= 99) return "C";
-  else if (spd >= 90 && spd <= 94) return "D";
-  else return "E";
+  else return "D";
 };
 
 const getSPDImage = (spd) => {
@@ -149,13 +144,12 @@ const getSPDImage = (spd) => {
 };
 
 const getCritRank = (crit) => {
-  if (crit >= 12) return "SS";
+  if (crit >= 13) return "SS";
   else if (crit >= 10 && crit <= 12) return "S";
   else if (crit >= 8 && crit <= 9) return "A";
   else if (crit >= 5 && crit <= 5) return "B";
   else if (crit >= 3 && crit <= 3) return "C";
-  else if (crit >= 0 && crit <= 1) return "D";
-  else return "E";
+  else return "D";
 };
 
 const getCritImage = (crit) => {
@@ -1192,13 +1186,13 @@ const addCKeywordListeners = () => {
                   <td></td>
 
                   <td class="centered-number">
-                    <div class="flex justify-start">150%</div>
+                    <div class="flex justify-start">{{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[0] : '150' }}%</div>
                   </td>
 
                   <td></td>
 
                   <td class="centered-number">
-                    <div class="flex justify-start">150%</div>
+                    <div class="flex justify-start">{{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[0] : '150' }}%</div>
                   </td>
 
                   <td>
