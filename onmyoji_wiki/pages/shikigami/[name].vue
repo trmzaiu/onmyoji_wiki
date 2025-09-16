@@ -1789,11 +1789,11 @@ const addCKeywordListeners = () => {
         ]">
 
           <!-- Animation -->
-          <h2 class="session-title" v-if="shikigami.voice.summon">
+          <h2 class="session-title" v-if="shikigami.voice || shikigami.voice.summon">
             {{ isEnglish ? "Animation Summon" : "Hoạt cảnh Triệu hồi" }}
           </h2>
 
-          <div v-if="shikigami.voice.summon">
+          <div v-if="shikigami.voice || shikigami.voice.summon">
             <video controls class="w-full h-auto my-5">
               <source :src="shikigami.voice.summon" type="video/mp4" />
             </video>
@@ -1811,7 +1811,7 @@ const addCKeywordListeners = () => {
                   <div class="cv-text text-center">
                     CV<span>{{ shikigami.voice.cv }}</span>
                   </div>
-                  <div class="mt-5" v-if="shikigami.voice.audio">
+                  <div class="mt-5" v-if="shikigami.voice || shikigami.voice.audio">
                     <button class="cv-audio" @click="playAudio(shikigami.voice.audio)">
                       <i :class="isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-volume-high'"></i>
                     </button>
@@ -1823,7 +1823,7 @@ const addCKeywordListeners = () => {
             <!-- Middle panel: Bio -->
             <div class="bio-panel flex-1"> 
               <div class="bio-panel-text">
-                <p v-if="shikigami.bios[activeBioTab]" class="bio-text-vertical text-black">
+                <p v-if="shikigami.bios || shikigami.bios[activeBioTab]" class="bio-text-vertical text-black">
                   <span v-for="(line, idx) in shikigami.bios[activeBioTab].brief.cn.split('\n')" :key="idx">
                     {{ line }}
                   </span>
