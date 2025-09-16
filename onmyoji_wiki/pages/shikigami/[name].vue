@@ -788,7 +788,7 @@ const addCKeywordListeners = () => {
         <!-- Image -->
         <div class="w-2/3 mx-auto">
           <!-- Images -->
-          <div class="flex justify-center h-[630px]">
+          <div class="flex justify-center" :class="(shikigami.id >= 201 && shikigami.id <= 217 ? 'h-[500px]' : 'h-[630px]')">
             <img :src="shikigami.images.image" :alt="shikigami.name.jp[1]"
               class="h-full object-cover transition-opacity hover:scale-115 transition-transform duration-300" />
           </div>
