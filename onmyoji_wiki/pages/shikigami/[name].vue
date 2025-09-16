@@ -43,13 +43,13 @@ const isPlaying = ref(false);
 const getImgUrl = (name) =>
   `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, "_")}.jpg`;
 
-// SS: 174 -> 174, S: 140 -> 165, A: 127 -> 133, B: 114 -> 124, C: 102 -> 104, D: 79 -> 98
+// SS: 174 -> 174, S: 140 -> 165, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 79 -> 98
 const getATKRank = (atk) => {
   if (atk >= 174 && atk <= 174) return "SS";
   else if (atk >= 140 && atk <= 165) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 114 && atk <= 124) return "B";
-  else if (atk >= 102 && atk <= 104) return "C";
+  else if (atk >= 102 && atk <= 109) return "C";
   else if (atk >= 79 && atk <= 98) return "D";
   else return "E";
 };
