@@ -1710,7 +1710,7 @@ const addCKeywordListeners = () => {
                 <td class="px-2 py-1 text-center table-cell">
                   <span class="lang-zh">{{ skin.artist }}</span>
                 </td>
-                <td class="px-2 py-1 text-center table-cell">
+                <td class="px-2 py-1 text-center table-cell whitespace-pre-line">
                   {{ skin.obtained }}
                 </td>
               </tr>
