@@ -1468,7 +1468,7 @@ const addCKeywordListeners = () => {
                         {{ isEnglish ? skill.name.en : skill.name.vn }}
                       </span>
                       <span class="skill-sub-name lang-zh">
-                        ({{ skill.name.cn === skill.name.jp ? skill.name.cn[0] : skill.name.cn + ' / ' + skill.name.jp }})
+                        ({{ skill.name.cn === skill.name.jp ? skill.name.cn : skill.name.cn + ' / ' + skill.name.jp }})
                       </span>
                       <button class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
                         @click="editSkill(skill)">
