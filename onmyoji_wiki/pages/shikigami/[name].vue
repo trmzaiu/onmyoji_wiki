@@ -73,7 +73,7 @@ const getATKEvoImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 1163 -> 1335, A: 1064 -> 1131, B: 960 -> 1056, C: 854 -> 950, D: 843 -> 843
+// S: 1163 -> 1335, A: 1064 -> 1142, B: 960 -> 1056, C: 854 -> 950, D: 843 -> 843
 const getHPRank = (hp) => {
   if (hp >= 1163 && hp <= 1335) return "S";
   else if (hp >= 1064 && hp <= 1120) return "A";
@@ -116,12 +116,12 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 485 -> 490, A: 441 -> 481, B: 397 -> 437, C: 353 -> 388, D: 0 -> 0
+// S: 485 -> 490, A: 441 -> 481, B: 397 -> 437, C: 353 -> 392, D: 0 -> 0
 const getDEFEvoRank = (def) => {
   if (def >= 485 && def <= 490) return "S";
   else if (def >= 441 && def <= 481) return "A";
   else if (def >= 397 && def <= 437) return "B";
-  else if (def >= 353 && def <= 388) return "C";
+  else if (def >= 353 && def <= 392) return "C";
   else return "D";
 };
 
