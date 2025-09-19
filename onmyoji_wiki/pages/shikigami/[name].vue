@@ -49,7 +49,7 @@ const getATKRank = (atk) => {
   else if (atk >= 140 && atk <= 166) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 114 && atk <= 124) return "B";
-  else if (atk >= 102 && atk <= 104) return "C";
+  else if (atk >= 102 && atk <= 109) return "C";
   else return "D";
 };
 
