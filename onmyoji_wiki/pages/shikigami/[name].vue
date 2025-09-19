@@ -1259,27 +1259,46 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Skills" : "Kĩ năng" }}
           </h2>
           <div class="flex border-b border-gray-300 mb-4 mt-2">
-            <button v-for="(skill, index) in shikigami.skills.slice(0, 3)" :key="index"
-              @click="activeSkillIndex = index" :class="[
-              'px-4 py-2',
-              activeSkillIndex === index
-                ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
-                : 'text-[#a3a3a3] cursor-pointer',
-            ]">
+            <button
+              v-for="(skill, index) in shikigami.skills.slice(0, 3)"
+              :key="index"
+              @click="activeSkillIndex = index"
+              :class="[
+                'px-4 py-2',
+                activeSkillIndex === index
+                  ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
+                  : 'text-[#a3a3a3] cursor-pointer',
+              ]"
+            >
+              <!-- Trường hợp đặc biệt: skill 1 & skill 3 cùng tab -->
               <template v-if="index === 1 && shikigami.skills[3]?.tab === 2">
                 {{
-                shikigami.skills[1].type !== shikigami.skills[3].type
-                ? `${shikigami.skills[1].type === shikigami.skills[2].type ? shikigami.skills[1].type + ' 1' : shikigami.skills[1].type} / ${shikigami.skills[1].type === shikigami.skills[3].type ? shikigami.skills[3].type + ' 1' : shikigami.skills[3].type}`
-                : (shikigami.skills[1].type === shikigami.skills[2].type ? shikigami.skills[1].type + ' 1' : shikigami.skills[1].type)
+                  shikigami.skills[1].type !== shikigami.skills[3].type
+                    ? `${shikigami.skills[1].type} / ${shikigami.skills[3].type}`
+                    : (shikigami.skills[1].type === 'Special'
+                        ? 'Special 1'
+                        : shikigami.skills[1].type)
                 }}
               </template>
-              <template v-if="index === 2">
+
+              <!-- Skill thứ 3 (tab 3) -->
+              <template v-else-if="index === 2">
                 {{
-                shikigami.skills[2].type === shikigami.skills[2].type ? shikigami.skills[2].type + ' 2' : shikigami.skills[2].type
+                  shikigami.skills[2].type === 'Special'
+                    ? 'Special 2'
+                    : shikigami.skills[2].type
                 }}
               </template>
+
+              <!-- Mặc định -->
               <template v-else>
-                {{ skill.type }}
+                {{
+                  skill.tab === 2 && skill.type === 'Special'
+                    ? 'Special 1'
+                    : skill.tab === 3 && skill.type === 'Special'
+                    ? 'Special 2'
+                    : skill.type
+                }}
               </template>
             </button>
             <button v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'" @click="activeSkillIndex = 3" :class="[
