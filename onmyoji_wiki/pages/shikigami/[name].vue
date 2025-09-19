@@ -76,7 +76,7 @@ const getATKEvoImage = (atk) => {
 // S: 1163 -> 1335, A: 1064 -> 1142, B: 960 -> 1056, C: 854 -> 950, D: 843 -> 843
 const getHPRank = (hp) => {
   if (hp >= 1163 && hp <= 1335) return "S";
-  else if (hp >= 1064 && hp <= 1120) return "A";
+  else if (hp >= 1064 && hp <= 1142) return "A";
   else if (hp >= 960 && hp <= 1056) return "B";
   else if (hp >= 854 && hp <= 950) return "C";
   else return "D";
