@@ -1259,66 +1259,38 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Skills" : "Kĩ năng" }}
           </h2>
           <div class="flex border-b border-gray-300 mb-4 mt-2">
-  <button
-    v-for="(skill, index) in shikigami.skills.slice(0, 3)"
-    :key="index"
-    @click="activeSkillIndex = index"
-    :class="[
-      'px-4 py-2',
-      activeSkillIndex === index
-        ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
-        : 'text-[#a3a3a3] cursor-pointer',
-    ]"
-  >
-    <template v-if="index === 1 && shikigami.skills[3]?.tab === 2">
-      <!-- Nếu type khác nhau -->
-      <template v-if="shikigami.skills[1].type !== shikigami.skills[3].type">
-        {{
-          shikigami.skills[1].tab === 2 && shikigami.skills[1].type === 'Special'
-            ? 'Special 1'
-            : shikigami.skills[1].type
-        }}
-        /
-        {{
-          shikigami.skills[3].tab === 3 && shikigami.skills[3].type === 'Special'
-            ? 'Special 2'
-            : shikigami.skills[3].type
-        }}
-      </template>
-      <!-- Nếu type giống nhau -->
-      <template v-else>
-        {{
-          shikigami.skills[1].tab === 2 && shikigami.skills[1].type === 'Special'
-            ? 'Special 1'
-            : shikigami.skills[1].type
-        }}
-      </template>
-    </template>
-    <template v-else>
-      {{
-        skill.tab === 2 && skill.type === 'Special'
-          ? 'Special 1'
-          : skill.tab === 3 && skill.type === 'Special'
-          ? 'Special 2'
-          : skill.type
-      }}
-    </template>
-  </button>
-
-  <button
-    v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'"
-    @click="activeSkillIndex = 3"
-    :class="[
-      'px-4 py-2',
-      activeSkillIndex === 3
-        ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
-        : 'text-[#a3a3a3] cursor-pointer',
-    ]"
-  >
-    Evolution Effect
-  </button>
-</div>
-
+            <button v-for="(skill, index) in shikigami.skills.slice(0, 3)" :key="index"
+              @click="activeSkillIndex = index" :class="[
+              'px-4 py-2',
+              activeSkillIndex === index
+                ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
+                : 'text-[#a3a3a3] cursor-pointer',
+            ]">
+              <template v-if="index === 1 && shikigami.skills[3]?.tab === 2">
+                {{
+                shikigami.skills[1].type !== shikigami.skills[3].type
+                ? `${shikigami.skills[1].type === shikigami.skills[2].type ? shikigami.skills[1].type + ' 1' : shikigami.skills[1].type} / ${shikigami.skills[1].type === shikigami.skills[3].type ? shikigami.skills[3].type + ' 1' : shikigami.skills[3].type}`
+                : (shikigami.skills[1].type === shikigami.skills[2].type ? shikigami.skills[1].type + ' 1' : shikigami.skills[1].type)
+                }}
+              </template>
+              <template v-if="index === 2">
+                {{
+                shikigami.skills[2].type === shikigami.skills[2].type ? shikigami.skills[2].type + ' 2' : shikigami.skills[2].type
+                }}
+              </template>
+              <template v-else>
+                {{ skill.type }}
+              </template>
+            </button>
+            <button v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'" @click="activeSkillIndex = 3" :class="[
+              'px-4 py-2',
+              activeSkillIndex === 3
+                ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
+                : 'text-[#a3a3a3] cursor-pointer',
+            ]">
+              Evolution Effect
+            </button>
+          </div>
           <div v-if="activeSkillIndex < 3">
             <div>
               <div style="position: relative; padding-left: 40px; margin-bottom: 20px">
