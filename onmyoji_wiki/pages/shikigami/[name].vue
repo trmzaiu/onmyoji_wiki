@@ -351,16 +351,16 @@ const matchedSubNotes = computed(() => {
         ? descObj?.en || ""
         : descObj?.vn || "";
 
-    // Tìm cả <b> và <a>
-    const matches = text.match(/<b>(.*?)<\/b>|<a>(.*?)<\/a>/g) || [];
-
-    matches.forEach((tag) => {
-      const inner = tag.replace(/<b>|<\/b>|<a>|<\/a>/g, "");
+    const bMatches = text.match(/<b>(.*?)<\/b>/g) || [];
+    bMatches.forEach((bTag) => {
+      const inner = bTag.replace(/<b>|<\/b>/g, "");
       const nums = inner.match(/\d+/g) || [];
       nums.forEach((numStr) => {
         const id = Number(numStr);
         const note = effectById.get(id);
-        if (note) result.push({ ...note });
+        if (note) {
+          result.push({ ...note });
+        }
       });
     });
 
