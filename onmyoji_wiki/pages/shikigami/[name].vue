@@ -351,6 +351,7 @@ const matchedSubNotes = computed(() => {
         ? descObj?.en || ""
         : descObj?.vn || "";
 
+    // Tìm cả <b> và <a>
     const matches = text.match(/<b>(.*?)<\/b>|<a>(.*?)<\/a>/g) || [];
 
     matches.forEach((tag) => {
