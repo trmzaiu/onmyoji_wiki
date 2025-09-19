@@ -351,9 +351,10 @@ const matchedSubNotes = computed(() => {
         ? descObj?.en || ""
         : descObj?.vn || "";
 
-    const bMatches = text.match(/<b>(.*?)<\/b>/g) || [];
-    bMatches.forEach((bTag) => {
-      const inner = bTag.replace(/<b>|<\/b>/g, "");
+    const matches = text.match(/<b>(.*?)<\/b>|<a.*?>(.*?)<\/a>/g) || [];
+    matches.forEach((tag) => {
+      // Lấy nội dung bên trong tag
+      const inner = tag.replace(/<b>|<\/b>|<a.*?>|<\/a>/g, "");
       const nums = inner.match(/\d+/g) || [];
       nums.forEach((numStr) => {
         const id = Number(numStr);
