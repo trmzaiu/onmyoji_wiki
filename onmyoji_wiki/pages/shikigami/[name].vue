@@ -43,7 +43,7 @@ const isPlaying = ref(false);
 const getImgUrl = (name) =>
   `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, "_")}.jpg`;
 
-// SS: 174 -> 174, S: 140 -> 166, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 79 -> 98
+// SS: 174 -> 174, S: 140 -> 166, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 75 -> 98
 const getATKRank = (atk) => {
   if (atk >= 174 && atk <= 174) return "SS";
   else if (atk >= 140 && atk <= 166) return "S";
@@ -58,7 +58,7 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// SS: 3672 -> 3672, S: 2948 -> 3511, A: 2894 -> 2921, B: 2412 -> 2466, C: 2144 -> 2385, D: 1822 -> 1822
+// SS: 3672 -> 3672, S: 2948 -> 3511, A: 2894 -> 2921, B: 2412 -> 2466, C: 2144 -> 2385, D: 1822 -> 1849
 const getATKEvoRank = (atk) => {
   if (atk >= 3672 && atk <= 3672) return "SS";
   else if (atk >= 2948 && atk <= 3511) return "S";
@@ -87,10 +87,10 @@ const getHPImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// SS: 15392 -> 15392, S: 12532 -> 14241, A: 11393 -> 12418, B: 10254 -> 11279, C: 9684 -> 10140, D: 0 -> 0
+// SS: 15392 -> 15392, S: 12532 -> 14925, A: 11393 -> 12418, B: 10254 -> 11279, C: 9684 -> 10140, D: 0 -> 0
 const getHPEvoRank = (hp) => {
   if (hp >= 15392 && hp <= 15392) return "SS";
-  else if (hp >= 12532 && hp <= 14241) return "S";
+  else if (hp >= 12532 && hp <= 14925) return "S";
   else if (hp >= 11393 && hp <= 12418) return "A";
   else if (hp >= 10254 && hp <= 11279) return "B";
   else if (hp >= 9684 && hp <= 10140) return "C";
