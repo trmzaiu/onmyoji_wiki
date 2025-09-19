@@ -1271,28 +1271,13 @@ const addCKeywordListeners = () => {
               ]"
             >
               <!-- Trường hợp đặc biệt: skill 1 & skill 3 cùng tab -->
-              <template v-if="index === 1 &&">
+              <template v-if="index === 1 && shikigami.skills[3]?.tab === 2">
                 {{
-                  shikigami.skills[3]?.tab === 2
-                    ? (
-                        shikigami.skills[1].type !== shikigami.skills[3].type
-                          ? `${shikigami.skills[1].type} / ${shikigami.skills[3].type}`
-                          : (shikigami.skills[1].type === 'Special'
-                              ? 'Special 1'
-                              : shikigami.skills[1].type)
-                      )
+                  shikigami.skills[1].type !== shikigami.skills[3].type
+                    ? `${shikigami.skills[1].type} / ${shikigami.skills[3].type}`
                     : (shikigami.skills[1].type === 'Special'
                         ? 'Special 1'
                         : shikigami.skills[1].type)
-                }}
-              </template>
-
-              <!-- Skill thứ 3 (tab 3) -->
-              <template v-else-if="index === 2">
-                {{
-                  shikigami.skills[2].type === 'Special'
-                    ? 'Special 2'
-                    : shikigami.skills[2].type
                 }}
               </template>
 
