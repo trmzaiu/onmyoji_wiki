@@ -39,6 +39,11 @@ const filesBios = ref([]);
 const previewsBios = ref([]);
 const isDraggingBios = ref(false);
 
+// state cho Audios
+const filesAudios = ref([]);
+const previewsAudios = ref([]);
+const isDraggingAudios = ref(false);
+
 // state cho Illustrations
 const filesIllustrations = ref([]);
 const previewsIllustrations = ref([]);
@@ -276,6 +281,35 @@ const removeBio = (index) => {
   previewsBios.value.splice(index, 1);
 };
 
+// ====== HANDLERS CHO AUDIOS ======
+const handleFileChangeAudios = (e) => {
+  const selectedFiles = Array.from(e.target.files);
+  filesAudios.value.push(...selectedFiles);
+  previewsAudios.value.push(...selectedFiles.map(f => URL.createObjectURL(f)));
+};
+
+const handleDropAudios = (e) => {
+  e.preventDefault();
+  isDraggingAudios.value = false;
+  if (e.dataTransfer?.files?.length) {
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    filesAudios.value.push(...droppedFiles);
+    previewsAudios.value.push(...droppedFiles.map((f) => URL.createObjectURL(f)));
+  }
+};
+
+const handleDragOverAudios = (e) => {
+  e.preventDefault();
+  isDraggingAudios.value = true;
+};
+const handleDragLeaveAudios = () => {
+  isDraggingAudios.value = false;
+};
+const removeAudio = (index) => {
+  filesAudios.value.splice(index, 1);
+  previewsAudios.value.splice(index, 1);
+};
+
 // Upload tất cả file
 const uploadFiles = async () => {
   // Upload images
@@ -396,6 +430,24 @@ const uploadFiles = async () => {
         previewsBios.value = [];
     }
   }
+
+	for (const f of filesAudios.value) {
+    const path = `${f.name}`;
+    const { data, error } = await supabase.storage
+        .from("Audio")
+        .upload(path, f, {
+        cacheControl: "31536000",
+        upsert: true,
+        contentType: f.type,
+        });
+
+    if (error) console.error("Upload Audios error:", error.message);
+    else {
+        console.log("Uploaded Audio:", data);
+        filesAudios.value = [];
+        previewsAudios.value = [];
+    }
+	}
 
   // Upload illustrations
   for (const f of filesIllustrations.value) {
@@ -624,6 +676,36 @@ const uploadFiles = async () => {
             </button>
           </div>
           <p class="text-sm mt-1 truncate">{{ filesBios[i].name }}</p>
+        </div>
+      </div>
+    </div>
+
+		<!-- Upload Audios -->
+    <div>
+      <h2 class="font-bold text-lg mb-2">Audios</h2>
+      <div
+        class="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
+        :class="{ 'border-green-500 bg-green-50': isDraggingAudios }"
+        @drop="handleDropAudios"
+        @dragover="handleDragOverAudios"
+        @dragleave="handleDragLeaveAudios"
+      >
+        <input type="file" accept="image/*" multiple @change="handleFileChangeAudios" />
+      </div>
+
+      <!-- Preview Audios -->
+      <div v-if="previewsAudios.length" class="mt-4 grid grid-cols-8 gap-4">
+        <div v-for="(url, i) in previewsAudios" :key="i">
+          <div class="relative">
+            <audio :src="url" controls class="w-full"></audio>
+            <button
+              class="absolute top-1 right-1 bg-red-500 text-white rounded-full px-2 cursor-pointer"
+              @click="removeAudio(i)"
+            >
+              ✕
+            </button>
+          </div>
+          <p class="text-sm mt-1 truncate">{{ filesAudios[i].name }}</p>
         </div>
       </div>
     </div>
