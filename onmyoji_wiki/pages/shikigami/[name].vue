@@ -1843,17 +1843,17 @@ const addCKeywordListeners = () => {
         ]">
 
           <!-- Animation -->
-          <h2 class="session-title" v-if="shikigami.voice && shikigami.voice.summon">
+          <h2 class="session-title" v-if="shikigami.rarity === 'SP' && shikigami.rarity === 'SSR'">
             {{ isEnglish ? "Animation Summon" : "Hoạt cảnh Triệu hồi" }}
           </h2>
 
-          <div v-if="shikigami.voice && shikigami.voice.summon">
+          <div v-if="shikigami.rarity === 'SP' && shikigami.rarity === 'SSR'">
             <video controls class="w-full h-auto my-5">
-              <source :src="shikigami.voice.summon" type="video/mp4" />
+              <source :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Animation/${route.params.name}.mp4`" type="video/mp4" />
             </video>
           </div>
 
-          <h2 class="session-title">
+          <h2 class="session-title" v-if="shikigami.bios && shikigami.voice">
             {{ isEnglish ? "Bios" : "Tiểu Sử" }}
           </h2>
           <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios && shikigami.voice">
@@ -1863,10 +1863,10 @@ const addCKeywordListeners = () => {
                 <img src="/assets/blue_btn.webp" class="cv-bg">
                 <div class="cv-content">
                   <div class="cv-text text-center">
-                    CV<span>{{ shikigami.voice.cv }}</span>
+                    CV<span>{{ shikigami.voice }}</span>
                   </div>
-                  <div class="mt-5" v-if="shikigami.voice && shikigami.voice.audio">
-                    <button class="cv-audio" @click="playAudio(shikigami.voice.audio)">
+                  <div class="mt-5" v-if="shikigami.voice && shikigami.rarity !== 'N'">
+                    <button class="cv-audio" @click="playAudio(`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Audio/${route.params.name}.mp3`)">
                       <i :class="isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-volume-high'"></i>
                     </button>
                   </div>
