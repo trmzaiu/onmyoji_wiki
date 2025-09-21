@@ -514,7 +514,6 @@ async function fetchShikigami() {
   if (error) console.error("Error fetching shikigami:", error);
   else {
     shikigami.value = data;
-    await fetchIllustrations(data.id);
     await nextTick();
     addTooltipListeners();
   }
@@ -735,6 +734,12 @@ watch(
   () => addCKeywordListeners()
 );
 
+watch(activeTab, async (newTab) => {
+  if (newTab === "illustration" && illustrations.value.length === 0) {
+    await fetchIllustrations(shikigami.value?.id);
+  }
+});
+
 const addCKeywordListeners = () => {
   nextTick(() => {
     document.querySelectorAll(".c-keyword").forEach((el) => {
@@ -788,7 +793,7 @@ const addCKeywordListeners = () => {
         <div class="w-2/3 mx-auto">
           <!-- Images -->
           <div class="flex justify-center items-center h-[650px]">
-            <img :src="shikigami.images.image" :alt="shikigami.name.jp[1]"
+            <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Images/${route.params.name}.webp`" :alt="shikigami.name.jp[1]"
               class="max-h-full max-w-full object-contain transition-opacity hover:scale-115 transition-transform duration-300" />
           </div>
         </div>
@@ -952,7 +957,7 @@ const addCKeywordListeners = () => {
                   <th rowspan="9">&nbsp;</th>
                   <th colspan="2">
                     <figure class="icon-img" style="position: relative">
-                      <img :src="shikigami.images.image_icon" :alt="shikigami.name.jp[1]" style="object-fit: contain"
+                      <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Icons/${route.params.name}_Icon.webp`" :alt="shikigami.name.jp[1]" style="object-fit: contain"
                         width="90" />
                       <div style="
                         color: #a51919;
@@ -978,10 +983,7 @@ const addCKeywordListeners = () => {
                   <th rowspan="9">&nbsp;</th>
                   <th colspan="2">
                     <figure class="icon-img" style="position: relative">
-                      <img :src="
-                        shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'
-                          ? shikigami.images.image_icon_evo
-                          : shikigami.images.image_icon
+                      <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Icons/${route.params.name}_Icon${shikigami.rarity !== 'SP' && shikigami.rarity !== 'N' ? '_Evo' : ''}.webp`
                       " :alt="shikigami.name.jp[1]" style="object-fit: contain" width="90" />
                       <div style="
                         color: #a51919;
