@@ -39,6 +39,20 @@ const notesInput = ref("");
 const audioPlayer = ref(null);
 const isPlaying = ref(false);
 
+const selectedImage = ref(null);
+const isModalOpen = ref(false);
+
+const openModal = (url) => {
+  selectedImage.value = url;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  selectedImage.value = null;
+};
+
+
 /* ---------------------- HELPERS ---------------------- */
 const getImgUrl = (name) =>
   `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, "_")}.jpg`;
@@ -1282,7 +1296,7 @@ const addCKeywordListeners = () => {
                 : shikigami.skills[2].type
                 }}
               </template>
-              <template v-else-if="shikigami.skills[1].type === shikigami.skills[2].type">
+              <template v-else-if="shikigami.skills[1].type === shikigami.skills[2]?.type">
                 {{
                 skill.type + (index === 1 ? ' 1' : (index === 2 ? ' 2' : ''))
                 }}
@@ -1675,13 +1689,40 @@ const addCKeywordListeners = () => {
           </h2>
           <div class="grid grid-cols-3 gap-5 mt-4">
             <div v-for="(skin, index) in shikigami.skins" :key="index" class="flex flex-col items-center"
-              :title="skin.name.en || skin.name.cn">
+              :title="skin.name.en || skin.name.cn" @click="openModal(skin.image)">
               <img :src="skin.image" :alt="skin.name.en || skin.name.cn"
-                class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible" />
+                class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer" />
               <p class="mt-4 text-center font-medium text-black"
                 :class="{ 'lang-zh': isEnglish ? !skin.name.en && skin.name.cn : false }">
                 {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
               </p>
+            </div>
+          </div>
+
+          <!-- Modal -->
+          <div
+            v-if="isModalOpen"
+            class="fixed inset-0 z-50 flex items-center justify-center"
+          >
+            <!-- Overlay -->
+            <div
+              class="absolute inset-0 bg-black/50"
+              @click="closeModal"
+            ></div>
+
+            <!-- Modal content -->
+            <div class="relative z-10 bg-white max-w-3xl w-full p-4 rounded-lg shadow-2xl">
+              <button
+                class="absolute top-2 right-3 text-black text-[40px] cursor-pointer"
+                @click="closeModal"
+              >
+                ✕
+              </button>
+              <img
+                :src="selectedImage"
+                alt="Skin Preview"
+                class="w-full h-auto"
+              />
             </div>
           </div>
 
