@@ -1853,19 +1853,19 @@ const addCKeywordListeners = () => {
             </video>
           </div>
 
-          <h2 class="session-title" v-if="shikigami.bios && shikigami.voice">
+          <h2 class="session-title" v-if="shikigami.bios && shikigami.name.cv">
             {{ isEnglish ? "Bios" : "Tiểu Sử" }}
           </h2>
-          <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios && shikigami.voice">
+          <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios && shikigami.name.cv">
             <!-- Left panel: CV -->
             <div class="left-panel mr-auto">
               <div class="cv-box">
                 <img src="/assets/blue_btn.webp" class="cv-bg">
                 <div class="cv-content">
                   <div class="cv-text text-center">
-                    CV<span>{{ shikigami.voice }}</span>
+                    CV<span>{{ shikigami.name.cv }}</span>
                   </div>
-                  <div class="mt-5" v-if="shikigami.voice && shikigami.rarity !== 'N'">
+                  <div class="mt-5" v-if="shikigami.name.cv && shikigami.rarity !== 'N'">
                     <button class="cv-audio" @click="playAudio(`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Audio/${route.params.name}.mp3`)">
                       <i :class="isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-volume-high'"></i>
                     </button>
