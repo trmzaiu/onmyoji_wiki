@@ -891,12 +891,12 @@ const addCKeywordListeners = () => {
               <tr v-if="shikigami.version !== null" class="table-row">
                 <td colspan="4" class="p-1">
                   <div class="flex flex-col items-center justify-center">
-                    <a :href="`/shikigami/${shikigami.version.name.replace(/ /g, '_')}`">
-                      <img :src="shikigami.version.image" :alt="shikigami.version.name"
+                    <a :href="`/shikigami/${shikigami.version.replace(/ /g, '_')}`">
+                      <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Shards/${shikigami.version.replace(/ /g, '_')}_Shard.webp`" :alt="shikigami.version.name"
                         class="h-16 w-16 object-contain mb-1" /></a>
-                    <router-link :to="`/shikigami/${shikigami.version.name.replace(/ /g, '_')}`"
+                    <router-link :to="`/shikigami/${shikigami.version.replace(/ /g, '_')}`"
                       class="text-black font-bold hover:text-[#a51919] font-[14px]">
-                      {{ shikigami.version.name }}
+                      {{ shikigami.version }}
                     </router-link>
                   </div>
                 </td>
