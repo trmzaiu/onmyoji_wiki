@@ -252,41 +252,26 @@ const imgs = computed(() => tooltipData.value?.images || []);
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
 
+  let processedText = text;
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
-  const effectMap = new Map();
-
-  // Build map theo name (để support chữ)
-  effects.value.forEach((note) => {
-    const addToMap = (n) => {
-      const names = [];
-      if (n.name?.en) names.push(n.name.en);
-      if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
-      if (n.name?.cn && n.name.cn !== n.name.en && n.name.cn !== n.name.vn) names.push(n.name.cn);
-      names.forEach((name) => {
-        if (!effectMap.has(name.toLowerCase())) {
-          effectMap.set(name.toLowerCase(), n);
-        }
-      });
-    };
-    addToMap(note);
-    if (note.subs?.length) {
-      note.subs.forEach((subId) => {
-        const sub = effectById.get(subId);
-        if (sub) addToMap(sub);
-      });
-    }
-  });
 
   const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
-  // Hàm xử lý thẻ tooltip
   const replaceWithTooltip = (match, content, type) => {
-    let note = /^\d+$/.test(content) ? effectById.get(content) : effectMap.get(content.toLowerCase());
+    let note = null;
+
+    if (/^\d+$/.test(content)) {
+      note = effectById.get(content);
+    } else {
+      note = effectMap.get(content.toLowerCase());
+    }
+
     if (!note) return match;
 
     const keyword = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
+
     const className = type === "b" ? "effect-tooltip" : "effect-highlight";
 
     return `<span class="${className}"
@@ -298,23 +283,40 @@ const processTextWithTooltips = (text) => {
               style="color:${color}">${keyword}</span>`;
   };
 
-  // Xử lý từng loại thẻ <...></...>
-  const tagMap = {
-    e: (_, keyword) => `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded-sm" />`,
-    d: (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`,
-    f: replaceWithTooltip,
-    b: replaceWithTooltip,
-    a: replaceWithTooltip,
-    c: (_, keyword) => `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
-  };
+  // <e>...</e>
+  processedText = processedText.replace(
+    /<e>(.*?)<\/e>/g,
+    (_, keyword) =>
+      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-sm" />`
+  );
 
-  let processedText = text;
+  // <d>...</d>
+  processedText = processedText.replace(
+    /<d>(.*?)<\/d>/g,
+    (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
+  );
+  
+  // <f>...</f>
+  processedText = processedText.replace(/<f>(.*?)<\/f>/g, (m, c) =>
+    replaceWithTooltip(m, c, "f")
+  );
 
-  // Duyệt qua từng tag, replace chỉ trong <>
-  Object.entries(tagMap).forEach(([tag, handler]) => {
-    const regex = new RegExp(`<${tag}>(.*?)<\\/${tag}>`, "g");
-    processedText = processedText.replace(regex, handler);
-  });
+  // <b>...</b>
+  processedText = processedText.replace(/<b>(.*?)<\/b>/g, (m, c) =>
+    replaceWithTooltip(m, c, "b")
+  );
+
+  // <a>...</a>
+  processedText = processedText.replace(/<a>(.*?)<\/a>/g, (m, c) =>
+    replaceWithTooltip(m, c, "a")
+  );
+
+  // <c>...</c>
+  processedText = processedText.replace(
+    /<c>(.*?)<\/c>/g,
+    (_, keyword) =>
+      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
+  );
 
   return processedText;
 };
@@ -328,6 +330,7 @@ const highlightWord = (text) => {
   );
 };
 
+const displayedNotes = new Set();
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
@@ -1914,6 +1917,7 @@ const addCKeywordListeners = () => {
                 {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn
                   }})</span>
               </div>
+              <script>displayedNotes.add(sub.name)</script>
               <img v-if="sub.images" v-for="(img, i) in sub.images" :key="i" :src="'/assets/effects/' + img" :alt="img"
                 style="width: 32px; height: 32px; margin-bottom: 8px" />
               <div class="subnote-description"
@@ -1921,21 +1925,34 @@ const addCKeywordListeners = () => {
 
               <!-- Sub-SubNotes -->
               <div v-if="sub.subNotes && sub.subNotes.length" class="mt-2">
-                <div v-for="(subsub, j) in sub.subNotes" :key="j" class="subnote-block">
+                <div 
+                  v-for="(subsub, j) in sub.subNotes" 
+                  :key="j" 
+                  class="subnote-block" 
+                  v-if="subsub.name.cn && !displayedNotes.has(subsub.name.cn)"
+                >
                   <div class="subnote-title">
-                    {{ isEnglish ? subsub.name.en : subsub.name.vn }} <span class="lang-zh" v-if="subsub.name.cn">({{
-                      subsub.name.cn }})</span>
+                    {{ isEnglish ? subsub.name.en : subsub.name.vn }} 
+                    <span class="lang-zh" v-if="subsub.name.cn">({{ subsub.name.cn }})</span>
                   </div>
-                  <img v-if="subsub.images" v-for="(img, k) in subsub.images" :key="k" :src="'/assets/effects/' + img"
-                    :alt="img" class="rounded rounded-sm" style="width: 32px; height: 32px; margin-bottom: 8px" />
-                  <div class="subnote-description"
-                    v-html="highlightWord(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
+
+                  <img v-if="subsub.images" 
+                      v-for="(img, k) in subsub.images" 
+                      :key="k" 
+                      :src="'/assets/effects/' + img"
+                      :alt="img" 
+                      class="rounded rounded-sm" 
+                      style="width: 32px; height: 32px; margin-bottom: 8px" />
+
+                  <div class="subnote-description" v-html="highlightWord(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
+
+                  <!-- Track displayed note INSIDE the v-for -->
+                  <script>displayedNotes.add(subsub.name.cn)</script>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Modal -->
