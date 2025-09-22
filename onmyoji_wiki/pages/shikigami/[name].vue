@@ -1956,7 +1956,7 @@ const addCKeywordListeners = () => {
                   v-for="(subsub, j) in sub.subNotes" 
                   :key="j" 
                   class="subnote-block" 
-                  v-if="subsub.name.cn && !displayedNotes.has(subsub.name.cn)"
+                  v-if="subsub.name && !displayedNotes.has(subsub.name)"
                 >
                   <div class="subnote-title">
                     {{ isEnglish ? subsub.name.en : subsub.name.vn }} 
@@ -1974,7 +1974,7 @@ const addCKeywordListeners = () => {
                   <div class="subnote-description" v-html="highlightWord(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
 
                   <!-- Track displayed note INSIDE the v-for -->
-                  <script>displayedNotes.add(subsub.name.cn)</script>
+                  <script>displayedNotes.add(subsub.name)</script>
                 </div>
               </div>
             </div>
