@@ -254,6 +254,33 @@ const processTextWithTooltips = (text) => {
 
   let processedText = text;
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
+  const effectMap = new Map();
+
+  // build effectMap theo name để vẫn hỗ trợ chữ
+  effects.value.forEach((note) => {
+    const addToMap = (n) => {
+      const names = [];
+      if (n.name?.en) names.push(n.name.en);
+      if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
+      if (n.name?.cn && n.name.cn !== n.name.en && n.name.cn !== n.name.vn) {
+        names.push(n.name.cn);
+      }
+      names.forEach((name) => {
+        if (!effectMap.has(name.toLowerCase())) {
+          effectMap.set(name.toLowerCase(), n);
+        }
+      });
+    };
+
+    addToMap(note);
+
+    if (note.subs?.length) {
+      note.subs.forEach((subId) => {
+        const sub = effectById.get(subId);
+        if (sub) addToMap(sub);
+      });
+    }
+  });
 
   const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
