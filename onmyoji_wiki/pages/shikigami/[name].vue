@@ -1292,7 +1292,7 @@ const addCKeywordListeners = () => {
                 {{
                 shikigami.skills[1].type !== shikigami.skills[3].type
                 ? `${shikigami.skills[1].type === shikigami.skills[2].type ? 'Special 1' : shikigami.skills[1].type} / ${shikigami.skills[3].type === shikigami.skills[2].type ? 'Special 1' : shikigami.skills[3].type}`
-                : shikigami.skills[1].type
+                : (shikigami.skills[1].type === shikigami.skills[2].type ? 'Special 1' : shikigami.skills[1].type)
                 }}
               </template>
               <template v-else-if="index === 2 && shikigami.skills[3]?.tab === 2">
