@@ -1649,7 +1649,7 @@ const addCKeywordListeners = () => {
 
                 <td class="py-1 text-black table-cell w-[100px]">
                   <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
-                    <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Shards/${route.params.name}_Shard.webp`" :alt="shikigami.name.jp" class="max-h-full max-w-full object-contain" />
+                    <img :src="shikigami.id === 144 ? '/assets/Jade.webp' : `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Shards/${route.params.name}_Shard.webp`" :alt="shikigami.name.jp" class="max-h-full max-w-full object-contain" />
                     <span class="absolute bottom-0 right-0 text-white font-bold" style="
                       text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                         1px 1px 0 #000;
@@ -1668,7 +1668,7 @@ const addCKeywordListeners = () => {
 
                 <td class="py-1 text-black table-cell w-[100px]">
                   <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
-                    <img src="/assets/Jade.webp" alt="Jade" class="max-h-full max-w-full object-contain" />
+                    <img :src="shikigami.id !== 144 ? '/assets/Jade.webp' : `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Shards/${route.params.name}_Shard.webp`" alt="Jade" class="max-h-full max-w-full object-contain" />
                     <span class="absolute bottom-0 right-0 text-white font-bold" style="
                       text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                         1px 1px 0 #000;
