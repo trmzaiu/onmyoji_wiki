@@ -357,7 +357,7 @@ const highlightWord = (text) => {
   );
 };
 
-const displayedNotes = new Set();
+const displayedNotes = ref(new Set());
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
@@ -378,7 +378,8 @@ const matchedSubNotes = computed(() => {
       nums.forEach((numStr) => {
         const id = Number(numStr);
         const note = effectById.get(id);
-        if (note) {
+        if (note && !displayedNotes.value.has(note.name.cn)) {
+          displayedNotes.value.add(note.name.cn);
           result.push({ ...note });
         }
       });
@@ -390,7 +391,7 @@ const matchedSubNotes = computed(() => {
   // subNotes của tooltip chính
   const subs = findNotes(tooltipData.value.description);
 
-  // sub-subNotes của mỗi sub
+  // sub-subNotes của mỗi sub, tránh trùng
   subs.forEach((sub, i) => {
     subs[i].subNotes = findNotes(sub.description);
   });
@@ -1944,7 +1945,6 @@ const addCKeywordListeners = () => {
                 {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn
                   }})</span>
               </div>
-              <script>displayedNotes.add(sub.name)</script>
               <img v-if="sub.images" v-for="(img, i) in sub.images" :key="i" :src="'/assets/effects/' + img" :alt="img"
                 style="width: 32px; height: 32px; margin-bottom: 8px" />
               <div class="subnote-description"
@@ -1960,7 +1960,7 @@ const addCKeywordListeners = () => {
                 >
                   <div class="subnote-title">
                     {{ isEnglish ? subsub.name.en : subsub.name.vn }} 
-                    <span class="lang-zh" v-if="subsub.name.cn">({{ subsub.name.cn }})</span>
+                    <span class="lang-zh">({{ subsub.name.cn }})</span>
                   </div>
 
                   <img v-if="subsub.images" 
@@ -1972,9 +1972,6 @@ const addCKeywordListeners = () => {
                       style="width: 32px; height: 32px; margin-bottom: 8px" />
 
                   <div class="subnote-description" v-html="highlightWord(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
-
-                  <!-- Track displayed note INSIDE the v-for -->
-                  <script>displayedNotes.add(subsub.name)</script>
                 </div>
               </div>
             </div>
