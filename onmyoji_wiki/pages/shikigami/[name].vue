@@ -357,7 +357,7 @@ const highlightWord = (text) => {
   );
 };
 
-const displayedNotes = ref(new Set());
+const displayedSubSubNotes = ref(new Set());
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
@@ -378,8 +378,7 @@ const matchedSubNotes = computed(() => {
       nums.forEach((numStr) => {
         const id = Number(numStr);
         const note = effectById.get(id);
-        if (note && !displayedNotes.value.has(note.name.cn)) {
-          displayedNotes.value.add(note.name.cn);
+        if (note) {
           result.push({ ...note });
         }
       });
@@ -391,9 +390,14 @@ const matchedSubNotes = computed(() => {
   // subNotes của tooltip chính
   const subs = findNotes(tooltipData.value.description);
 
-  // sub-subNotes của mỗi sub, tránh trùng
+  // sub-subNotes của mỗi sub, loại bỏ trùng
   subs.forEach((sub, i) => {
-    subs[i].subNotes = findNotes(sub.description);
+    const subsubNotes = findNotes(sub.description);
+    subs[i].subNotes = subsubNotes.filter((subsub) => {
+      if (displayedSubSubNotes.value.has(subsub.name)) return false;
+      displayedSubSubNotes.value.add(subsub.name);
+      return true;
+    });
   });
 
   return subs;
