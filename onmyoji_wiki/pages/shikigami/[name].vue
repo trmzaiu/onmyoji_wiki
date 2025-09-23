@@ -321,6 +321,14 @@ const processTextWithTooltips = (text) => {
 
     const className = type === "b" ? "effect-tooltip" : "effect-highlight";
 
+    if (type === "f") {
+      keyword = keyword.toLowerCase();
+    }
+
+    if (type === "g") {
+      keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+    }
+
     return `<span class="${className}"
               data-name="${keyword}"
               data-name-cn="${note.name?.cn || ""}"
@@ -345,6 +353,11 @@ const processTextWithTooltips = (text) => {
   
   // <f>...</f>
   processedText = processedText.replace(/<f>(.*?)<\/f>/g, (m, c) =>
+    replaceWithTooltip(m, c, "f")
+  );
+
+  // <g>...</g>
+  processedText = processedText.replace(/<g>(.*?)<\/g>/g, (m, c) =>
     replaceWithTooltip(m, c, "f")
   );
 
