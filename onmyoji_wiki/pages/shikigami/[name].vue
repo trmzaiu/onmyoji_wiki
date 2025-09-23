@@ -18,6 +18,7 @@ const onmyojiList = ref(null);
 const effects = ref([]);
 const illustrations = ref([]);
 const conditions = ref([]);
+const evolution = ref(null);
 const isEnglish = ref(true);
 
 // UI
@@ -171,11 +172,31 @@ const getCritImage = (crit) => {
   return `/assets/stats/${rank}.webp`;
 };
 
+/* ---------------------- EVOLUTION RENDER ---------------------- */
+const renderEvoText = (evo) => {
+  const evoTemplate = evolution.value
+  if (!evoTemplate) {
+    return ""
+  }
+  if (!evoTemplate) return ""
+
+  let text = isEnglish.value ? evoTemplate.text.en : evoTemplate.text.vn
+  if (!text) return ""
+
+  const replacements = { name: isEnglish.value ? shikigami.value.name.en : shikigami.value.name.vn }
+
+  if (evo.skill) {
+    const targetSkill = isEnglish.value ? shikigami.value.skills[evo.skill - 1].name.en : shikigami.value.skills[evo.skill - 1].name.vn
+    replacements.skill = highlightWord(targetSkill);
+  }
+
+  return text.replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? "")
+}
+
 /* ---------------------- BIO RENDER ---------------------- */
 const renderBioText = (bio) => {
   const bioTemplate = conditions.value.find(b => b.id === bio.no)
   if (!bioTemplate) {
-    console.warn("Không tìm thấy template cho bio.no =", bio.no)
     return ""
   }
   if (!bioTemplate) return ""
@@ -194,7 +215,6 @@ const renderBioText = (bio) => {
       const shikiName = isEnglish.value ? targetShiki.name.en : targetShiki.name.vn
       replacements.shiki = makeHighlight(shikiName, "shikigami")
     } else {
-      console.warn("Không tìm thấy shikigami cho id =", bio.shiki)
       replacements.shiki = ""
     }
   }
@@ -205,7 +225,6 @@ const renderBioText = (bio) => {
       const onmyojiName = isEnglish.value ? targetOnmyoji.name.en : targetOnmyoji.name.vn
       replacements.onmyoji = makeHighlight(onmyojiName, "onmyoji")
     } else {
-      console.warn("Không tìm thấy onmyoji cho id =", bio.onmyoji)
       replacements.onmyoji = ""
     }
   }
@@ -350,11 +369,7 @@ const processTextWithTooltips = (text) => {
 
 const highlightWord = (text) => {
   if (!text) return "";
-  return text.replace(
-    /<c>(.*?)<\/c>/g,
-    (_, keyword) =>
-      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
-  );
+  return `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${text}">${text}</span>`;
 };
 
 const displayedSubSubNotes = ref(new Set());
@@ -403,7 +418,7 @@ const matchedSubNotes = computed(() => {
   return subs;
 });
 
-const highlightBioText = (profile) => {
+const highlightProfileText = (profile) => {
   if (!profile) return "";
   const text = isEnglish.value ? profile.en : profile.vn;
   if (!text) return "";
@@ -503,7 +518,16 @@ async function fetchConditions() {
     .order("id", { ascending: true });
   if (error) console.error("Error fetching conditions:", error);
   else conditions.value = data;
-  console.log("Conditions:", conditions.value);
+}
+
+async function fetchEvolution(id) {
+  const { data, error } = await supabase
+    .from("Evolution")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) console.error("Error fetching evolution:", error);
+  else evolution.value = data;
 }
 
 async function fetchAllOnmyoji() {
@@ -536,6 +560,7 @@ async function fetchShikigami() {
     shikigami.value = data;
     await nextTick();
     addTooltipListeners();
+    fetchEvolution(data.evolution.no);
   }
 }
 
@@ -567,7 +592,6 @@ function subscribeRealtime() {
         "postgres_changes",
         { event: "*", schema: "public", table: "Shikigami" },
         async () => {
-          console.log("Shikigami table changed!");
           await fetchAllShikigami();
           await fetchShikigami();
         }
@@ -582,7 +606,6 @@ function subscribeRealtime() {
         "postgres_changes",
         { event: "*", schema: "public", table: "Illustration" },
         async () => {
-          console.log("Illustration table changed!");
           await fetchIllustrations(shikigami.value?.id);
         }
       )
@@ -597,7 +620,6 @@ function subscribeRealtime() {
         "postgres_changes",
         { event: "*", schema: "public", table: "Effect" },
         async () => {
-          console.log("Effect table changed!");
           await fetchAllEffects();
         }
       )
@@ -654,10 +676,8 @@ const saveSkill = async () => {
     .eq("id", shikigami.value.id);
 
   if (error) {
-    console.error("Error updating skill:", error);
     alert("Update failed!");
   } else {
-    console.log("Skill updated:", data);
     closeEditModal();
   }
 };
@@ -765,7 +785,6 @@ const addCKeywordListeners = () => {
     document.querySelectorAll(".c-keyword").forEach((el) => {
       el.onclick = () => {
         const keyword = el.dataset.keyword;
-        console.log("Clicked keyword:", keyword);
 
         let index = shikigami.value.skills.findIndex(
           (s) => s.name.en === keyword || s.name.vn === keyword
@@ -781,7 +800,6 @@ const addCKeywordListeners = () => {
         }
 
         if (index !== -1) {
-          console.log("Switching to skill index:", index);
           activeSkillIndex.value = index;
         }
       };
@@ -927,7 +945,7 @@ const addCKeywordListeners = () => {
 
       <!-- Profile -->
       <div class="text-black text-justify mt-2 whitespace-pre-line" v-if="shikigami.profile !== null"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }" v-html="highlightBioText(shikigami.profile, isEnglish)"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }" v-html="highlightProfileText(shikigami.profile, isEnglish)"
         </div>
 
         <!-- Content -->
@@ -1302,7 +1320,7 @@ const addCKeywordListeners = () => {
                 : (shikigami.skills[2].type === shikigami.skills[1].type ? 'Special 2' : shikigami.skills[2].type)
                 }}
               </template>
-              <template v-else-if="shikigami.skills[1].type === shikigami.skills[2].type">
+              <template v-else-if="shikigami.skills[1].type === shikigami.skills[2]?.type">
                 {{
                 skill.type + (index === 1 ? ' 1' : (index === 2 ? ' 2' : ''))
                 }}
@@ -1599,7 +1617,7 @@ const addCKeywordListeners = () => {
                 line-height: 1.5;
                 color: #444;
                 padding: 10px 0;
-              " v-html="highlightWord(isEnglish ? shikigami.evolution.en : shikigami.evolution.vn)"></p>
+              " v-html="renderEvoText(shikigami.evolution)"></p>
             </div>
           </div>
 
