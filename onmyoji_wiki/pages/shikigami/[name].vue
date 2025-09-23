@@ -318,23 +318,25 @@ const processTextWithTooltips = (text) => {
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    const className = type === "b" ? "effect-tooltip" : "effect-highlight";
+    // chỉnh keyword theo type
+    if (type === "f") keyword = keyword.toLowerCase();
+    if (type === "g") keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
 
-    if (type === "f") {
-      keyword = keyword.toLowerCase();
+    if (type === "b") {
+      // chỉ b mới có data
+      return `<span class="effect-tooltip"
+                data-name="${keyword}"
+                data-name-cn="${note.name?.cn || ""}"
+                data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+                data-img='${JSON.stringify(note.images || [])}'
+                data-color="${color}"
+                style="color:${color}">${keyword}</span>`;
+    } else {
+      // các type khác chỉ highlight
+      return `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
     }
-    if (type === "g") {
-      keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
-    }
-
-    return `<span class="${className}"
-              data-name="${keyword}"
-              data-name-cn="${note.name?.cn || ""}"
-              data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-              data-img='${JSON.stringify(note.images || [])}'
-              data-color="${color}"
-              style="color:${color}">${keyword}</span>`;
   };
+
 
   // === xử lý các tag đặc biệt ===
   processedText = processedText
