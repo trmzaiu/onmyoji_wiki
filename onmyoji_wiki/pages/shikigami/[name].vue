@@ -339,19 +339,15 @@ const processTextWithTooltips = (text) => {
   const replaceShikigami = (match, content) => {
     if (!shikigamiList?.value?.length) return match;
 
-    // tìm theo id
     const shiki = shikigamiList.value.find(
       (s) => String(s.id) === String(content)
     );
-    console.log("Shiki", shiki);
     if (!shiki) return match;
 
-    // chọn tên theo ngôn ngữ
     const keyword = isEnglish.value
       ? shiki.name?.en || ""
       : shiki.name?.vn || shiki.name?.en || "";
 
-    // type có thể chỉnh style nếu cần, còn không thì return tên thôi
     return `<span>${keyword}</span>`;
   };
 
@@ -374,7 +370,7 @@ const processTextWithTooltips = (text) => {
       replaceShikigami(m, content)
     );
 
-  // === gom các tag cần tooltip lại: f, g, b, a, h ===
+  // f, g, b, a, h 
   processedText = processedText.replace(/<(f|g|b|a|h|i)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceWithTooltip(m, content, type)
   );
