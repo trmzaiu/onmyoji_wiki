@@ -332,21 +332,17 @@ const processTextWithTooltips = (text) => {
                 data-color="${color}"
                 style="color:${color}">${keyword}</span>`;
     } else {
-      // các type khác chỉ highlight
-      return `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
+      return `<span ${type === 'i' 
+        ? '' 
+        : `class="effect-highlight"`} style="color:${color}">${keyword}</span>`;
     }
   };
 
-
   // === xử lý các tag đặc biệt ===
   processedText = processedText
-  // <i>
-    .replace(/<i>(.*?)<\/i>/g, (_, keyword) =>
-      `<span>${keyword}</span>`
-    )
     // <e>
     .replace(/<e>(.*?)<\/e>/g, (_, keyword) =>
-      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-sm" />`
+      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
     )
     // <d>
     .replace(/<d>(.*?)<\/d>/g, (_, keyword) =>
@@ -358,13 +354,12 @@ const processTextWithTooltips = (text) => {
     );
 
   // === gom các tag cần tooltip lại: f, g, b, a, h ===
-  processedText = processedText.replace(/<(f|g|b|a|h)>(.*?)<\/\1>/g, (m, type, content) =>
+  processedText = processedText.replace(/<(f|g|b|a|h|i)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceWithTooltip(m, content, type)
   );
 
   return processedText;
 };
-
 
 const highlightWord = (text) => {
   if (!text) return "";
