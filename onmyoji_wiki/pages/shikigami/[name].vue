@@ -318,12 +318,10 @@ const processTextWithTooltips = (text) => {
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    // chỉnh keyword theo type
     if (type === "f") keyword = keyword.toLowerCase();
     if (type === "g") keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
 
     if (type === "b") {
-      // chỉ b mới có data
       return `<span class="effect-tooltip"
                 data-name="${keyword}"
                 data-name-cn="${note.name?.cn || ""}"
@@ -339,12 +337,14 @@ const processTextWithTooltips = (text) => {
   };
 
   const replaceShikigami = (match, content) => {
-    if (!shikigamiList?.length) return match;
+    if (!shikigamiList?.value?.length) return match;
 
     // tìm theo id
-    const shiki = shikigamiList.find(s => String(s.id) === String(content));
+    const shiki = shikigamiList.value.find(
+      (s) => String(s.id) === String(content)
+    );
     console.log("Shiki", shiki);
-    if (!shiki) return match; // nếu không thấy thì giữ nguyên
+    if (!shiki) return match;
 
     // chọn tên theo ngôn ngữ
     const keyword = isEnglish.value
