@@ -338,6 +338,22 @@ const processTextWithTooltips = (text) => {
     }
   };
 
+  const replaceShikigami = (match, content, type) => {
+    if (!shikigamiList?.length) return match;
+
+    // tìm theo id
+    const shiki = shikigamiList.find(s => String(s.id) === String(content));
+    if (!shiki) return match; // nếu không thấy thì giữ nguyên
+
+    // chọn tên theo ngôn ngữ
+    const keyword = isEnglish.value
+      ? shiki.name?.en || ""
+      : shiki.name?.vn || shiki.name?.en || "";
+
+    // type có thể chỉnh style nếu cần, còn không thì return tên thôi
+    return `<span>${keyword}</span>`;
+  };
+
   // === xử lý các tag đặc biệt ===
   processedText = processedText
     // <e>
@@ -351,6 +367,10 @@ const processTextWithTooltips = (text) => {
     // <c>
     .replace(/<c>(.*?)<\/c>/g, (_, keyword) =>
       `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
+    )
+    // <k></k>
+    .replace(/<k>(.*?)<\/k>/g, (m, content) =>
+      replaceShikigami(m, content, "k")
     );
 
   // === gom các tag cần tooltip lại: f, g, b, a, h ===
