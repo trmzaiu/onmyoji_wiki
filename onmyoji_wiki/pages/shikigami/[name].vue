@@ -351,7 +351,7 @@ const processTextWithTooltips = (text) => {
     // <c>
     .replace(/<c>(.*?)<\/c>/g, (_, keyword) =>
       `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
-    );
+    )
     // <i>
     .replace(/<i>(.*?)<\/i>/g, (_, keyword) =>
       `<span>${keyword}</span>`
