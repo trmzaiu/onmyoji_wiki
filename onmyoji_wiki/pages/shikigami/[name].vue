@@ -334,7 +334,7 @@ const processTextWithTooltips = (text) => {
     } else {
       return `<span ${type === 'i' 
         ? '' 
-        : `class="effect-highlight"`} style="color:${color}">${keyword}</span>`;
+        : `class="effect-highlight" style="color:${color}"`}>${keyword}</span>`;
     }
   };
 
