@@ -363,7 +363,7 @@ const processTextWithTooltips = (text) => {
 
   // <g>...</g>
   processedText = processedText.replace(/<g>(.*?)<\/g>/g, (m, c) =>
-    replaceWithTooltip(m, c, "f")
+    replaceWithTooltip(m, c, "g")
   );
 
   // <b>...</b>
@@ -579,7 +579,7 @@ async function fetchShikigami() {
     shikigami.value = data;
     await nextTick();
     addTooltipListeners();
-    fetchEvolution(data.evolution.no);
+    if (data.rarity !== 'SP') fetchEvolution(data.evolution.no);
   }
 }
 
