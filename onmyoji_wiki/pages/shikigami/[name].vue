@@ -395,11 +395,11 @@ const highlightWord = (text) => {
   return `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${text}">${text}</span>`;
 };
 
-const displayedSubSubNotes = ref(new Set());
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
   const effectById = new Map(effects.value.map((e) => [e.id, e]));
+  const displayedSubs = new Set(); // chỉ track subs
 
   const findNotes = (descObj) => {
     const result = [];
@@ -425,15 +425,18 @@ const matchedSubNotes = computed(() => {
     return result;
   };
 
-  // subNotes của tooltip chính
+  // subNotes
   const subs = findNotes(tooltipData.value.description);
 
-  // sub-subNotes của mỗi sub, loại bỏ trùng
+  subs.forEach((sub) => {
+    displayedSubs.add(sub.id); // đánh dấu sub
+  });
+
+  // sub-subNotes (chỉ loại nếu đã có trong subs)
   subs.forEach((sub, i) => {
     const subsubNotes = findNotes(sub.description);
     subs[i].subNotes = subsubNotes.filter((subsub) => {
-      if (displayedSubSubNotes.value.has(subsub.name)) return false;
-      displayedSubSubNotes.value.add(subsub.name);
+      if (displayedSubs.has(subsub.id)) return false;
       return true;
     });
   });
@@ -2001,7 +2004,6 @@ const addCKeywordListeners = () => {
                   v-for="(subsub, j) in sub.subNotes" 
                   :key="j" 
                   class="subnote-block" 
-                  v-if="subsub.name && !displayedNotes.has(subsub.name)"
                 >
                   <div class="subnote-title">
                     {{ isEnglish ? subsub.name.en : subsub.name.vn }} 
@@ -2016,7 +2018,7 @@ const addCKeywordListeners = () => {
                       class="rounded rounded-sm" 
                       style="width: 32px; height: 32px; margin-bottom: 8px" />
 
-                  <div class="subnote-description" v-html="highlightWord(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
+                  <div class="subnote-description">{{isEnglish ? subsub.description.en : subsub.description.vn}}</div>
                 </div>
               </div>
             </div>
