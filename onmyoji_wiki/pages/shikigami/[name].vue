@@ -58,9 +58,9 @@ const closeModal = () => {
 const getImgUrl = (name) =>
   `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, "_")}.jpg`;
 
-// SS: 174 -> 174, S: 140 -> 166, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 75 -> 98
+// SS: 171 -> 197, S: 140 -> 166, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 75 -> 98
 const getATKRank = (atk) => {
-  if (atk >= 174 && atk <= 174) return "SS";
+  if (atk >= 171 && atk <= 197) return "SS";
   else if (atk >= 140 && atk <= 166) return "S";
   else if (atk >= 127 && atk <= 133) return "A";
   else if (atk >= 114 && atk <= 124) return "B";
@@ -73,9 +73,9 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// SS: 3672 -> 3672, S: 2948 -> 3597, A: 2894 -> 2921, B: 2412 -> 2466, C: 2144 -> 2385, D: 1822 -> 1849
+// SS: 3618 -> 4153, S: 2948 -> 3597, A: 2894 -> 2921, B: 2412 -> 2466, C: 2144 -> 2385, D: 1822 -> 1849
 const getATKEvoRank = (atk) => {
-  if (atk >= 3672 && atk <= 3672) return "SS";
+  if (atk >= 3618 && atk <= 4153) return "SS";
   else if (atk >= 2948 && atk <= 3597) return "S";
   else if (atk >= 2894 && atk <= 2921) return "A";
   else if (atk >= 2412 && atk <= 2466) return "B";
@@ -117,9 +117,9 @@ const getHPEvoImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 83 -> 83, A: 75 -> 82, B: 68 -> 74, C: 60 -> 67, D: 54 -> 59
+// S: 83 -> 94, A: 75 -> 82, B: 68 -> 74, C: 60 -> 67, D: 54 -> 59
 const getDEFRank = (def) => {
-  if (def >= 83 && def <= 83) return "S";
+  if (def >= 83 && def <= 94) return "S";
   else if (def >= 75 && def <= 82) return "A";
   else if (def >= 68 && def <= 74) return "B";
   else if (def >= 60 && def <= 67) return "C";
@@ -131,9 +131,10 @@ const getDEFImage = (def) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// S: 485 -> 490, A: 441 -> 481, B: 397 -> 437, C: 353 -> 392, D: 0 -> 0
+// SS: 595 -> 595, S: 485 -> 490, A: 441 -> 481, B: 397 -> 437, C: 353 -> 392, D: 0 -> 0
 const getDEFEvoRank = (def) => {
-  if (def >= 485 && def <= 490) return "S";
+  if (def >= 595 && def <= 595) return "SS";
+  else if (def >= 485 && def <= 490) return "S";
   else if (def >= 441 && def <= 481) return "A";
   else if (def >= 397 && def <= 437) return "B";
   else if (def >= 353 && def <= 392) return "C";
@@ -159,8 +160,8 @@ const getSPDImage = (spd) => {
 };
 
 const getCritRank = (crit) => {
-  if (crit >= 13) return "SS";
-  else if (crit >= 10 && crit <= 12) return "S";
+  if (crit >= 16) return "SS";
+  else if (crit >= 10 && crit <= 15) return "S";
   else if (crit >= 8 && crit <= 9) return "A";
   else if (crit >= 5 && crit <= 5) return "B";
   else if (crit >= 3 && crit <= 3) return "C";
@@ -1237,7 +1238,7 @@ const addCKeywordListeners = () => {
                   <td></td>
 
                   <td class="centered-number">
-                    <div class="flex justify-start">{{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[0] : '150' }}%</div>
+                    <div class="flex justify-start">{{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] : '150' }}%</div>
                   </td>
 
                   <td>
@@ -1254,13 +1255,13 @@ const addCKeywordListeners = () => {
                   <td></td>
 
                   <td class="centered-number">
-                    <div class="flex justify-start">0%</div>
+                    <div class="flex justify-start">{{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[0] : '0' }}%</div>
                   </td>
 
                   <td></td>
 
                   <td class="centered-number">
-                    <div class="flex justify-start">0%</div>
+                    <div class="flex justify-start">{{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : '0' }}%</div>
                   </td>
 
                   <td>
@@ -1779,7 +1780,7 @@ const addCKeywordListeners = () => {
                       class="w-full h-full object-contain" :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''" />
                   </div>
                 </td>
-                <td class="px-2 py-1 text-center table-cell"
+                <td class="px-2 py-1 text-center table-cell w-[300px]"
                   v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
                   <div>{{ isEnglish ? skin.name.en : skin.name.vn }}</div>
                 </td>
@@ -1867,11 +1868,11 @@ const addCKeywordListeners = () => {
         ]">
 
           <!-- Animation -->
-          <h2 class="session-title" v-if="shikigami.rarity === 'SP' && shikigami.rarity === 'SSR'">
+          <h2 class="session-title" v-if="shikigami.rarity === 'SP' || shikigami.rarity === 'SSR'">
             {{ isEnglish ? "Animation Summon" : "Hoạt cảnh Triệu hồi" }}
           </h2>
 
-          <div v-if="shikigami.rarity === 'SP' && shikigami.rarity === 'SSR'">
+          <div v-if="shikigami.rarity === 'SP' || shikigami.rarity === 'SSR'">
             <video controls class="w-full h-auto my-5">
               <source :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Animation/${route.params.name}.mp4`" type="video/mp4" />
             </video>
