@@ -340,6 +340,10 @@ const processTextWithTooltips = (text) => {
 
   // === xử lý các tag đặc biệt ===
   processedText = processedText
+  // <i>
+    .replace(/<i>(.*?)<\/i>/g, (_, keyword) =>
+      `<span>${keyword}</span>`
+    )
     // <e>
     .replace(/<e>(.*?)<\/e>/g, (_, keyword) =>
       `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-sm" />`
@@ -351,10 +355,6 @@ const processTextWithTooltips = (text) => {
     // <c>
     .replace(/<c>(.*?)<\/c>/g, (_, keyword) =>
       `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
-    )
-    // <i>
-    .replace(/<i>(.*?)<\/i>/g, (_, keyword) =>
-      `<span>${keyword}</span>`
     );
 
   // === gom các tag cần tooltip lại: f, g, b, a, h ===
