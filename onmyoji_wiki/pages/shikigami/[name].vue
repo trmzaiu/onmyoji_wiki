@@ -350,6 +350,11 @@ const processTextWithTooltips = (text) => {
     /<d>(.*?)<\/d>/g,
     (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
   );
+
+  // <h>...</h>
+  processedText = processedText.replace(/<h>(.*?)<\/h>/g, (m, c) =>
+    replaceWithTooltip(m, c, "h")
+  );
   
   // <f>...</f>
   processedText = processedText.replace(/<f>(.*?)<\/f>/g, (m, c) =>
