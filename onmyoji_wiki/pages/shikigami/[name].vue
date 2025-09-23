@@ -352,6 +352,10 @@ const processTextWithTooltips = (text) => {
     .replace(/<c>(.*?)<\/c>/g, (_, keyword) =>
       `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
     );
+    // <i>
+    .replace(/<i>(.*?)<\/i>/g, (_, keyword) =>
+      `<span>${keyword}</span>`
+    );
 
   // === gom các tag cần tooltip lại: f, g, b, a, h ===
   processedText = processedText.replace(/<(f|g|b|a|h)>(.*?)<\/\1>/g, (m, type, content) =>
