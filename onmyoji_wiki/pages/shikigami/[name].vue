@@ -319,19 +319,19 @@ const processTextWithTooltips = (text) => {
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
     if (type === "f") {
-      // Nếu bắt đầu bằng "HP "
       if (keyword.startsWith("HP ")) {
         keyword = "HP " + keyword.slice(3).toLowerCase();
       } else if (keyword.toUpperCase() === "HP") {
-        // Trường hợp chỉ có "HP"
         keyword = "HP";
       } else {
-        // Các trường hợp khác thì lower hết
         keyword = keyword.toLowerCase();
       }
     }
 
-    if (type === "g") keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+    if (type === "g") {
+      keyword = keyword.toLowerCase();
+      keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+    }
 
     if (type === "b") {
       return `<span class="effect-tooltip"
@@ -342,9 +342,9 @@ const processTextWithTooltips = (text) => {
                 data-color="${color}"
                 style="color:${color}">${keyword}</span>`;
     } else {
-      return `<span ${type === 'i' 
-        ? '' 
-        : `class="effect-highlight" style="color:${color}"`}>${keyword}</span>`;
+      return type === "i"
+        ? `<span>${keyword}</span>`
+        : `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
     }
   };
 
