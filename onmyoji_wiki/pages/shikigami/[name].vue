@@ -689,8 +689,12 @@ const saveSkill = async () => {
   shikigami.value.skills[editingSkillIndex.value] = {
     ...editingSkill.value,
     levels: {
-      en: editingSkill.value.levels.en.map((l) => ({ ...l })),
-      vn: editingSkill.value.levels.vn.map((l) => ({ ...l })),
+      en: Array.isArray(editingSkill.value.levels.en)
+        ? editingSkill.value.levels.en.map((l) => ({ ...l }))
+        : editingSkill.value.levels.en, 
+      vn: Array.isArray(editingSkill.value.levels.vn)
+        ? editingSkill.value.levels.vn.map((l) => ({ ...l }))
+        : editingSkill.value.levels.vn,
     },
     tags: editingSkill.value.tags ? [...editingSkill.value.tags] : [],
     notes: editingSkill.value.notes ? [...editingSkill.value.notes] : [],
