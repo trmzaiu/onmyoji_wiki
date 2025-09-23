@@ -318,7 +318,19 @@ const processTextWithTooltips = (text) => {
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    if (type === "f") keyword = keyword.toLowerCase();
+    if (type === "f") {
+      // Nếu bắt đầu bằng "HP "
+      if (keyword.startsWith("HP ")) {
+        keyword = "HP " + keyword.slice(3).toLowerCase();
+      } else if (keyword.toUpperCase() === "HP") {
+        // Trường hợp chỉ có "HP"
+        keyword = "HP";
+      } else {
+        // Các trường hợp khác thì lower hết
+        keyword = keyword.toLowerCase();
+      }
+    }
+
     if (type === "g") keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
 
     if (type === "b") {
