@@ -383,7 +383,7 @@ const processTextWithTooltips = (text) => {
     );
 
   // f, g, b, a, h 
-  processedText = processedText.replace(/<(f|g|b|a|h|i)>(.*?)<\/\1>/g, (m, type, content) =>
+  processedText = processedText.replace(/<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceWithTooltip(m, content, type)
   );
 
