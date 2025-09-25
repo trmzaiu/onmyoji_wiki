@@ -318,7 +318,7 @@ const processTextWithTooltips = (text) => {
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    if (type === "f") {
+    if (type === "f" || type === "l") {
       if (keyword.startsWith("HP ")) {
         keyword = "HP " + keyword.slice(3).toLowerCase();
       } else if (keyword.toUpperCase() === "HP") {
@@ -342,7 +342,7 @@ const processTextWithTooltips = (text) => {
                 data-color="${color}"
                 style="color:${color}">${keyword}</span>`;
     } else {
-      return type === "i"
+      return (type === "i"|| type === "l")
         ? `<span>${keyword}</span>`
         : `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
     }
