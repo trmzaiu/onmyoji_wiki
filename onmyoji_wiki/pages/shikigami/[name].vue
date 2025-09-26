@@ -2022,7 +2022,7 @@ const addCKeywordListeners = () => {
                       class="rounded rounded-sm" 
                       style="width: 32px; height: 32px; margin-bottom: 8px" />
 
-                  <div class="subnote-description">{{isEnglish ? subsub.description.en : subsub.description.vn}}</div>
+                  <div class="subnote-description" v-html="processTextWithTooltips(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
                 </div>
               </div>
             </div>
