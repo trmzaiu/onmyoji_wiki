@@ -918,10 +918,10 @@ const addCKeywordListeners = () => {
               </tr>
               <tr class="table-row text-sm">
                 <td class="px-4 py-2">
-                  <strong>JP</strong>
+                  <strong>{{ shikigami.collab === true ? 'CN' : 'JP'}}</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div class="whitespace-pre-line">{{ shikigami.name.va }}</div>
+                  <div class="whitespace-pre-line" :class="shikigami.collab === true ? 'lang-zh' : ''">{{ shikigami.name.va }}</div>
                 </td>
               </tr>
               <tr v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'">
