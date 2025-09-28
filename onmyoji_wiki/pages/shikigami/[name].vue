@@ -1271,7 +1271,7 @@ const addCKeywordListeners = () => {
                   </td>
 
                   <td>
-                    <div class="flex justify-start">+{{ shikigami.stats.CritDMG[1] - shikigami.stats.CritDMG[0] }}%</div>
+                    <div class="flex justify-start">+{{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] - shikigami.stats.CritDMG[0] : '0' }}%</div>
                   </td>
                 </tr>
 
@@ -1294,7 +1294,7 @@ const addCKeywordListeners = () => {
                   </td>
 
                   <td>
-                    <div class="flex justify-start">+{{ shikigami.stats.EffectHIT[1] - shikigami.stats.EffectHIT[0] }}%</div>
+                    <div class="flex justify-start">+{{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] - shikigami.stats.EffectHIT[0] : '0' }}%</div>
                   </td>
                 </tr>
 
