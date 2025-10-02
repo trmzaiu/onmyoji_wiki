@@ -1,7 +1,7 @@
 <script setup>
 import { useSupabase } from "@/utils/useSupabase.ts";
 import { useTags } from "@/utils/useTags";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 /* ---------------------- GLOBAL ---------------------- */
@@ -36,9 +36,6 @@ const editingSkillIndex = ref(-1);
 
 const tagsInput = ref("");
 const notesInput = ref("");
-
-const audioPlayer = ref(null);
-const isPlaying = ref(false);
 
 const selectedImage = ref(null);
 const isModalOpen = ref(false);
@@ -842,7 +839,7 @@ const addCKeywordListeners = () => {
                   <strong>CN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div class="lang-zh">{{ shikigami.name.cn[0] }}</div>
+                  <div class="lang-zh">{{ shikigami.name?.cn[0] }}</div>
                   <div>{{ shikigami.name.cn[1] }}</div>
                 </td>
               </tr>
@@ -1631,7 +1628,7 @@ const addCKeywordListeners = () => {
                   1
                 </td>
                 <td class="text-black table-cell px-3">
-                  <span v-html="renderBioText(shikigami.bio[0])"></span>
+                  <span v-html="renderBioText(shikigami.biography[0])"></span>
                 </td>
 
                 <td class="py-1 text-black table-cell w-[100px]">
@@ -1697,7 +1694,7 @@ const addCKeywordListeners = () => {
         ]">
           <!-- Skins -->
           <h2 class="session-title mt-5">
-            {{ isEnglish ? "Skins" : "Ngoại hình" }}
+            {{ isEnglish ? "Skins" : "Trang phục" }}
           </h2>
           <div class="grid grid-cols-3 gap-5 mt-4">
             <div v-for="(skin, index) in shikigami.skins" :key="index" class="flex flex-col items-center"
