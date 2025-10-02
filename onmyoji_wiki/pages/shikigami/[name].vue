@@ -192,8 +192,8 @@ const renderEvoText = (evo) => {
 }
 
 /* ---------------------- BIO RENDER ---------------------- */
-const renderBioText = (bio) => {
-  const bioTemplate = conditions.value.find(b => b.id === bio.no)
+const renderBioText = (biography) => {
+  const bioTemplate = conditions.value.find(b => b.id === biography.no)
   if (!bioTemplate) {
     return ""
   }
@@ -206,9 +206,9 @@ const renderBioText = (bio) => {
 
   const replacements = { name }
 
-  if (bio.count) replacements.count = bio.count
-  if (bio.shiki) {
-    const targetShiki = shikigamiList.value.find(s => s.id === bio.shiki)
+  if (biography.count) replacements.count = biography.count
+  if (biography.shiki) {
+    const targetShiki = shikigamiList.value.find(s => s.id === biography.shiki)
     if (targetShiki) {
       const shikiName = isEnglish.value ? targetShiki.name.en : targetShiki.name.vn
       replacements.shiki = makeHighlight(shikiName, "shikigami")
@@ -217,8 +217,8 @@ const renderBioText = (bio) => {
     }
   }
 
-  if (bio.onmyoji) {
-    const targetOnmyoji = onmyojiList.value.find(o => o.id === bio.onmyoji)
+  if (biography.onmyoji) {
+    const targetOnmyoji = onmyojiList.value.find(o => o.id === biography.onmyoji)
     if (targetOnmyoji) {
       const onmyojiName = isEnglish.value ? targetOnmyoji.name.en : targetOnmyoji.name.vn
       replacements.onmyoji = makeHighlight(onmyojiName, "onmyoji")
@@ -1343,7 +1343,7 @@ const addCKeywordListeners = () => {
                     border: 1px solid #a51919;
                     padding: 5px;
                   ">
-                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${activeSkillIndex+1}`"
+                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${activeSkillIndex+1}.webp`"
                       :alt="shikigami.skills[activeSkillIndex].name.en"
                       :title="shikigami.skills[activeSkillIndex].name.en" />
                   </span>
@@ -1388,7 +1388,7 @@ const addCKeywordListeners = () => {
                       <span class="flex" style="margin-left: 40px">
                         <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
                         <img
-                          src="https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Onibi.webp"
+                          src="/assets/Onibi.webp"
                           alt="Onibi" />
                         {{ shikigami.skills[activeSkillIndex].onibi }}
                       </span>
@@ -1494,7 +1494,7 @@ const addCKeywordListeners = () => {
                     border: 1px solid #a51919;
                     padding: 5px;
                   ">
-                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${index+1}`" :alt="skill.name.en" :title="skill.name.en" />
+                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${index+1}.webp`" :alt="skill.name.en" :title="skill.name.en" />
                   </span>
                   <span style="
                     display: table-cell;
@@ -1698,8 +1698,12 @@ const addCKeywordListeners = () => {
           </h2>
           <div class="grid grid-cols-3 gap-5 mt-4">
             <div v-for="(skin, index) in shikigami.skins" :key="index" class="flex flex-col items-center"
-              :title="skin.name.en || skin.name.cn" @click="openModal(skin.image)">
-              <img :src="skin.image" :alt="skin.name.en || skin.name.cn"
+              :title="skin.name.en || skin.name.cn" @click="openModal((skin.name.en === 'Default' || skin.name.en === 'Evolution') ? `/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution'? '_Evo' : '')}.webp` : `/assets/shikigami/skins/${route.params.name}_Skin${index}.webp`)">
+              <img v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'" :src="`/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution'? '_Evo' : '')}.webp`" :alt="skin.name.en || skin.name.cn"
+                class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer" />
+                <img v-else :src="`/assets/shikigami/skins/${route.params.name}_Skin${(shikigami.rarity === 'SP' || shikigami.rarity === 'N')
+                        ? (index ? index : '')
+                        : index - 1 }.webp`" :alt="skin.name.en || skin.name.cn"
                 class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer" />
               <p class="mt-4 text-center font-medium text-black"
                 :class="{ 'lang-zh': isEnglish ? !skin.name.en && skin.name.cn : false }">
@@ -1760,13 +1764,13 @@ const addCKeywordListeners = () => {
               <tr class="text-black" v-for="(skin, index) in shikigami.skins" :key="index">
                 <td class="px-2 py-2 text-center table-cell w-[105px]" v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
                   <div class="w-24 h-24 overflow-hidden">
-                    <img :src="skin.name.en === 'Default' ? `/assets/shikigami/skins/${route.params.name}_SkinInfo0.webp` : `/assets/shikigami/skins/${route.params.name}_SkinInfo00.webp`" :alt="skin.name.en || skin.name.cn"
+                    <img :src="skin.name.en === 'Default' ? `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp` : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`" :alt="skin.name.en || skin.name.cn"
                       class="w-full h-full object-contain" :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''" />
                   </div>
                 </td>
                 <td class="px-2 py-2 text-center table-cell w-[105px]" v-else>
                   <div class="w-24 h-24 overflow-hidden">
-                    <img :src="`/assets/shikigami/skins/${route.params.name}_SkinInfo${
+                    <img :src="`/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo${
                       (shikigami.rarity === 'SP' || shikigami.rarity === 'N')
                         ? (index ? index : '')
                         : index - 1
