@@ -728,48 +728,6 @@ function updateNotes() {
     .map(Number);
 }
 
-/* ---------------------- AUDIO ---------------------- */
-const playAudio = (audioUrl) => {
-  if (!audioUrl) return
-
-  // Nếu có audio đang phát
-  if (audioPlayer.value) {
-    if (!audioPlayer.value.paused) {
-      // Đang phát → dừng
-      audioPlayer.value.pause()
-      audioPlayer.value.currentTime = 0 // reset về đầu luôn
-      isPlaying.value = false
-      return
-    } else {
-      // Đang pause → phát lại từ đầu
-      audioPlayer.value.currentTime = 0
-      audioPlayer.value.play()
-      isPlaying.value = true
-      return
-    }
-  }
-
-  // Chưa có → tạo audio mới
-  audioPlayer.value = new Audio(audioUrl)
-  audioPlayer.value.play()
-    .then(() => isPlaying.value = true)
-    .catch(err => console.error('Audio play error:', err))
-
-  // Reset khi phát xong
-  audioPlayer.value.addEventListener('ended', () => {
-    isPlaying.value = false
-    audioPlayer.value = null
-  })
-}
-
-onBeforeUnmount(() => {
-  if (audioPlayer.value) {
-    audioPlayer.value.pause()
-    audioPlayer.value = null
-    isPlaying.value = false
-  }
-})
-
 /* ---------------------- LIFECYCLE ---------------------- */
 onMounted(async () => {
   document.title = `${formattedName}`;
@@ -1692,7 +1650,7 @@ const addCKeywordListeners = () => {
                   2
                 </td>
                 <td class="text-black table-cell px-3">
-                  <span v-html="renderBioText(shikigami.bio[1])"></span>
+                  <span v-html="renderBioText(shikigami.biography[1])"></span>
                 </td>
 
                 <td class="py-1 text-black table-cell w-[100px]">
@@ -1711,7 +1669,7 @@ const addCKeywordListeners = () => {
                   3
                 </td>
                 <td class="text-black table-cell px-3">
-                  <span v-html="renderBioText(shikigami.bio[2])"></span>
+                  <span v-html="renderBioText(shikigami.biography[2])"></span>
                 </td>
 
                 <td class="py-1 text-black table-cell w-[100px]">
