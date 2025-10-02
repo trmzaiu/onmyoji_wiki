@@ -1848,7 +1848,7 @@ const addCKeywordListeners = () => {
               <tr class="text-black" v-for="(bio, index) in shikigami.accessories" :key="index">
                 <td class="px-2 py-1 text-center table-cell w-[50px]">{{ bio.no }}</td>
                 <td class="px-2 py-1 text-center table-cell w-[105px]">
-                  <img :src="`/assets/shikigami/bios/${route.params.name}_Bio${index+4}`" :alt="bio.name.en || bio.name.cn" class="w-24 h-24 object-contain mx-auto" />
+                  <img :src="`/assets/shikigami/bios/${route.params.name}_Bio${index+4}.webp`" :alt="bio.name.en || bio.name.cn" class="w-24 h-24 object-contain mx-auto" />
                 </td>
                 <td class="px-2 py-1 text-center table-cell">
                   <div>{{ bio.name.en }}</div>
