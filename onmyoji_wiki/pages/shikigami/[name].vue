@@ -360,6 +360,26 @@ const processTextWithTooltips = (text) => {
     return `<span>${keyword}</span>`;
   };
 
+  const replaceSkill = (match, content, type) => {
+    const index = parseInt(content, 10);
+    if (isNaN(index) || !currentShikigami?.skills?.length) return match;
+
+    const skill = currentShikigami.skills[index];
+    if (!skill) return match;
+
+    const keyword = isEnglish.value
+      ? skill.name?.en || ""
+      : skill.name?.vn || skill.name?.en || "";
+
+    if (type === "c") {
+      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
+    } else if (type === "m") {
+      return `<span>${keyword}</span>`; // chỉ là span trơn
+    }
+
+    return match;
+  };
+
   // === xử lý các tag đặc biệt ===
   processedText = processedText
     // <e>
@@ -369,10 +389,6 @@ const processTextWithTooltips = (text) => {
     // <d>
     .replace(/<d>(.*?)<\/d>/g, (_, keyword) =>
       `<strong class="text-[#c07b2a]">${keyword}</strong>`
-    )
-    // <c>
-    .replace(/<c>(.*?)<\/c>/g, (_, keyword) =>
-      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
     )
     // <k></k>
     .replace(/<k>(.*?)<\/k>/g, (m, content) =>
@@ -384,12 +400,16 @@ const processTextWithTooltips = (text) => {
     replaceWithTooltip(m, content, type)
   );
 
+  processedText = processedText.replace(/<(c|m)>(.*?)<\/\1>/g, (m, type, content) =>
+    replaceSkill(m, content, type)
+  );
+
   return processedText;
 };
 
 const highlightWord = (text) => {
   if (!text) return "";
-  return `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${text}">${text}</span>`;
+  return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${text}">${text}</span>`;
 };
 
 const matchedSubNotes = computed(() => {
@@ -767,7 +787,7 @@ watch(activeTab, async (newTab) => {
 
 const addCKeywordListeners = () => {
   nextTick(() => {
-    document.querySelectorAll(".c-keyword").forEach((el) => {
+    document.querySelectorAll(".skill-keyword").forEach((el) => {
       el.onclick = () => {
         const keyword = el.dataset.keyword;
 
