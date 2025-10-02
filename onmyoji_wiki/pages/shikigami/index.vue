@@ -219,7 +219,7 @@ onMounted(async () => {
               <td class="px-2 py-1 text-center w-[160px]" style="border-left: 1px solid #e0e0e0">
                 <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`"
                   ><img
-                    :src="`/assets/shikigami/shards/${shiki.name.jp[1].replace(/ /g, '_')}_Shard.webp`"
+                    :src="`/assets/shikigami/shards/${shiki.name.jp[1].replace(/ /g, '_')}_Shard.webp` || `/assets/Unknown_Shard.webp`"
                     :alt="shiki.name.jp[1]"
                     class="w-16 h-16 object-contain mx-auto"
                 /></a>
