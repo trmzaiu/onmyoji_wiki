@@ -56,7 +56,7 @@ const closeModal = () => {
 
 /* ---------------------- HELPERS ---------------------- */
 const getImgUrl = (name) =>
-  `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Illustration/${name.replace(/ /g, "_")}.jpg`;
+  `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
 
 // SS: 171 -> 197, S: 140 -> 166, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 75 -> 98
 const getATKRank = (atk) => {
@@ -861,7 +861,7 @@ const addCKeywordListeners = () => {
         <div class="w-2/3 mx-auto">
           <!-- Images -->
           <div class="flex justify-center items-center h-[650px]">
-            <img :src="`/assets/shikigami/images${route.params.name}.webp`" :alt="shikigami.name.jp[1]"
+            <img :src="`/assets/shikigami/images/${route.params.name}.webp`" :alt="shikigami.name.jp[1]"
               class="max-h-full max-w-full object-contain transition-opacity hover:scale-115 transition-transform duration-300" />
           </div>
         </div>
@@ -946,7 +946,7 @@ const addCKeywordListeners = () => {
                 <td colspan="4" class="p-1">
                   <div class="flex flex-col items-center justify-center">
                     <a :href="`/shikigami/${shikigami.version.replace(/ /g, '_')}`">
-                      <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Shards/${shikigami.version.replace(/ /g, '_')}_Shard.webp`" :alt="shikigami.version.name"
+                      <img :src="`/assets/shikigami/shards/${shikigami.version.replace(/ /g, '_')}_Shard.webp`" :alt="shikigami.version.name"
                         class="h-16 w-16 object-contain mb-1" /></a>
                     <router-link :to="`/shikigami/${shikigami.version.replace(/ /g, '_')}`"
                       class="text-black font-bold hover:text-[#a51919] font-[14px]">
@@ -1025,7 +1025,7 @@ const addCKeywordListeners = () => {
                   <th rowspan="9">&nbsp;</th>
                   <th colspan="2">
                     <figure class="icon-img" style="position: relative">
-                      <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Icons/${route.params.name}_Icon.webp`" :alt="shikigami.name.jp[1]" style="object-fit: contain"
+                      <img :src="`/assets/shikigami/icons/${route.params.name}_Icon.webp`" :alt="shikigami.name.jp[1]" style="object-fit: contain"
                         width="90" />
                       <div style="
                         color: #a51919;
@@ -1051,7 +1051,7 @@ const addCKeywordListeners = () => {
                   <th rowspan="9">&nbsp;</th>
                   <th colspan="2">
                     <figure class="icon-img" style="position: relative">
-                      <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Icons/${route.params.name}_Icon${shikigami.rarity !== 'SP' && shikigami.rarity !== 'N' ? '_Evo' : ''}.webp`
+                      <img :src="`/assets/shikigami/icons/${route.params.name}_Icon${shikigami.rarity !== 'SP' && shikigami.rarity !== 'N' ? '_Evo' : ''}.webp`
                       " :alt="shikigami.name.jp[1]" style="object-fit: contain" width="90" />
                       <div style="
                         color: #a51919;
@@ -1388,7 +1388,7 @@ const addCKeywordListeners = () => {
                     border: 1px solid #a51919;
                     padding: 5px;
                   ">
-                    <img :src="shikigami.skills[activeSkillIndex].image"
+                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${activeSkillIndex+1}`"
                       :alt="shikigami.skills[activeSkillIndex].name.en"
                       :title="shikigami.skills[activeSkillIndex].name.en" />
                   </span>
@@ -1539,7 +1539,7 @@ const addCKeywordListeners = () => {
                     border: 1px solid #a51919;
                     padding: 5px;
                   ">
-                    <img :src="skill.image" :alt="skill.name.en" :title="skill.name.en" />
+                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${index+1}`" :alt="skill.name.en" :title="skill.name.en" />
                   </span>
                   <span style="
                     display: table-cell;
@@ -1697,7 +1697,7 @@ const addCKeywordListeners = () => {
 
                 <td class="py-1 text-black table-cell w-[100px]">
                   <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
-                    <img :src="shikigami.id === 144 ? '/assets/Jade.webp' : (shikigami.id === 71 ? '/assets/Black_Daruma.webp' : `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Shards/${route.params.name}_Shard.webp`)" :alt="shikigami.name.jp" class="max-h-full max-w-full object-contain" />
+                    <img :src="shikigami.id === 144 ? '/assets/Jade.webp' : (shikigami.id === 71 ? '/assets/Black_Daruma.webp' : `/assets/shikigami/shards/${route.params.name}_Shard.webp`)" :alt="shikigami.name.jp" class="max-h-full max-w-full object-contain" />
                     <span class="absolute bottom-0 right-0 text-white font-bold" style="
                       text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                         1px 1px 0 #000;
@@ -1716,7 +1716,7 @@ const addCKeywordListeners = () => {
 
                 <td class="py-1 text-black table-cell w-[100px]">
                   <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
-                    <img :src="shikigami.id !== 144 ? '/assets/Jade.webp' : `https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Shards/${route.params.name}_Shard.webp`" alt="Jade" class="max-h-full max-w-full object-contain" />
+                    <img :src="shikigami.id !== 144 ? '/assets/Jade.webp' : `/assets/shikigami/shards/${route.params.name}_Shard.webp`" alt="Jade" class="max-h-full max-w-full object-contain" />
                     <span class="absolute bottom-0 right-0 text-white font-bold" style="
                       text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                         1px 1px 0 #000;
@@ -1803,9 +1803,19 @@ const addCKeywordListeners = () => {
             </thead>
             <tbody>
               <tr class="text-black" v-for="(skin, index) in shikigami.skins" :key="index">
-                <td class="px-2 py-2 text-center table-cell w-[105px]">
+                <td class="px-2 py-2 text-center table-cell w-[105px]" v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
                   <div class="w-24 h-24 overflow-hidden">
-                    <img :src="skin.image_info" :alt="skin.name.en || skin.name.cn"
+                    <img :src="skin.name.en === 'Default' ? `/assets/shikigami/skins/${route.params.name}_SkinInfo0.webp` : `/assets/shikigami/skins/${route.params.name}_SkinInfo00.webp`" :alt="skin.name.en || skin.name.cn"
+                      class="w-full h-full object-contain" :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''" />
+                  </div>
+                </td>
+                <td class="px-2 py-2 text-center table-cell w-[105px]" v-else>
+                  <div class="w-24 h-24 overflow-hidden">
+                    <img :src="`/assets/shikigami/skins/${route.params.name}_SkinInfo${
+                      (shikigami.rarity === 'SP' || shikigami.rarity === 'N')
+                        ? (index ? index : '')
+                        : index - 1
+                          }.webp`" :alt="skin.name.en || skin.name.cn"
                       class="w-full h-full object-contain" :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''" />
                   </div>
                 </td>
@@ -1859,7 +1869,7 @@ const addCKeywordListeners = () => {
               <tr class="text-black" v-for="(bio, index) in shikigami.accessories" :key="index">
                 <td class="px-2 py-1 text-center table-cell w-[50px]">{{ bio.no }}</td>
                 <td class="px-2 py-1 text-center table-cell w-[105px]">
-                  <img :src="bio.image" :alt="bio.name.en || bio.name.cn" class="w-24 h-24 object-contain mx-auto" />
+                  <img :src="`/assets/shikigami/bios/${route.params.name}_Bio${index+4}`" :alt="bio.name.en || bio.name.cn" class="w-24 h-24 object-contain mx-auto" />
                 </td>
                 <td class="px-2 py-1 text-center table-cell">
                   <div>{{ bio.name.en }}</div>
@@ -1886,84 +1896,6 @@ const addCKeywordListeners = () => {
                 class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md">
                 {{ img.name }}
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dialogue Tab -->
-        <div v-show="activeTab === 'dialogue'" :class="[
-          activeTab === 'dialogue' ? 'opacity-100' : 'opacity-0',
-          isEnglish ? 'lang-en' : 'lang-vi',
-        ]">
-
-          <!-- Animation -->
-          <h2 class="session-title" v-if="shikigami.rarity === 'SP' || shikigami.rarity === 'SSR'">
-            {{ isEnglish ? "Animation Summon" : "Hoạt cảnh Triệu hồi" }}
-          </h2>
-
-          <div v-if="shikigami.rarity === 'SP' || shikigami.rarity === 'SSR'">
-            <video controls class="w-full h-auto my-5">
-              <source :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Animation/${route.params.name}.mp4`" type="video/mp4" />
-            </video>
-          </div>
-
-          <h2 class="session-title" v-if="shikigami.bios && shikigami.name.cv">
-            {{ isEnglish ? "Bios" : "Tiểu Sử" }}
-          </h2>
-          <div class="shikigami-profile mt-5 flex relative" v-if="shikigami.bios && shikigami.name.cv">
-            <!-- Left panel: CV -->
-            <div class="left-panel mr-auto">
-              <div class="cv-box">
-                <img src="/assets/blue_btn.webp" class="cv-bg">
-                <div class="cv-content">
-                  <div class="cv-text text-center">
-                    CV<span>{{ shikigami.name.cv }}</span>
-                  </div>
-                  <div class="mt-5" v-if="shikigami.name.cv && shikigami.rarity !== 'N'">
-                    <button class="cv-audio" @click="playAudio(`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Audio/${route.params.name}.mp3`)">
-                      <i :class="isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-volume-high'"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Middle panel: Bio -->
-            <div class="bio-panel flex-1"> 
-              <div class="bio-panel-text">
-                <p v-if="shikigami.bios && shikigami.bios[activeBioTab]" class="bio-text-vertical text-black">
-                  <span v-for="(line, idx) in shikigami.bios[activeBioTab].brief.cn.split('\n')" :key="idx">
-                    {{ line }}
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            <!-- Right panel: Tabs -->
-            <div class="right-panel">
-              <div class="right-container text-black flex flex-col">
-                <!-- Tab name cố định -->
-                <div class="tab-name lang-zh mb-5 pb-3">
-                  {{ shikigami.name.cn[0] }}
-                </div>
-
-                <!-- Tab list scroll -->
-                <div class="flex-1 overflow-y-auto hide-scrollbar">
-                  <div class="tabs">
-                    <div class="mt-2" 
-                        v-for="(tab, i) in shikigami.bios" 
-                        :key="i"
-                        :class="['tab', { active: activeBioTab===i }]" 
-                        @click="activeBioTab=i">
-                      {{ '传记 ' + (tab.no) }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="absolute left-0 bottom-0 w-32 h-auto z-10">
-              <img src="/public/assets/Paperdoll.webp" class="object-contain" />
             </div>
           </div>
         </div>
