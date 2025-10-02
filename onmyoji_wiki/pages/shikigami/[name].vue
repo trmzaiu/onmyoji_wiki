@@ -1873,7 +1873,7 @@ const addCKeywordListeners = () => {
           {{ tooltipData.name }} <span class="lang-zh" v-if="tooltipData.cn">({{ tooltipData.cn }})</span>
         </div>
         <div v-if="imgs.length" class="tooltip-images pb-1">
-          <img v-for="(img, i) in imgs" :key="i" :src="'/assets/effects/' + img" :alt="img" class="tooltip-img rounded rounded-sm" />
+          <img v-for="(img, i) in imgs" :key="i" :src="'/assets/effects/' + img + '.webp'" :alt="img" class="tooltip-img rounded rounded-sm" />
         </div>
 
         <div class="tooltip-description whitespace-pre-line" v-html="processTextWithTooltips(tooltipData.description)">
