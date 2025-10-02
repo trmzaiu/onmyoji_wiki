@@ -1761,7 +1761,7 @@ const addCKeywordListeners = () => {
 
           <!-- Skins Info -->
           <h2 class="session-title mt-5">
-            {{ isEnglish ? "Skins Info" : "Thông tin ngoại hình" }}
+            {{ isEnglish ? "Skins Info" : "Thông tin trang phục" }}
           </h2>
           <table class="w-full mt-4" style="border: 1px solid #a51919">
             <thead>
