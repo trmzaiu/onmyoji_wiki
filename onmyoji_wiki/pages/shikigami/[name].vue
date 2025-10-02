@@ -861,7 +861,7 @@ const addCKeywordListeners = () => {
         <div class="w-2/3 mx-auto">
           <!-- Images -->
           <div class="flex justify-center items-center h-[650px]">
-            <img :src="`https://twdujdgoxkgbvdkstske.supabase.co/storage/v1/object/public/Shikigami/Images/${route.params.name}.webp`" :alt="shikigami.name.jp[1]"
+            <img :src="`/assets/shikigami/images${route.params.name}.webp`" :alt="shikigami.name.jp[1]"
               class="max-h-full max-w-full object-contain transition-opacity hover:scale-115 transition-transform duration-300" />
           </div>
         </div>
