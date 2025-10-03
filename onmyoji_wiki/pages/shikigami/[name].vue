@@ -466,14 +466,12 @@ const highlightProfileText = (profile) => {
   const text = isEnglish.value ? profile.en : profile.vn;
   if (!text) return "";
 
-  return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
+  let result = text;
+
+  // 🟦 B1: Xử lý <a>...ID...</a> → chỉ đổi ID thành tên
+  result = result.replace(/<a([^>]*)>(.*?)<\/a>/g, (match, attrs, inner) => {
     const content = inner.trim();
     if (!content) return match;
-
-    // nếu bên trong đã có thẻ <a> thì giữ nguyên luôn, không xử lý
-    if (/<a\s/i.test(content)) {
-      return match;
-    }
 
     let targetType = null;
     let targetData = null;
@@ -486,6 +484,44 @@ const highlightProfileText = (profile) => {
       if (targetData) targetType = "onmyoji";
     } else {
       // mặc định là shikigami id
+      const shikiId = parseInt(content, 10);
+      if (!isNaN(shikiId)) {
+        targetData = shikigamiList.value?.find(s => s.id === shikiId);
+        if (targetData) targetType = "shikigami";
+      }
+    }
+
+    if (!targetType || !targetData) return match;
+
+    // đổi ID thành tên hiển thị
+    let keyword = "";
+    if (targetType === "shikigami") {
+      const n = targetData.name;
+      keyword = isEnglish.value ? n.en || n.vn : n.vn || n.en;
+    } else if (targetType === "onmyoji") {
+      const n = targetData.name;
+      keyword = isEnglish.value ? n.en || n.vn : n.vn || n.en;
+    }
+
+    return `<a${attrs}>${keyword}</a>`;
+  });
+
+  // 🟨 B2: Xử lý <b>...ID...</b> → highlight + đổi ID thành tên + bọc link
+  result = result.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
+    const content = inner.trim();
+    if (!content) return match;
+
+    let targetType = null;
+    let targetData = null;
+
+    // onmyoji dạng o-<id>
+    const onmyojiMatch = content.match(/^o-(\d+)$/i);
+    if (onmyojiMatch) {
+      const id = parseInt(onmyojiMatch[1], 10);
+      targetData = onmyojiList.value?.find(o => o.id === id);
+      if (targetData) targetType = "onmyoji";
+    } else {
+      // shikigami id
       const shikiId = parseInt(content, 10);
       if (!isNaN(shikiId)) {
         targetData = shikigamiList.value?.find(s => s.id === shikiId);
@@ -510,9 +546,10 @@ const highlightProfileText = (profile) => {
 
     finalName = finalName.replace(/\s+/g, "_");
 
-    // chỉ tạo link nếu chưa có sẵn
     return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
   });
+
+  return result;
 };
 
 /* ---------------------- TOOLTIP EVENTS ---------------------- */
