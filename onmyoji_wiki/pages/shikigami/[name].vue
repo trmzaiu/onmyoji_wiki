@@ -394,15 +394,17 @@ const processTextWithTooltips = (text) => {
     .replace(/<k>(.*?)<\/k>/g, (m, content) =>
       replaceShikigami(m, content)
     );
+    
+  processedText = processedText.replace(/<(c|m)>(.*?)<\/\1>/g, (m, type, content) =>
+    replaceSkill(m, content, type)
+  );
 
   // f, g, b, a, h 
   processedText = processedText.replace(/<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceWithTooltip(m, content, type)
   );
 
-  processedText = processedText.replace(/<(c|m)>(.*?)<\/\1>/g, (m, type, content) =>
-    replaceSkill(m, content, type)
-  );
+  
 
   return processedText;
 };
