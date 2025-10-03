@@ -362,9 +362,9 @@ const processTextWithTooltips = (text) => {
 
   const replaceSkill = (match, content, type) => {
     const index = parseInt(content, 10);
-    if (isNaN(index) || !currentShikigami?.skills?.length) return match;
+    if (isNaN(index) || !shikigami?.skills?.length) return match;
 
-    const skill = currentShikigami.skills[index];
+    const skill = shikigami.skills[index];
     if (!skill) return match;
 
     const keyword = isEnglish.value
