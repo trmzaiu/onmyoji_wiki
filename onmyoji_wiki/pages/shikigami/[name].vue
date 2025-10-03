@@ -466,46 +466,46 @@ const highlightProfileText = (profile) => {
   const text = isEnglish.value ? profile.en : profile.vn;
   if (!text) return "";
 
-  // tìm tất cả <b>...</b>
   return text.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
-    const keyword = inner.trim();
-    if (!keyword) return match;
+    const content = inner.trim();
+    if (!content) return match;
 
     let targetType = null;
-    let finalName = keyword;
+    let targetData = null;
 
-    // check shikigami
-    const targetShikigami = shikigamiList.value?.find((s) => {
-      const n = s.name || {};
-      return [n.en, n.vn, n.jp]
-        .flatMap(v => Array.isArray(v) ? v : [v])
-        .some(name => name?.toLowerCase() === keyword.toLowerCase());
-    });
-
-    if (targetShikigami) {
-      targetType = "shikigami";
-      const n = targetShikigami.name;
-      finalName = Array.isArray(n.jp) ? n.jp[1] || n.jp[0] : n.jp || keyword;
-    } else if (onmyojiList.value?.length) {
-      // check onmyoji
-      const targetOnmyoji = onmyojiList.value.find((o) => {
-        const n = o.name || {};
-        return [n.en, n.vn, n.jp]
-          .flatMap(v => Array.isArray(v) ? v : [v])
-          .some(name => name?.toLowerCase() === keyword.toLowerCase());
-      });
-      if (targetOnmyoji) {
-        targetType = "onmyoji";
-        finalName = targetOnmyoji.name.en || keyword;
+    // check onmyoji dạng o-<id>
+    const onmyojiMatch = content.match(/^o-(\d+)$/i);
+    if (onmyojiMatch) {
+      const id = parseInt(onmyojiMatch[1], 10);
+      targetData = onmyojiList.value?.find(o => o.id === id);
+      if (targetData) targetType = "onmyoji";
+    } else {
+      // mặc định là shikigami id
+      const shikiId = parseInt(content, 10);
+      if (!isNaN(shikiId)) {
+        targetData = shikigamiList.value?.find(s => s.id === shikiId);
+        if (targetData) targetType = "shikigami";
       }
+    }
+
+    if (!targetType || !targetData) return match;
+
+    let finalName = "";
+    let keyword = "";
+
+    if (targetType === "shikigami") {
+      const n = targetData.name;
+      finalName = (Array.isArray(n.jp) ? n.jp[1] || n.jp[0] : n.jp) || n.en || n.vn;
+      keyword = isEnglish.value ? n.en || n.vn : n.vn || n.en;
+    } else if (targetType === "onmyoji") {
+      const n = targetData.name;
+      finalName = n.en || n.vn;
+      keyword = isEnglish.value ? n.en || n.vn : n.vn || n.en;
     }
 
     finalName = finalName.replace(/\s+/g, "_");
 
-    if (targetType) {
-      return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
-    }
-    return match;
+    return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
   });
 };
 
