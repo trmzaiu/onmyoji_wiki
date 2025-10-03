@@ -363,6 +363,7 @@ const processTextWithTooltips = (text) => {
   const replaceSkill = (match, content, type) => {
     const index = parseInt(content, 10);
     if (isNaN(index) || !shikigami?.skills?.length) return match;
+    console.log("Shiki": shikigami);
 
     const skill = shikigami.skills[index-1];
     if (!skill) return match;
