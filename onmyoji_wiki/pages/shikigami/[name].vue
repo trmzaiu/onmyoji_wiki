@@ -470,6 +470,11 @@ const highlightProfileText = (profile) => {
     const content = inner.trim();
     if (!content) return match;
 
+    // nếu bên trong đã có thẻ <a> thì giữ nguyên luôn, không xử lý
+    if (/<a\s/i.test(content)) {
+      return match;
+    }
+
     let targetType = null;
     let targetData = null;
 
@@ -505,6 +510,7 @@ const highlightProfileText = (profile) => {
 
     finalName = finalName.replace(/\s+/g, "_");
 
+    // chỉ tạo link nếu chưa có sẵn
     return `<b><a href="/${targetType}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`;
   });
 };
