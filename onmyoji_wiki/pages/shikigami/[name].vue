@@ -664,6 +664,7 @@ async function fetchIllustrations(shikiId) {
     console.error("Error fetching illustrations:", error);
   } else {
     illustrations.value = data;
+    console.log(data);
   }
 }
 
