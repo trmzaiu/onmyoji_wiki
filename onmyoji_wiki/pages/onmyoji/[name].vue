@@ -31,18 +31,23 @@ const processTextWithTooltips = (text) => {
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
   const effectMap = new Map();
 
-  // build effectMap theo name để vẫn hỗ trợ chữ
+  // build effectMap
   effects.value.forEach((note) => {
     const addToMap = (n) => {
       const names = [];
       if (n.name?.en) names.push(n.name.en);
       if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
+      if (n.name?.cn && n.name.cn !== n.name.en && n.name.cn !== n.name.vn) {
+        names.push(n.name.cn);
+      }
       names.forEach((name) => {
-        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), n);
+        if (!effectMap.has(name.toLowerCase())) {
+          effectMap.set(name.toLowerCase(), n);
+        }
       });
     };
-    addToMap(note);
 
+    addToMap(note);
     if (note.subs?.length) {
       note.subs.forEach((subId) => {
         const sub = effectById.get(subId);
@@ -64,50 +69,79 @@ const processTextWithTooltips = (text) => {
 
     if (!note) return match;
 
-    const keyword = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
+    let keyword = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    const className = type === "b" ? "effect-tooltip" : "effect-highlight";
+    if (type === "f" || type === "l") {
+      if (keyword.startsWith("HP ")) {
+        keyword = "HP " + keyword.slice(3).toLowerCase();
+      } else if (keyword.toUpperCase() === "HP") {
+        keyword = "HP";
+      } else {
+        keyword = keyword.toLowerCase();
+      }
+    }
 
-    return `<span class="${className}"
-              data-name="${keyword}"
-                            data-name-cn="${note.name?.cn || ""}"
+    if (type === "g") {
+      keyword = keyword.toLowerCase();
+      keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+    }
 
-              data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-              data-img='${JSON.stringify(note.images || [])}'
-              data-color="${color}"
-              style="color:${color}">${keyword}</span>`;
+    if (type === "b") {
+      return `<span class="effect-tooltip"
+                data-name="${keyword}"
+                data-name-cn="${note.name?.cn || ""}"
+                data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+                data-img='${JSON.stringify(note.images || [])}'
+                data-color="${color}"
+                style="color:${color}">${keyword}</span>`;
+    } else {
+      return (type === "i"|| type === "l")
+        ? `<span>${keyword}</span>`
+        : `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
+    }
   };
 
-  // <e>...</e>
-  processedText = processedText.replace(
-    /<e>(.*?)<\/e>/g,
-    (_, keyword) =>
-      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom" />`
+  const replaceSkill = (match, content, type) => {
+    const index = parseInt(content, 10);
+
+    if (isNaN(index) || !onmyoji.value?.skills?.length) return match;
+    
+    const skill = onmyoji.value?.skills[index-1];
+    if (!skill) return match;
+
+    const keyword = isEnglish.value
+      ? skill.name?.en || ""
+      : skill.name?.vn || skill.name?.en || "";
+
+    if (type === "c") {
+      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
+    } else if (type === "m") {
+      return `<span>${keyword}</span>`; // chỉ là span trơn
+    }
+
+    return match;
+  };
+
+  // === xử lý các tag đặc biệt ===
+  processedText = processedText
+    // <e>
+    .replace(/<e>(.*?)<\/e>/g, (_, keyword) =>
+      `<img src="/assets/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
+    )
+    // <d>
+    .replace(/<d>(.*?)<\/d>/g, (_, keyword) =>
+      `<strong class="text-[#c07b2a]">${keyword}</strong>`
+    )
+    
+  processedText = processedText.replace(/<(c|m)>(.*?)<\/\1>/g, (m, type, content) =>
+    replaceSkill(m, content, type)
   );
 
-  // <d>...</d>
-  processedText = processedText.replace(
-    /<d>(.*?)<\/d>/g,
-    (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
-  );
-
-  // <b>...</b>
-  processedText = processedText.replace(/<b>(.*?)<\/b>/g, (m, c) =>
-    replaceWithTooltip(m, c, "b")
-  );
-
-  // <a>...</a>
-  processedText = processedText.replace(/<a>(.*?)<\/a>/g, (m, c) =>
-    replaceWithTooltip(m, c, "a")
-  );
-
-  // <c>...</c>
-  processedText = processedText.replace(
-    /<c>(.*?)<\/c>/g,
-    (_, keyword) =>
-      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
+  // f, g, b, a, h 
+  processedText = processedText.replace(/<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g, (m, type, content) =>
+    replaceWithTooltip(m, content, type)
   );
 
   return processedText;
@@ -266,9 +300,7 @@ watch(isEnglish, async () => {
         <div
           class="flex justify-center w-2/3 hover:scale-115 transition-transform duration-200"
         >
-          <img
-            :src="onmyoji.images.image"
-            :alt="onmyoji.name.en"
+          <img :src="`/assets/onmyoji/images/${route.params.name}.webp`" :alt="onmyoji.name.en"
             class="max-h-[500px] object-contain"
           />
         </div>
@@ -326,7 +358,7 @@ watch(isEnglish, async () => {
                   <strong>JP</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div>{{ onmyoji.va }}</div>
+                  <div>{{ onmyoji.name.va }}</div>
                 </td>
               </tr>
             </tbody>
@@ -390,7 +422,7 @@ watch(isEnglish, async () => {
                 <th>
                   <figure class="icon-img" style="position: relative">
                     <img
-                      :src="onmyoji.images.image_icon"
+                      :src="`/assets/onmyoji/icons/${ route.params.name }_Icon.webp`"
                       :alt="onmyoji.name.en"
                       style="object-fit: contain"
                       width="90"
@@ -415,7 +447,7 @@ watch(isEnglish, async () => {
                 <th style="padding: 0; margin: 0">
                   <figure class="icon-img" style="position: relative">
                     <img
-                      :src="onmyoji.images.image_icon_totem"
+                      :src="`/assets/onmyoji/icons/${ route.params.name }_Icon2.webp`"
                       :alt="onmyoji.name.en"
                       style="object-fit: contain"
                       width="90"
@@ -552,7 +584,7 @@ watch(isEnglish, async () => {
               "
               class="skill-icon"
             >
-              <img :src="skill.image" :alt="skill.name.en" />
+              <img :src="`/assets/onmyoji/skills/${route.params.name}_Skill${index+1}.webp`" :alt="skill.name.en" />
             </span>
             <span
               style="
@@ -716,28 +748,16 @@ watch(isEnglish, async () => {
             isEnglish ? 'lang-en' : 'lang-vi',
           ]"
         >
-          <div class="flex flex-col items-center" title="Default">
-            <img
-              :src="onmyoji.images.image"
-              :alt="onmyoji.name.jp[1]"
-              class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300"
-            />
-            <p
-              class="mt-4 text-center font-medium text-black"
-              :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-            >
-              {{ isEnglish ? "Default" : "Mặc định" }}
-            </p>
-          </div>
           <div
-            v-for="(skin, index) in onmyoji.skins.slice(0, -1)"
+            v-for="(skin, index) in onmyoji.skins"
             :key="index"
             class="flex flex-col items-center"
             :title="skin.name.en || skin.name.cn"
           >
             <img
-              :src="skin.image"
+              :src="(index === 0) ? `/assets/onmyoji/images/${route.params.name}.webp` : `/assets/onmyoji/skins/${route.params.name}_Skin${index}.webp`"
               :alt="skin.name.en || skin.name.cn"
+              @click="openModal((index === 0) ? `/assets/onmyoji/images/${route.params.name}.webp` : `/assets/onmyoji/skins/${route.params.name}_Skin${index}.webp`)"
               class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
             />
             <p class="mt-4 text-center font-medium text-black">
@@ -763,8 +783,9 @@ watch(isEnglish, async () => {
             :title="skin.name.en || skin.name.cn"
           >
             <img
-              :src="skin.image"
+              :src="`/assets/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${index+1}.webp`"
               :alt="skin.name.en || skin.name.cn"
+              @click="openModal(`/assets/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${index+1}.webp`)"
               class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
             />
             <p
@@ -775,6 +796,33 @@ watch(isEnglish, async () => {
             </p>
           </div>
         </div>
+
+        <!-- Modal -->
+          <div
+            v-if="isModalOpen"
+            class="fixed inset-0 z-50 flex items-center justify-center"
+          >
+            <!-- Overlay -->
+            <div
+              class="absolute inset-0 bg-black/50"
+              @click="closeModal"
+            ></div>
+
+            <!-- Modal content -->
+            <div class="relative z-10 bg-white max-w-3xl w-full p-4 rounded-lg shadow-2xl">
+              <button
+                class="absolute top-2 right-3 text-black text-[40px] cursor-pointer"
+                @click="closeModal"
+              >
+                ✕
+              </button>
+              <img
+                :src="selectedImage"
+                alt="Skin Preview"
+                class="w-full h-auto"
+              />
+            </div>
+          </div>
 
         <!-- Skins Info -->
         <h2
@@ -836,40 +884,21 @@ watch(isEnglish, async () => {
             </tr>
           </thead>
           <tbody>
-            <tr class="text-black">
-              <td
-                class="w-26 h-26 px-2 py-1 text-center"
-                style="border: 1px solid #a51919"
-              >
-                <img
-                  :src="onmyoji.images.image_skin"
-                  alt="Default Skin"
-                  class="w-24 h-24 object-contain mx-auto"
-                />
-              </td>
-              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-                Default
-              </td>
-              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
-                {{ onmyoji.skins[onmyoji.skins.length - 1].artist || "" }}
-              </td>
-              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919"></td>
-            </tr>
             <tr
               class="text-black"
-              v-for="(skin, index) in onmyoji.skins.slice(0, -1)"
+              v-for="(skin, index) in onmyoji.skins"
               :key="index"
             >
-              <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
+              <td class="px-2 py-1 text-center w-[105px]" style="border: 1px solid #a51919">
                 <img
-                  :src="skin.image_info"
+                  :src="`/assets/onmyoji/skinsInfo/${route.params.name}_SkinInfo${index}.webp`"
                   :alt="skin.name.en || skin.name.cn"
                   class="w-24 h-24 object-contain mx-auto"
                 />
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 <div>{{ skin.name.en }}</div>
-                <div><span class="lang-zh">{{ skin.name.cn }}</span> - <span class="lang-vi">{{ skin.name.vn }}</span></div>
+                <div><span class="lang-zh">{{ skin.name.cn }}</span> {{ index === 0 ? '' : '-' }} <span class="lang-vi">{{ skin.name.vn }}</span></div>
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 <span class="lang-zh">{{ skin.artist }}</span>
@@ -909,9 +938,9 @@ watch(isEnglish, async () => {
           </thead>
           <tbody>
             <tr class="text-black" v-for="(skin, index) in onmyoji.totem" :key="index">
-              <td class="px-2 py-1 text-center w-26" style="border: 1px solid #a51919">
+              <td class="px-2 py-1 text-center w-26 w-[105px]" style="border: 1px solid #a51919">
                 <img
-                  :src="skin.image_info"
+                  :src="`/assets/onmyoji/totemsInfo/${onmyoji.totem[0].name.en}_SkinInfo${index+1}.webp`"
                   :alt="skin.name.en || skin.name.cn"
                   class="w-24 h-24 object-contain mx-auto"
                 />
@@ -952,7 +981,7 @@ watch(isEnglish, async () => {
         <img
           v-for="(img, i) in imgs"
           :key="i"
-          :src="'/assets/effects/' + img"
+          :src="`/assets/effects/${img}.webp`"
           :alt="img"
           class="tooltip-img"
         />
@@ -975,7 +1004,7 @@ watch(isEnglish, async () => {
               v-if="sub.images"
               v-for="(img, i) in sub.images"
               :key="i"
-              :src="'/assets/effects/' + img"
+              :src="`/assets/effects/${img}.webp`"
               :alt="img"
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />

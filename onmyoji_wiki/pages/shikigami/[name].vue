@@ -405,8 +405,6 @@ const processTextWithTooltips = (text) => {
     replaceWithTooltip(m, content, type)
   );
 
-  
-
   return processedText;
 };
 
@@ -1768,10 +1766,10 @@ const addCKeywordListeners = () => {
               :title="skin.name.en || skin.name.cn" @click="openModal((skin.name.en === 'Default' || skin.name.en === 'Evolution') ? `/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution'? '_Evo' : '')}.webp` : `/assets/shikigami/skins/${route.params.name}_Skin${index}.webp`)">
               <img v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'" :src="`/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution'? '_Evo' : '')}.webp`" :alt="skin.name.en || skin.name.cn"
                 class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer" />
-                <img v-else :src="`/assets/shikigami/skins/${route.params.name}_Skin${(shikigami.rarity === 'SP' || shikigami.rarity === 'N')
-                        ? (index ? index : '')
-                        : index - 1 }.webp`" :alt="skin.name.en || skin.name.cn"
-                class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer" />
+              <img v-else :src="`/assets/shikigami/skins/${route.params.name}_Skin${(shikigami.rarity === 'SP' || shikigami.rarity === 'N')
+                      ? (index ? index : '')
+                      : index - 1 }.webp`" :alt="skin.name.en || skin.name.cn"
+              class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer" />
               <p class="mt-4 text-center font-medium text-black"
                 :class="{ 'lang-zh': isEnglish ? !skin.name.en && skin.name.cn : false }">
                 {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
