@@ -617,6 +617,13 @@ watch(isEnglish, async () => {
                 <span style="margin-left: 25px; font-size: smaller">
                   <b>{{ isEnglish ? "Type" : "Loại" }}:</b> {{ skill.type }}
                 </span>
+                <span class="flex" style="margin-left: 40px">
+                  <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
+                  <img
+                    src="/assets/Onibi.webp"
+                    alt="Onibi" />
+                  0
+                </span>
                 <span style="margin-left: 25px; font-size: smaller">
                   <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
                   {{ skill.cooldown }}
