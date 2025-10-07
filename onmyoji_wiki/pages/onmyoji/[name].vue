@@ -613,8 +613,8 @@ watch(isEnglish, async () => {
           </div>
           <div style="padding: 10px 25px; border: 1px solid #a51919">
             <div class="text-black pb-5 skill-header">
-              <div class="skill-info">
-                <span style="margin-left: 25px; font-size: smaller">
+              <div class="skill-info flex">
+                <span style="margin-left: 25px">
                   <b>{{ isEnglish ? "Type" : "Loại" }}:</b> {{ skill.type }}
                 </span>
                 <span class="flex" style="margin-left: 40px">
@@ -624,7 +624,7 @@ watch(isEnglish, async () => {
                     alt="Onibi" />
                   0
                 </span>
-                <span style="margin-left: 25px; font-size: smaller">
+                <span style="margin-left: 25px;">
                   <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
                   {{ skill.cooldown }}
                 </span>
