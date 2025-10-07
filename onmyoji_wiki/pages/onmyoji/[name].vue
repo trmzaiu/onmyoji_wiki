@@ -309,7 +309,7 @@ watch(isEnglish, async () => {
   addTooltipListeners();
 });
 
-watch(activeTab, async (newTab) => {
+watch(activeMainTab, async (newTab) => {
   if (newTab === "gallery" && illustrations.value.length === 0) {
     await fetchIllustrations(onmyoji.value?.id);
   }
@@ -1006,16 +1006,16 @@ watch(activeTab, async (newTab) => {
 
         <h2 class="session-title mt-5">
             {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
-          </h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mt-4">
-            <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden shadow-md relative aspect-video">
-              <img :src="getImgUrl(img.name)" :alt="img.name" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" :title="img.name" @click="openModal(getImgUrl(img.name))"/>
-              <div 
-                class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md">
-                {{ img.name }}
-              </div>
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mt-4">
+          <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden shadow-md relative aspect-video">
+            <img :src="getImgUrl(img.name)" :alt="img.name" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" :title="img.name" @click="openModal(getImgUrl(img.name))"/>
+            <div 
+              class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md">
+              {{ img.name }}
             </div>
           </div>
+        </div>
       </div>
     </div>
 
