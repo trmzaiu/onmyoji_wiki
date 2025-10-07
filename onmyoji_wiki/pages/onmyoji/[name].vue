@@ -287,6 +287,7 @@ async function fetchIllustrations(onmyojiId) {
     console.error("Error fetching illustrations:", error);
   } else {
     illustrations.value = data;
+    console.log("Illustrations:", data);
   }
 }
 
