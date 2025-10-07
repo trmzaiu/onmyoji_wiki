@@ -8,8 +8,9 @@ const route = useRoute();
 const supabase = useSupabase();
 
 const onmyoji = ref(null);
-
+const illustrations = ref([]);
 const effects = ref([]);
+
 const isEnglish = ref(true);
 
 const tooltipData = ref(null);
@@ -22,7 +23,23 @@ const activeSkinTab = ref(route.params.name.replace(/_/g, " ").toLowerCase());
 
 const formattedName = route.params.name.replace(/_/g, " ");
 
+const selectedImage = ref(null);
+const isModalOpen = ref(false);
+
+const openModal = (url) => {
+  selectedImage.value = url;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  selectedImage.value = null;
+};
+
 const { tagMap, loadTags } = useTags();
+
+const getImgUrl = (name) =>
+  `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
 
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
@@ -259,6 +276,20 @@ async function fetchOnmyoji() {
   }
 }
 
+async function fetchIllustrations(onmyojiId) {
+  const { data, error } = await supabase
+    .from("Illustration")
+    .select("*")
+    .contains("onmyoji", [onmyojiId])
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching illustrations:", error);
+  } else {
+    illustrations.value = data;
+  }
+}
+
 onMounted(async () => {
   document.title = `${formattedName}`;
   await fetchAllEffects();
@@ -275,6 +306,12 @@ watch(isEnglish, async () => {
   await nextTick();
   removeTooltipListeners();
   addTooltipListeners();
+});
+
+watch(activeTab, async (newTab) => {
+  if (newTab === "gallery" && illustrations.value.length === 0) {
+    await fetchIllustrations(onmyoji.value?.id);
+  }
 });
 </script>
 

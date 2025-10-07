@@ -56,7 +56,6 @@
               <NuxtLink to="/shikigami" class="nav-item">Shikigami</NuxtLink>
               <NuxtLink to="/souls" class="nav-item">Souls</NuxtLink>
               <NuxtLink to="/pets" class="nav-item">Pets</NuxtLink>
-              <NuxtLink to="/upload" class="nav-item">Upload</NuxtLink>
             </div>
           </nav>
         </div>
@@ -108,7 +107,6 @@
             <NuxtLink to="/shikigami" class="hover:text-gray-200">Shikigami</NuxtLink>
             <NuxtLink to="/souls" class="hover:text-gray-200">Souls</NuxtLink>
             <NuxtLink to="/pets" class="hover:text-gray-200">Pets</NuxtLink>
-            <NuxtLink to="/upload" class="hover:text-gray-200">Upload</NuxtLink>
           </div>
         </nav>
       </div>

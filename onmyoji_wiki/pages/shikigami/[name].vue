@@ -28,7 +28,6 @@ const showTooltip = ref(false);
 
 const activeTab = ref("main");
 const activeSkillIndex = ref(0);
-const activeBioTab = ref(0);
 
 const showEditModal = ref(false);
 const editingSkill = ref(null);
@@ -662,7 +661,6 @@ async function fetchIllustrations(shikiId) {
     console.error("Error fetching illustrations:", error);
   } else {
     illustrations.value = data;
-    console.log(data);
   }
 }
 
