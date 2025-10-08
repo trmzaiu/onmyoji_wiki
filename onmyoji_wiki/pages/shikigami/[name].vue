@@ -206,6 +206,7 @@ const renderBioText = (biography) => {
   const replacements = { name }
 
   if (biography.count) replacements.count = biography.count
+  if (biography.skill) replacements.skill = isEnglish.value ? shikigami.value.skill[biography.skill-1].name.en : shikigami.value.skill[biography.skill-1].name.vn
   if (biography.shiki) {
     const targetShiki = shikigamiList.value.find(s => s.id === biography.shiki)
     if (targetShiki) {
@@ -468,7 +469,6 @@ const highlightProfileText = (profile) => {
 
   let result = text;
 
-  // 🟦 B1: Xử lý <a>...ID...</a> → chỉ đổi ID thành tên
   result = result.replace(/<a([^>]*)>(.*?)<\/a>/g, (match, attrs, inner) => {
     const content = inner.trim();
     if (!content) return match;
@@ -506,7 +506,6 @@ const highlightProfileText = (profile) => {
     return `<a${attrs}>${keyword}</a>`;
   });
 
-  // 🟨 B2: Xử lý <b>...ID...</b> → highlight + đổi ID thành tên + bọc link
   result = result.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
     const content = inner.trim();
     if (!content) return match;
