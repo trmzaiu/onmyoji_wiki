@@ -315,6 +315,16 @@ const processTextWithTooltips = (text) => {
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
+    if (note.name?.en === "Heal Down") {
+      const bracketMatch = match.match(/\[(.*?)\]/);
+      const countValue = bracketMatch ? bracketMatch[1] : null;
+      if (countValue) {
+        keyword = keyword.replace("{count}", countValue);
+      } else {
+        keyword = keyword.replace("{count}", "");
+      }
+    }
+
     if (type === "f" || type === "l") {
       if (keyword.startsWith("HP ")) {
         keyword = "HP " + keyword.slice(3).toLowerCase();
