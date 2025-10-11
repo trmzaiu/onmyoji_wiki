@@ -301,6 +301,20 @@ const processTextWithTooltips = (text) => {
 
   const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
+   processedText = processedText.replace(/<b>(\d+)<\/b>(?:<n>(.*?)<\/n>)?/g, (match, id, count) => {
+    if (count) {
+      const note = effectById.get(id);
+      if (note) {
+        const baseVN = note.name?.vn || note.name?.en || "";
+        const replacedVN = baseVN.includes("{count}") ? baseVN.replace("{count}", count) : baseVN;
+        effectKeywordOverrides.set(id, replacedVN);
+      }
+    }
+    return `<b>${id}</b>`; // giữ <b> để tooltip dùng
+  });
+
+  processedText = processedText.replace(/<n>.*?<\/n>/g, "");
+
   const replaceWithTooltip = (match, content, type) => {
     let note = null;
 
