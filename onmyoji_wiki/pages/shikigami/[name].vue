@@ -301,18 +301,21 @@ const processTextWithTooltips = (text) => {
 
   const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
-   processedText = processedText.replace(/<b>(\d+)<\/b>(?:<n>(.*?)<\/n>)?/g, (match, id, count) => {
-    if (count) {
-      const note = effectById.get(id);
-      if (note) {
-        const baseVN = note.name?.vn || note.name?.en || "";
-        const replacedVN = baseVN.includes("{count}") ? baseVN.replace("{count}", count) : baseVN;
-        effectKeywordOverrides.set(id, replacedVN);
-      }
-    }
-    return `<b>${id}</b>`; // giữ <b> để tooltip dùng
+  processedText = processedText.replace(/<b>(\d+)<\/b>(?:<n>(.*?)<\/n>)?/g, (match, id, nValue) => {
+    const note = effectById.get(id);
+    if (!note) return match;
+
+    let baseVN = note.name?.vn || note.name?.en || "";
+
+    // Nếu có <n> thì thay {count} bằng value, nếu không thì '' 
+    const countReplacement = nValue || "";
+    baseVN = baseVN.replace("{count}", countReplacement).trim();
+
+    effectKeywordOverrides.set(id, baseVN);
+    return `<b>${id}</b>`; // giữ <b> để tooltip xử lý tiếp
   });
 
+  // Xóa mọi <n> còn sót
   processedText = processedText.replace(/<n>.*?<\/n>/g, "");
 
   const replaceWithTooltip = (match, content, type) => {
@@ -326,14 +329,22 @@ const processTextWithTooltips = (text) => {
 
     if (!note) return match;
 
-    const keywordOverride = effectKeywordOverrides.get(String(note.id));
-    const keywordForDisplay = keywordOverride 
-      ? keywordOverride 
-      : (isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en);
+    let keywordForDisplay;
+    let keywordForTooltip;
 
-    let keywordForTooltip = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
-    if (keywordForTooltip?.includes("{count}")) {
-      keywordForTooltip = keywordForTooltip.replace("{count}", "").trim();
+    if (type === "b") {
+      // <b> dùng override (đã chèn {count})
+      const keywordOverride = effectKeywordOverrides.get(String(note.id));
+      keywordForDisplay = keywordOverride
+        ? keywordOverride
+        : (isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en);
+      keywordForTooltip = isEnglish.value
+        ? note.name?.en
+        : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
+    } else {
+      // tag khác: bỏ {count} khỏi text và tooltip
+      keywordForDisplay = isEnglish.value ? note.name?.en : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
+      keywordForTooltip = keywordForDisplay;
     }
 
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
@@ -403,22 +414,6 @@ const processTextWithTooltips = (text) => {
 
     return match;
   };
-
-  processedText = processedText.replace(/<b>(\d+)<\/b>(?:<n>(.*?)<\/n>)?/g, (match, id, count) => {
-    if (id === "8" && count) {
-      const note = effectById.get(id);
-      if (note) {
-        const base = note.name?.vn || note.name?.en || "";
-        const replaced = base.replace("{count}", count);
-        effectKeywordOverrides.set(id, replaced);
-      }
-      return `<b>${id}</b>`;
-    }
-    return match;
-  });
-
-  // Xóa mọi <n>...</n> còn sót
-  processedText = processedText.replace(/<n>.*?<\/n>/g, "");
 
   // === xử lý các tag đặc biệt ===
   processedText = processedText
