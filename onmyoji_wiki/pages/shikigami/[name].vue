@@ -272,6 +272,7 @@ const processTextWithTooltips = (text) => {
   let processedText = text;
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
   const effectMap = new Map();
+  const effectKeywordOverrides = new Map();
 
   // build effectMap
   effects.value.forEach((note) => {
@@ -311,19 +312,20 @@ const processTextWithTooltips = (text) => {
 
     if (!note) return match;
 
-    let keyword = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
+    const keywordOverride = effectKeywordOverrides.get(String(note.id));
+    const keywordForDisplay = keywordOverride 
+      ? keywordOverride 
+      : (isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en);
+
+    let keywordForTooltip = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
+    if (keywordForTooltip?.includes("{count}")) {
+      keywordForTooltip = keywordForTooltip.replace("{count}", "").trim();
+    }
+
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    if (note.name?.en === "Heal Down") {
-      const bracketMatch = match.match(/\[(.*?)\]/);
-      const countValue = bracketMatch ? bracketMatch[1] : null;
-      if (countValue) {
-        keyword = keyword.replace("{count}", countValue);
-      } else {
-        keyword = keyword.replace("{count}", "");
-      }
-    }
+    let keyword = keywordForDisplay;
 
     if (type === "f" || type === "l") {
       if (keyword.startsWith("HP ")) {
@@ -342,14 +344,14 @@ const processTextWithTooltips = (text) => {
 
     if (type === "b") {
       return `<span class="effect-tooltip"
-                data-name="${keyword}"
+                data-name="${keywordForTooltip}"
                 data-name-cn="${note.name?.cn || ""}"
                 data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
                 data-img='${JSON.stringify(note.images || [])}'
                 data-color="${color}"
                 style="color:${color}">${keyword}</span>`;
     } else {
-      return (type === "i"|| type === "l")
+      return (type === "i" || type === "l")
         ? `<span>${keyword}</span>`
         : `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
     }
@@ -357,7 +359,6 @@ const processTextWithTooltips = (text) => {
 
   const replaceShikigami = (match, content) => {
     if (!shikigamiList?.value?.length) return match;
-
     const shiki = shikigamiList.value.find(
       (s) => String(s.id) === String(content)
     );
@@ -372,9 +373,7 @@ const processTextWithTooltips = (text) => {
 
   const replaceSkill = (match, content, type) => {
     const index = parseInt(content, 10);
-
     if (isNaN(index) || !shikigami.value?.skills?.length) return match;
-    
     const skill = shikigami.value?.skills[index-1];
     if (!skill) return match;
 
@@ -385,32 +384,43 @@ const processTextWithTooltips = (text) => {
     if (type === "c") {
       return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
     } else if (type === "m") {
-      return `<span>${keyword}</span>`; // chỉ là span trơn
+      return `<span>${keyword}</span>`;
     }
 
     return match;
   };
 
+  processedText = processedText.replace(/<b>(\d+)<\/b>(?:<n>(.*?)<\/n>)?/g, (match, id, count) => {
+    if (id === "8" && count) {
+      const note = effectById.get(id);
+      if (note) {
+        const base = note.name?.vn || note.name?.en || "";
+        const replaced = base.replace("{count}", count);
+        effectKeywordOverrides.set(id, replaced);
+      }
+      return `<b>${id}</b>`;
+    }
+    return match;
+  });
+
+  // Xóa mọi <n>...</n> còn sót
+  processedText = processedText.replace(/<n>.*?<\/n>/g, "");
+
   // === xử lý các tag đặc biệt ===
   processedText = processedText
-    // <e>
     .replace(/<e>(.*?)<\/e>/g, (_, keyword) =>
       `<img src="/assets/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
     )
-    // <d>
     .replace(/<d>(.*?)<\/d>/g, (_, keyword) =>
       `<strong class="text-[#c07b2a]">${keyword}</strong>`
     )
-    // <k></k>
-    .replace(/<k>(.*?)<\/k>/g, (m, content) =>
-      replaceShikigami(m, content)
-    );
-    
+    .replace(/<k>(.*?)<\/k>/g, (m, content) => replaceShikigami(m, content));
+
   processedText = processedText.replace(/<(c|m)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceSkill(m, content, type)
   );
 
-  // f, g, b, a, h 
+  // f, g, b, a, h
   processedText = processedText.replace(/<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceWithTooltip(m, content, type)
   );
