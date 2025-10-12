@@ -305,8 +305,8 @@ const processTextWithTooltips = (text) => {
     const note = effectById.get(id);
     if (!note) return match;
 
-    let textVN = note.name?.vn || note.name?.en || "";
-    let textEN = note.name?.en || note.name?.vn || "";
+    let textVN = note.name?.vn;
+    let textEN = note.name?.en;
 
     textVN = textVN.replace("{count}", nValue || "").trim();
 
