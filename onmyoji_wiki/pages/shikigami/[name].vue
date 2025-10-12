@@ -456,7 +456,7 @@ const processTextWithTooltips = (text) => {
 
   processedText = processedText.replace(/<d>(.*?)<\/d>/g, replaceSkillRef);
 
-  processedText = processedText.replace(/<(c|m)>(.*?)<\/\1>/g, (m, type, content) =>
+  processedText = processedText.replace(/<(c|m|o)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceSkill(m, content, type)
   );
 
