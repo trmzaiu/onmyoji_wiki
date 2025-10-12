@@ -305,7 +305,7 @@ const processTextWithTooltips = (text) => {
     const note = effectById.get(id);
     if (!note) return match;
 
-    let baseVN = note.name?.vn || note.name?.en || "";
+    let baseVN = note.name?.vn;
 
     // Nếu có <n> thì thay {count} bằng value, nếu không thì '' 
     const countReplacement = nValue || "";
