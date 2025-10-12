@@ -576,7 +576,37 @@ const highlightProfileText = (profile) => {
       keyword = isEnglish.value ? n.en || n.vn : n.vn || n.en;
     }
 
-    return `<a class="text-[#a51919]" ${attrs}>${keyword}</a>`;
+    return `<a${attrs}>${keyword}</a$>`;
+  });
+
+  result = result.replace(/<c>(.*?)<\/c>/g, (match, inner) => {
+    const content = inner.trim();
+    if (!content) return match;
+
+    let targetType = null;
+    let targetData = null;
+
+    // check onmyoji dạng o-<id>
+    const onmyojiMatch = content.match(/^o-(\d+)$/i);
+    if (onmyojiMatch) {
+      const id = parseInt(onmyojiMatch[1], 10);
+      targetData = onmyojiList.value?.find(o => o.id === id);
+      if (targetData) targetType = "onmyoji";
+    } else {
+      // mặc định là shikigami id
+      const shikiId = parseInt(content, 10);
+      if (!isNaN(shikiId)) {
+        targetData = shikigamiList.value?.find(s => s.id === shikiId);
+        if (targetData) targetType = "shikigami";
+      }
+    }
+
+    if (!targetType || !targetData) return match;
+
+    const n = targetData.name;
+    const keyword = isEnglish.value ? n.en || n.vn : n.vn || n.en;
+
+    return `<span class="text-[#a51919]">${keyword}</span>`;
   });
 
   result = result.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
