@@ -408,7 +408,7 @@ const processTextWithTooltips = (text) => {
     if (type === "c") {
       return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
     } else if (type === "m") {
-      return `<span>${keyword}</span>`;
+      return `<span class="skill-keyword text-[#c07b2a]">${keyword}</span>`;
     }
 
     return match;
@@ -567,7 +567,6 @@ const highlightProfileText = (profile) => {
 
     if (!targetType || !targetData) return match;
 
-    // đổi ID thành tên hiển thị
     let keyword = "";
     if (targetType === "shikigami") {
       const n = targetData.name;
@@ -577,7 +576,7 @@ const highlightProfileText = (profile) => {
       keyword = isEnglish.value ? n.en || n.vn : n.vn || n.en;
     }
 
-    return `<a${attrs}>${keyword}</a>`;
+    return `<a class="text-[#a51919]" ${attrs}>${keyword}</a>`;
   });
 
   result = result.replace(/<b>(.*?)<\/b>/g, (match, inner) => {
