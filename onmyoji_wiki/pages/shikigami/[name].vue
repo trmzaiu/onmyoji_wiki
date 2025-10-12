@@ -409,6 +409,8 @@ const processTextWithTooltips = (text) => {
       return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
     } else if (type === "m") {
       return `<span class="skill-keyword text-[#c07b2a]">${keyword}</span>`;
+    } else if (type === "o") {
+      return `<span >${keyword}</span>`;
     }
 
     return match;
