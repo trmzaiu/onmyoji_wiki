@@ -441,6 +441,22 @@ const highlightWord = (text) => {
   return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${text}">${text}</span>`;
 };
 
+const highlightSkin = (content) => {
+  if (!content || !shikigami?.value?.skins?.length) return content;
+
+  return content.replace(/<b>(\d+)<\/b>/g, (_, num) => {
+    const index = parseInt(num, 10);
+    const skinItem = shikigami.value.rarity !== 'SP'
+      ? shikigami.value.skins[index + 1]
+      : shikigami.value.skins[index];
+
+    if (!skinItem) return _;
+
+    const keyword = skinItem.name?.en || skinItem.name?.cn || "";
+    return `<span class="text-[#c07b2a]">${keyword}</span>`;
+  });
+};
+
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
@@ -1927,8 +1943,8 @@ const addCKeywordListeners = () => {
                 <td class="px-2 py-1 text-center table-cell">
                   {{ bio.type }}
                 </td>
-                <td class="px-2 py-1 text-center table-cell">
-                  {{ bio.obtained }}
+                <td class="px-2 py-1 text-center table-cell" v-html="highlightSkin(bio.obtained)">
+
                 </td>
               </tr>
             </tbody>
