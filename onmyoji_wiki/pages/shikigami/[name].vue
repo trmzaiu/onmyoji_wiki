@@ -414,15 +414,45 @@ const processTextWithTooltips = (text) => {
     return match;
   };
 
+  const replaceSkillRef = (match, content) => {
+    console.log("[replaceSkillRef] raw content:", content);
+
+    const [shikiIdStr, skillIndexStr] = content.split("-");
+    const shikiId = parseInt(shikiIdStr, 10);
+    const skillIndex = parseInt(skillIndexStr, 10);
+
+    if (!shikigamiList?.value?.length) return match;
+
+    let shiki = shikigamiList.value.find(
+      (s) => String(s.id) === String(shikiId)
+    );
+    console.log("[replaceSkillRef] found in list:", shiki);
+
+    if (!shiki || !shiki.skills?.length) {
+      return match;
+    }
+
+    const skill = shiki.skills[skillIndex - 1];
+
+    if (!skill) {
+      return match;
+    }
+
+    const keyword = isEnglish.value
+      ? (skill.name?.en || "")
+      : (skill.name?.vn || skill.name?.en || "");
+
+    return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
+  };
+
   // === xử lý các tag đặc biệt ===
   processedText = processedText
     .replace(/<e>(.*?)<\/e>/g, (_, keyword) =>
       `<img src="/assets/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
     )
-    .replace(/<d>(.*?)<\/d>/g, (_, keyword) =>
-      `<strong class="text-[#c07b2a]">${keyword}</strong>`
-    )
     .replace(/<k>(.*?)<\/k>/g, (m, content) => replaceShikigami(m, content));
+
+  processedText = processedText.replace(/<d>(.*?)<\/d>/g, replaceSkillRef);
 
   processedText = processedText.replace(/<(c|m)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceSkill(m, content, type)
@@ -448,7 +478,7 @@ const highlightSkin = (content) => {
     const index = parseInt(num, 10);
     const skinItem = shikigami.value.rarity !== 'SP'
       ? shikigami.value.skins[index + 1]
-      : shikigami.value.skins[index];
+      : shikigami.value.skins[index ];
 
     if (!skinItem) return _;
 
@@ -671,7 +701,7 @@ async function fetchAllOnmyoji() {
 async function fetchAllShikigami() {
   const { data, error } = await supabase
     .from("Shikigami")
-    .select("id, name")
+    .select("id, name, skills")
     .order("id", { ascending: true });
   if (error) console.error("Error fetching shikigami:", error);
   else shikigamiList.value = data;
