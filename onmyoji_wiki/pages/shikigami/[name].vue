@@ -305,17 +305,16 @@ const processTextWithTooltips = (text) => {
     const note = effectById.get(id);
     if (!note) return match;
 
-    let baseVN = note.name?.vn;
+    let textVN = note.name?.vn || note.name?.en || "";
+    let textEN = note.name?.en || note.name?.vn || "";
 
-    // Nếu có <n> thì thay {count} bằng value, nếu không thì '' 
-    const countReplacement = nValue || "";
-    baseVN = baseVN.replace("{count}", countReplacement).trim();
+    textVN = textVN.replace("{count}", nValue || "").trim();
 
-    effectKeywordOverrides.set(id, baseVN);
-    return `<b>${id}</b>`; // giữ <b> để tooltip xử lý tiếp
+    effectKeywordOverrides.set(id, isEnglish.value ? textEN : textVN);
+
+    return `<b>${id}</b>`; 
   });
 
-  // Xóa mọi <n> còn sót
   processedText = processedText.replace(/<n>.*?<\/n>/g, "");
 
   const replaceWithTooltip = (match, content, type) => {
