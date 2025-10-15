@@ -1661,7 +1661,11 @@ const addCKeywordListeners = () => {
                     border: 1px solid #a51919;
                     padding: 5px;
                   ">
-                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${index+4}.webp`" :alt="skill.name.en" :title="skill.name.en" />
+                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${
+                        index + (activeSkillIndex === 0 ? 4 : activeSkillIndex === 1 ? 5 : 6)
+                      }.webp`" 
+                      :alt="skill.name.en" 
+                      :title="skill.name.en" />
                   </span>
                   <span style="
                     display: table-cell;
