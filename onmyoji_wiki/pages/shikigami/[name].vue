@@ -269,10 +269,10 @@ const imgs = computed(() => tooltipData.value?.images || []);
 function addIngForm(word) {
 
   if (word.endsWith("e")) {
-    return word.slice(0, -1) + "ing";
+    return word.slice(0, -1);
   }
 
-  return word + "ing";
+  return word;
 }
 
 const processTextWithTooltips = (text) => {
