@@ -1932,7 +1932,7 @@ const addCKeywordListeners = () => {
               </tr>
             </thead>
             <tbody>
-              <tr class="text-black" v-for="(skin, index) in shikigami.skins" :key="index">
+              <tr class="text-black" v-for="(skin, index) in shikigami.skins" :key="index" v-if="skin.obtained !== 'Cancelled'">
                 <td class="px-2 py-2 text-center table-cell w-[105px]" v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
                   <div class="w-24 h-24 overflow-hidden">
                     <img :src="skin.name.en === 'Default' ? `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp` : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`" :alt="skin.name.en || skin.name.cn"
