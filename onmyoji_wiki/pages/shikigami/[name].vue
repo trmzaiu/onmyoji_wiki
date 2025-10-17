@@ -375,11 +375,6 @@ const processTextWithTooltips = (text) => {
       keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
     }
 
-    const afterMatch = fullString.slice(offset + match.length);
-    if (afterMatch.startsWith("ing")) {
-      keyword = addIngForm(keyword);
-    }
-
     if (hasIng) {
       keyword = addIngForm(keyword);
     }
