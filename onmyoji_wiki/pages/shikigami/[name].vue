@@ -1931,7 +1931,7 @@ const addCKeywordListeners = () => {
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody v-if="shikigami.skins && shikigami.skins.length">
               <tr class="text-black" v-for="(skin, index) in shikigami.skins" :key="index"  v-if="skin.obtained !== 'Cancelled'">
                 
                 <td class="px-2 py-2 text-center table-cell w-[105px]" v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
