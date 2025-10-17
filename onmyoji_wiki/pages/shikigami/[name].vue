@@ -1885,39 +1885,42 @@ const addCKeywordListeners = () => {
           <h2 class="session-title mt-5">
             {{ isEnglish ? "Skins" : "Trang phục" }}
           </h2>
-          <div
-            v-for="(skin, index) in shikigami.skins"
-            :key="index"
-            class="flex flex-col items-center"
-            :title="skin.name.en || skin.name.cn"
-            @click="openModal(
-              (skin.name.en === 'Default' || skin.name.en === 'Evolution')
-                ? `/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution' ? '_Evo' : '')}.webp`
-                : `/assets/shikigami/skins/${route.params.name}_Skin${
-                    (shikigami.rarity === 'SP' || shikigami.rarity === 'N')
-                      ? (index ? index : '')
-                      : index - 1
-                  }.webp`
-            )"
-          >
-            <img
-              :src="(skin.name.en === 'Default' || skin.name.en === 'Evolution')
-                ? `/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution' ? '_Evo' : '')}.webp`
-                : `/assets/shikigami/skins/${route.params.name}_Skin${
-                    (shikigami.rarity === 'SP' || shikigami.rarity === 'N')
-                      ? (index ? index : '')
-                      : index - 1
-                  }.webp`"
-              :alt="skin.name.en || skin.name.cn"
-              class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
-            />
-            <p
-              class="mt-4 text-center font-medium text-black"
-              :class="{ 'lang-zh': isEnglish ? !skin.name.en && skin.name.cn : false }"
+          <div class="grid grid-cols-3 gap-5 mt-4">
+            <div
+              v-for="(skin, index) in shikigami.skins"
+              :key="index"
+              class="flex flex-col items-center"
+              :title="skin.name.en || skin.name.cn"
+              @click="openModal(
+                (skin.name.en === 'Default' || skin.name.en === 'Evolution')
+                  ? `/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution' ? '_Evo' : '')}.webp`
+                  : `/assets/shikigami/skins/${route.params.name}_Skin${
+                      (shikigami.rarity === 'SP' || shikigami.rarity === 'N')
+                        ? (index ? index : '')
+                        : index - 1
+                    }.webp`
+              )"
             >
-              {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
-            </p>
+              <img
+                :src="(skin.name.en === 'Default' || skin.name.en === 'Evolution')
+                  ? `/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution' ? '_Evo' : '')}.webp`
+                  : `/assets/shikigami/skins/${route.params.name}_Skin${
+                      (shikigami.rarity === 'SP' || shikigami.rarity === 'N')
+                        ? (index ? index : '')
+                        : index - 1
+                    }.webp`"
+                :alt="skin.name.en || skin.name.cn"
+                class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
+              />
+              <p
+                class="mt-4 text-center font-medium text-black"
+                :class="{ 'lang-zh': isEnglish ? !skin.name.en && skin.name.cn : false }"
+              >
+                {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
+              </p>
+            </div>
           </div>
+
           <!-- Modal -->
           <div
             v-if="isModalOpen"
