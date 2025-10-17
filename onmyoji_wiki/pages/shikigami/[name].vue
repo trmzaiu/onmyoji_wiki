@@ -266,6 +266,15 @@ const makeHighlight = (keyword, type) => {
 /* ---------------------- TOOLTIP ---------------------- */
 const imgs = computed(() => tooltipData.value?.images || []);
 
+function addIngForm(word) {
+
+  if (word.endsWith("e")) {
+    return word.slice(0, -1) + "ing";
+  }
+
+  return word + "ing";
+}
+
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
 
@@ -364,6 +373,11 @@ const processTextWithTooltips = (text) => {
     if (type === "g") {
       keyword = keyword.toLowerCase();
       keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+    }
+
+    const afterMatch = fullString.slice(offset + match.length);
+    if (afterMatch.startsWith("ing")) {
+      keyword = addIngForm(keyword);
     }
 
     if (type === "b") {
