@@ -326,7 +326,7 @@ const processTextWithTooltips = (text) => {
 
   processedText = processedText.replace(/<n>.*?<\/n>/g, "");
 
-  const replaceWithTooltip = (match, content, type) => {
+  const replaceWithTooltip = (match, content, type, hasIng = false) => {
     let note = null;
 
     if (/^\d+$/.test(content)) {
@@ -377,6 +377,10 @@ const processTextWithTooltips = (text) => {
 
     const afterMatch = fullString.slice(offset + match.length);
     if (afterMatch.startsWith("ing")) {
+      keyword = addIngForm(keyword);
+    }
+
+    if (hasIng) {
       keyword = addIngForm(keyword);
     }
 
@@ -475,10 +479,15 @@ const processTextWithTooltips = (text) => {
   );
 
   // f, g, b, a, h
-  processedText = processedText.replace(/<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g, (m, type, content) =>
-    replaceWithTooltip(m, content, type)
-  );
+  processedText = processedText.replace(
+    /<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g,
+    (match, type, content, offset, fullString) => {
+      const after = fullString.slice(offset + match.length);
+      const hasIng = after.startsWith("ing");
 
+      return replaceWithTooltip(match, content, type, hasIng);
+    }
+  );
   return processedText;
 };
 
