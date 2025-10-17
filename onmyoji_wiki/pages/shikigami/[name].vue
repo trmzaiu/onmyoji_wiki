@@ -1887,7 +1887,7 @@ const addCKeywordListeners = () => {
           </h2>
           <div class="grid grid-cols-3 gap-5 mt-4">
             <div v-for="(skin, index) in shikigami.skins" :key="index" class="flex flex-col items-center"
-              :title="skin.name.en || skin.name.cn" @click="openModal((skin.name.en === 'Default' || skin.name.en === 'Evolution') ? `/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution'? '_Evo' : '')}.webp` : `/assets/shikigami/skins/${route.params.name}_Skin${index+1}.webp`)">
+              :title="skin.name.en || skin.name.cn" @click="openModal((skin.name.en === 'Default' || skin.name.en === 'Evolution') ? `/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution'? '_Evo' : '')}.webp` : `/assets/shikigami/skins/${route.params.name}_Skin${index-2}.webp`)">
               <img v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'" :src="`/assets/shikigami/images/${route.params.name}${(skin.name.en === 'Evolution'? '_Evo' : '')}.webp`" :alt="skin.name.en || skin.name.cn"
                 class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer" />
               <img v-else :src="`/assets/shikigami/skins/${route.params.name}_Skin${(shikigami.rarity === 'SP' || shikigami.rarity === 'N')
