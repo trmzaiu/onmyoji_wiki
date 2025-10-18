@@ -310,7 +310,7 @@ const processTextWithTooltips = (text) => {
 
   const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
-  processedText = processedText.replace(/<b>(\d+)<\/b>(?:<n>(.*?)<\/n>)?/g, (match, id, nValue) => {
+  processedText = processedText.replace(/<(b|a)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g, (match, tag, id, nValue) => {
     const note = effectById.get(id);
     if (!note) return match;
 
@@ -321,7 +321,7 @@ const processTextWithTooltips = (text) => {
 
     effectKeywordOverrides.set(id, isEnglish.value ? textEN : textVN);
 
-    return `<b>${id}</b>`; 
+    return `<${tag}>${id}</${tag}>`;
   });
 
   processedText = processedText.replace(/<n>.*?<\/n>/g, "");
