@@ -429,7 +429,7 @@ const processTextWithTooltips = (text) => {
     return match;
   };
 
-  const replaceSkillRef = (match, content) => {
+  const replaceSkillRef = (match, content, type) => {
     console.log("[replaceSkillRef] raw content:", content);
 
     const [shikiIdStr, skillIndexStr] = content.split("-");
@@ -457,7 +457,13 @@ const processTextWithTooltips = (text) => {
       ? (skill.name?.en || "")
       : (skill.name?.vn || skill.name?.en || "");
 
-    return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
+    
+    if (type === "d") {
+      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
+    } else if (type === "p") {
+      return `<span class="skill-keyword text-[#c07b2a]">${keyword}</span>`;
+    }
+    return match;
   };
 
   // === xử lý các tag đặc biệt ===
@@ -467,7 +473,9 @@ const processTextWithTooltips = (text) => {
     )
     .replace(/<k>(.*?)<\/k>/g, (m, content) => replaceShikigami(m, content));
 
-  processedText = processedText.replace(/<d>(.*?)<\/d>/g, replaceSkillRef);
+  processedText = processedText.replace(/<(d|p)>(.*?)<\/\1>/g, (m, type, content) =>
+    replaceSkillRef(m, content, type)
+  );
 
   processedText = processedText.replace(/<(c|m|o)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceSkill(m, content, type)
