@@ -1662,14 +1662,19 @@ const addCKeywordListeners = () => {
                 </div>
               </div>
 
-              <div v-if="shikigami.skills.length > 3" v-for="(skill, index) in shikigami.skills.filter(
-                (s, i) => i >= 3 && s?.tab === activeSkillIndex + 1
-              )" :key="'extra-' + index" style="
-                position: relative;
-                padding-left: 40px;
-                margin-bottom: 20px;
-                margin-top: 50px;
-              ">
+              <div
+                v-for="({ skill, i }, index) in shikigami.skills
+                  .map((s, i) => ({ skill: s, i }))
+                  .filter(({ skill, i }) => i >= 3 && skill?.tab === activeSkillIndex + 1)"
+                :key="'extra-' + i"
+
+                style="
+                  position: relative;
+                  padding-left: 40px;
+                  margin-bottom: 20px;
+                  margin-top: 50px;
+                ">
+
                 <!-- Skill icon + title -->
                 <div>
                   <span style="
@@ -1687,10 +1692,8 @@ const addCKeywordListeners = () => {
                     border: 1px solid #a51919;
                     padding: 5px;
                   ">
-                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${
-                        index + (activeSkillIndex === 0 ? 4 : activeSkillIndex === 1 ? 5 : 6)
-                      }.webp`" 
-                      :alt="skill.name.en" 
+                    <img :src="`/assets/shikigami/skills/${route.params.name}_Skill${i + 1}.webp`"
+                      :alt="skill.name.en"
                       :title="skill.name.en" />
                   </span>
                   <span style="
