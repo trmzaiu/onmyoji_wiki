@@ -206,7 +206,10 @@ const renderBioText = (biography) => {
   const replacements = { name }
 
   if (biography.count) replacements.count = biography.count
-  if (biography.skill) replacements.skill = isEnglish.value ? shikigami.value.skill[biography.skill-1].name.en : shikigami.value.skill[biography.skill-1].name.vn
+  if (biography.skill) {
+    const targetSkill = isEnglish.value ? shikigami.value?.skills[biography.skill - 1].name.en : shikigami.value?.skills[biography.skill - 1].name.vn
+    replacements.skill = targetSkill;
+  }
   if (biography.shiki) {
     const targetShiki = shikigamiList.value.find(s => s.id === biography.shiki)
     if (targetShiki) {
