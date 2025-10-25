@@ -531,6 +531,7 @@ const highlightSkin = (content) => {
     if (!skinItem) return _;
 
     const keyword = skinItem.name?.en || skinItem.name?.cn || "";
+    console.log(`[replaceSkin] ✅ Found skin:`, keyword);
     return `<span class="text-[#c07b2a]">${keyword}</span>`;
   });
 };
