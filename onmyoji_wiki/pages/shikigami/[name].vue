@@ -344,7 +344,6 @@ const processTextWithTooltips = (text) => {
     let keywordForTooltip;
 
     if (type === "b") {
-      // <b> dùng override (đã chèn {count})
       const keywordOverride = effectKeywordOverrides.get(String(note.id));
       keywordForDisplay = keywordOverride
         ? keywordOverride
@@ -353,7 +352,6 @@ const processTextWithTooltips = (text) => {
         ? note.name?.en
         : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
     } else {
-      // tag khác: bỏ {count} khỏi text và tooltip
       keywordForDisplay = isEnglish.value ? note.name?.en : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
       keywordForTooltip = keywordForDisplay;
     }
@@ -432,6 +430,20 @@ const processTextWithTooltips = (text) => {
     return match;
   };
 
+  const replaceSkin = (match, content) => {
+    const index = parseInt(content, 10);
+    if (isNaN(index) || !shikigami.value?.skins?.length) return match;
+    const ind = shikigami.value.rarity === 'SP' ? 0 : 1;
+    const skin = shikigami.value?.skins[index+ind];
+    if (!skin) return match;
+
+    const keyword = isEnglish.value
+      ? skin.name?.en || ""
+      : skin.name?.vn || skin.name?.en || "";
+
+    return `<i>${keyword}</i>`;
+  };
+
   const replaceSkillRef = (match, content, type) => {
     console.log("[replaceSkillRef] raw content:", content);
 
@@ -482,6 +494,10 @@ const processTextWithTooltips = (text) => {
 
   processedText = processedText.replace(/<(c|m|o)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceSkill(m, content, type)
+  );
+
+  processedText = processedText.replace(/<q>(.*?)<\/q>/g, (m, content) =>
+    replaceSkin(m, content)
   );
 
   // f, g, b, a, h
