@@ -442,7 +442,7 @@ const processTextWithTooltips = (text) => {
       ? skin.name?.en || ""
       : skin.name?.vn || skin.name?.en || "";
 
-    return `<i>${keyword}</i>`;
+    return `<span class="text-italic">${keyword}</span>`;
   };
 
   const replaceSkillRef = (match, content, type) => {
