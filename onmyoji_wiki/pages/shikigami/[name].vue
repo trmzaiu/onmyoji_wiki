@@ -1789,6 +1789,11 @@ const addCKeywordListeners = () => {
                     </div>
                   </div>
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+                  <div class="w-[80%] mx-auto" v-if="shikigami.skill.voice">
+                    <p class="text-center text-[#a3a3a3] voice-font">
+                      "{{ shikigami.skill?.voice }}"
+                    </p>
+                  </div>
                   <p class="whitespace-pre-line text-justify" style="
                     margin: 0;
                     font-size: 16px;
