@@ -1752,7 +1752,6 @@ const addCKeywordListeners = () => {
                       <button class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
                         @click="editSkill(skill)">
                         <i class="fas fa-edit"></i>
-                        <!-- dùng font-awesome -->
                       </button>
                     </div>
                   </span>
@@ -1789,9 +1788,9 @@ const addCKeywordListeners = () => {
                     </div>
                   </div>
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-                  <div class="w-[80%] mx-auto" v-if="shikigami.skill.voice">
+                  <div class="w-[80%] mx-auto" v-if="skill.voice">
                     <p class="text-center text-[#a3a3a3] voice-font">
-                      "{{ shikigami.skill?.voice }}"
+                      "{{ skill?.voice }}"
                     </p>
                   </div>
                   <p class="whitespace-pre-line text-justify" style="
