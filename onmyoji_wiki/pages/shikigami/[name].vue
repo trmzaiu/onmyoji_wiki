@@ -433,16 +433,33 @@ const processTextWithTooltips = (text) => {
   const replaceSkin = (match, content) => {
     const index = parseInt(content, 10);
     if (isNaN(index) || !shikigami.value?.skins?.length) return match;
+
     const skin = shikigami.value.rarity !== 'SP'
       ? shikigami.value.skins[index + 1]
-      : shikigami.value.skins[index ];
+      : shikigami.value.skins[index];
     if (!skin) return match;
 
-    const keyword = isEnglish.value
-      ? skin.name?.en || skin.name?.cn
-      : skin.name?.vn || "";
-    return `<span class="italic">${keyword}</span>`;
+    let keyword = "";
+    let extraClass = "";
+
+    if (isEnglish.value) {
+      if (skin.name?.en) {
+        keyword = skin.name.en;
+      } else if (skin.name?.cn) {
+        keyword = skin.name.cn;
+        extraClass = "lang-zh";
+      }
+    } else {
+      keyword = skin.name?.vn || "";
+      if (!keyword && skin.name?.cn) {
+        keyword = skin.name.cn;
+        extraClass = "lang-zh";
+      }
+    }
+
+    return `<span class="italic ${extraClass}">${keyword}</span>`;
   };
+
 
   const replaceSkillRef = (match, content, type) => {
     console.log("[replaceSkillRef] raw content:", content);
