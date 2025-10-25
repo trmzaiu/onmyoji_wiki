@@ -439,10 +439,9 @@ const processTextWithTooltips = (text) => {
     if (!skin) return match;
 
     const keyword = isEnglish.value
-      ? skin.name?.en || ""
-      : skin.name?.vn || skin.name?.en || "";
-
-    return `<span class="text-italic">${keyword}</span>`;
+      ? skin.name?.en || skin.name?.cn
+      : skin.name?.vn || "";
+    return `<span class="italic">${keyword}</span>`;
   };
 
   const replaceSkillRef = (match, content, type) => {
@@ -531,7 +530,7 @@ const highlightSkin = (content) => {
     if (!skinItem) return _;
 
     const keyword = skinItem.name?.en || skinItem.name?.cn || "";
-    console.log(`[replaceSkin] ✅ Found skin:`, keyword);
+  
     return `<span class="text-[#c07b2a]">${keyword}</span>`;
   });
 };
