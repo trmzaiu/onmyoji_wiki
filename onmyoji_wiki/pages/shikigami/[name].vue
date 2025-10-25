@@ -433,8 +433,9 @@ const processTextWithTooltips = (text) => {
   const replaceSkin = (match, content) => {
     const index = parseInt(content, 10);
     if (isNaN(index) || !shikigami.value?.skins?.length) return match;
-    const ind = shikigami.value.rarity === 'SP' ? 0 : 1;
-    const skin = shikigami.value?.skins[index+ind];
+    const skin = shikigami.value.rarity !== 'SP'
+      ? shikigami.value.skins[index + 1]
+      : shikigami.value.skins[index ];
     if (!skin) return match;
 
     const keyword = isEnglish.value
