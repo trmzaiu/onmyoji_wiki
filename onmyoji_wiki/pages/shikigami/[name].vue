@@ -457,7 +457,7 @@ const processTextWithTooltips = (text) => {
       }
     }
 
-    return `<span class="italic ${extraClass}">${keyword}</span>`;
+    return `<span class="${extraClass}">${keyword}</span>`;
   };
 
 
