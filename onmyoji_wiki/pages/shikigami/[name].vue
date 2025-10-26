@@ -1897,7 +1897,7 @@ const addCKeywordListeners = () => {
                     <span class="absolute bottom-0 right-0 text-white font-bold" style="
                       text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                         1px 1px 0 #000;
-                    ">{{ (shikigami.id >= 201 && shikigami.id <= 217) ? 2 : (shikigami.id === 71 ? '' : 10) }}</span>
+                    ">{{ (shikigami.id >= 201 && shikigami.id <= 214) ? 2 : (shikigami.id === 71 ? '' : 10) }}</span>
                   </div>
                 </td>
               </tr>
@@ -2059,7 +2059,7 @@ const addCKeywordListeners = () => {
                 <td class="px-2 py-1 text-center table-cell">
                   <span class="lang-zh">{{ skin.artist }}</span>
                 </td>
-                <td class="px-2 py-1 text-center table-cell whitespace-pre-line">
+                <td class="px-2 py-1 text-center table-cell whitespace-pre-line w-[280px]">
                   {{ skin.obtained }}
                 </td>
               
