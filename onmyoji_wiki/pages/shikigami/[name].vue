@@ -1109,7 +1109,7 @@ const addCKeywordListeners = () => {
                   <div class="whitespace-pre-line" :class="(shikigami.id === 255 || shikigami.id === 256) ? 'lang-zh' : ''">{{ shikigami.name.va }}</div>
                 </td>
               </tr>
-              <tr v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'">
+              <tr v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'UR' && shikigami.rarity !== 'N'">
                 <td class="table-title-row" colspan="4">Evo Materials</td>
               </tr>
               <tr v-if="shikigami.materials && shikigami.materials.length">
@@ -1228,7 +1228,7 @@ const addCKeywordListeners = () => {
                         width: 100%;
                       ">
                         {{
-                        shikigami.rarity !== "SP" && shikigami.rarity !== 'N'
+                        shikigami.rarity !== "SP" && shikigami.rarity !== "UR" && shikigami.rarity !== 'N'
                         ? isEnglish
                         ? "Unevolved"
                         : "Cơ bản"
@@ -1242,7 +1242,7 @@ const addCKeywordListeners = () => {
                   <th rowspan="9">&nbsp;</th>
                   <th colspan="2">
                     <figure class="icon-img" style="position: relative">
-                      <img :src="`/assets/shikigami/icons/${route.params.name}_Icon${shikigami.rarity !== 'SP' && shikigami.rarity !== 'N' ? '_Evo' : ''}.webp`
+                      <img :src="`/assets/shikigami/icons/${route.params.name}_Icon${shikigami.rarity !== 'SP' && shikigami.rarity !== 'UR' && shikigami.rarity !== 'N' ? '_Evo' : ''}.webp`
                       " :alt="shikigami.name.jp[1]" style="object-fit: contain" width="90" />
                       <div style="
                         color: #a51919;
@@ -1254,7 +1254,7 @@ const addCKeywordListeners = () => {
                         width: 100%;
                       ">
                         {{
-                        shikigami.rarity !== "SP" && shikigami.rarity !== "N"
+                        shikigami.rarity !== "SP" && shikigami.rarity !== "UR" && shikigami.rarity !== "N"
                         ? isEnglish
                         ? "Evolved"
                         : "Thức tỉnh"
@@ -1550,7 +1550,7 @@ const addCKeywordListeners = () => {
                 {{ skill.type }}
               </template>
             </button>
-            <button v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'N'" @click="activeSkillIndex = 3" :class="[
+            <button v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'UR' && shikigami.rarity !== 'N'" @click="activeSkillIndex = 3" :class="[
               'px-4 py-2',
               activeSkillIndex === 3
                 ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
