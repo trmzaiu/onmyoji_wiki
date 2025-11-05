@@ -1129,20 +1129,26 @@ const addCKeywordListeners = () => {
               </tr>
               <tr v-if="shikigami.version !== null" class="table-row">
                 <td colspan="4" class="p-1">
-                  <div class="flex flex-col items-center justify-center" v-for="ver in shikigami.version" :key="ver">
-                    <a :href="`/shikigami/${ver.replace(/ /g, '_')}`">
-                      <img
-                        :src="`/assets/shikigami/shards/${ver.replace(/ /g, '_')}_Shard.webp`"
-                        :alt="ver"
-                        class="h-16 w-16 object-contain mb-1"
-                      />
-                    </a>
-                    <router-link
-                      :to="`/shikigami/${ver.replace(/ /g, '_')}`"
-                      class="text-black font-bold hover:text-[#a51919] text-[14px]"
+                  <div class="grid grid-cols-2 gap-4 justify-items-center">
+                    <div
+                      v-for="ver in shikigami.version"
+                      :key="ver"
+                      class="flex flex-col items-center justify-center"
                     >
-                      {{ ver }}
-                    </router-link>
+                      <a :href="`/shikigami/${ver.replace(/ /g, '_')}`">
+                        <img
+                          :src="`/assets/shikigami/shards/${ver.replace(/ /g, '_')}_Shard.webp`"
+                          :alt="ver"
+                          class="h-16 w-16 object-contain mb-1"
+                        />
+                      </a>
+                      <router-link
+                        :to="`/shikigami/${ver.replace(/ /g, '_')}`"
+                        class="text-black font-bold hover:text-[#a51919] text-[14px]"
+                      >
+                        {{ ver }}
+                      </router-link>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -1558,6 +1564,14 @@ const addCKeywordListeners = () => {
             ]">
               Evolution Effect
             </button>
+            <button v-if="shikigami.rarity === 'UR'" @click="activeSkillIndex = 3" :class="[
+              'px-4 py-2',
+              activeSkillIndex === 3
+                ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
+                : 'text-[#a3a3a3] cursor-pointer',
+            ]">
+              Linked
+            </button>
           </div>
           <div v-if="activeSkillIndex < 3">
             <div>
@@ -1842,7 +1856,154 @@ const addCKeywordListeners = () => {
             </div>
           </div>
           <div v-else>
-            <div style="padding: 10px; border: 1px solid #a51919">
+            <div v-if="shikigami.rarity !== 'UR'">
+              <div style="position: relative; padding-left: 40px; margin-bottom: 20px">
+                <!-- Skill icon + title -->
+                <div>
+                  <span style="
+                    background-color: #fff;
+                    overflow: hidden;
+                    border-radius: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 95px;
+                    height: 95px;
+                    border: 1px solid #a51919;
+                    padding: 5px;
+                  ">
+                    <img
+                      :src="`/assets/shikigami/skills/${route.params.name}_Skill0.webp`"
+                      :alt="shikigami.skills.find(s => s.type === 'Linked')?.name.en"
+                      :title="shikigami.skills.find(s => s.type === 'Linked')?.name.en"
+                    />
+                  </span>
+                  <span style="
+                    display: table-cell;
+                    vertical-align: bottom;
+                    font-weight: 900;
+                    font-size: 20px;
+                    color: #a51919;
+                    height: 70px;
+                    text-indent: 70px;
+                    padding-bottom: 5px;
+                  ">
+                    <div class="skill-title">
+                      <span class="skill-name">
+                        {{
+                        isEnglish
+                        ? shikigami.skills.find(s => s.type === 'Linked')?.name.en
+                        : shikigami.skills.find(s => s.type === 'Linked')?.name.vn
+                        }}
+                      </span>
+                      <span class="skill-sub-name lang-zh">
+                        ({{ shikigami.skills.find(s => s.type === 'Linked')?.name.cn === shikigami.skills.find(s => s.type === 'Linked')?.name.jp ? shikigami.skills.find(s => s.type === 'Linked')?.name.cn : shikigami.skills.find(s => s.type === 'Linked')?.name.cn + ' / ' + shikigami.skills.find(s => s.type === 'Linked')?.name.jp }})
+                      </span>
+                      <button class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
+                        @click="editSkill(shikigami.skills.find(s => s.type === 'Linked'))">
+                        <i class="fas fa-edit"></i>
+                        <!-- dùng font-awesome -->
+                      </button>
+                    </div>
+                  </span>
+                </div>
+
+                <!-- Skill description -->
+                <div style="padding: 10px 20px; border: 1px solid #a51919">
+                  <div class="text-black pb-5 skill-header">
+                    <div class="skill-info flex">
+                      <span style="margin-left: 25px">
+                        <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
+                        {{ shikigami.skills.find(s => s.type === 'Linked')?.type }}
+                      </span>
+                      <span class="flex" style="margin-left: 40px">
+                        <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
+                        <img
+                          src="/assets/Onibi.webp"
+                          alt="Onibi" />
+                        {{ shikigami.skills.find(s => s.type === 'Linked')?.onibi }}
+                      </span>
+                      <span style="margin-left: 40px">
+                        <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
+                        {{ shikigami.skills.find(s => s.type === 'Linked')?.cooldown }}
+                      </span>
+                    </div>
+                    <div class="skill-badges flex flex-wrap gap-2">
+                      <div v-for="tagId in shikigami.skills.find(s => s.type === 'Linked')?.tags" :key="tagId"
+                        class="relative inline-flex items-center justify-center w-20 h-6 overflow-hidden rounded-md">
+                        <!-- brush nền -->
+                        <div class="absolute inset-0 tint-base" :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')">
+                        </div>
+
+                        <!-- chữ đè lên -->
+                        <span class="relative z-10 text-xs text-white">
+                          {{ tagMap?.[tagId]?.name }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+
+                  <div class="w-[80%] mx-auto">
+                    <p class="text-center text-[#a3a3a3] voice-font">
+                      "{{ shikigami.skills.find(s => s.type === 'Linked')?.voice }}"
+                    </p>
+                  </div>
+                  <p class="whitespace-pre-line text-justify" style="
+                    margin: 0;
+                    font-size: 16px;
+                    line-height: 1.5;
+                    color: #444;
+                    padding: 10px 0;
+                  " v-html="
+                    processTextWithTooltips(
+                      isEnglish
+                        ? shikigami.skills.find(s => s.type === 'Linked')?.description.en
+                        : shikigami.skills.find(s => s.type === 'Linked')?.description.vn
+                    )
+                  "></p>
+                  <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+                  <table style="width: 100%; border-collapse: collapse; font-size: 16px" v-if="
+                    Array.isArray(
+                      isEnglish
+                        ? shikigami.skills.find(s => s.type === 'Linked')?.levels.en
+                        : shikigami.skills.find(s => s.type === 'Linked')?.levels.vn
+                    )
+                  ">
+                    <tbody>
+                      <tr style="color: #a51919; font-weight: bold">
+                        <th style="padding: 6px; text-align: left; width: 70px">
+                          {{ isEnglish ? "Level" : "Cấp" }}
+                        </th>
+                        <th style="padding: 6px 10px; text-align: left">
+                          {{ isEnglish ? "Effect" : "Hiệu ứng" }}
+                        </th>
+                      </tr>
+                      <tr v-for="lvl in isEnglish
+                        ? shikigami.skills.find(s => s.type === 'Linked')?.levels.en
+                        : shikigami.skills.find(s => s.type === 'Linked')?.levels.vn" :key="lvl.level" style="color: #444">
+                        <td style="padding: 6px 10px">{{ lvl.level }}</td>
+                        <td class="text-justify" style="padding: 6px 10px" v-html="processTextWithTooltips(lvl.effect)">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div v-else>
+                    <p style="color: #a3a3a3" class="no-level" v-html="
+                      processTextWithTooltips(
+                        isEnglish
+                          ? shikigami.skills.find(s => s.type === 'Linked')?.levels.en
+                          : shikigami.skills.find(s => s.type === 'Linked')?.levels.vn
+                      )
+                    "></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else style="padding: 10px; border: 1px solid #a51919">
               <p class="whitespace-pre-line text-justify" style="
                 margin: 0;
                 font-size: 15px;
