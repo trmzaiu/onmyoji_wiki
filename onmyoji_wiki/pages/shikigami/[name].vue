@@ -86,7 +86,7 @@ const getATKEvoImage = (atk) => {
 
 // S: 1164 -> 1335, A: 1064 -> 1163, B: 960 -> 1056, C: 854 -> 950, D: 843 -> 843
 const getHPRank = (hp) => {
-  if (hp >= 1164 && hp <= 1335) return "S";
+  if (hp >= 1164 && hp <= 1355) return "S";
   else if (hp >= 1064 && hp <= 1163) return "A";
   else if (hp >= 960 && hp <= 1056) return "B";
   else if (hp >= 854 && hp <= 950) return "C";
@@ -1129,13 +1129,19 @@ const addCKeywordListeners = () => {
               </tr>
               <tr v-if="shikigami.version !== null" class="table-row">
                 <td colspan="4" class="p-1">
-                  <div class="flex flex-col items-center justify-center">
-                    <a :href="`/shikigami/${shikigami.version.replace(/ /g, '_')}`">
-                      <img :src="`/assets/shikigami/shards/${shikigami.version.replace(/ /g, '_')}_Shard.webp`" :alt="shikigami.version.name"
-                        class="h-16 w-16 object-contain mb-1" /></a>
-                    <router-link :to="`/shikigami/${shikigami.version.replace(/ /g, '_')}`"
-                      class="text-black font-bold hover:text-[#a51919] font-[14px]">
-                      {{ shikigami.version }}
+                  <div class="flex flex-col items-center justify-center" v-for="ver in shikigami.version" :key="ver">
+                    <a :href="`/shikigami/${ver.replace(/ /g, '_')}`">
+                      <img
+                        :src="`/assets/shikigami/shards/${ver.replace(/ /g, '_')}_Shard.webp`"
+                        :alt="ver"
+                        class="h-16 w-16 object-contain mb-1"
+                      />
+                    </a>
+                    <router-link
+                      :to="`/shikigami/${ver.replace(/ /g, '_')}`"
+                      class="text-black font-bold hover:text-[#a51919] text-[14px]"
+                    >
+                      {{ ver }}
                     </router-link>
                   </div>
                 </td>
