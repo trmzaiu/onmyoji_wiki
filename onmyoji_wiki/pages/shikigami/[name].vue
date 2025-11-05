@@ -1863,7 +1863,7 @@ const addCKeywordListeners = () => {
             </div>
           </div>
           <div v-else>
-            <div v-if="shikigami.rarity !== 'UR'">
+            <div v-if="shikigami.rarity === 'UR'">
               <div style="position: relative; padding-left: 40px; margin-bottom: 20px">
                 <!-- Skill icon + title -->
                 <div>
