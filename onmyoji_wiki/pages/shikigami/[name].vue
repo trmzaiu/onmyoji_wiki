@@ -1129,11 +1129,11 @@ const addCKeywordListeners = () => {
               </tr>
               <tr v-if="shikigami.version !== null" class="table-row">
                 <td colspan="4" class="p-1">
-                  <div class="grid grid-cols-2 gap-4 justify-items-center">
+                  <div class="grid grid-cols-2 gap-4 justify-items-start">
                     <div
                       v-for="ver in shikigami.version"
                       :key="ver"
-                      class="flex flex-col items-center justify-center"
+                      class="flex flex-col items-center justify-start"
                     >
                       <a :href="`/shikigami/${ver.replace(/ /g, '_')}`">
                         <img
@@ -1144,7 +1144,7 @@ const addCKeywordListeners = () => {
                       </a>
                       <router-link
                         :to="`/shikigami/${ver.replace(/ /g, '_')}`"
-                        class="text-black font-bold hover:text-[#a51919] text-[14px]"
+                        class="text-black text-center font-bold hover:text-[#a51919] text-[14px]"
                       >
                         {{ ver }}
                       </router-link>
