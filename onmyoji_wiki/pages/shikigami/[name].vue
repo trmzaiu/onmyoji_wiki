@@ -2108,7 +2108,7 @@ const addCKeywordListeners = () => {
           isEnglish ? 'lang-en' : 'lang-vi',
         ]">
           <!-- Skins -->
-          <h2 class="session-title mt-5">
+          <h2 class="session-title">
             {{ isEnglish ? "Skins" : "Trang phục" }}
           </h2>
           <div class="grid grid-cols-3 gap-5 mt-4">
