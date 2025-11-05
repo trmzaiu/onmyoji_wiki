@@ -1884,8 +1884,8 @@ const addCKeywordListeners = () => {
                   ">
                     <img
                       :src="`/assets/shikigami/skills/${route.params.name}_Skill0.webp`"
-                      :alt="shikigami.skills.find(s => s.type === 'Linked')?.name.en"
-                      :title="shikigami.skills.find(s => s.type === 'Linked')?.name.en"
+                      :alt="shikigami.skills.find(s => s.type === 'Linked').name.en"
+                      :title="shikigami.skills.find(s => s.type === 'Linked').name.en"
                     />
                   </span>
                   <span style="
@@ -1902,12 +1902,12 @@ const addCKeywordListeners = () => {
                       <span class="skill-name">
                         {{
                         isEnglish
-                        ? shikigami.skills.find(s => s.type === 'Linked')?.name.en
-                        : shikigami.skills.find(s => s.type === 'Linked')?.name.vn
+                        ? shikigami.skills.find(s => s.type === 'Linked').name.en
+                        : shikigami.skills.find(s => s.type === 'Linked').name.vn
                         }}
                       </span>
                       <span class="skill-sub-name lang-zh">
-                        ({{ shikigami.skills.find(s => s.type === 'Linked')?.name.cn === shikigami.skills.find(s => s.type === 'Linked')?.name.jp ? shikigami.skills.find(s => s.type === 'Linked')?.name.cn : shikigami.skills.find(s => s.type === 'Linked')?.name.cn + ' / ' + shikigami.skills.find(s => s.type === 'Linked')?.name.jp }})
+                        ({{ shikigami.skills.find(s => s.type === 'Linked').name.cn === shikigami.skills.find(s => s.type === 'Linked').name.jp ? shikigami.skills.find(s => s.type === 'Linked').name.cn : shikigami.skills.find(s => s.type === 'Linked').name.cn + ' / ' + shikigami.skills.find(s => s.type === 'Linked').name.jp }})
                       </span>
                       <button class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
                         @click="editSkill(shikigami.skills.find(s => s.type === 'Linked'))">
@@ -1924,22 +1924,22 @@ const addCKeywordListeners = () => {
                     <div class="skill-info flex">
                       <span style="margin-left: 25px">
                         <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
-                        {{ shikigami.skills.find(s => s.type === 'Linked')?.type }}
+                        {{ shikigami.skills.find(s => s.type === 'Linked').type }}
                       </span>
                       <span class="flex" style="margin-left: 40px">
                         <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
                         <img
                           src="/assets/Onibi.webp"
                           alt="Onibi" />
-                        {{ shikigami.skills.find(s => s.type === 'Linked')?.onibi }}
+                        {{ shikigami.skills.find(s => s.type === 'Linked').onibi }}
                       </span>
                       <span style="margin-left: 40px">
                         <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
-                        {{ shikigami.skills.find(s => s.type === 'Linked')?.cooldown }}
+                        {{ shikigami.skills.find(s => s.type === 'Linked').cooldown }}
                       </span>
                     </div>
                     <div class="skill-badges flex flex-wrap gap-2">
-                      <div v-for="tagId in shikigami.skills.find(s => s.type === 'Linked')?.tags" :key="tagId"
+                      <div v-for="tagId in shikigami.skills.find(s => s.type === 'Linked').tags" :key="tagId"
                         class="relative inline-flex items-center justify-center w-20 h-6 overflow-hidden rounded-md">
                         <!-- brush nền -->
                         <div class="absolute inset-0 tint-base" :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')">
@@ -1956,7 +1956,7 @@ const addCKeywordListeners = () => {
 
                   <div class="w-[80%] mx-auto">
                     <p class="text-center text-[#a3a3a3] voice-font">
-                      "{{ shikigami.skills.find(s => s.type === 'Linked')?.voice }}"
+                      "{{ shikigami.skills.find(s => s.type === 'Linked').voice }}"
                     </p>
                   </div>
                   <p class="whitespace-pre-line text-justify" style="
@@ -1968,16 +1968,16 @@ const addCKeywordListeners = () => {
                   " v-html="
                     processTextWithTooltips(
                       isEnglish
-                        ? shikigami.skills.find(s => s.type === 'Linked')?.description.en
-                        : shikigami.skills.find(s => s.type === 'Linked')?.description.vn
+                        ? shikigami.skills.find(s => s.type === 'Linked').description.en
+                        : shikigami.skills.find(s => s.type === 'Linked').description.vn
                     )
                   "></p>
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
                   <table style="width: 100%; border-collapse: collapse; font-size: 16px" v-if="
                     Array.isArray(
                       isEnglish
-                        ? shikigami.skills.find(s => s.type === 'Linked')?.levels.en
-                        : shikigami.skills.find(s => s.type === 'Linked')?.levels.vn
+                        ? shikigami.skills.find(s => s.type === 'Linked').levels.en
+                        : shikigami.skills.find(s => s.type === 'Linked').levels.vn
                     )
                   ">
                     <tbody>
@@ -1990,8 +1990,8 @@ const addCKeywordListeners = () => {
                         </th>
                       </tr>
                       <tr v-for="lvl in isEnglish
-                        ? shikigami.skills.find(s => s.type === 'Linked')?.levels.en
-                        : shikigami.skills.find(s => s.type === 'Linked')?.levels.vn" :key="lvl.level" style="color: #444">
+                        ? shikigami.skills.find(s => s.type === 'Linked').levels.en
+                        : shikigami.skills.find(s => s.type === 'Linked').levels.vn" :key="lvl.level" style="color: #444">
                         <td style="padding: 6px 10px">{{ lvl.level }}</td>
                         <td class="text-justify" style="padding: 6px 10px" v-html="processTextWithTooltips(lvl.effect)">
                         </td>
@@ -2002,8 +2002,8 @@ const addCKeywordListeners = () => {
                     <p style="color: #a3a3a3" class="no-level" v-html="
                       processTextWithTooltips(
                         isEnglish
-                          ? shikigami.skills.find(s => s.type === 'Linked')?.levels.en
-                          : shikigami.skills.find(s => s.type === 'Linked')?.levels.vn
+                          ? shikigami.skills.find(s => s.type === 'Linked').levels.en
+                          : shikigami.skills.find(s => s.type === 'Linked').levels.vn
                       )
                     "></p>
                   </div>
