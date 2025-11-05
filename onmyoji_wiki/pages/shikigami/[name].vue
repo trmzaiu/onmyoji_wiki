@@ -1058,8 +1058,15 @@ const addCKeywordListeners = () => {
               <tr class="table-title">
                 <th class="p-2 relative text-[20px]" colspan="4">
                   <div>{{ shikigami.name.jp[1] }}</div>
-                  <img :src="`/assets/rarity/${shikigami.rarity}.webp`" :alt="shikigami.rarity"
-                    class="w-16 h-16 object-contain absolute top-[-30px] left-[-40px]" />
+                  <img
+                    :src="`/assets/rarity/${shikigami.rarity}.webp`"
+                    :alt="shikigami.rarity"
+                    class="object-contain absolute top-[-30px] left-[-40px]"
+                    :class="{
+                      'w-14 h-14': shikigami.rarity === 'UR',
+                      'w-16 h-16': shikigami.rarity !== 'UR'
+                    }"
+                  />
                 </th>
               </tr>
             </thead>
