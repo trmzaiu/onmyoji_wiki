@@ -1136,7 +1136,7 @@ const addCKeywordListeners = () => {
               </tr>
               <tr v-if="shikigami.version !== null" class="table-row">
                 <td colspan="4" class="p-1">
-                  <div class="gap-4 justify-items-center" :class="shikigami.version > 1 ? 'grid grid-cols-2':''">
+                  <div class="gap-4 justify-items-center" :class="shikigami.version.length > 1 ? 'grid grid-cols-2' : ''">
                     <div
                       v-for="ver in shikigami.version"
                       :key="ver"
