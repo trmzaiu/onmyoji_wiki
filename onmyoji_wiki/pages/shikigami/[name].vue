@@ -1511,17 +1511,17 @@ const addCKeywordListeners = () => {
                   <td></td>
 
                   <td class="centered-number">
-                    <div class="flex justify-start">0%</div>
+                    <div class="flex justify-start">{{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[0] : '0' }}%</div>
                   </td>
 
                   <td></td>
 
                   <td class="centered-number">
-                    <div class="flex justify-start">0%</div>
+                    <div class="flex justify-start">{{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : '0' }}%</div>
                   </td>
 
                   <td>
-                    <div class="flex justify-start">+0%</div>
+                    <div class="flex justify-start">+{{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] - shikigami.stats.EffectRES[0] : '0' }}%</div>
                   </td>
                 </tr>
               </tbody>
