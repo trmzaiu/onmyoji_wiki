@@ -2111,7 +2111,7 @@ const addCKeywordListeners = () => {
           <h2 class="session-title">
             {{ isEnglish ? "Skins" : "Trang phục" }}
           </h2>
-          <div class="grid grid-cols-3 gap-5 mt-4">
+          <div class="grid grid-cols-3 gap-5 mt-4 place-items-center">
             <div
               v-for="(skin, index) in shikigami.skins"
               :key="index"
