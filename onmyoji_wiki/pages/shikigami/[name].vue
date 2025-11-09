@@ -2111,7 +2111,7 @@ const addCKeywordListeners = () => {
           <h2 class="session-title">
             {{ isEnglish ? "Skins" : "Trang phục" }}
           </h2>
-          <div class="flex flex-wrap justify-center gap-2 mt-4">
+          <div class="flex flex-wrap justify-between gap-2 mt-4">
             <div
               v-for="(skin, index) in shikigami.skins"
               :key="index"
@@ -2136,7 +2136,7 @@ const addCKeywordListeners = () => {
                         : index - 1
                     }.webp`"
                 :alt="skin.name.en || skin.name.cn"
-                class="w-full h-65 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
+                class="w-full h-66 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
               />
               <p
                 class="mt-4 text-center font-medium text-black"
