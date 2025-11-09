@@ -2136,7 +2136,7 @@ const addCKeywordListeners = () => {
                         : index - 1
                     }.webp`"
                 :alt="skin.name.en || skin.name.cn"
-                class="w-full h-70 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
+                class="w-full h-60 object-contain hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
               />
               <p
                 class="mt-4 text-center font-medium text-black"
