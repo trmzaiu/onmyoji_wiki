@@ -74,7 +74,7 @@ const getATKEvoRank = (atk) => {
   if (atk >= 3618 && atk <= 4153) return "SS";
   else if (atk >= 2948 && atk <= 3597) return "S";
   else if (atk >= 2894 && atk <= 2921) return "A";
-  else if (atk >= 2412 && atk <= 2466) return "B";
+  else if (atk >= 2412 && atk <= 2492) return "B";
   else if (atk >= 2144 && atk <= 2385) return "C";
   else return "D";
 };
