@@ -115,7 +115,8 @@ const getHPEvoImage = (hp) => {
 
 // S: 83 -> 94, A: 75 -> 82, B: 68 -> 74, C: 60 -> 67, D: 54 -> 59
 const getDEFRank = (def) => {
-  if (def >= 83 && def <= 94) return "S";
+  if (def >= 101 && def <= 101) return "SS";
+  else if (def >= 83 && def <= 94) return "S";
   else if (def >= 75 && def <= 82) return "A";
   else if (def >= 68 && def <= 74) return "B";
   else if (def >= 60 && def <= 67) return "C";
@@ -130,7 +131,7 @@ const getDEFImage = (def) => {
 // SS: 595 -> 595, S: 485 -> 490, A: 441 -> 481, B: 397 -> 437, C: 353 -> 392, D: 0 -> 0
 const getDEFEvoRank = (def) => {
   if (def >= 549 && def <= 595) return "SS";
-  else if (def >= 485 && def <= 490) return "S";
+  else if (def >= 485 && def <= 538) return "S";
   else if (def >= 441 && def <= 481) return "A";
   else if (def >= 397 && def <= 437) return "B";
   else if (def >= 353 && def <= 392) return "C";
