@@ -274,7 +274,7 @@ watch(isEnglish, async () => {
       <div class="flex gap-6">
         <div class="flex justify-center w-2/3">
           <img
-            :src="soul.images.image"
+            :src="`/assets/souls/images/${soul.name.en.replace(/ /g, '_')}.webp`"
             :alt="soul.name.en"
             class="max-h-[500px] object-contain hover:scale-110 transition-transform duration-300"
           />
