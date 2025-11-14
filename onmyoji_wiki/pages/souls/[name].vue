@@ -291,6 +291,39 @@ async function fetchSoul() {
   }
 }
 
+let soulChannel = null;
+let effectChannel = null;
+
+function subscribeRealtime() {
+  // --- Channel Soul ---
+  if (!soulChannel) {
+    soulChannel = supabase
+      .channel("soul-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Soul" },
+        async () => {
+          await fetchSoul();
+        }
+      )
+      .subscribe();
+  }
+
+  // --- Channel Effect ---
+  if (!effectChannel) {
+    effectChannel = supabase
+      .channel("effect-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "Effect" },
+        async () => {
+          await fetchAllEffects();
+        }
+      )
+      .subscribe();
+  }
+}
+
 onMounted(async () => {
   document.title = `Soul - ${formattedName}`;
   await fetchSoul();
