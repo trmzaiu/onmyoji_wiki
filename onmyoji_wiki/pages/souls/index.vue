@@ -329,7 +329,7 @@ onMounted(async () => {
               <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0">
                 <a :href="`/souls/${soul.name.en.replace(/ /g, '_')}`"
                   ><img
-                    :src="soul.images.image_icon"
+                    :src="`/assets/souls/icons/${soul.name.en.replace(/ /g, '_')}_Icon.webp`"
                     :alt="soul.name.en"
                     class="w-16 h-16 object-contain mx-auto"
                 /></a>
