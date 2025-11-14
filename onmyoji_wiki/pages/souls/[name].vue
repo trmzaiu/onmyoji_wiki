@@ -462,7 +462,7 @@ watch(isEnglish, async () => {
         <img
           v-for="(img, i) in imgs"
           :key="i"
-          :src="'/assets/effects/' + img"
+          :src="'/assets/effects/' + img + '.webp'"
           :alt="img"
           class="tooltip-img"
         />
