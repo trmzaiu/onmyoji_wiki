@@ -15,6 +15,15 @@ const showTooltip = ref(false);
 
 const formattedName = route.params.name.replace(/_/g, " ");
 
+function addIngForm(word) {
+
+  if (word.endsWith("e")) {
+    return word.slice(0, -1);
+  }
+
+  return word;
+}
+
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
 
