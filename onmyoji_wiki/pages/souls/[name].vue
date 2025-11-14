@@ -21,19 +21,25 @@ const processTextWithTooltips = (text) => {
   let processedText = text;
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
   const effectMap = new Map();
+  const effectKeywordOverrides = new Map();
 
-  // build effectMap theo name để vẫn hỗ trợ chữ
+  // build effectMap
   effects.value.forEach((note) => {
     const addToMap = (n) => {
       const names = [];
       if (n.name?.en) names.push(n.name.en);
       if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
+      if (n.name?.cn && n.name.cn !== n.name.en && n.name.cn !== n.name.vn) {
+        names.push(n.name.cn);
+      }
       names.forEach((name) => {
-        if (!effectMap.has(name.toLowerCase())) effectMap.set(name.toLowerCase(), n);
+        if (!effectMap.has(name.toLowerCase())) {
+          effectMap.set(name.toLowerCase(), n);
+        }
       });
     };
-    addToMap(note);
 
+    addToMap(note);
     if (note.subs?.length) {
       note.subs.forEach((subId) => {
         const sub = effectById.get(subId);
@@ -44,7 +50,23 @@ const processTextWithTooltips = (text) => {
 
   const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
-  const replaceWithTooltip = (match, content, type) => {
+  processedText = processedText.replace(/<(b|a)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g, (match, tag, id, nValue) => {
+    const note = effectById.get(id);
+    if (!note) return match;
+
+    let textVN = note.name?.vn;
+    let textEN = note.name?.en;
+
+    textVN = textVN.replace("{count}", nValue || "").trim();
+
+    effectKeywordOverrides.set(id, isEnglish.value ? textEN : textVN);
+
+    return `<${tag}>${id}</${tag}>`;
+  });
+
+  processedText = processedText.replace(/<n>.*?<\/n>/g, "");
+
+  const replaceWithTooltip = (match, content, type, hasIng = false) => {
     let note = null;
 
     if (/^\d+$/.test(content)) {
@@ -55,52 +77,77 @@ const processTextWithTooltips = (text) => {
 
     if (!note) return match;
 
-    const keyword = isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en;
+    let keywordForDisplay;
+    let keywordForTooltip;
+
+    if (type === "b") {
+      const keywordOverride = effectKeywordOverrides.get(String(note.id));
+      keywordForDisplay = keywordOverride
+        ? keywordOverride
+        : (isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en);
+      keywordForTooltip = isEnglish.value
+        ? note.name?.en
+        : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
+    } else {
+      keywordForDisplay = isEnglish.value ? note.name?.en : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
+      keywordForTooltip = keywordForDisplay;
+    }
+
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
-    const className = type === "b" ? "effect-tooltip" : "effect-highlight";
+    let keyword = keywordForDisplay;
 
-    return `<span class="${className}"
-              data-name="${keyword}"
-                            data-name-cn="${note.name?.cn || ""}"
+    if (type === "f" || type === "l") {
+      if (keyword.startsWith("HP ")) {
+        keyword = "HP " + keyword.slice(3).toLowerCase();
+      } else if (keyword.toUpperCase() === "HP") {
+        keyword = "HP";
+      } else {
+        keyword = keyword.toLowerCase();
+      }
+    }
 
-              data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-              data-img='${JSON.stringify(note.images || [])}'
-              data-color="${color}"
-              style="color:${color}">${keyword}</span>`;
+    if (type === "g") {
+      keyword = keyword.toLowerCase();
+      keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+    }
+
+    if (hasIng) {
+      keyword = addIngForm(keyword);
+    }
+
+    if (type === "b") {
+      return `<span class="effect-tooltip"
+                data-name="${keywordForTooltip}"
+                data-name-cn="${note.name?.cn || ""}"
+                data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+                data-img='${JSON.stringify(note.images || [])}'
+                data-color="${color}"
+                style="color:${color}">${keyword}</span>`;
+    } else {
+      return (type === "i" || type === "l")
+        ? `<span>${keyword}</span>`
+        : `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
+    }
   };
 
-  // <e>...</e>
+  // === xử lý các tag đặc biệt ===
+  processedText = processedText
+    .replace(/<e>(.*?)<\/e>/g, (_, keyword) =>
+      `<img src="/assets/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
+    )
+
+  // f, g, b, a, h
   processedText = processedText.replace(
-    /<e>(.*?)<\/e>/g,
-    (_, keyword) =>
-      `<img src="/assets/effects/${keyword}" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom" />`
-  );
+    /<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g,
+    (match, type, content, offset, fullString) => {
+      const after = fullString.slice(offset + match.length);
+      const hasIng = after.startsWith("ing");
 
-  // <d>...</d>
-  processedText = processedText.replace(
-    /<d>(.*?)<\/d>/g,
-    (_, keyword) => `<strong class="text-[#c07b2a]">${keyword}</strong>`
+      return replaceWithTooltip(match, content, type, hasIng);
+    }
   );
-
-  // <b>...</b>
-  processedText = processedText.replace(/<b>(.*?)<\/b>/g, (m, c) =>
-    replaceWithTooltip(m, c, "b")
-  );
-
-  // <a>...</a>
-  processedText = processedText.replace(/<a>(.*?)<\/a>/g, (m, c) =>
-    replaceWithTooltip(m, c, "a")
-  );
-
-  // <c>...</c>
-  processedText = processedText.replace(
-    /<c>(.*?)<\/c>/g,
-    (_, keyword) =>
-      `<span class="c-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`
-  );
-
   return processedText;
 };
 
@@ -429,7 +476,7 @@ watch(isEnglish, async () => {
               v-if="sub.images"
               v-for="(img, i) in sub.images"
               :key="i"
-              :src="'/assets/effects/' + img"
+              :src="'/assets/effects/' + img + '.webp'"
               :alt="img"
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />
@@ -448,7 +495,7 @@ watch(isEnglish, async () => {
                   v-if="subsub.images"
                   v-for="(img, k) in subsub.images"
                   :key="k"
-                  :src="'/assets/effects/' + img"
+                  :src="'/assets/effects/' + img + '.webp'"
                   :alt="img"
                   style="width: 32px; height: 32px; margin-bottom: 8px"
                 />
