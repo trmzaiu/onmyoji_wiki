@@ -377,7 +377,7 @@ watch(isEnglish, async () => {
 
       <ul class="px-3 list-disc pl-6 text-black" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <li
-          v-for="(item, index) in isEnglish ? soul.obtainable.en : soul.obtainable.vn"
+          v-for="(item, index) in soul.obtainable"
           :key="index"
         >
           {{ item }}
