@@ -58,7 +58,7 @@ const getImgUrl = (name) =>
 const getATKRank = (atk) => {
   if (atk >= 171 && atk <= 197) return "SS";
   else if (atk >= 140 && atk <= 166) return "S";
-  else if (atk >= 127 && atk <= 133) return "A";
+  else if (atk >= 127 && atk <= 136) return "A";
   else if (atk >= 114 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 110) return "C";
   else return "D";
@@ -73,7 +73,7 @@ const getATKImage = (atk) => {
 const getATKEvoRank = (atk) => {
   if (atk >= 3618 && atk <= 4153) return "SS";
   else if (atk >= 2948 && atk <= 3597) return "S";
-  else if (atk >= 2894 && atk <= 2921) return "A";
+  else if (atk >= 2734 && atk <= 2921) return "A";
   else if (atk >= 2412 && atk <= 2492) return "B";
   else if (atk >= 2144 && atk <= 2385) return "C";
   else return "D";
