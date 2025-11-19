@@ -1148,6 +1148,7 @@ const addCKeywordListeners = () => {
                           :src="`/assets/shikigami/shards/${ver.replace(/ /g, '_')}_Shard.webp`"
                           :alt="ver"
                           class="h-16 w-16 object-contain mb-1"
+                          @error="event => event.target.src = '/assets/Unknown_Shard.webp'"
                         />
                       </a>
                       <router-link
@@ -1231,7 +1232,8 @@ const addCKeywordListeners = () => {
                   <th colspan="2">
                     <figure class="icon-img" style="position: relative">
                       <img :src="`/assets/shikigami/icons/${route.params.name}_Icon.webp`" :alt="shikigami.name.jp[1]" style="object-fit: contain"
-                        width="90" />
+                        width="90" 
+                        @error="event => event.target.src = '/assets/Unknown_Icon.webp'"/>
                       <div style="
                         color: #a51919;
                         font-weight: bold;
@@ -1257,7 +1259,7 @@ const addCKeywordListeners = () => {
                   <th colspan="2">
                     <figure class="icon-img" style="position: relative">
                       <img :src="`/assets/shikigami/icons/${route.params.name}_Icon${shikigami.rarity !== 'SP' && shikigami.rarity !== 'UR' && shikigami.rarity !== 'N' ? '_Evo' : ''}.webp`
-                      " :alt="shikigami.name.jp[1]" style="object-fit: contain" width="90" />
+                      " :alt="shikigami.name.jp[1]" style="object-fit: contain" width="90" @error="event => event.target.src = '/assets/Unknown_Icon.webp'"/>
                       <div style="
                         color: #a51919;
                         font-weight: bold;
