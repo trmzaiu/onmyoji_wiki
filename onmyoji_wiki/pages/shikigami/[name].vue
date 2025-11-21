@@ -914,23 +914,18 @@ const saveSkill = async () => {
   updateTags();
   updateNotes();
 
-  shikigami.value.skills[editingSkillIndex.value] = {
-    ...editingSkill.value,
-    levels: {
-      en: Array.isArray(editingSkill.value.levels.en)
-        ? editingSkill.value.levels.en.map((l) => ({ ...l }))
-        : editingSkill.value.levels.en, 
-      vn: Array.isArray(editingSkill.value.levels.vn)
-        ? editingSkill.value.levels.vn.map((l) => ({ ...l }))
-        : editingSkill.value.levels.vn,
-    },
-    tags: editingSkill.value.tags ? [...editingSkill.value.tags] : [],
-    notes: editingSkill.value.notes ? [...editingSkill.value.notes] : [],
-  };
+  // deep clone
+  const clonedSkill = structuredClone(editingSkill.value);
+
+  // update vào mảng local
+  shikigami.value.skills[editingSkillIndex.value] = clonedSkill;
+
+  // Supabase require JSON-safe data
+  const safeSkills = cleanForSupabase(shikigami.value.skills);
 
   const { data, error } = await supabase
     .from("Shikigami")
-    .update({ skills: shikigami.value.skills })
+    .update({ skills: safeSkills })
     .eq("id", shikigami.value.id);
 
   if (error) {
@@ -939,6 +934,10 @@ const saveSkill = async () => {
     closeEditModal();
   }
 };
+
+function cleanForSupabase(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
 
 function updateTags() {
   editingSkill.tags = tagsInput.value
