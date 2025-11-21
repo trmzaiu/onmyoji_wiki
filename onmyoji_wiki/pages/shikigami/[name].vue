@@ -101,7 +101,7 @@ const getHPImage = (hp) => {
 // SS: 15392 -> 15392, S: 12532 -> 14925, A: 11393 -> 12418, B: 10254 -> 11279, C: 9684 -> 10140, D: 0 -> 0
 const getHPEvoRank = (hp) => {
   if (hp >= 15392 && hp <= 15392) return "SS";
-  else if (hp >= 12532 && hp <= 14925) return "S";
+  else if (hp >= 12532 && hp <= 14925 || hp === 16405) return "S";
   else if (hp >= 11393 && hp <= 12418) return "A";
   else if (hp >= 10254 && hp <= 11279) return "B";
   else if (hp >= 9684 && hp <= 10140) return "C";
