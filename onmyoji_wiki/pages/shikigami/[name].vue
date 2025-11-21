@@ -2103,6 +2103,109 @@ const addCKeywordListeners = () => {
           <h2 class="session-title mt-5">
             {{ isEnglish ? "Build" : "Định hướng" }}
           </h2>
+
+          <section class="build-section">
+            <!-- Tag + Soul choice -->
+            <div class="build-meta">
+              <div class="build-block">
+                <div class="build-label">
+                  {{ isEnglish ? "Tag" : "Vai trò" }}
+                </div>
+                <div class="build-tags">
+                  <!-- Tự thay text cho hợp hero -->
+                  <span class="build-tag">DPS</span>
+                  <span class="build-tag">Single Target</span>
+                </div>
+              </div>
+
+              <div class="build-block">
+                <div class="build-label">
+                  {{ isEnglish ? "Soul choice" : "Linh hồn khuyên dùng" }}
+                </div>
+                <div class="build-soul">
+                  <!-- "Build cho đẹp" bạn có thể đổi thành gợi ý cụ thể -->
+                  {{ isEnglish ? "Prioritize aesthetics / matching skin" : "Ưu tiên set đẹp, đồng bộ ngoại hình" }}
+                </div>
+              </div>
+            </div>
+
+            <!-- PVP & PVE -->
+            <div class="build-cards">
+              <!-- PVP -->
+              <div class="build-card">
+                <div class="build-card-header">
+                  <span class="build-mode">PVP</span>
+                </div>
+
+                <div class="build-line">
+                  <span class="build-label-small">
+                    {{ isEnglish ? "Main stat" : "Chỉ số chính" }}:
+                  </span>
+                  <span class="build-value">
+                    ATK / AT / Crit
+                  </span>
+                </div>
+
+                <div class="build-line">
+                  <span class="build-label-small">
+                    {{ isEnglish ? "Substat" : "Chỉ số phụ" }}:
+                  </span>
+                  <span class="build-value">
+                    Damage &gt;&gt;
+                  </span>
+                </div>
+
+                <div class="build-breakpoint">
+                  <span class="build-label-small">
+                    {{ isEnglish ? "Breakpoint" : "Ngưỡng quan trọng" }}:
+                  </span>
+                  <ul class="build-list">
+                    <li>G6</li>
+                    <li>Max Skill 2, 3</li>
+                    <li>220+ SpD</li>
+                    <li>Max Crit</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- PVE -->
+              <div class="build-card">
+                <div class="build-card-header">
+                  <span class="build-mode">PVE</span>
+                </div>
+
+                <div class="build-line">
+                  <span class="build-label-small">
+                    {{ isEnglish ? "Main stat" : "Chỉ số chính" }}:
+                  </span>
+                  <span class="build-value">
+                    ATK / AT / Crit
+                  </span>
+                </div>
+
+                <div class="build-line">
+                  <span class="build-label-small">
+                    {{ isEnglish ? "Substat" : "Chỉ số phụ" }}:
+                  </span>
+                  <span class="build-value">
+                    Damage &gt;&gt;
+                  </span>
+                </div>
+
+                <div class="build-breakpoint">
+                  <span class="build-label-small">
+                    {{ isEnglish ? "Breakpoint" : "Ngưỡng quan trọng" }}:
+                  </span>
+                  <ul class="build-list">
+                    <li>G6</li>
+                    <li>Max Skill 2, 3</li>
+                    <li>220+ SpD</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
         </div>
 
         <!-- Gallery Tab -->
@@ -3039,4 +3142,102 @@ const addCKeywordListeners = () => {
   border-right: 5px solid transparent;
   border-bottom: 5px solid #ffffff;
 }
+
+.build-section {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.build-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+}
+
+.build-block {
+  min-width: 220px;
+}
+
+.build-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.build-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.build-tag {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.build-soul {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.build-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.build-card {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+.build-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.build-mode {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.build-line {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.build-label-small {
+  font-weight: 600;
+}
+
+.build-value {
+  opacity: 0.9;
+}
+
+.build-breakpoint {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.build-list {
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+}
+
 </style>
