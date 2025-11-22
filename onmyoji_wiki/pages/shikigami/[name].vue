@@ -1557,7 +1557,7 @@ const addCKeywordListeners = () => {
                 : (shikigami.skills[2].type === shikigami.skills[1].type ? 'Special 2' : shikigami.skills[2].type)
                 }}
               </template>
-              <template v-else-if="shikigami.skills[1].type === shikigami.skills[2]?.type">
+              <template v-else-if="shikigami.skills[1]?.type === shikigami.skills[2]?.type">
                 {{
                 skill.type + (index === 1 ? ' 1' : (index === 2 ? ' 2' : ''))
                 }}
