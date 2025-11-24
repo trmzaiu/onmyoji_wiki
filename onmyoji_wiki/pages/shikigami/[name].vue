@@ -2068,7 +2068,17 @@ const addCKeywordListeners = () => {
                   <span v-html="renderBioText(shikigami.biography[1])"></span>
                 </td>
 
-                <td class="py-1 text-black table-cell w-[100px]">
+                <td v-if="shikigami.id===78" class="py-1 text-black table-cell w-[100px]">
+                  <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
+                    <img src="/assets/Gold.webp" alt="Gold" class="max-h-full max-w-full object-contain" />
+                    <span class="absolute bottom-0 right-0 text-white font-bold" style="
+                      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+                        1px 1px 0 #000;
+                    ">5000</span>
+                  </div>
+                </td>
+
+                <td v-else class="py-1 text-black table-cell w-[100px]">
                   <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
                     <img :src="shikigami.id === 144 ? '/assets/Jade.webp' : (shikigami.id === 71 ? '/assets/Black_Daruma.webp' : `/assets/shikigami/shards/${route.params.name}_Shard.webp`)" :alt="shikigami.name.jp" class="max-h-full max-w-full object-contain" />
                     <span class="absolute bottom-0 right-0 text-white font-bold" style="
