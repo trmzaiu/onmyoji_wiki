@@ -1718,7 +1718,7 @@ const addCKeywordListeners = () => {
                     </tbody>
                   </table>
                   <div v-else>
-                    <p style="color: #7a7a7a" class="no-level" v-html="
+                    <p style="color: #666666" class="no-level" v-html="
                       processTextWithTooltips(
                         isEnglish
                           ? shikigami.skills[activeSkillIndex].levels.en
@@ -1855,7 +1855,7 @@ const addCKeywordListeners = () => {
                     </tbody>
                   </table>
                   <div v-else>
-                    <p style="color: #7a7a7a" class="no-level" v-html="
+                    <p style="color: #666666" class="no-level" v-html="
                       processTextWithTooltips(
                         isEnglish ? skill.levels.en : skill.levels.vn
                       )
@@ -2012,7 +2012,7 @@ const addCKeywordListeners = () => {
                     </tbody>
                   </table>
                   <div v-else>
-                    <p style="color: #7a7a7a" class="no-level" v-html="
+                    <p style="color: #666666" class="no-level" v-html="
                       processTextWithTooltips(
                         isEnglish
                           ? shikigami.skills.find(s => s.type === 'Linked').levels.en
