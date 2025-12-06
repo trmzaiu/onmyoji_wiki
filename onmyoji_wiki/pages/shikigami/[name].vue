@@ -1977,7 +1977,7 @@ const addCKeywordListeners = () => {
                   "></p>
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
                   <div>
-                    <p style="color: #7a7a7a" class="no-level" v-html="
+                    <p style="color: #a3a3a3" class="no-level" v-html="
                         processTextWithTooltips(
                           isEnglish
                             ? shikigami.skills.find(s => s.type === 'Linked').notes.en
