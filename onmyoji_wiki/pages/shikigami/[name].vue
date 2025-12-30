@@ -2119,113 +2119,6 @@ const addCKeywordListeners = () => {
               </tr>
             </tbody>
           </table>
-
-          <h2 class="session-title mt-5">
-            {{ isEnglish ? "Build" : "Định hướng" }}
-          </h2>
-
-          <section class="build-section">
-            <!-- Tag + Soul choice -->
-            <div class="build-meta">
-              <div class="build-block">
-                <div class="build-label">
-                  {{ isEnglish ? "Tag" : "Vai trò" }}
-                </div>
-                <div class="build-tags">
-                  <!-- Tự thay text cho hợp hero -->
-                  <span class="build-tag">DPS</span>
-                  <span class="build-tag">Single Target</span>
-                </div>
-              </div>
-
-              <div class="build-block">
-                <div class="build-label">
-                  {{ isEnglish ? "Soul choice" : "Linh hồn khuyên dùng" }}
-                </div>
-                <div class="build-soul">
-                  <!-- "Build cho đẹp" bạn có thể đổi thành gợi ý cụ thể -->
-                  {{ isEnglish ? "Prioritize aesthetics / matching skin" : "Ưu tiên set đẹp, đồng bộ ngoại hình" }}
-                </div>
-              </div>
-            </div>
-
-            <!-- PVP & PVE -->
-            <div class="build-cards">
-              <!-- PVP -->
-              <div class="build-card">
-                <div class="build-card-header">
-                  <span class="build-mode">PVP</span>
-                </div>
-
-                <div class="build-line">
-                  <span class="build-label-small">
-                    {{ isEnglish ? "Main stat" : "Chỉ số chính" }}:
-                  </span>
-                  <span class="build-value">
-                    ATK / AT / Crit
-                  </span>
-                </div>
-
-                <div class="build-line">
-                  <span class="build-label-small">
-                    {{ isEnglish ? "Substat" : "Chỉ số phụ" }}:
-                  </span>
-                  <span class="build-value">
-                    Damage &gt;&gt;
-                  </span>
-                </div>
-
-                <div class="build-breakpoint">
-                  <span class="build-label-small">
-                    {{ isEnglish ? "Breakpoint" : "Ngưỡng quan trọng" }}:
-                  </span>
-                  <ul class="build-list">
-                    <li>G6</li>
-                    <li>Max Skill 2, 3</li>
-                    <li>220+ SpD</li>
-                    <li>Max Crit</li>
-                  </ul>
-                </div>
-              </div>
-
-              <!-- PVE -->
-              <div class="build-card">
-                <div class="build-card-header">
-                  <span class="build-mode">PVE</span>
-                </div>
-
-                <div class="build-line">
-                  <span class="build-label-small">
-                    {{ isEnglish ? "Main stat" : "Chỉ số chính" }}:
-                  </span>
-                  <span class="build-value">
-                    ATK / AT / Crit
-                  </span>
-                </div>
-
-                <div class="build-line">
-                  <span class="build-label-small">
-                    {{ isEnglish ? "Substat" : "Chỉ số phụ" }}:
-                  </span>
-                  <span class="build-value">
-                    Damage &gt;&gt;
-                  </span>
-                </div>
-
-                <div class="build-breakpoint">
-                  <span class="build-label-small">
-                    {{ isEnglish ? "Breakpoint" : "Ngưỡng quan trọng" }}:
-                  </span>
-                  <ul class="build-list">
-                    <li>G6</li>
-                    <li>Max Skill 2, 3</li>
-                    <li>220+ SpD</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </section>
-
         </div>
 
         <!-- Gallery Tab -->
@@ -2262,7 +2155,7 @@ const addCKeywordListeners = () => {
                         : index - 1
                     }.webp`"
                 :alt="skin.name.en || skin.name.cn"
-                class="w-full h-68 object-contain mt-2 hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
+                class="w-68 h-68 object-contain mt-2 hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
               />
               <p
                 class="mt-4 text-center font-medium text-black"
