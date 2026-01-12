@@ -282,253 +282,266 @@ function addIngForm(word) {
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
 
-  let processedText = text;
+  // =========================================================
+  // 0) Build lookup maps
+  // =========================================================
+  const processed = { value: text };
+
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
-  const effectMap = new Map();
-  const effectKeywordOverrides = new Map();
+  const effectMap = new Map();                // name (lowercase) -> effect note
+  const effectKeywordOverrides = new Map();   // effectId -> display keyword (after <n> replace)
 
-  // build effectMap
+  const colorMap = {
+    red: "#a63f37",
+    blue: "#4994d4",
+    yellow: "#c07b2a",
+  };
+
+  const addEffectNameToMap = (note) => {
+    const names = [];
+    if (note.name?.en) names.push(note.name.en);
+    if (note.name?.vn && note.name.vn !== note.name.en) names.push(note.name.vn);
+    if (note.name?.cn && note.name.cn !== note.name.en && note.name.cn !== note.name.vn) {
+      names.push(note.name.cn);
+    }
+
+    names.forEach((name) => {
+      const key = name?.toLowerCase();
+      if (key && !effectMap.has(key)) effectMap.set(key, note);
+    });
+  };
+
+  // Build effectMap including subs
   effects.value.forEach((note) => {
-    const addToMap = (n) => {
-      const names = [];
-      if (n.name?.en) names.push(n.name.en);
-      if (n.name?.vn && n.name.vn !== n.name.en) names.push(n.name.vn);
-      if (n.name?.cn && n.name.cn !== n.name.en && n.name.cn !== n.name.vn) {
-        names.push(n.name.cn);
-      }
-      names.forEach((name) => {
-        if (!effectMap.has(name.toLowerCase())) {
-          effectMap.set(name.toLowerCase(), n);
-        }
-      });
-    };
-
-    addToMap(note);
-    if (note.subs?.length) {
-      note.subs.forEach((subId) => {
-        const sub = effectById.get(subId);
-        if (sub) addToMap(sub);
-      });
-    }
+    addEffectNameToMap(note);
+    note.subs?.forEach((subId) => {
+      const sub = effectById.get(String(subId));
+      if (sub) addEffectNameToMap(sub);
+    });
   });
 
-  const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
+  // =========================================================
+  // 1) Helpers: Entities (Shikigami / Onmyoji)
+  // =========================================================
+  const replaceShikigami = (match, id) => {
+    if (!shikigamiList?.value?.length) return match;
+    const shiki = shikigamiList.value.find((s) => String(s.id) === String(id));
+    if (!shiki) return match;
 
-  processedText = processedText.replace(/<(b|a)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g, (match, tag, id, nValue) => {
-    const note = effectById.get(id);
-    if (!note) return match;
+    const name = isEnglish.value ? (shiki.name?.en || "") : (shiki.name?.vn || shiki.name?.en || "");
+    return `<span class="entity shikigami">${name}</span>`;
+  };
 
-    let textVN = note.name?.vn;
-    let textEN = note.name?.en;
+  const replaceOnmyoji = (match, id) => {
+    if (!onmyojiList?.value?.length) return match;
+    const onm = onmyojiList.value.find((o) => String(o.id) === String(id));
+    if (!onm) return match;
 
-    textVN = textVN.replace("{count}", nValue || "").trim();
+    const name = isEnglish.value ? (onm.name?.en || "") : (onm.name?.vn || onm.name?.en || "");
+    return `<span class="entity onmyoji">${name}</span>`;
+  };
 
-    effectKeywordOverrides.set(id, isEnglish.value ? textEN : textVN);
+  // =========================================================
+  // 2) Helpers: Skills (current shikigami / referenced shikigami)
+  // =========================================================
+  // Tag: <c|m|o>index</c|m|o>  (skill index of current shikigami)
+  const replaceSkill = (match, content, type) => {
+    const index = parseInt(content, 10);
+    if (isNaN(index) || !shikigami.value?.skills?.length) return match;
 
-    return `<${tag}>${id}</${tag}>`;
-  });
+    const skill = shikigami.value.skills[index - 1];
+    if (!skill) return match;
 
-  processedText = processedText.replace(/<n>.*?<\/n>/g, "");
+    const name = isEnglish.value ? (skill.name?.en || "") : (skill.name?.vn || skill.name?.en || "");
+    if (type === "c") return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
+    if (type === "m") return `<span class="skill-keyword text-[#c07b2a]">${name}</span>`;
+    if (type === "o") return `<span>${name}</span>`;
+    return match;
+  };
 
-  const replaceWithTooltip = (match, content, type, hasIng = false) => {
-    let note = null;
+  // Tag: <d|r>shikiId-skillIndex</d|r> (skill of another shikigami by id)
+  // NOTE: dùng <r> để tránh conflict với <p> (onmyoji)
+  const replaceSkillRef = (match, content, type) => {
+    const [shikiIdStr, skillIndexStr] = String(content).split("-");
+    const shikiId = parseInt(shikiIdStr, 10);
+    const skillIndex = parseInt(skillIndexStr, 10);
+    if (isNaN(shikiId) || isNaN(skillIndex) || !shikigamiList?.value?.length) return match;
 
-    if (/^\d+$/.test(content)) {
-      note = effectById.get(content);
+    const shiki = shikigamiList.value.find((s) => String(s.id) === String(shikiId));
+    if (!shiki?.skills?.length) return match;
+
+    const skill = shiki.skills[skillIndex - 1];
+    if (!skill) return match;
+
+    const name = isEnglish.value ? (skill.name?.en || "") : (skill.name?.vn || skill.name?.en || "");
+
+    if (type === "d") return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
+    if (type === "r") return `<span class="skill-keyword text-[#c07b2a]">${name}</span>`;
+    return match;
+  };
+
+  // =========================================================
+  // 3) Helpers: Skins
+  // =========================================================
+  // Tag: <q>index</q>
+  const replaceSkin = (match, content) => {
+    const index = parseInt(content, 10);
+    if (isNaN(index) || !shikigami.value?.skins?.length) return match;
+
+    const skin = shikigami.value.rarity !== "SP"
+      ? shikigami.value.skins[index + 1]
+      : shikigami.value.skins[index];
+
+    if (!skin) return match;
+
+    let name = "";
+    let extraClass = "";
+
+    if (isEnglish.value) {
+      if (skin.name?.en) name = skin.name.en;
+      else if (skin.name?.cn) { name = skin.name.cn; extraClass = "lang-zh"; }
     } else {
-      note = effectMap.get(content.toLowerCase());
+      name = skin.name?.vn || "";
+      if (!name && skin.name?.cn) { name = skin.name.cn; extraClass = "lang-zh"; }
     }
 
+    return `<span class="${extraClass}">${name}</span>`;
+  };
+
+  // =========================================================
+  // 4) Helpers: Effects tooltip/highlight
+  // =========================================================
+  const resolveEffectNote = (content) => {
+    if (/^\d+$/.test(content)) return effectById.get(content);
+    return effectMap.get(content.toLowerCase());
+  };
+
+  const replaceEffect = (match, content, type, hasIng = false) => {
+    const note = resolveEffectNote(content);
     if (!note) return match;
+
+    const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
+    const color = note.color ? (colorMap[note.color] || "#a51919") : "#a51919";
 
     let keywordForDisplay;
     let keywordForTooltip;
 
     if (type === "b") {
-      const keywordOverride = effectKeywordOverrides.get(String(note.id));
-      keywordForDisplay = keywordOverride
-        ? keywordOverride
-        : (isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en);
+      const override = effectKeywordOverrides.get(String(note.id));
+      keywordForDisplay = override ?? (isEnglish.value ? note.name?.en : (note.name?.vn || note.name?.en));
       keywordForTooltip = isEnglish.value
         ? note.name?.en
-        : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
+        : (note.name?.vn?.replace("{count}", "").trim() || note.name?.en);
     } else {
-      keywordForDisplay = isEnglish.value ? note.name?.en : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
+      keywordForDisplay = isEnglish.value
+        ? note.name?.en
+        : (note.name?.vn?.replace("{count}", "").trim() || note.name?.en);
       keywordForTooltip = keywordForDisplay;
     }
 
-    const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
-    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
+    let keyword = keywordForDisplay || "";
 
-    let keyword = keywordForDisplay;
-
+    // grammar / casing rules
     if (type === "f" || type === "l") {
-      if (keyword.startsWith("HP ")) {
-        keyword = "HP " + keyword.slice(3).toLowerCase();
-      } else if (keyword.toUpperCase() === "HP") {
-        keyword = "HP";
-      } else {
-        keyword = keyword.toLowerCase();
-      }
+      if (keyword.startsWith("HP ")) keyword = "HP " + keyword.slice(3).toLowerCase();
+      else if (keyword.toUpperCase() === "HP") keyword = "HP";
+      else keyword = keyword.toLowerCase();
     }
-
     if (type === "g") {
       keyword = keyword.toLowerCase();
       keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
     }
+    if (hasIng) keyword = addIngForm(keyword);
 
-    if (hasIng) {
-      keyword = addIngForm(keyword);
-    }
-
+    // Tooltip only for <b>
     if (type === "b") {
       return `<span class="effect-tooltip"
-                data-name="${keywordForTooltip}"
-                data-name-cn="${note.name?.cn || ""}"
-                data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-                data-img='${JSON.stringify(note.images || [])}'
-                data-color="${color}"
-                style="color:${color}">${keyword}</span>`;
-    } else {
-      return (type === "i" || type === "l")
-        ? `<span>${keyword}</span>`
-        : `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
+        data-name="${keywordForTooltip || ""}"
+        data-name-cn="${note.name?.cn || ""}"
+        data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
+        data-img='${JSON.stringify(note.images || [])}'
+        data-color="${color}"
+        style="color:${color}">${keyword}</span>`;
     }
+
+    // Highlight or plain spans
+    if (type === "i" || type === "l") return `<span>${keyword}</span>`;
+    return `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
   };
 
-  const replaceShikigami = (match, content) => {
-    if (!shikigamiList?.value?.length) return match;
-    const shiki = shikigamiList.value.find(
-      (s) => String(s.id) === String(content)
-    );
-    if (!shiki) return match;
+  // =========================================================
+  // 5) Step A: Preprocess effect keyword overrides: <b|a>id</b|a><n>count</n>
+  // =========================================================
+  processed.value = processed.value.replace(
+    /<(b|a)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g,
+    (match, tag, id, nValue) => {
+      const note = effectById.get(String(id));
+      if (!note) return match;
 
-    const keyword = isEnglish.value
-      ? shiki.name?.en || ""
-      : shiki.name?.vn || shiki.name?.en || "";
+      const textEN = note.name?.en || "";
+      const textVN = (note.name?.vn || "").replace("{count}", nValue || "").trim();
 
-    return `<span>${keyword}</span>`;
-  };
-
-  const replaceSkill = (match, content, type) => {
-    const index = parseInt(content, 10);
-    if (isNaN(index) || !shikigami.value?.skills?.length) return match;
-    const skill = shikigami.value?.skills[index-1];
-    if (!skill) return match;
-
-    const keyword = isEnglish.value
-      ? skill.name?.en || ""
-      : skill.name?.vn || skill.name?.en || "";
-
-    if (type === "c") {
-      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
-    } else if (type === "m") {
-      return `<span class="skill-keyword text-[#c07b2a]">${keyword}</span>`;
-    } else if (type === "o") {
-      return `<span >${keyword}</span>`;
+      effectKeywordOverrides.set(String(id), isEnglish.value ? textEN : textVN);
+      return `<${tag}>${id}</${tag}>`;
     }
+  );
 
-    return match;
-  };
+  // remove leftover <n>
+  processed.value = processed.value.replace(/<n>.*?<\/n>/g, "");
 
-  const replaceSkin = (match, content) => {
-    const index = parseInt(content, 10);
-    if (isNaN(index) || !shikigami.value?.skins?.length) return match;
-
-    const skin = shikigami.value.rarity !== 'SP'
-      ? shikigami.value.skins[index + 1]
-      : shikigami.value.skins[index];
-    if (!skin) return match;
-
-    let keyword = "";
-    let extraClass = "";
-
-    if (isEnglish.value) {
-      if (skin.name?.en) {
-        keyword = skin.name.en;
-      } else if (skin.name?.cn) {
-        keyword = skin.name.cn;
-        extraClass = "lang-zh";
-      }
-    } else {
-      keyword = skin.name?.vn || "";
-      if (!keyword && skin.name?.cn) {
-        keyword = skin.name.cn;
-        extraClass = "lang-zh";
-      }
-    }
-
-    return `<span class="${extraClass}">${keyword}</span>`;
-  };
-
-
-  const replaceSkillRef = (match, content, type) => {
-    console.log("[replaceSkillRef] raw content:", content);
-
-    const [shikiIdStr, skillIndexStr] = content.split("-");
-    const shikiId = parseInt(shikiIdStr, 10);
-    const skillIndex = parseInt(skillIndexStr, 10);
-
-    if (!shikigamiList?.value?.length) return match;
-
-    let shiki = shikigamiList.value.find(
-      (s) => String(s.id) === String(shikiId)
-    );
-    console.log("[replaceSkillRef] found in list:", shiki);
-
-    if (!shiki || !shiki.skills?.length) {
-      return match;
-    }
-
-    const skill = shiki.skills[skillIndex - 1];
-
-    if (!skill) {
-      return match;
-    }
-
-    const keyword = isEnglish.value
-      ? (skill.name?.en || "")
-      : (skill.name?.vn || skill.name?.en || "");
-
-    
-    if (type === "d") {
-      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${keyword}">${keyword}</span>`;
-    } else if (type === "p") {
-      return `<span class="skill-keyword text-[#c07b2a]">${keyword}</span>`;
-    }
-    return match;
-  };
-
-  // === xử lý các tag đặc biệt ===
-  processedText = processedText
-    .replace(/<e>(.*?)<\/e>/g, (_, keyword) =>
+  // =========================================================
+  // 6) Step B: Special tags (icons / entities / skills / skins)
+  // =========================================================
+  // <e>iconKey</e>
+  processed.value = processed.value.replace(
+    /<e>(.*?)<\/e>/g,
+    (_, keyword) =>
       `<img src="/assets/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
-    )
-    .replace(/<k>(.*?)<\/k>/g, (m, content) => replaceShikigami(m, content));
+  );
 
-  processedText = processedText.replace(/<(d|p)>(.*?)<\/\1>/g, (m, type, content) =>
+  // Entities:
+  // <k>id</k>  => Shikigami
+  // <r>id</r>  => Onmyoji
+  processed.value = processed.value
+    .replace(/<k>(.*?)<\/k>/g, (m, id) => replaceShikigami(m, id))
+    .replace(/<r>(.*?)<\/r>/g, (m, id) => replaceOnmyoji(m, id));
+
+  // Skills:
+  // <d>shikiId-skillIndex</d> clickable
+  // <p>shikiId-skillIndex</p> non-clickable
+  processed.value = processed.value.replace(/<(d|p)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceSkillRef(m, content, type)
   );
 
-  processedText = processedText.replace(/<(c|m|o)>(.*?)<\/\1>/g, (m, type, content) =>
+  // Current shikigami skills:
+  // <c>1</c> clickable
+  // <m>1</m> normal highlight
+  // <o>1</o> plain
+  processed.value = processed.value.replace(/<(c|m|o)>(.*?)<\/\1>/g, (m, type, content) =>
     replaceSkill(m, content, type)
   );
 
-  processedText = processedText.replace(/<q>(.*?)<\/q>/g, (m, content) =>
+  // Skin:
+  // <q>index</q>
+  processed.value = processed.value.replace(/<q>(.*?)<\/q>/g, (m, content) =>
     replaceSkin(m, content)
   );
 
-  // f, g, b, a, h
-  processedText = processedText.replace(
+  // =========================================================
+  // 7) Step C: Effects tags (tooltip/highlight)
+  // =========================================================
+  // <b>idOrName</b> tooltip
+  // <a|f|g|h|i|l>idOrName</...> highlight / plain
+  processed.value = processed.value.replace(
     /<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g,
     (match, type, content, offset, fullString) => {
       const after = fullString.slice(offset + match.length);
       const hasIng = after.startsWith("ing");
-
-      return replaceWithTooltip(match, content, type, hasIng);
+      return replaceEffect(match, content, type, hasIng);
     }
   );
-  return processedText;
+
+  return processed.value;
 };
 
 const highlightWord = (text) => {
