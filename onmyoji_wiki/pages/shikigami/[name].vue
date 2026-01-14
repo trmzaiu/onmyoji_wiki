@@ -359,8 +359,7 @@ const processTextWithTooltips = (text) => {
     return match;
   };
 
-  // Tag: <d|r>shikiId-skillIndex</d|r> (skill of another shikigami by id)
-  // NOTE: dùng <r> để tránh conflict với <p> (onmyoji)
+  // Tag: <d|p>shikiId-skillIndex</d|p> (skill of another shikigami by id)
   const replaceSkillRef = (match, content, type) => {
     const [shikiIdStr, skillIndexStr] = String(content).split("-");
     const shikiId = parseInt(shikiIdStr, 10);
@@ -376,7 +375,7 @@ const processTextWithTooltips = (text) => {
     const name = isEnglish.value ? (skill.name?.en || "") : (skill.name?.vn || skill.name?.en || "");
 
     if (type === "d") return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
-    if (type === "r") return `<span class="skill-keyword text-[#c07b2a]">${name}</span>`;
+    if (type === "p") return `<span class="skill-keyword text-[#c07b2a]">${name}</span>`;
     return match;
   };
 
