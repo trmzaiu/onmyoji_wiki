@@ -1671,7 +1671,7 @@ const addCKeywordListeners = () => {
                     </div>
                     <div class="skill-badges flex flex-wrap gap-2">
                       <div v-for="tagId in shikigami.skills[activeSkillIndex].tags" :key="tagId"
-                        class="relative inline-flex items-center justify-center w-20 h-6 overflow-hidden rounded-md">
+                        class="relative inline-flex items-center justify-center w-30 h-6 overflow-hidden rounded-md">
                         <!-- brush nền -->
                         <div class="absolute inset-0 tint-base" :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')">
                         </div>
@@ -1819,7 +1819,7 @@ const addCKeywordListeners = () => {
                     </div>
                     <div class="skill-badges flex flex-wrap gap-2">
                       <div v-for="tagId in skill.tags" :key="tagId"
-                        class="relative inline-flex items-center justify-center w-20 h-6 overflow-hidden rounded-md">
+                        class="relative inline-flex items-center justify-center w-30 h-6 overflow-hidden rounded-md">
                         <div class="absolute inset-0 tint-base" :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')">
                         </div>
 
@@ -1955,7 +1955,7 @@ const addCKeywordListeners = () => {
                     </div>
                     <div class="skill-badges flex flex-wrap gap-2">
                       <div v-for="tagId in shikigami.skills.find(s => s.type === 'Linked').tags" :key="tagId"
-                        class="relative inline-flex items-center justify-center w-20 h-6 overflow-hidden rounded-md">
+                        class="relative inline-flex items-center justify-center w-30 h-6 overflow-hidden rounded-md">
                         <!-- brush nền -->
                         <div class="absolute inset-0 tint-base" :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')">
                         </div>
