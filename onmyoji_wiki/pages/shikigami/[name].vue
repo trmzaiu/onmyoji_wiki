@@ -1685,7 +1685,7 @@ const addCKeywordListeners = () => {
                         </div>
 
                         <!-- chữ đè lên -->
-                        <span class="relative z-10 text-xs text-white">
+                        <span class="relative z-10 text-[10px] text-white">
                           {{ tagMap?.[tagId]?.name }}
                         </span>
                       </div>
@@ -1831,7 +1831,7 @@ const addCKeywordListeners = () => {
                         <div class="absolute inset-0 tint-base" :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')">
                         </div>
 
-                        <span class="relative z-10 text-xs text-white">
+                        <span class="relative z-10 text-[10px] text-white">
                           {{ tagMap?.[tagId]?.name }}
                         </span>
                       </div>
@@ -1969,7 +1969,7 @@ const addCKeywordListeners = () => {
                         </div>
 
                         <!-- chữ đè lên -->
-                        <span class="relative z-10 text-xs text-white">
+                        <span class="relative z-10 text-[10px] text-white">
                           {{ tagMap?.[tagId]?.name }}
                         </span>
                       </div>
