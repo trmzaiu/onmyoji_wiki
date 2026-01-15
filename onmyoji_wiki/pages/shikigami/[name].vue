@@ -569,49 +569,57 @@ const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
   const effectById = new Map(effects.value.map((e) => [e.id, e]));
-  const displayedSubs = new Set(); // chỉ track subs
 
-  const findNotes = (descObj) => {
+  const getText = (descObj) => {
+    if (typeof descObj === "string") return descObj;
+    return isEnglish.value ? descObj?.en || "" : descObj?.vn || "";
+  };
+
+  // find notes inside <b>...</b>, with optional excludeIds (ancestor / already shown)
+  const findNotes = (descObj, excludeIds = new Set()) => {
     const result = [];
-    const text = typeof descObj === "string"
-      ? descObj
-      : isEnglish.value
-        ? descObj?.en || ""
-        : descObj?.vn || "";
+    const text = getText(descObj);
 
     const bMatches = text.match(/<b>(.*?)<\/b>/g) || [];
     bMatches.forEach((bTag) => {
       const inner = bTag.replace(/<b>|<\/b>/g, "");
       const nums = inner.match(/\d+/g) || [];
+
       nums.forEach((numStr) => {
         const id = Number(numStr);
+        if (excludeIds.has(id)) return; // ✅ chặn trùng theo ancestor
+
         const note = effectById.get(id);
-        if (note) {
-          result.push({ ...note });
-        }
+        if (note) result.push({ ...note });
       });
     });
 
     return result;
   };
 
-  // subNotes
+  // 1) subs từ tooltip
   const subs = findNotes(tooltipData.value.description);
 
-  subs.forEach((sub) => {
-    displayedSubs.add(sub.id); // đánh dấu sub
+  // set các sub đã hiển thị
+  const displayedSubs = new Set(subs.map((s) => s.id));
+
+  // 2) sub-subNotes cho từng sub
+  const subsWithChildren = subs.map((sub) => {
+    // ancestor = tất cả subs (để khỏi lặp lại) + chính sub hiện tại (để khỏi self-loop)
+    const excludeForSub = new Set([...displayedSubs, sub.id]);
+
+    const subsubNotes = findNotes(sub.description, excludeForSub);
+
+    // Nếu bạn muốn xử lý case subsub lại chứa ancestor nữa (Daze->Freeze->Daze)
+    // thì chỉ cần excludeForSub đã có sub.id (Daze) là đủ để loại Daze khỏi con của Freeze.
+
+    return {
+      ...sub,
+      subNotes: subsubNotes,
+    };
   });
 
-  // sub-subNotes (chỉ loại nếu đã có trong subs)
-  subs.forEach((sub, i) => {
-    const subsubNotes = findNotes(sub.description);
-    subs[i].subNotes = subsubNotes.filter((subsub) => {
-      if (displayedSubs.has(subsub.id)) return false;
-      return true;
-    });
-  });
-
-  return subs;
+  return subsWithChildren;
 });
 
 const highlightProfileText = (profile) => {
