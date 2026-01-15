@@ -568,53 +568,48 @@ const highlightSkin = (content) => {
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
-  const effectById = new Map(effects.value.map((e) => [e.id, e]));
+  const effectById = new Map(effects.value.map(e => [e.id, e]));
 
   const getText = (descObj) => {
     if (typeof descObj === "string") return descObj;
-    return isEnglish.value ? descObj?.en || "" : descObj?.vn || "";
+    return isEnglish.value ? (descObj?.en || "") : (descObj?.vn || "");
   };
 
-  // parse ids trong <b>...</b> + loại id đã nằm trong exclude/visited
   const findNotes = (descObj, exclude = new Set()) => {
     const text = getText(descObj);
     const bMatches = text.match(/<b>(.*?)<\/b>/g) || [];
 
-    const result = [];
-    const seenThisLevel = new Set();
+    const res = [];
+    const seenLevel = new Set();
 
     for (const bTag of bMatches) {
       const inner = bTag.replace(/<b>|<\/b>/g, "");
       const nums = inner.match(/\d+/g) || [];
 
-      for (const numStr of nums) {
-        const id = Number(numStr);
-        if (!id || exclude.has(id) || seenThisLevel.has(id)) continue;
+      for (const s of nums) {
+        const id = Number(s);
+        if (!id || exclude.has(id) || seenLevel.has(id)) continue;
 
         const note = effectById.get(id);
         if (note) {
-          result.push({ ...note });
-          seenThisLevel.add(id);
+          res.push({ ...note });
+          seenLevel.add(id);
         }
       }
     }
-    return result;
+    return res;
   };
 
-  const rootId = tooltipData.value.id;
-
-  // ✅ subs: loại rootId để khỏi tự lặp
+  const rootId = tooltipData.value.id; // ✅ phải có
   const subs = findNotes(tooltipData.value.description, new Set([rootId]));
 
-  // ✅ sub-sub: loại toàn bộ ancestor (root + all subs + current sub)
-  const subIds = new Set(subs.map((s) => s.id));
+  const subIds = new Set(subs.map(s => s.id));
 
-  subs.forEach((sub) => {
-    const exclude = new Set([rootId, ...subIds, sub.id]);
-    sub.subNotes = findNotes(sub.description, exclude);
+  return subs.map(sub => {
+    const exclude = new Set([rootId, ...subIds, sub.id]); // chặn root + các sub + self
+    const subNotes = findNotes(sub.description, exclude);
+    return { ...sub, subNotes };
   });
-
-  return subs;
 });
 
 const highlightProfileText = (profile) => {
@@ -2358,7 +2353,7 @@ const addCKeywordListeners = () => {
         <div v-if="matchedSubNotes.length">
           <hr class="tooltip-divider" />
           <div class="subnotes-container">
-            <div v-for="(sub, idx) in matchedSubNotes" :key="idx" class="subnote-block">
+            <div v-for="sub in matchedSubNotes" :key="sub.id" class="subnote-block">
               <div class="subnote-title">
                 {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn
                   }})</span>
@@ -2371,8 +2366,7 @@ const addCKeywordListeners = () => {
               <!-- Sub-SubNotes -->
               <div v-if="sub.subNotes && sub.subNotes.length" class="mt-2">
                 <div 
-                  v-for="(subsub, j) in sub.subNotes" 
-                  :key="j" 
+                  v-for="subsub in sub.subNotes" :key="subsub.id"
                   class="subnote-block" 
                 >
                   <div class="subnote-title">
