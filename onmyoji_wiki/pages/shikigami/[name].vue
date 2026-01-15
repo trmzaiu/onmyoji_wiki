@@ -455,6 +455,7 @@ const processTextWithTooltips = (text) => {
     // Tooltip only for <b>
     if (type === "b") {
       return `<span class="effect-tooltip"
+        data-id="${note.id}"
         data-name="${keywordForTooltip || ""}"
         data-name-cn="${note.name?.cn || ""}"
         data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
@@ -734,6 +735,7 @@ const highlightProfileText = (profile) => {
 const handleMouseEnter = (e) => {
   const target = e.currentTarget;
   tooltipData.value = {
+    id: Number(target.getAttribute("data-id")),
     name: target.getAttribute("data-name"),
     description: target.getAttribute("data-desc"),
     images: target.getAttribute("data-img")
