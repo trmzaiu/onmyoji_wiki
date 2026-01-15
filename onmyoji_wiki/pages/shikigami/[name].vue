@@ -575,51 +575,46 @@ const matchedSubNotes = computed(() => {
     return isEnglish.value ? descObj?.en || "" : descObj?.vn || "";
   };
 
-  // find notes inside <b>...</b>, with optional excludeIds (ancestor / already shown)
-  const findNotes = (descObj, excludeIds = new Set()) => {
-    const result = [];
+  // parse ids trong <b>...</b> + loại id đã nằm trong exclude/visited
+  const findNotes = (descObj, exclude = new Set()) => {
     const text = getText(descObj);
-
     const bMatches = text.match(/<b>(.*?)<\/b>/g) || [];
-    bMatches.forEach((bTag) => {
+
+    const result = [];
+    const seenThisLevel = new Set();
+
+    for (const bTag of bMatches) {
       const inner = bTag.replace(/<b>|<\/b>/g, "");
       const nums = inner.match(/\d+/g) || [];
 
-      nums.forEach((numStr) => {
+      for (const numStr of nums) {
         const id = Number(numStr);
-        if (excludeIds.has(id)) return; // ✅ chặn trùng theo ancestor
+        if (!id || exclude.has(id) || seenThisLevel.has(id)) continue;
 
         const note = effectById.get(id);
-        if (note) result.push({ ...note });
-      });
-    });
-
+        if (note) {
+          result.push({ ...note });
+          seenThisLevel.add(id);
+        }
+      }
+    }
     return result;
   };
 
-  // 1) subs từ tooltip
-  const subs = findNotes(tooltipData.value.description);
+  const rootId = tooltipData.value.id;
 
-  // set các sub đã hiển thị
-  const displayedSubs = new Set(subs.map((s) => s.id));
+  // ✅ subs: loại rootId để khỏi tự lặp
+  const subs = findNotes(tooltipData.value.description, new Set([rootId]));
 
-  // 2) sub-subNotes cho từng sub
-  const subsWithChildren = subs.map((sub) => {
-    // ancestor = tất cả subs (để khỏi lặp lại) + chính sub hiện tại (để khỏi self-loop)
-    const excludeForSub = new Set([...displayedSubs, sub.id]);
+  // ✅ sub-sub: loại toàn bộ ancestor (root + all subs + current sub)
+  const subIds = new Set(subs.map((s) => s.id));
 
-    const subsubNotes = findNotes(sub.description, excludeForSub);
-
-    // Nếu bạn muốn xử lý case subsub lại chứa ancestor nữa (Daze->Freeze->Daze)
-    // thì chỉ cần excludeForSub đã có sub.id (Daze) là đủ để loại Daze khỏi con của Freeze.
-
-    return {
-      ...sub,
-      subNotes: subsubNotes,
-    };
+  subs.forEach((sub) => {
+    const exclude = new Set([rootId, ...subIds, sub.id]);
+    sub.subNotes = findNotes(sub.description, exclude);
   });
 
-  return subsWithChildren;
+  return subs;
 });
 
 const highlightProfileText = (profile) => {
