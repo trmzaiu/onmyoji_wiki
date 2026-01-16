@@ -438,9 +438,14 @@ watch(isEnglish, async () => {
         <h3 class="px-3 text-red">
           {{ isEnglish ? "2-Piece Set Effect" : "Hiệu ứng 2 mảnh" }}:
         </h3>
-        <p class="px-3 text-black">
-          {{ isEnglish ? soul.effects.piece2.en : soul.effects.piece2.vn }}
-        </p>
+        <p
+          class="px-3 text-black"
+          v-html="
+            isEnglish
+              ? processTextWithTooltips(soul.effects.piece2.en)
+              : processTextWithTooltips(soul.effects.piece2.vn)
+          "
+        ></p>
       </div>
 
       <div v-if="soul.effects.piece4" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
