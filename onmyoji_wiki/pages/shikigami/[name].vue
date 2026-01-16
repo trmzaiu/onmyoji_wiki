@@ -2228,46 +2228,82 @@ const addCKeywordListeners = () => {
             </thead>
             <tbody>
               <tr
-                  v-for="(skin, index) in (shikigami.skins || []).filter(s => s && s.obtained !== 'Cancelled')"
-                  :key="index"
-                  class="text-black"
+                v-for="(skin, index) in (shikigami.skins || [])"
+                :key="index"
+                v-if="skin && skin.obtained !== 'Cancelled'"
+                class="text-black"
+              >
+
+                <!-- ===== ICON DEFAULT / EVOLUTION ===== -->
+                <td
+                  class="px-2 py-2 text-center table-cell w-[105px]"
+                  v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'"
                 >
-                
-                <td class="px-2 py-2 text-center table-cell w-[105px]" v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
                   <div class="w-24 h-24 overflow-hidden">
-                    <img :src="skin.name.en === 'Default' ? (index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? `/assets/shikigami/shards/${route.params.name}_Shard.webp` : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp` : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`" :alt="skin.name.en || skin.name.cn"
-                      class="w-full h-full object-contain" :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''" />
+                    <img
+                      :src="
+                        skin.name.en === 'Default'
+                          ? (index === 0 && shikigami.id >= 201 && shikigami.id <= 217)
+                            ? `/assets/shikigami/shards/${route.params.name}_Shard.webp`
+                            : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp`
+                          : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`
+                      "
+                      :alt="skin.name.en || skin.name.cn"
+                      class="w-full h-full object-contain"
+                      :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''"
+                    />
                   </div>
                 </td>
-                <td class="px-2 py-2 text-center table-cell w-[105px]" v-else>
+
+                <!-- ===== ICON SKIN THƯỜNG ===== -->
+                <td
+                  class="px-2 py-2 text-center table-cell w-[105px]"
+                  v-else
+                >
                   <div class="w-24 h-24 overflow-hidden">
-                    <img :src="`/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo${
-                      (shikigami.rarity === 'SP' || shikigami.rarity === 'N')
-                        ? (index ? index : '')
-                        : index - 1
-                          }.webp`" :alt="skin.name.en || skin.name.cn"
-                      class="w-full h-full object-contain" :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''" />
+                    <img
+                      :src="`/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo${
+                        (shikigami.rarity === 'SP' || shikigami.rarity === 'N')
+                          ? (index ? index : '')
+                          : index - 1
+                      }.webp`"
+                      :alt="skin.name.en || skin.name.cn"
+                      class="w-full h-full object-contain"
+                    />
                   </div>
                 </td>
-                <td class="px-2 py-1 text-center table-cell w-[300px]"
-                  v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
+
+                <!-- ===== NAME DEFAULT / EVOLUTION ===== -->
+                <td
+                  class="px-2 py-1 text-center table-cell w-[300px]"
+                  v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'"
+                >
                   <div>{{ isEnglish ? skin.name.en : skin.name.vn }}</div>
                 </td>
 
-                <td class="px-2 py-1 text-center table-cell" v-else>
+                <!-- ===== NAME SKIN THƯỜNG ===== -->
+                <td
+                  class="px-2 py-1 text-center table-cell"
+                  v-else
+                >
                   <div>{{ skin.name.en }}</div>
                   <div>
-                    <span class="lang-zh">{{ skin.name.cn }}</span> - <span class="lang-vi">{{ skin.name.vn }}</span>
+                    <span class="lang-zh">{{ skin.name.cn }}</span>
+                    -
+                    <span class="lang-vi">{{ skin.name.vn }}</span>
                   </div>
                 </td>
 
+                <!-- ===== ARTIST ===== -->
                 <td class="px-2 py-1 text-center table-cell">
                   <span class="lang-zh">{{ skin.artist }}</span>
                 </td>
+
+                <!-- ===== OBTAINED ===== -->
                 <td class="px-2 py-1 text-center table-cell whitespace-pre-line w-[280px]">
                   {{ skin.obtained }}
                 </td>
-              
+
               </tr>
             </tbody>
           </table>
