@@ -2233,10 +2233,23 @@ const addCKeywordListeners = () => {
                 v-if="skin && skin.obtained !== 'Cancelled'"
                 class="text-black"
               >
-                <td class="px-2 py-2 text-center table-cell w-[105px]" v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
+                <td
+                  class="px-2 py-2 text-center table-cell w-[105px]"
+                  v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'"
+                >
                   <div class="w-24 h-24 overflow-hidden">
-                    <img :src="skin.name.en === 'Default' ? (index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? `/assets/shikigami/shards/${route.params.name}_Shard.webp` : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp` : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`" :alt="skin.name.en || skin.name.cn"
-                      class="w-full h-full object-contain" :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''" />
+                    <img
+                      :src="
+                        skin.name.en === 'Default'
+                          ? (index === 0 && shikigami.id >= 201 && shikigami.id <= 217)
+                            ? `/assets/shikigami/shards/${route.params.name}_Shard.webp`
+                            : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp`
+                          : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`
+                      "
+                      :alt="skin.name.en || skin.name.cn"
+                      class="w-full h-full object-contain"
+                      :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''"
+                    />
                   </div>
                 </td>
                 <td class="px-2 py-2 text-center table-cell w-[105px]" v-else>
