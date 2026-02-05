@@ -188,6 +188,8 @@ const renderEvoText = (evo) => {
     replacements.skill = highlightWord(targetSkill);
   }
 
+  if (evo.count) replacements.count = evo.count
+
   return text.replace(/\{(\w+)\}/g, (_, key) => replacements[key] ?? "")
 }
 
