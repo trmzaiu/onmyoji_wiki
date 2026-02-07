@@ -264,7 +264,7 @@ async function fetchOnmyoji() {
   const { data, error } = await supabase
     .from("Onmyoji")
     .select("*")
-    .eq("name->>en", formattedName)
+    .eq("name->jp->>1", formattedName)
     .single();
 
   if (error) {

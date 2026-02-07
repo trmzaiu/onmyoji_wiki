@@ -47,10 +47,10 @@
                       >Yao Bikuni</NuxtLink
                     >
                     <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label"
-                      >Minamoto_no_Yorimitsu</NuxtLink
+                      >Yorimitsu</NuxtLink
                     >
                     <NuxtLink to="/onmyoji/Fujiwara_no_Michinaga" class="submenu-label"
-                      >Fujiwara_no_Michinaga</NuxtLink
+                      >Michinaga</NuxtLink
                     >
                   </div>
                 </div>
@@ -101,10 +101,10 @@
                     >Yao Bikuni</NuxtLink
                   >
                   <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label"
-                    >Minamoto_no_Yorimitsu</NuxtLink
+                    >Yorimitsu</NuxtLink
                   >
                   <NuxtLink to="/onmyoji/Fujiwara_no_Michinaga" class="submenu-label"
-                    >Fujiwara_no_Michinaga</NuxtLink
+                    >Michinaga</NuxtLink
                   >
                 </div>
               </div>
