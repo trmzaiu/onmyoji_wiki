@@ -49,7 +49,7 @@
                     <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label"
                       >Yorimitsu</NuxtLink
                     >
-                    <NuxtLink to="/onmyoji/Fujiware_no_Michinaga" class="submenu-label"
+                    <NuxtLink to="/onmyoji/Fujiwara_no_Michinaga" class="submenu-label"
                       >Michinaga</NuxtLink
                     >
                   </div>
@@ -103,7 +103,7 @@
                   <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label"
                     >Yorimitsu</NuxtLink
                   >
-                  <NuxtLink to="/onmyoji/Fujiware_no_Michinaga" class="submenu-label"
+                  <NuxtLink to="/onmyoji/Fujiwara_no_Michinaga" class="submenu-label"
                     >Michinaga</NuxtLink
                   >
                 </div>
