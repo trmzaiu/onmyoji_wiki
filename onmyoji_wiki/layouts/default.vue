@@ -100,8 +100,11 @@
                   <NuxtLink to="/onmyoji/Yao_Bikuni" class="submenu-label"
                     >Yao Bikuni</NuxtLink
                   >
-                  <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label"
+                  <NuxtLink to="/onmyoji/Yorimitsu" class="submenu-label"
                     >Yorimitsu</NuxtLink
+                  >
+                  <NuxtLink to="/onmyoji/Michinaga" class="submenu-label"
+                    >Michinaga</NuxtLink
                   >
                 </div>
               </div>
