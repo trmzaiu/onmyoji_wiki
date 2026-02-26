@@ -548,7 +548,7 @@ const processTextWithTooltips = (text) => {
   // =========================================================
   processed.value = processed.value.replace(
     /(Evolution[^\n]*)/g,
-    (match) => `<span style="color:#a63f37; font-weight:600;">${match}</span>`
+    (match) => `<span style="color:#ff0000;">${match}</span>`
   );
 
   return processed.value;
