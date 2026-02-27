@@ -169,32 +169,48 @@ const imgs = computed(() => tooltipData.value?.images || []);
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
-  const desc = tooltipData.value.description || "";
-  const effectById = new Map(effects.value.map((e) => [e.id, e]));
-  const seen = new Set();
-  let result = [];
+  const effectById = new Map(effects.value.map(e => [e.id, e]));
 
-  // tìm tất cả <b>...</b>
-  const bMatches = desc.match(/<b>(.*?)<\/b>/g) || [];
+  const getText = (descObj) => {
+    if (typeof descObj === "string") return descObj;
+    return isEnglish.value ? (descObj?.en || "") : (descObj?.vn || "");
+  };
 
-  bMatches.forEach((bTag) => {
-    // lấy inner text
-    const inner = bTag.replace(/<b>|<\/b>/g, "");
-    // lấy tất cả số trong inner
-    const nums = inner.match(/\d+/g) || [];
-    nums.forEach((numStr) => {
-      const id = Number(numStr);
-      if (!seen.has(id)) {
+  const findNotes = (descObj, exclude = new Set()) => {
+    const text = getText(descObj);
+    const bMatches = text.match(/<b>(.*?)<\/b>/g) || [];
+
+    const res = [];
+    const seenLevel = new Set();
+
+    for (const bTag of bMatches) {
+      const inner = bTag.replace(/<b>|<\/b>/g, "");
+      const nums = inner.match(/\d+/g) || [];
+
+      for (const s of nums) {
+        const id = Number(s);
+        if (!id || exclude.has(id) || seenLevel.has(id)) continue;
+
         const note = effectById.get(id);
         if (note) {
-          seen.add(id);
-          result.push(note);
+          res.push({ ...note });
+          seenLevel.add(id);
         }
       }
-    });
-  });
+    }
+    return res;
+  };
 
-  return result;
+  const rootId = tooltipData.value.id; // ✅ phải có
+  const subs = findNotes(tooltipData.value.description, new Set([rootId]));
+
+  const subIds = new Set(subs.map(s => s.id));
+
+  return subs.map(sub => {
+    const exclude = new Set([rootId, ...subIds, sub.id]); // chặn root + các sub + self
+    const subNotes = findNotes(sub.description, exclude);
+    return { ...sub, subNotes };
+  });
 });
 
 // Mouse event handlers for tooltip
