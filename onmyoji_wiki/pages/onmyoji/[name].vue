@@ -1035,56 +1035,60 @@ watch(activeMainTab, async (newTab) => {
     </div>
 
     <!-- Tooltip -->
-    <div
-      v-if="showTooltip && tooltipData"
-      class="tooltip"
-      :style="{
-        left: tooltipPosition.x + 'px',
-        top: tooltipPosition.y + 'px',
-        borderColor: tooltipData.color,
-        boxShadow: '0 0 12px ' + tooltipData.color,
-        '--tooltip-color': tooltipData.color,
-      }"
-    >
+    <div v-if="showTooltip && tooltipData" class="tooltip" :style="{
+      left: tooltipPosition.x + 'px',
+      top: tooltipPosition.y + 'px',
+      borderColor: tooltipData.color,
+      boxShadow: '0 0 12px ' + tooltipData.color,
+      '--tooltip-color': tooltipData.color,
+    }" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
       <!-- Note chính -->
       <div class="tooltip-title" :style="{ color: tooltipData.color }">
         {{ tooltipData.name }} <span class="lang-zh" v-if="tooltipData.cn">({{ tooltipData.cn }})</span>
       </div>
       <div v-if="imgs.length" class="tooltip-images pb-1">
-        <img
-          v-for="(img, i) in imgs"
-          :key="i"
-          :src="`/assets/effects/${img}.webp`"
-          :alt="img"
-          class="tooltip-img"
-        />
+        <img v-for="(img, i) in imgs" :key="i" :src="'/assets/effects/' + img + '.webp'" :alt="img" class="tooltip-img rounded rounded-sm" />
       </div>
 
-      <div
-        class="tooltip-description"
-        v-html="processTextWithTooltips(tooltipData.description)"
-      ></div>
+      <div class="tooltip-description whitespace-pre-line" v-html="processTextWithTooltips(tooltipData.description)">
+      </div>
 
       <!-- Nếu có subNotes match -->
       <div v-if="matchedSubNotes.length">
         <hr class="tooltip-divider" />
         <div class="subnotes-container">
-          <div v-for="(sub, idx) in matchedSubNotes" :key="idx" class="subnote-block">
+          <div v-for="sub in matchedSubNotes" :key="sub.id" class="subnote-block">
             <div class="subnote-title">
-              {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn }})</span>
+              {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn
+                }})</span>
             </div>
-            <img
-              v-if="sub.images"
-              v-for="(img, i) in sub.images"
-              :key="i"
-              :src="`/assets/effects/${img}.webp`"
-              :alt="img"
-              style="width: 32px; height: 32px; margin-bottom: 8px"
-            />
-            <div
-              class="subnote-description"
-              v-html="processBoldC(isEnglish ? sub.description.en : sub.description.vn)"
-            ></div>
+            <img v-if="sub.images" v-for="(img, i) in sub.images" :key="i" :src="'/assets/effects/' + img + '.webp'" :alt="img"
+              style="width: 32px; height: 32px; margin-bottom: 8px" />
+            <div class="subnote-description"
+              v-html="processTextWithTooltips(isEnglish ? sub.description.en : sub.description.vn)"></div>
+
+            <!-- Sub-SubNotes -->
+            <div v-if="sub.subNotes && sub.subNotes.length" class="mt-2">
+              <div 
+                v-for="subsub in sub.subNotes" :key="subsub.id"
+                class="subnote-block" 
+              >
+                <div class="subnote-title">
+                  {{ isEnglish ? subsub.name.en : subsub.name.vn }} 
+                  <span class="lang-zh">({{ subsub.name.cn }})</span>
+                </div>
+
+                <img v-if="subsub.images" 
+                    v-for="(img, k) in subsub.images" 
+                    :key="k" 
+                    :src="'/assets/effects/' + img + '.webp'"
+                    :alt="img" 
+                    class="rounded rounded-sm" 
+                    style="width: 32px; height: 32px; margin-bottom: 8px" />
+
+                <div class="subnote-description" v-html="processTextWithTooltips(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
