@@ -543,14 +543,6 @@ const processTextWithTooltips = (text) => {
     }
   );
 
-  // =========================================================
-  // 8) Highlight "Evolution" section until newline
-  // =========================================================
-  processed.value = processed.value.replace(
-    /(Evolution[^\n]*)/g,
-    (match) => `<span style="color:#ff0000;">${match}</span>`
-  );
-
   return processed.value;
 };
 
