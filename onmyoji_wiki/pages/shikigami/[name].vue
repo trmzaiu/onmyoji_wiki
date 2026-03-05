@@ -69,10 +69,10 @@ const getATKImage = (atk) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// SS: 3618 -> 4153, S: 2948 -> 3597, A: 2894 -> 2921, B: 2412 -> 2626, C: 2144 -> 2385, D: 1822 -> 1849
+// SS: 3618 -> 4153, S: 2948 -> 3605, A: 2894 -> 2921, B: 2412 -> 2626, C: 2144 -> 2385, D: 1822 -> 1849
 const getATKEvoRank = (atk) => {
   if (atk >= 3618 && atk <= 4153) return "SS";
-  else if (atk >= 2948 && atk <= 3602) return "S";
+  else if (atk >= 2948 && atk <= 3605) return "S";
   else if (atk >= 2680 && atk <= 2921) return "A";
   else if (atk >= 2412 && atk <= 2626) return "B";
   else if (atk >= 2144 && atk <= 2385) return "C";
