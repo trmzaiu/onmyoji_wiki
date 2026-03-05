@@ -54,11 +54,11 @@ const closeModal = () => {
 const getImgUrl = (name) =>
   `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
 
-// SS: 171 -> 197, S: 140 -> 166, A: 127 -> 133, B: 114 -> 124, C: 102 -> 109, D: 75 -> 100
+// SS: 171 -> 197, S: 140 -> 166, A: 127 -> 137, B: 114 -> 124, C: 102 -> 109, D: 75 -> 100
 const getATKRank = (atk) => {
   if (atk >= 171 && atk <= 197) return "SS";
   else if (atk >= 140 && atk <= 166) return "S";
-  else if (atk >= 127 && atk <= 136) return "A";
+  else if (atk >= 127 && atk <= 137) return "A";
   else if (atk >= 114 && atk <= 124) return "B";
   else if (atk >= 102 && atk <= 110) return "C";
   else return "D";
