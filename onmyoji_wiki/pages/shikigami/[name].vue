@@ -1582,7 +1582,7 @@ const addCKeywordListeners = () => {
                 {{ skill.type }}
               </template>
             </button>
-            <button v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'UR' && shikigami.rarity !== 'N' && shikigami.id !== 193" @click="activeSkillIndex = 3" :class="[
+            <button v-if="shikigami.rarity !== 'SP' || shikigami.rarity !== 'UR' || shikigami.rarity !== 'N' || shikigami.id !== 193" @click="activeSkillIndex = 3" :class="[
               'px-4 py-2',
               activeSkillIndex === 3
                 ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
