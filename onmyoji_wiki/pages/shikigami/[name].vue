@@ -1317,7 +1317,7 @@ const addCKeywordListeners = () => {
                     </div>
                   </td>
 
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-end">
                       <img :src="getATKEvoImage(shikigami.stats.ATK[1])" :alt="getATKEvoImage(shikigami.stats.ATK[1])"
                         class="w-6 h-6" />
@@ -1354,13 +1354,13 @@ const addCKeywordListeners = () => {
                     </div>
                   </td>
 
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-end">
                       <img :src="getHPEvoImage(shikigami.stats.HP[1])" :alt="getHPEvoRank(shikigami.stats.HP[1])"
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td  class="centered-number">
+                  <td v-if="hasLevel40"  class="centered-number">
                     <div class="flex justify-start">
                       {{ shikigami.stats.HP[1] }}
                     </div>
@@ -1390,7 +1390,7 @@ const addCKeywordListeners = () => {
                     </div>
                   </td>
 
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-end">
                       <img :src="getDEFEvoImage(shikigami.stats.DEF[1])" :alt="getDEFEvoRank(shikigami.stats.DEF[1])"
                         class="w-6 h-6" />
@@ -1425,7 +1425,7 @@ const addCKeywordListeners = () => {
                       {{ shikigami.stats.SPD[0] }}
                     </div>
                   </td>
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-end">
                       <img :src="getSPDImage(shikigami.stats.SPD[1])" :alt="getSPDRank(shikigami.stats.SPD[1])"
                         class="w-6 h-6" />
@@ -1464,7 +1464,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">{{ shikigami.stats.Crit[1] }}%</div>
                   </td>
 
