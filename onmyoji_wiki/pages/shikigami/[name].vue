@@ -1133,7 +1133,7 @@ const addCKeywordListeners = () => {
                   <div class="whitespace-pre-line" :class="(shikigami.id === 255 || shikigami.id === 256) ? 'lang-zh' : ''">{{ shikigami.name.va }}</div>
                 </td>
               </tr>
-              <tr v-if="shikigami.rarity !== 'SP' && shikigami.rarity !== 'UR' && shikigami.rarity !== 'N' && shikigami.id !== 193">
+              <tr v-if="shikigami.rarity !== 'SP' || shikigami.rarity !== 'UR' || shikigami.rarity !== 'N' || shikigami.id !== 193">
                 <td class="table-title-row" colspan="4">Evo Materials</td>
               </tr>
               <tr v-if="shikigami.materials && shikigami.materials.length">
