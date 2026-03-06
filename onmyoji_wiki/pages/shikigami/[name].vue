@@ -971,6 +971,8 @@ function updateNotes() {
 }
 
 /* ---------------------- LIFECYCLE ---------------------- */
+const hasLevel40 = computed(() => shikigami.value?.id !== 193);
+
 onMounted(async () => {
   document.title = `${formattedName}`;
 
@@ -1270,7 +1272,7 @@ const addCKeywordListeners = () => {
                     </figure>
                   </th>
                   <th rowspan="9">&nbsp;</th>
-                  <th colspan="2">
+                  <th colspan="2" v-if="hasLevel40">
                     <figure class="icon-img" style="position: relative">
                       <img :src="`/assets/shikigami/icons/${route.params.name}_Icon${shikigami.rarity !== 'SP' && shikigami.rarity !== 'UR' && shikigami.rarity !== 'N' ? '_Evo' : ''}.webp`
                       " :alt="shikigami.name.jp[1]" style="object-fit: contain" width="90" @error="event => event.target.src = '/assets/Unknown_Icon.webp'"/>
@@ -1296,7 +1298,7 @@ const addCKeywordListeners = () => {
                     </figure>
                   </th>
                   <th></th>
-                  <th rowspan="9">&nbsp;</th>
+                  <th rowspan="9" v-if="hasLevel40">&nbsp;</th>
                 </tr>
                 <tr>
                   <th class="label-cell">
@@ -1322,13 +1324,13 @@ const addCKeywordListeners = () => {
                     </div>
                   </td>
 
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
                       {{ shikigami.stats.ATK[1] }}
                     </div>
                   </td>
 
-                  <td>
+                  <td v-if="hasLevel40">
                     <div class="flex justify-start">
                       +{{ shikigami.stats.ATK[1] - shikigami.stats.ATK[0] }}
                     </div>
@@ -1358,13 +1360,13 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number">
+                  <td  class="centered-number">
                     <div class="flex justify-start">
                       {{ shikigami.stats.HP[1] }}
                     </div>
                   </td>
 
-                  <td>
+                  <td v-if="hasLevel40">
                     <div class="flex justify-start">
                       +{{ shikigami.stats.HP[1] - shikigami.stats.HP[0] }}
                     </div>
@@ -1394,13 +1396,13 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
                       {{ shikigami.stats.DEF[1] }}
                     </div>
                   </td>
 
-                  <td>
+                  <td v-if="hasLevel40">
                     <div class="flex justify-start">
                       +{{ shikigami.stats.DEF[1] - shikigami.stats.DEF[0] }}
                     </div>
@@ -1429,13 +1431,13 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
                       {{ shikigami.stats.SPD[1] }}
                     </div>
                   </td>
 
-                  <td>
+                  <td v-if="hasLevel40">
                     <div class="flex justify-start">
                       +{{ shikigami.stats.SPD[1] - shikigami.stats.SPD[0] }}
                     </div>
@@ -1447,16 +1449,16 @@ const addCKeywordListeners = () => {
                     <img src="/assets/stats/CRIT.webp" alt="CRIT" />
                     Crit
                   </th>
-                  <td class="centered-number">
+                  <td  class="centered-number">
                     <div class="flex justify-end">
                       <img :src="getCritImage(shikigami.stats.Crit[0])" :alt="getCritRank(shikigami.stats.Crit[0])"
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number">
+                  <td  class="centered-number">
                     <div class="flex justify-start">{{ shikigami.stats.Crit[0] }}%</div>
                   </td>
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-end">
                       <img :src="getCritImage(shikigami.stats.Crit[1])" :alt="getCritRank(shikigami.stats.Crit[1])"
                         class="w-6 h-6" />
@@ -1466,7 +1468,7 @@ const addCKeywordListeners = () => {
                     <div class="flex justify-start">{{ shikigami.stats.Crit[1] }}%</div>
                   </td>
 
-                  <td>
+                  <td v-if="hasLevel40">
                     <div class="flex justify-start">
                       +{{ shikigami.stats.Crit[1] - shikigami.stats.Crit[0] }}%
                     </div>
@@ -1487,11 +1489,11 @@ const addCKeywordListeners = () => {
 
                   <td></td>
 
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">{{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] : '150' }}%</div>
                   </td>
 
-                  <td>
+                  <td v-if="hasLevel40">
                     <div class="flex justify-start">+{{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] - shikigami.stats.CritDMG[0] : '0' }}%</div>
                   </td>
                 </tr>
@@ -1510,11 +1512,11 @@ const addCKeywordListeners = () => {
 
                   <td></td>
 
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">{{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : '0' }}%</div>
                   </td>
 
-                  <td>
+                  <td v-if="hasLevel40">
                     <div class="flex justify-start">+{{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] - shikigami.stats.EffectHIT[0] : '0' }}%</div>
                   </td>
                 </tr>
@@ -1533,11 +1535,11 @@ const addCKeywordListeners = () => {
 
                   <td></td>
 
-                  <td class="centered-number">
+                  <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">{{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : '0' }}%</div>
                   </td>
 
-                  <td>
+                  <td v-if="hasLevel40">
                     <div class="flex justify-start">+{{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] - shikigami.stats.EffectRES[0] : '0' }}%</div>
                   </td>
                 </tr>
