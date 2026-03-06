@@ -2051,10 +2051,10 @@ const addCKeywordListeners = () => {
           </div>
 
           <!-- Biography Unlock -->
-          <h2 class="session-title mt-5">
+          <h2 class="session-title mt-5" v-if="shikigami.id !== 193">
             {{ isEnglish ? "Biography Unlock" : "Mở khoá Tiểu sử" }}
           </h2>
-          <table class="w-full mt-4" style="border: 1px solid #a51919">
+          <table class="w-full mt-4" style="border: 1px solid #a51919" v-if="shikigami.id !== 193">
             <thead>
               <tr>
                 <th class="table-title">No.</th>
