@@ -969,7 +969,16 @@ async function handleVisibilityChange() {
 }
 
 /* ---------------------- LIFECYCLE ---------------------- */
-setInterval(fetchAllShikigami, 3000);
+setInterval(() => {
+
+  const status = supabase.getChannels();
+
+  if (!status.length) {
+    console.log("Realtime lost → reconnect");
+    subscribeRealtime();
+  }
+
+}, 4000);
 onMounted(() => {
 
   subscribeRealtime();
