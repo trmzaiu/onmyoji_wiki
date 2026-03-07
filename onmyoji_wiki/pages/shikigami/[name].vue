@@ -842,6 +842,8 @@ async function fetchIllustrations(shikiId) {
   if (error) {
     console.error("Error fetching illustrations:", error);
   } else {
+    await nextTick();
+    addTooltipListeners();
     illustrations.value = data;
   }
 }
