@@ -857,7 +857,6 @@ let illustrationChannel = null;
 /* ---------------------- SUBSCRIBE ---------------------- */
 
 function subscribeRealtime() {
-
   // --- Channel Shikigami ---
   if (!shikigamiChannel) {
     shikigamiChannel = supabase
@@ -898,8 +897,15 @@ function subscribeRealtime() {
 
           console.log("Illustration changed:", payload);
 
-          if (shikigami.value?.id) {
-            await fetchIllustrations(shikigami.value.id);
+          const shikiId = shikigami.value?.id;
+
+          if (!shikiId) return;
+
+          const newList = payload.new?.shiki || [];
+          const oldList = payload.old?.shiki || [];
+
+          if (newList.includes(shikiId) || oldList.includes(shikiId)) {
+            await fetchIllustrations(shikiId);
           }
 
         }
@@ -919,7 +925,6 @@ function subscribeRealtime() {
       });
   }
 
-
   // --- Channel Effect ---
   if (!effectChannel) {
     effectChannel = supabase
@@ -931,7 +936,20 @@ function subscribeRealtime() {
 
           console.log("Effect changed:", payload);
 
-          await fetchAllEffects();
+          const effectIds = shikigami.value?.skills || [];
+
+          if (!effectIds.length) return;
+
+          const changedId =
+            payload.new?.id || payload.old?.id;
+
+          if (effectIds.includes(changedId)) {
+
+            console.log("Effect in current page changed");
+
+            await fetchAllEffects();
+
+          }
 
         }
       )
