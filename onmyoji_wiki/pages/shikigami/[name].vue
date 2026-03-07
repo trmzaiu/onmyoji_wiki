@@ -969,16 +969,7 @@ async function handleVisibilityChange() {
 }
 
 /* ---------------------- LIFECYCLE ---------------------- */
-setInterval(() => {
 
-  const status = supabase.getChannels();
-
-  if (!status.length) {
-    console.log("Realtime lost → reconnect");
-    subscribeRealtime();
-  }
-
-}, 4000);
 onMounted(() => {
 
   subscribeRealtime();
