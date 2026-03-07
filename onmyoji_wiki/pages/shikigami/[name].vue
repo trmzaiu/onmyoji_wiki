@@ -969,7 +969,7 @@ async function handleVisibilityChange() {
 }
 
 /* ---------------------- LIFECYCLE ---------------------- */
-
+setInterval(fetchAllShikigami, 30000);
 onMounted(() => {
 
   subscribeRealtime();
