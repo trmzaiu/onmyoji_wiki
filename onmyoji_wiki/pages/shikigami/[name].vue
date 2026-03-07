@@ -863,24 +863,29 @@ function subscribeRealtime() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Shikigami" },
-        async () => {
-          await fetchAllShikigami();
-          await fetchShikigami();
+        (payload) => {
+
+          const newShiki = payload.new;
+
+          if (payload.eventType === "UPDATE") {
+
+            const index = shikigamiList.value.findIndex(
+              s => s.id === newShiki.id
+            );
+
+            if (index !== -1) {
+              shikigamiList.value[index] = newShiki;
+            }
+
+            if (shikigami.value?.id === newShiki.id) {
+              shikigami.value = newShiki;
+            }
+
+          }
+
         }
       )
-      .subscribe((status) => {
-
-        if (status === "SUBSCRIBED") {
-          console.log("Realtime Shikigami connected");
-        }
-
-        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          console.log("Realtime Shikigami reconnecting...");
-          unsubscribeRealtime();
-          subscribeRealtime();
-        }
-
-      });
+      .subscribe();
   }
 
   // --- Channel Illustration ---
@@ -890,18 +895,31 @@ function subscribeRealtime() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Illustration" },
-        async () => {
-          await fetchIllustrations(shikigami.value?.id);
+        (payload) => {
+
+          const newData = payload.new;
+          const oldData = payload.old;
+
+          if (payload.eventType === "INSERT") {
+            illustrations.value.push(newData);
+          }
+
+          if (payload.eventType === "UPDATE") {
+            const index = illustrations.value.findIndex(
+              i => i.id === newData.id
+            );
+            if (index !== -1) illustrations.value[index] = newData;
+          }
+
+          if (payload.eventType === "DELETE") {
+            illustrations.value = illustrations.value.filter(
+              i => i.id !== oldData.id
+            );
+          }
+
         }
       )
-      .subscribe((status) => {
-
-        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          unsubscribeRealtime();
-          subscribeRealtime();
-        }
-
-      });
+      .subscribe();
   }
 
   // --- Channel Effect ---
@@ -911,18 +929,27 @@ function subscribeRealtime() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Effect" },
-        async () => {
-          await fetchAllEffects();
+        (payload) => {
+
+          const newEffect = payload.new;
+          const oldEffect = payload.old;
+
+          if (payload.eventType === "INSERT") {
+            effects.value.push(newEffect);
+          }
+
+          if (payload.eventType === "UPDATE") {
+            const index = effects.value.findIndex(e => e.id === newEffect.id);
+            if (index !== -1) effects.value[index] = newEffect;
+          }
+
+          if (payload.eventType === "DELETE") {
+            effects.value = effects.value.filter(e => e.id !== oldEffect.id);
+          }
+
         }
       )
-      .subscribe((status) => {
-
-        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          unsubscribeRealtime();
-          subscribeRealtime();
-        }
-
-      });
+      .subscribe();
   }
 }
 
