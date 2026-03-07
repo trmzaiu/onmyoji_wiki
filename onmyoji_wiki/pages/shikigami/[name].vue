@@ -863,7 +863,9 @@ function subscribeRealtime() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Shikigami" },
-        async () => {
+        async (payload) => {
+          console.log("Shikigami changed:", payload);
+
           await fetchAllShikigami();
           await fetchShikigami();
         }
