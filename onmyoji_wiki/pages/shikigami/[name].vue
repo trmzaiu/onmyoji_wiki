@@ -992,6 +992,14 @@ onUnmounted(() => {
 
 });
 
+setInterval(async () => {
+
+  if (document.visibilityState === "visible") {
+    await fetchShikigami();
+  }
+
+}, 5000);
+
 /* ---------------------- EDIT MODAL ---------------------- */
 const editSkill = (skill, index) => {
   editingSkill.value = { ...skill }; 
