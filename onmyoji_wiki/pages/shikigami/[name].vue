@@ -894,19 +894,31 @@ function subscribeRealtime() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Illustration" },
-        async () => {
-          await fetchIllustrations(shikigami.value?.id);
+        async (payload) => {
+
+          console.log("Illustration changed:", payload);
+
+          if (shikigami.value?.id) {
+            await fetchIllustrations(shikigami.value.id);
+          }
+
         }
       )
       .subscribe((status) => {
 
+        if (status === "SUBSCRIBED") {
+          console.log("Realtime Illustration connected");
+        }
+
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.log("Realtime Illustration reconnecting...");
           unsubscribeRealtime();
           subscribeRealtime();
         }
 
       });
   }
+
 
   // --- Channel Effect ---
   if (!effectChannel) {
@@ -915,19 +927,29 @@ function subscribeRealtime() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "Effect" },
-        async () => {
+        async (payload) => {
+
+          console.log("Effect changed:", payload);
+
           await fetchAllEffects();
+
         }
       )
       .subscribe((status) => {
 
+        if (status === "SUBSCRIBED") {
+          console.log("Realtime Effect connected");
+        }
+
         if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.log("Realtime Effect reconnecting...");
           unsubscribeRealtime();
           subscribeRealtime();
         }
 
       });
   }
+
 }
 
 /* ---------------------- UNSUBSCRIBE ---------------------- */
