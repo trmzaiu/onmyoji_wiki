@@ -847,11 +847,15 @@ async function fetchIllustrations(shikiId) {
 }
 
 /* ---------------------- REALTIME ---------------------- */
+
 let shikigamiChannel = null;
 let effectChannel = null;
 let illustrationChannel = null;
 
+/* ---------------------- SUBSCRIBE ---------------------- */
+
 function subscribeRealtime() {
+
   // --- Channel Shikigami ---
   if (!shikigamiChannel) {
     shikigamiChannel = supabase
@@ -864,9 +868,22 @@ function subscribeRealtime() {
           await fetchShikigami();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+
+        if (status === "SUBSCRIBED") {
+          console.log("Realtime Shikigami connected");
+        }
+
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          console.log("Realtime Shikigami reconnecting...");
+          unsubscribeRealtime();
+          subscribeRealtime();
+        }
+
+      });
   }
 
+  // --- Channel Illustration ---
   if (!illustrationChannel) {
     illustrationChannel = supabase
       .channel("illustration-changes")
@@ -877,7 +894,14 @@ function subscribeRealtime() {
           await fetchIllustrations(shikigami.value?.id);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          unsubscribeRealtime();
+          subscribeRealtime();
+        }
+
+      });
   }
 
   // --- Channel Effect ---
@@ -891,21 +915,82 @@ function subscribeRealtime() {
           await fetchAllEffects();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+
+        if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          unsubscribeRealtime();
+          subscribeRealtime();
+        }
+
+      });
   }
 }
 
-// Nếu cần unsubscribe (ví dụ khi rời component)
+/* ---------------------- UNSUBSCRIBE ---------------------- */
+
 function unsubscribeRealtime() {
+
   if (shikigamiChannel) {
-    shikigamiChannel.unsubscribe();
+    supabase.removeChannel(shikigamiChannel);
     shikigamiChannel = null;
   }
+
   if (effectChannel) {
-    effectChannel.unsubscribe();
+    supabase.removeChannel(effectChannel);
     effectChannel = null;
   }
+
+  if (illustrationChannel) {
+    supabase.removeChannel(illustrationChannel);
+    illustrationChannel = null;
+  }
+
 }
+
+/* ---------------------- TAB VISIBILITY ---------------------- */
+
+async function handleVisibilityChange() {
+
+  if (document.visibilityState === "visible") {
+
+    console.log("Tab active → reconnect realtime");
+
+    // refresh data
+    await fetchAllShikigami();
+    await fetchAllEffects();
+    await fetchIllustrations(shikigami.value?.id);
+
+    // reconnect realtime
+    unsubscribeRealtime();
+    subscribeRealtime();
+
+  }
+
+}
+
+/* ---------------------- LIFECYCLE ---------------------- */
+
+onMounted(() => {
+
+  subscribeRealtime();
+
+  document.addEventListener(
+    "visibilitychange",
+    handleVisibilityChange
+  );
+
+});
+
+onUnmounted(() => {
+
+  unsubscribeRealtime();
+
+  document.removeEventListener(
+    "visibilitychange",
+    handleVisibilityChange
+  );
+
+});
 
 /* ---------------------- EDIT MODAL ---------------------- */
 const editSkill = (skill, index) => {
