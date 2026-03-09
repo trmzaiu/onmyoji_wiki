@@ -104,7 +104,7 @@ const getHPEvoRank = (hp) => {
   else if (hp >= 12532 && hp <= 15152 || hp === 16406) return "S";
   else if (hp >= 11393 && hp <= 12418) return "A";
   else if (hp >= 10254 && hp <= 11279) return "B";
-  else if (hp >= 9684 && hp <= 10140) return "C";
+  else if (hp >= 9115 && hp <= 10140) return "C";
   else return "D";
 };
 
