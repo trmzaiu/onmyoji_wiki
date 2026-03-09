@@ -854,6 +854,14 @@ let shikigamiChannel = null;
 let effectChannel = null;
 let illustrationChannel = null;
 
+setInterval(async () => {
+
+  if (document.visibilityState === "visible") {
+    await fetchShikigami();
+  }
+
+}, 5000);
+
 /* ---------------------- SUBSCRIBE ---------------------- */
 
 function subscribeRealtime() {
