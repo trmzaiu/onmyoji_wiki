@@ -1036,14 +1036,6 @@ onUnmounted(() => {
 
 });
 
-setInterval(async () => {
-
-  if (document.visibilityState === "visible") {
-    await fetchShikigami();
-  }
-
-}, 5000);
-
 /* ---------------------- EDIT MODAL ---------------------- */
 const editSkill = (skill, index) => {
   editingSkill.value = { ...skill }; 
@@ -1844,6 +1836,30 @@ const addCKeywordListeners = () => {
                         : shikigami.skills[activeSkillIndex].description.vn
                     )
                   "></p>
+                  <div v-if="shikigami.id===132 && activeSkillIndex === 2">
+                    <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+
+                    <b class="text-black mb-3 block cursor-pointer hover:text-[#a51919]" @click="activeSkillIndex = 1">
+                      {{ isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn }}
+                    </b>
+
+                    <div class="flex justify-center gap-6">
+                      
+                      <div v-for="i in [4,5,6,7]" :key="i" class="flex flex-col items-center">
+                        
+                        <img
+                          :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${i-3}.webp`"
+                          class="w-24 h-24 object-contain mb-1"
+                        />
+
+                        <span class="text-black text-sm cursor-pointer hover:text-[#a51919]" @click="activeSkillIndex = 1">
+                          {{ isEnglish ? shikigami.skills[i-1].name.en : shikigami.skills[i-1].name.vn }}
+                        </span>
+
+                      </div>
+                    </div>
+                  </div>
+
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
                   <table style="width: 100%; border-collapse: collapse; font-size: 16px" v-if="
                     Array.isArray(
@@ -1987,6 +2003,30 @@ const addCKeywordListeners = () => {
                       isEnglish ? skill.description.en : skill.description.vn
                     )
                   "></p>
+                  <div v-if="shikigami.id===132 && activeSkillIndex === 2">
+                    <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+
+                    <b class="text-black mb-3 block cursor-pointer hover:text-[#a51919]" @click="activeSkillIndex = 1">
+                      {{ isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn }}
+                    </b>
+
+                    <div class="flex justify-center gap-6">
+                      
+                      <div v-for="i in [4,5,6,7]" :key="i" class="flex flex-col items-center">
+                        
+                        <img
+                          :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${i+1}.webp`"
+                          class="w-24 h-24 object-contain mb-1"
+                        />
+
+                        <span class="text-black text-sm cursor-pointer hover:text-[#a51919]" @click="activeSkillIndex = 1">
+                          {{ isEnglish ? shikigami.skills[i-1].name.en : shikigami.skills[i-1].name.vn }}
+                        </span>
+
+                      </div>
+                    </div>
+                  </div>
+                  
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
                   <table style="width: 100%; border-collapse: collapse; font-size: 16px"
                     v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)">
