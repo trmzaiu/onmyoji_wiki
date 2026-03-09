@@ -1570,7 +1570,9 @@ const addCKeywordListeners = () => {
                   </td>
                   <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
-                      {{ shikigami.stats.SPD[1] }}
+                      {{ shikigami.evolution.no === 7 
+                        ? shikigami.stats.SPD[1] + shikigami.evolution.count 
+                        : shikigami.stats.SPD[1] }}
                     </div>
                   </td>
 
