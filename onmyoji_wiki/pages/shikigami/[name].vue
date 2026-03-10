@@ -1711,11 +1711,21 @@ const addCKeywordListeners = () => {
                   <td></td>
 
                   <td v-if="hasLevel40" class="centered-number">
-                    <div class="flex justify-start">{{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : '0' }}%</div>
+                    <div class="flex justify-start">
+                      {{ (shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : 0)
+                        + (shikigami.evolution.no === 10 ? shikigami.evolution.count : 0) }}%
+                    </div>
                   </td>
 
                   <td v-if="hasLevel40">
-                    <div class="flex justify-start">+{{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] - shikigami.stats.EffectRES[0] : '0' }}%</div>
+                    <div class="flex justify-start">
+                      +{{
+                        (shikigami.stats.EffectRES
+                          ? shikigami.stats.EffectRES[1] - shikigami.stats.EffectRES[0]
+                          : 0)
+                        + (shikigami.evolution.no === 10 ? shikigami.evolution.count : 0)
+                      }}%
+                    </div>
                   </td>
                 </tr>
               </tbody>
