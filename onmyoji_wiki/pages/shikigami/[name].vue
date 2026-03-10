@@ -1448,7 +1448,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number w-[100]">
+                  <td class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.ATK[0] }}
                     </div>
@@ -1461,7 +1461,7 @@ const addCKeywordListeners = () => {
                     </div>
                   </td>
 
-                  <td v-if="hasLevel40" class="centered-number w-[100]">
+                  <td v-if="hasLevel40" class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.ATK[1] }}
                       <span v-if="shikigami.evolution.no === 1" class="text-[#c85a5a]">
@@ -1495,7 +1495,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number w-[100]">
+                  <td class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.HP[0] }}
                     </div>
@@ -1507,7 +1507,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td v-if="hasLevel40"  class="centered-number w-[100]">
+                  <td v-if="hasLevel40"  class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.HP[1] }}
                     </div>
@@ -1531,7 +1531,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number w-[100]">
+                  <td class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.DEF[0] }}
                     </div>
@@ -1543,7 +1543,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td v-if="hasLevel40" class="centered-number w-[100]">
+                  <td v-if="hasLevel40" class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.DEF[1] }}
                     </div>
@@ -1567,7 +1567,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td class="centered-number w-[100]">
+                  <td class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.SPD[0] }}
                     </div>
@@ -1578,7 +1578,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td v-if="hasLevel40" class="centered-number w-[100]">
+                  <td v-if="hasLevel40" class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.SPD[1] }}
                         <span v-if="shikigami.evolution.no === 7" class="text-[#c85a5a]">
@@ -1610,7 +1610,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td  class="centered-number w-[100]">
+                  <td  class="centered-number w-[100px]">
                     <div class="flex justify-start">{{ shikigami.stats.Crit[0] }}%</div>
                   </td>
                   <td v-if="hasLevel40" class="centered-number">
@@ -1619,7 +1619,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td v-if="hasLevel40" class="centered-number w-[100]">
+                  <td v-if="hasLevel40" class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.Crit[1] }}%
                       <span v-if="shikigami.evolution.no === 6" class="text-[#c85a5a]">
