@@ -1466,7 +1466,7 @@ const addCKeywordListeners = () => {
                       {{
                         shikigami.stats.ATK[1]
                       }}
-                      <span v-if="shikigami.evolution.no === 1" class="text-red"> (+{{ Math.round(shikigami.evolution.count / 100) }})</span>
+                      <span v-if="shikigami.evolution.no === 1" class="text-red"> (+{{ shikigami.stats.ATK[1] * Math.round(shikigami.evolution.count / 100) }})</span>
                     </div>
                   </td>
 
