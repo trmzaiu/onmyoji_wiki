@@ -1469,6 +1469,7 @@ const addCKeywordListeners = () => {
                           ? 1 + Math.round(shikigami.evolution.count / 100)
                           : 1)
                       }}
+                      <span v-if="shikigami.evolution.no === 1" class="text-red"> (+{{ Math.round(shikigami.evolution.count / 100) }})</span>
                     </div>
                   </td>
 
