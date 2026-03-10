@@ -1610,7 +1610,7 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td  class="centered-number">
+                  <td  class="centered-number w-[100]">
                     <div class="flex justify-start">{{ shikigami.stats.Crit[0] }}%</div>
                   </td>
                   <td v-if="hasLevel40" class="centered-number">
@@ -1619,13 +1619,23 @@ const addCKeywordListeners = () => {
                         class="w-6 h-6" />
                     </div>
                   </td>
-                  <td v-if="hasLevel40" class="centered-number">
-                    <div class="flex justify-start">{{ shikigami.stats.Crit[1] }}%</div>
+                  <td v-if="hasLevel40" class="centered-number w-[100]">
+                    <div class="flex justify-start">
+                      {{ shikigami.stats.Crit[1] }}
+                      <span v-if="shikigami.evolution.no === 6" class="text-[#c85a5a]">
+                        +{{ shikigami.evolution.count }}%
+                      </span>
+                    </div>
                   </td>
 
                   <td v-if="hasLevel40">
                     <div class="flex justify-start">
-                      +{{ shikigami.stats.Crit[1] - shikigami.stats.Crit[0] }}%
+                      +{{ 
+                        (shikigami.evolution.no === 6 
+                          ? shikigami.stats.Crit[1] + shikigami.evolution.count 
+                          : shikigami.stats.Crit[1]) 
+                        - shikigami.stats.Crit[0] 
+                      }}
                     </div>
                   </td>
                 </tr>
