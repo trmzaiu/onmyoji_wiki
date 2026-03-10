@@ -1463,21 +1463,24 @@ const addCKeywordListeners = () => {
 
                   <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
-                      {{
-                        shikigami.stats.ATK[1]
-                      }}
-                      <span v-if="shikigami.evolution.no === 1" class=" ms-2"> (+{{ shikigami.stats.ATK[1] * Math.round(shikigami.evolution.count / 100) }})</span>
+                      {{ shikigami.stats.ATK[1] }}
+
+                      <span v-if="shikigami.evolution.no === 1" class="ms-2">
+                        (+{{ Math.round(shikigami.stats.ATK[1] * shikigami.evolution.count / 100) }})
+                      </span>
                     </div>
                   </td>
 
                   <td v-if="hasLevel40">
                     <div class="flex justify-start">
                       +{{
-                        shikigami.stats.ATK[1] *
-                        (shikigami.evolution.no === 1
-                          ? 1 + Math.round(shikigami.evolution.count / 100)
-                          : 1) - shikigami.stats.ATK[0]
-                      }} 
+                        Math.round(
+                          shikigami.stats.ATK[1] *
+                          (1 + (shikigami.evolution.no === 1
+                            ? shikigami.evolution.count / 100
+                            : 0))
+                        ) - shikigami.stats.ATK[0]
+                      }}
                     </div>
                   </td>
                 </tr>
