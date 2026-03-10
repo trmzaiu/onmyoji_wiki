@@ -1464,10 +1464,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
                       {{
-                        shikigami.stats.ATK[1] *
-                        (shikigami.evolution.no === 1
-                          ? 1 + Math.round(shikigami.evolution.count / 100)
-                          : 1)
+                        shikigami.stats.ATK[1]
                       }}
                       <span v-if="shikigami.evolution.no === 1" class="text-red"> (+{{ Math.round(shikigami.evolution.count / 100) }})</span>
                     </div>
