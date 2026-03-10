@@ -130,8 +130,8 @@ const getDEFImage = (def) => {
 
 // SS: 595 -> 595, S: 485 -> 490, A: 441 -> 481, B: 397 -> 437, C: 353 -> 392, D: 0 -> 0
 const getDEFEvoRank = (def) => {
-  if (def >= 549 && def <= 595) return "SS";
-  else if (def >= 485 && def <= 538) return "S";
+  if (def >= 550 && def <= 595) return "SS";
+  else if (def >= 485 && def <= 549) return "S";
   else if (def >= 441 && def <= 481) return "A";
   else if (def >= 397 && def <= 437) return "B";
   else if (def >= 353 && def <= 393) return "C";
