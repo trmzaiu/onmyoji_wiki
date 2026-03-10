@@ -1580,9 +1580,10 @@ const addCKeywordListeners = () => {
                   </td>
                   <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
-                      {{ shikigami.evolution.no === 7 
-                        ? shikigami.stats.SPD[1] + shikigami.evolution.count 
-                        : shikigami.stats.SPD[1] }}
+                      {{ shikigami.stats.SPD[1] }}
+                        <span v-if="shikigami.evolution.no === 7" class="text-[#c85a5a]">
+                          +{{ shikigami.evolution.count }}
+                        </span>
                     </div>
                   </td>
 
@@ -1667,7 +1668,12 @@ const addCKeywordListeners = () => {
                   <td></td>
 
                   <td v-if="hasLevel40" class="centered-number">
-                    <div class="flex justify-start">{{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : '0' }}%</div>
+                    <div class="flex justify-start">
+                      {{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : '0' }}%
+                      <span v-if="shikigami.evolution.no === 9" class="text-[#c85a5a]">
+                        {{ shikigami.evolution.count }}%
+                      </span>
+                    </div>
                   </td>
 
                   <td v-if="hasLevel40">
