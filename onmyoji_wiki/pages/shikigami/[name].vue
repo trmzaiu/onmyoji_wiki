@@ -1466,7 +1466,7 @@ const addCKeywordListeners = () => {
                       {{
                         shikigami.stats.ATK[1] *
                         (shikigami.evolution.no === 1
-                          ? 1 + shikigami.evolution.count / 100
+                          ? 1 + Math.round(shikigami.evolution.count / 100)
                           : 1)
                       }}
                     </div>
@@ -1477,7 +1477,7 @@ const addCKeywordListeners = () => {
                       +{{
                         shikigami.stats.ATK[1] *
                         (shikigami.evolution.no === 1
-                          ? 1 + shikigami.evolution.count / 100
+                          ? 1 + Math.round(shikigami.evolution.count / 100)
                           : 1) - shikigami.stats.ATK[0]
                       }} 
                     </div>
