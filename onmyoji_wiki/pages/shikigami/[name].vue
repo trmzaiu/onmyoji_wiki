@@ -157,7 +157,8 @@ const getSPDImage = (spd) => {
 };
 
 const getCritRank = (crit) => {
-  if (crit >= 16) return "SS";
+  if (crit === 50) return "SSS";
+  else if (crit >= 16) return "SS";
   else if (crit >= 10 && crit <= 15) return "S";
   else if (crit >= 8 && crit <= 9) return "A";
   else if (crit >= 5 && crit <= 5) return "B";
