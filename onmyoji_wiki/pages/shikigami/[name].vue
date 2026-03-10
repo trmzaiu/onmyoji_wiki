@@ -134,7 +134,7 @@ const getDEFEvoRank = (def) => {
   else if (def >= 485 && def <= 538) return "S";
   else if (def >= 441 && def <= 481) return "A";
   else if (def >= 397 && def <= 437) return "B";
-  else if (def >= 353 && def <= 392) return "C";
+  else if (def >= 353 && def <= 393) return "C";
   else return "D";
 };
 
