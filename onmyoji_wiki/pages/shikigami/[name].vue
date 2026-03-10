@@ -1464,7 +1464,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40" class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.ATK[1] }}
-                      <span v-if="shikigami.evolution.no === 1" class="text-[#c85a5a]">
+                      <span v-if="shikigami.evolution &&  shikigami.evolution.no === 1" class="text-[#c85a5a]">
                         +{{ Math.round(shikigami.stats.ATK[1] * shikigami.evolution.count / 100) }}
                       </span>
                     </div>
@@ -1475,7 +1475,7 @@ const addCKeywordListeners = () => {
                       +{{
                         Math.round(
                           shikigami.stats.ATK[1] *
-                          (1 + (shikigami.evolution.no === 1
+                          (1 + (shikigami.evolution && shikigami.evolution.no === 1
                             ? shikigami.evolution.count / 100
                             : 0))
                         ) - shikigami.stats.ATK[0]
@@ -1510,7 +1510,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40"  class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.HP[1] }}
-                      <span v-if="shikigami.evolution.no === 4" class="text-[#c85a5a]">
+                      <span v-if="shikigami.evolution && shikigami.evolution.no === 4" class="text-[#c85a5a]">
                         +{{ Math.round(shikigami.stats.HP[1] * shikigami.evolution.count / 100) }}
                       </span>
                     </div>
@@ -1521,7 +1521,7 @@ const addCKeywordListeners = () => {
                       +{{
                         Math.round(
                           shikigami.stats.HP[1] *
-                          (1 + (shikigami.evolution.no === 4
+                          (1 + (shikigami.evolution && shikigami.evolution.no === 4
                             ? shikigami.evolution.count / 100
                             : 0))
                         ) - shikigami.stats.HP[0]
@@ -1591,7 +1591,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40" class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.SPD[1] }}
-                        <span v-if="shikigami.evolution.no === 7" class="text-[#c85a5a]">
+                        <span v-if="shikigami.evolution && shikigami.evolution.no === 7" class="text-[#c85a5a]">
                           +{{ shikigami.evolution.count }}
                         </span>
                     </div>
@@ -1600,7 +1600,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40">
                     <div class="flex justify-start">
                       +{{ 
-                        (shikigami.evolution.no === 7 
+                        (shikigami.evolution && shikigami.evolution.no === 7 
                           ? shikigami.stats.SPD[1] + shikigami.evolution.count 
                           : shikigami.stats.SPD[1]) 
                         - shikigami.stats.SPD[0] 
@@ -1632,7 +1632,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40" class="centered-number w-[100px]">
                     <div class="flex justify-start">
                       {{ shikigami.stats.Crit[1] }}%
-                      <span v-if="shikigami.evolution.no === 6" class="text-[#c85a5a]">
+                      <span v-if="shikigami.evolution && shikigami.evolution.no === 6" class="text-[#c85a5a]">
                         +{{ shikigami.evolution.count }}%
                       </span>
                     </div>
@@ -1641,7 +1641,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40">
                     <div class="flex justify-start">
                       +{{ 
-                        (shikigami.evolution.no === 6 
+                        (shikigami.evolution && shikigami.evolution.no === 6 
                           ? shikigami.stats.Crit[1] + shikigami.evolution.count 
                           : shikigami.stats.Crit[1]) 
                         - shikigami.stats.Crit[0] 
@@ -1690,7 +1690,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
                       {{ (shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : 0)
-                        + (shikigami.evolution.no === 9 ? shikigami.evolution.count : 0) }}%
+                        + (shikigami.evolution && shikigami.evolution.no === 9 ? shikigami.evolution.count : 0) }}%
                     </div>
                   </td>
 
@@ -1700,7 +1700,7 @@ const addCKeywordListeners = () => {
                         (shikigami.stats.EffectHIT
                           ? shikigami.stats.EffectHIT[1] - shikigami.stats.EffectHIT[0]
                           : 0)
-                        + (shikigami.evolution.no === 9 ? shikigami.evolution.count : 0)
+                        + (shikigami.evolution && shikigami.evolution.no === 9 ? shikigami.evolution.count : 0)
                       }}%
                     </div>
                   </td>
@@ -1723,7 +1723,7 @@ const addCKeywordListeners = () => {
                   <td v-if="hasLevel40" class="centered-number">
                     <div class="flex justify-start">
                       {{ (shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : 0)
-                        + (shikigami.evolution.no === 10 ? shikigami.evolution.count : 0) }}%
+                        + (shikigami.evolution && shikigami.evolution.no === 10 ? shikigami.evolution.count : 0) }}%
                     </div>
                   </td>
 
@@ -1733,7 +1733,7 @@ const addCKeywordListeners = () => {
                         (shikigami.stats.EffectRES
                           ? shikigami.stats.EffectRES[1] - shikigami.stats.EffectRES[0]
                           : 0)
-                        + (shikigami.evolution.no === 10 ? shikigami.evolution.count : 0)
+                        + (shikigami.evolution && shikigami.evolution.no === 10 ? shikigami.evolution.count : 0)
                       }}%
                     </div>
                   </td>
