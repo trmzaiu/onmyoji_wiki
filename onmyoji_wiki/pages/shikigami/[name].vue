@@ -1656,7 +1656,7 @@ const addCKeywordListeners = () => {
                           ? shikigami.stats.Crit[1] + shikigami.evolution.count 
                           : shikigami.stats.Crit[1]) 
                         - shikigami.stats.Crit[0] 
-                      }}
+                      }}%
                     </div>
                   </td>
                 </tr>
