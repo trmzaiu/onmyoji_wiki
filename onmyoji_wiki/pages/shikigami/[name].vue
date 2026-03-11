@@ -2664,7 +2664,7 @@ const addCKeywordListeners = () => {
 
                   <div v-if="sub.images" class="flex gap-2 mb-2">
                     <img
-                      v-for="(img, i) in sub.images"
+                      v-for="(img, i) in subsub.images"
                       :key="i"
                       :src="'/assets/effects/' + img + '.webp'"
                       :alt="img"
