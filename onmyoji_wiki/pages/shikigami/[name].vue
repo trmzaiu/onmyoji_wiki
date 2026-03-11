@@ -2662,13 +2662,15 @@ const addCKeywordListeners = () => {
                     <span class="lang-zh">({{ subsub.name.cn }})</span>
                   </div>
 
-                  <img v-if="subsub.images" 
-                      v-for="(img, k) in subsub.images" 
-                      :key="k" 
+                  <div v-if="sub.images" class="flex gap-2 mb-2">
+                    <img
+                      v-for="(img, i) in sub.images"
+                      :key="i"
                       :src="'/assets/effects/' + img + '.webp'"
-                      :alt="img" 
-                      class="tooltip-images rounded rounded-sm" 
-                      style="width: 32px; height: 32px; margin-bottom: 8px" />
+                      :alt="img"
+                      class="w-8 h-8"
+                    />
+                  </div>
 
                   <div class="subnote-description" v-html="processTextWithTooltips(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
                 </div>
