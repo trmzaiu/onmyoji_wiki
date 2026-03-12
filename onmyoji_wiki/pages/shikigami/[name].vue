@@ -271,14 +271,6 @@ const makeHighlight = (keyword, type) => {
   return `<b><a href="/${type}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`
 }
 
-function getSoul(id) {
-  return souls.value.find(s => s.id === id);
-}
-
-function formatSoulName(name) {
-  return name.replace(/ /g, "_");
-}
-
 /* ---------------------- TOOLTIP ---------------------- */
 const imgs = computed(() => tooltipData.value?.images || []);
 
@@ -809,13 +801,23 @@ async function fetchEvolution(id) {
 }
 
 async function fetchSouls(ids) {
+  if (!ids || !ids.length) {
+    souls.value = [];
+    return;
+  }
+
   const { data, error } = await supabase
     .from("Soul")
     .select("*")
     .in("id", ids);
 
-  if (error) console.error("Error fetching souls:", error);
-  else souls.value = data;
+  if (error) {
+    console.error("Error fetching souls:", error);
+    souls.value = [];
+  } else {
+    // sort theo thứ tự trong ids
+    souls.value = data.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+  }
 }
 
 async function fetchAllOnmyoji() {
