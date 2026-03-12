@@ -858,6 +858,7 @@ function getStatClass(stat) {
   if (stat.includes('hp')) return 'border-green-300 text-green-600'
   if (stat.includes('hit')) return 'border-cyan-300 text-cyan-600'
   if (stat.includes('res')) return 'border-orange-300 text-orange-600'
+  if (stat.includes('def')) return 'border-amber-400 text-amber-700'
 
   return 'border-gray-300 text-gray-700'
 }
