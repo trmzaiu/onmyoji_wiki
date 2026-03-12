@@ -2389,6 +2389,20 @@ const addCKeywordListeners = () => {
               </tr>
             </tbody>
           </table>
+
+          <h2 class="session-title mt-5" v-if="shikigami.id !== 193">
+            {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
+          </h2>
+
+          <div class="flex items-center gap-2">
+            <img
+              v-for="(soul, index) in shikigami.souls"
+              :key="index"
+              :src="`/assets/souls/${soul}.webp`"
+              :alt="soul"
+              class="w-16 h-16 object-cover rounded-full"
+            />
+          </div>
         </div>
 
         <!-- Gallery Tab -->
