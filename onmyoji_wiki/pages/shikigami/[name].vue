@@ -2417,13 +2417,21 @@ const addCKeywordListeners = () => {
           </h2>
 
           <div class="mt-4 flex gap-2" v-if="shikigami.id !== 193 && souls.length">
+            <div
+              v-for="soul in souls"
+              :key="soul.id"
+              class="flex flex-col items-center me-2"
+            >
               <img
-                v-for="soul in souls"
-                :key="soul.id"
                 :src="`/assets/souls/icons/${soul.name.en.replace(/\s+/g,'_')}_Icon.webp`"
-                class="w-16 h-16 rounded-full me-2 cursor-pointer hover:scale-110 transition-transform duration-300"
+                class="w-16 h-16 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300"
               />
+
+              <span class="text-xs mt-1 text-center">
+                {{ soul.name.en }}
+              </span>
             </div>
+          </div>
         </div>
 
         <!-- Gallery Tab -->
