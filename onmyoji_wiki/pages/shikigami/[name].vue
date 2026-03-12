@@ -2421,6 +2421,16 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
           </h2>
 
+          <div>
+            <p class="text-red">2 / 4 / 6:</p>
+            <div v-for="(build, i) in shikigami.indicate" :key="i" class="flex items-center gap-2 mb-1">
+              <span class="text-sm text-gray-500">Build {{ i + 1 }}:</span>
+              <span class="text-sm font-medium">
+                {{ build.split('/').join(' • ') }}
+              </span>
+            </div>
+          </div>
+
           <div class="mt-4 grid grid-cols-6 gap-3" v-if="shikigami.id !== 193 && souls.length">
             <router-link
               v-for="soul in souls"
