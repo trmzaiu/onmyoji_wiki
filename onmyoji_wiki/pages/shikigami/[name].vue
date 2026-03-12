@@ -815,8 +815,11 @@ async function fetchSouls(ids) {
     console.error("Error fetching souls:", error);
     souls.value = [];
   } else {
-    // sort theo thứ tự trong ids
-    souls.value = data.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+    const order = ids.map(Number); // ép thành number
+
+    souls.value = data.sort(
+      (a, b) => order.indexOf(a.id) - order.indexOf(b.id)
+    );
   }
 }
 
