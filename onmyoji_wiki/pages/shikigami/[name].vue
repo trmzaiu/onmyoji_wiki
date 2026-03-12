@@ -849,7 +849,7 @@ async function fetchShikigami() {
     addTooltipListeners();
     if (data.rarity !== 'SP') fetchEvolution(data.evolution.no);
     if (data.souls) {
-      await fetchSouls(data.souls.id);
+      await fetchSouls(data.souls);
     }
   }
 }
