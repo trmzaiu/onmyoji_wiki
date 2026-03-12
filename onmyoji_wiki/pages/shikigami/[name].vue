@@ -2414,14 +2414,11 @@ const addCKeywordListeners = () => {
           </h2>
 
           <div class="flex gap-2">
-            <div
-              v-for="id in shikigami.souls"
-              :key="id"
-            >
+            <div class="flex gap-2">
               <img
-                v-if="getSoul(id)"
-                :src="`/assets/souls/images/${formatSoulName(getSoul(id).name.en)}.webp`"
-                :alt="getSoul(id).name.en"
+                v-for="soul in souls"
+                :key="soul.id"
+                :src="`/assets/souls/images/${soul.name.en.replace(/\s+/g,'_')}.webp`"
                 class="w-16 h-16 rounded-full"
               />
             </div>
