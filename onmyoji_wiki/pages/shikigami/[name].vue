@@ -2416,7 +2416,7 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
           </h2>
 
-          <div class="mt-4 flex gap-2" v-if="shikigami.id !== 193 && souls.length">
+          <div class="mt-4 flex gap-2 flex-wrap" v-if="shikigami.id !== 193 && souls.length">
             <div
               v-for="soul in souls"
               :key="soul.id"
@@ -2427,7 +2427,7 @@ const addCKeywordListeners = () => {
                 class="w-16 h-16 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300"
               />
 
-              <span class="text-xs mt-1 text-center">
+              <span class="text-sm mt-2 text-center text-black break-words leading-tight">
                 {{ soul.name.en }}
               </span>
             </div>
