@@ -823,6 +823,64 @@ async function fetchSouls(ids) {
   }
 }
 
+function getSoul(id) {
+  return souls.value.find(s => s.id === id)
+}
+
+function getSoulName(id) {
+  const soul = getSoul(id)
+  return soul ? soul.name.en : ''
+}
+
+function getSoulSlug(id) {
+  const soul = getSoul(id)
+  return soul ? soul.name.en.replace(/\s+/g,'_') : ''
+}
+
+function parseStats(indicate) {
+  return indicate
+    .split('/')
+    .map(slot =>
+      slot
+        .split(/or/i)
+        .map(s => s.replace(/[()]/g, '').trim())
+    )
+}
+
+function getStatClass(stat) {
+
+  stat = stat.toLowerCase()
+
+  if (stat.includes('atk')) return 'border-red-300 text-red-500'
+  if (stat.includes('spd')) return 'border-blue-300 text-blue-500'
+  if (stat.includes('crit')) return 'border-yellow-300 text-yellow-600'
+  if (stat.includes('cdmg')) return 'border-purple-300 text-purple-600'
+  if (stat.includes('hp')) return 'border-green-300 text-green-600'
+  if (stat.includes('hit')) return 'border-cyan-300 text-cyan-600'
+  if (stat.includes('res')) return 'border-orange-300 text-orange-600'
+
+  return 'border-gray-300 text-gray-700'
+}
+
+function parseSubstats(text) {
+
+  return text
+    .replace(/>>/g,' >> ')
+    .replace(/>/g,' > ')
+    .trim()
+    .split(/\s+/)
+    .map(token => {
+
+      if(token === '>' || token === '>>'){
+        return { type:'arrow', value: token }
+      }
+
+      return { type:'stat', value: token }
+
+    })
+
+}
+
 async function fetchAllOnmyoji() {
   const { data, error } = await supabase
     .from("Onmyoji")
@@ -882,13 +940,13 @@ let shikigamiChannel = null;
 let effectChannel = null;
 let illustrationChannel = null;
 
-setInterval(async () => {
+// setInterval(async () => {
 
-  if (document.visibilityState === "visible") {
-    await fetchShikigami();
-  }
+//   if (document.visibilityState === "visible") {
+//     await fetchShikigami();
+//   }
 
-}, 5000);
+// }, 5000);
 
 /* ---------------------- SUBSCRIBE ---------------------- */
 
@@ -2421,32 +2479,112 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
           </h2>
 
-          <div>
-            <p class="text-red">2 / 4 / 6:</p>
-            <div v-for="(build, i) in shikigami.indicate" :key="i" class="flex items-center gap-2 mb-1">
-              <span class="text-sm text-gray-500">Build {{ i + 1 }}:</span>
-              <span class="text-sm font-medium">
-                {{ build.split('/').join(' • ') }}
-              </span>
-            </div>
-          </div>
+          <div v-if="shikigami.build?.length && shikigami.id !== 193" class="space-y-6 mt-4">
 
-          <div class="mt-4 grid grid-cols-6 gap-3" v-if="shikigami.id !== 193 && souls.length">
-            <router-link
-              v-for="soul in souls"
-              :key="soul.id"
-              :to="`/souls/${soul.name.en.replace(/\s+/g,'_')}`"
-              class="flex flex-col items-center text-center"
+            <div
+              v-for="build in shikigami.build"
+              :key="build.no"
+              class="border border-[#a51919] rounded-xl p-5 bg-white shadow-sm"
             >
-              <img
-                :src="`/assets/souls/icons/${soul.name.en.replace(/\s+/g,'_')}_Icon.webp`"
-                class="w-16 h-16 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300"
-              />
 
-              <span class="text-sm mt-2 text-black break-words leading-tight hover:underline">
-                {{ soul.name.en }}
-              </span>
-            </router-link>
+              <!-- Build title -->
+              <h3 class="text-lg font-semibold mb-3 text-[#a51919]">
+                Build {{ build.no }}
+              </h3>
+
+              <!-- 2 / 4 / 6 stats -->
+              <div class="mb-4">
+                <span
+                  v-for="(stat, index) in parseStats(build.indicate)"
+                  :key="index"
+                  class="inline-block mr-2"
+                >
+                  <span
+                    v-for="s in stat"
+                    :key="s"
+                    class="inline-block px-2 py-1 rounded-md border mr-1"
+                    :class="getStatClass(s)"
+                  >
+                    {{ s }}
+                  </span>
+
+                  <span v-if="index < 2" class="text-gray-400 mx-1">/</span>
+                </span>
+              </div>
+
+              <!-- Souls -->
+              <div class="grid grid-cols-6 gap-3 mb-4">
+
+                <router-link
+                  v-for="id in build.souls"
+                  :key="id"
+                  :to="`/souls/${getSoulSlug(id)}`"
+                  class="flex flex-col items-center text-center"
+                >
+
+                  <img
+                    :src="`/assets/souls/icons/${getSoulSlug(id)}_Icon.webp`"
+                    class="w-14 h-14 rounded-full hover:scale-110 transition duration-200"
+                  />
+
+                  <span class="text-xs mt-1 text-gray-700">
+                    {{ getSoulName(id) }}
+                  </span>
+
+                </router-link>
+
+              </div>
+
+              <!-- Substats -->
+              <div v-if="build.substats" class="text-sm text-black mb-2 flex items-center flex-wrap gap-1">
+                <span class="font-bold mr-2">Substats:</span>
+
+                <template v-for="(item, i) in parseSubstats(build.substats)" :key="i">
+                  
+                  <span
+                    v-if="item.type === 'stat'"
+                    class="px-2 py-1 text-xs border rounded-md"
+                    :class="getStatClass(item.value)"
+                  >
+                    {{ item.value }}
+                  </span>
+
+                  <span
+                    v-else
+                    class="text-gray-400 text-xs px-1"
+                  >
+                    {{ item.value }}
+                  </span>
+
+                </template>
+              </div>
+
+              <!-- Breakpoint -->
+              <div v-if="build.breakpoint" class="mb-3 text-black">
+
+                <span class="font-bold text-sm mr-2">Breakpoint:</span>
+
+                <span
+                  v-for="tag in build.breakpoint.split('|').map(t => t.trim())"
+                  :key="tag"
+                  class="inline-block bg-gray-100 border text-xs px-2 py-1 rounded-md mr-1 mb-1"
+                >
+                  {{ tag }}
+                </span>
+
+              </div>
+
+              <!-- Note -->
+              <div
+                v-if="build.note"
+                class="text-sm text-gray-600 bg-gray-50 border rounded-md p-2"
+              >
+                <span class="font-medium me-1">Note:</span>
+                <span class="italic">{{ build.note }}</span>
+              </div>
+
+            </div>
+
           </div>
         </div>
 
