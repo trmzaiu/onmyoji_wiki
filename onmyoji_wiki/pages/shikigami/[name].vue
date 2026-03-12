@@ -809,7 +809,7 @@ async function fetchEvolution(id) {
 
 async function fetchSouls(id) {
   const { data, error } = await supabase
-    .from("Souls")
+    .from("Soul")
     .select("*")
     .eq("id", id)
     .single();
