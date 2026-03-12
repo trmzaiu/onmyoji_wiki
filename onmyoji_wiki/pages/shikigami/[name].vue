@@ -274,6 +274,10 @@ function getSoul(id) {
   return souls.value.find(s => s.id === id);
 }
 
+function formatSoulName(name) {
+  return name.replace(/ /g, "_");
+}
+
 /* ---------------------- TOOLTIP ---------------------- */
 const imgs = computed(() => tooltipData.value?.images || []);
 
@@ -2416,8 +2420,8 @@ const addCKeywordListeners = () => {
             >
               <img
                 v-if="getSoul(id)"
-                :src="`/assets/souls/${getSoul(id).icon}.webp`"
-                :alt="getSoul(id).name"
+                :src="`/assets/souls/images/${formatSoulName(getSoul(id).name.en)}.webp`"
+                :alt="getSoul(id).name.en"
                 class="w-16 h-16 rounded-full"
               />
             </div>
