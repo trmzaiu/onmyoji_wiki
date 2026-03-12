@@ -2416,11 +2416,11 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
           </h2>
 
-          <div class="mt-4 flex gap-2 flex-wrap" v-if="shikigami.id !== 193 && souls.length">
+          <div class="mt-4 grid grid-cols-6 gap-3" v-if="shikigami.id !== 193 && souls.length">
             <div
               v-for="soul in souls"
               :key="soul.id"
-              class="flex flex-col items-center me-2 w-32 h-32"
+              class="flex flex-col items-center"
             >
               <img
                 :src="`/assets/souls/icons/${soul.name.en.replace(/\s+/g,'_')}_Icon.webp`"
