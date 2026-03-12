@@ -2415,7 +2415,7 @@ const addCKeywordListeners = () => {
 
           <div class="flex gap-2">
             <div
-              v-for="id in shikigami.soul"
+              v-for="id in shikigami.souls"
               :key="id"
             >
               <img
