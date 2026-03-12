@@ -906,15 +906,29 @@ async function fetchShikigami() {
     .eq("name->jp->>1", formattedName)
     .single();
 
-  if (error) console.error("Error fetching shikigami:", error);
-  else {
-    shikigami.value = data;
-    await nextTick();
-    addTooltipListeners();
-    if (data.rarity !== 'SP') fetchEvolution(data.evolution.no);
-    if (data.souls) {
-      await fetchSouls(data.souls);
-    }
+  if (error) {
+    console.error("Error fetching shikigami:", error);
+    return;
+  }
+
+  shikigami.value = data;
+
+  await nextTick();
+  addTooltipListeners();
+
+  if (data.rarity !== 'SP') {
+    fetchEvolution(data.evolution.no);
+  }
+
+  if (data.build?.length) {
+
+    // gom toàn bộ soul id từ các build
+    const soulIds = [...new Set(
+      data.build.flatMap(b => b.souls || [])
+    )];
+
+    await fetchSouls(soulIds);
+
   }
 }
 
