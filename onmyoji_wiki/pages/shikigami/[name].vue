@@ -1138,7 +1138,6 @@ onMounted(async () => {
     fetchShikigami(),
     fetchAllOnmyoji(),
     fetchConditions(),
-    fetchSouls(),
     loadTags(),
   ]);
   
