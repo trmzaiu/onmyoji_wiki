@@ -2593,7 +2593,7 @@ const addCKeywordListeners = () => {
                 v-if="build.note"
                 class="text-sm text-gray-600 bg-gray-50 border rounded-md p-2"
               >
-                <span class="italic">{{ build.note }}</span>
+                <span class="italic whitespace-pre-line">{{ build.note }}</span>
               </div>
 
             </div>
