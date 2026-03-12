@@ -270,6 +270,10 @@ const makeHighlight = (keyword, type) => {
   return `<b><a href="/${type}/${encodeURIComponent(finalName)}" class="text-[#a51919] font-bold">${keyword}</a></b>`
 }
 
+function getSoul(id) {
+  return souls.value.find(s => s.id === id);
+}
+
 /* ---------------------- TOOLTIP ---------------------- */
 const imgs = computed(() => tooltipData.value?.images || []);
 
@@ -799,6 +803,16 @@ async function fetchEvolution(id) {
   else evolution.value = data;
 }
 
+async function fetchSouls(id) {
+  const { data, error } = await supabase
+    .from("Souls")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) console.error("Error fetching souls:", error);
+  else souls.value = data;
+}
+
 async function fetchAllOnmyoji() {
   const { data, error } = await supabase
     .from("Onmyoji")
@@ -1120,6 +1134,7 @@ onMounted(async () => {
     fetchShikigami(),
     fetchAllOnmyoji(),
     fetchConditions(),
+    fetchSouls(),
     loadTags(),
   ]);
   
@@ -2394,14 +2409,18 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
           </h2>
 
-          <div class="flex items-center gap-2">
-            <img
-              v-for="(soul, index) in shikigami.souls"
-              :key="index"
-              :src="`/assets/souls/${soul}.webp`"
-              :alt="soul"
-              class="w-16 h-16 object-cover rounded-full"
-            />
+          <div class="flex gap-2">
+            <div
+              v-for="id in shikigami.soul"
+              :key="id"
+            >
+              <img
+                v-if="getSoul(id)"
+                :src="`/assets/souls/${getSoul(id).icon}.webp`"
+                :alt="getSoul(id).name"
+                class="w-16 h-16 rounded-full"
+              />
+            </div>
           </div>
         </div>
 
