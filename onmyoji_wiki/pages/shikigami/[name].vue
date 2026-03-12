@@ -807,12 +807,12 @@ async function fetchEvolution(id) {
   else evolution.value = data;
 }
 
-async function fetchSouls(id) {
+async function fetchSouls(ids) {
   const { data, error } = await supabase
     .from("Soul")
     .select("*")
-    .eq("id", id)
-    .single();
+    .in("id", ids);
+
   if (error) console.error("Error fetching souls:", error);
   else souls.value = data;
 }
@@ -1138,6 +1138,7 @@ onMounted(async () => {
     fetchShikigami(),
     fetchAllOnmyoji(),
     fetchConditions(),
+    fetchSouls(shikigami.value.souls),
     loadTags(),
   ]);
   
