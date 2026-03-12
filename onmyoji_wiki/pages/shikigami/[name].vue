@@ -2420,7 +2420,7 @@ const addCKeywordListeners = () => {
             <div
               v-for="soul in souls"
               :key="soul.id"
-              class="flex flex-col items-center me-2"
+              class="flex flex-col items-center me-2 w-32 h-32"
             >
               <img
                 :src="`/assets/souls/icons/${soul.name.en.replace(/\s+/g,'_')}_Icon.webp`"
