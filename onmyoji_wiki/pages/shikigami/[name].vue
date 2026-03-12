@@ -19,6 +19,7 @@ const effects = ref([]);
 const illustrations = ref([]);
 const conditions = ref([]);
 const evolution = ref(null);
+const souls = ref([]);
 const isEnglish = ref(true);
 
 // UI
