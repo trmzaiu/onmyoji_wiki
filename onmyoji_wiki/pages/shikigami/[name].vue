@@ -848,6 +848,9 @@ async function fetchShikigami() {
     await nextTick();
     addTooltipListeners();
     if (data.rarity !== 'SP') fetchEvolution(data.evolution.no);
+    if (data.souls) {
+      await fetchSouls(data.souls.id);
+    }
   }
 }
 
@@ -1138,7 +1141,6 @@ onMounted(async () => {
     fetchShikigami(),
     fetchAllOnmyoji(),
     fetchConditions(),
-    fetchSouls(shikigami.value.souls),
     loadTags(),
   ]);
   
@@ -2413,8 +2415,7 @@ const addCKeywordListeners = () => {
             {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
           </h2>
 
-          <div class="flex gap-2">
-            <div class="flex gap-2">
+          <div class="flex gap-2" v-if="shikigami.id !== 193 && souls.length">
               <img
                 v-for="soul in souls"
                 :key="soul.id"
@@ -2422,7 +2423,6 @@ const addCKeywordListeners = () => {
                 class="w-16 h-16 rounded-full"
               />
             </div>
-          </div>
         </div>
 
         <!-- Gallery Tab -->
