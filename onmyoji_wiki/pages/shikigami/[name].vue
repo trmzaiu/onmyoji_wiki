@@ -2,11 +2,12 @@
 import { useSupabase } from "@/utils/useSupabase.ts";
 import { useTags } from "@/utils/useTags";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 /* ---------------------- GLOBAL ---------------------- */
 const supabase = useSupabase();
 const route = useRoute();
+const router = useRouter()
 const { tagMap, loadTags } = useTags();
 
 const formattedName = route.params.name.replace(/_/g, " ");
@@ -27,7 +28,7 @@ const tooltipData = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 const showTooltip = ref(false);
 
-const activeTab = ref("main");
+const activeTab = ref(route.hash.replace('#','') || 'Main')
 const activeSkillIndex = ref(0);
 
 const showEditModal = ref(false);
@@ -50,6 +51,31 @@ const closeModal = () => {
   selectedImage.value = null;
 };
 
+function changeTab(tab) {
+  activeTab.value = tab
+
+  history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}#${tab}`
+  )
+}
+
+function changeSkill(index) {
+  activeSkillIndex.value = index
+
+  let hash = `Skill${index+1}`
+
+  if (index === 3) {
+    if (shikigami.value.rarity === 'UR') {
+      hash = 'Link'
+    } else {
+      hash = 'Evo'
+    }
+  }
+
+  history.replaceState(null, '', `${window.location.pathname}#${hash}`)
+}
 
 /* ---------------------- HELPERS ---------------------- */
 const getImgUrl = (name) =>
@@ -1133,6 +1159,19 @@ onMounted(() => {
     handleVisibilityChange
   );
 
+  const hash = window.location.hash.replace("#", "")
+  if (hash) activeTab.value = hash
+
+  if (hash.startsWith('Skill')) {
+    activeTab.value = 'Main'
+    activeSkillIndex.value = parseInt(hash.split('Skill')[1]) || 0
+  }
+
+  if (hash === 'Evo' || hash === 'Link') {
+    activeTab.value = 'Main'
+    activeSkillIndex.value = 3
+  }
+
 });
 
 onUnmounted(() => {
@@ -1227,6 +1266,13 @@ onMounted(async () => {
   subscribeRealtime();
   addTooltipListeners();
 });
+
+watch(
+  () => route.hash,
+  (hash) => {
+    activeTab.value = hash.replace('#','') || 'Main'
+  }
+)
 
 watch(activeSkillIndex, async () => {
   await nextTick();
@@ -1441,32 +1487,34 @@ const addCKeywordListeners = () => {
 
         <!-- Content -->
         <div class="flex border-b border-gray-300 mt-5" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
-          <button class="flex py-2 px-4 text-center" :class="
-            activeTab === 'main'
+          <button
+            class="flex py-2 px-4 text-center"
+            :class="activeTab === 'Main'
               ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-              : 'text-[#a3a3a3] cursor-pointer'
-          " @click="activeTab = 'main'">
+              : 'text-[#a3a3a3] cursor-pointer'"
+            @click="changeTab('Main')"
+          >
             {{ isEnglish ? "Main" : "Chính Điện" }}
           </button>
           <button class="flex py-2 px-4 text-center" :class="
-            activeTab === 'gallery'
+            activeTab === 'Gallery'
               ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
               : 'text-[#a3a3a3] cursor-pointer'
-          " @click="activeTab = 'gallery'">
+          " @click="changeTab('Gallery')">
             {{ isEnglish ? "Gallery" : "Hoạ Phòng" }}
           </button>
           <button class="flex py-2 px-4 text-center" :class="
-            activeTab === 'dialogue'
+            activeTab === 'Dialogue'
               ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
               : 'text-[#a3a3a3] cursor-pointer'
-          " @click="activeTab = 'dialogue'">
+          " @click="changeTab('Dialogue')">
             {{ isEnglish ? "Dialogue" : "Lời Thoại" }}
           </button>
         </div>
 
         <!-- Main Tab -->
-        <div class="w-full" v-show="activeTab === 'main'" :class="[
-          activeTab === 'main' ? 'opacity-100' : 'opacity-0',
+        <div class="w-full" v-show="activeTab === 'Main'" :class="[
+          activeTab === 'Main' ? 'opacity-100' : 'opacity-0',
           isEnglish ? 'lang-en' : 'lang-vi',
         ]">
           <!-- Stats -->
@@ -1860,7 +1908,7 @@ const addCKeywordListeners = () => {
           </h2>
           <div class="flex border-b border-gray-300 mb-4 mt-2">
             <button v-for="(skill, index) in shikigami.skills.slice(0, 3)" :key="index"
-              @click="activeSkillIndex = index" :class="[
+              @click="changeSkill(index)" :class="[
               'px-4 py-2',
               activeSkillIndex === index
                 ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
@@ -1889,7 +1937,7 @@ const addCKeywordListeners = () => {
                 {{ skill.type }}
               </template>
             </button>
-            <button v-if="!['SP','UR','N'].includes(shikigami.rarity) && shikigami.id !== 193" @click="activeSkillIndex = 3" :class="[
+            <button v-if="!['SP','UR','N'].includes(shikigami.rarity) && shikigami.id !== 193" @click="changeSkill(3)" :class="[
               'px-4 py-2',
               activeSkillIndex === 3
                 ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
@@ -1897,7 +1945,7 @@ const addCKeywordListeners = () => {
             ]">
               Evolution Effect
             </button>
-            <button v-if="shikigami.rarity === 'UR'" @click="activeSkillIndex = 3" :class="[
+            <button v-if="shikigami.rarity === 'UR'" @click="changeSkill(3)" :class="[
               'px-4 py-2',
               activeSkillIndex === 3
                 ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
@@ -2604,8 +2652,8 @@ const addCKeywordListeners = () => {
         </div>
 
         <!-- Gallery Tab -->
-        <div v-show="activeTab === 'gallery'" :class="[
-          activeTab === 'gallery' ? 'opacity-100' : 'opacity-0',
+        <div v-show="activeTab === 'Gallery'" :class="[
+          activeTab === 'Gallery' ? 'opacity-100' : 'opacity-0',
           isEnglish ? 'lang-en' : 'lang-vi',
         ]">
           <!-- Skins -->

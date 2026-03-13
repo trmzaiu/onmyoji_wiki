@@ -47,6 +47,18 @@ function sortBy(key) {
   }
 }
 
+const currentPage = ref(1)
+const perPage = 100
+
+const totalPages = computed(() =>
+  Math.ceil(sortedShikigami.value.length / perPage)
+)
+
+const paginatedShikigami = computed(() => {
+  const start = (currentPage.value - 1) * perPage
+  return sortedShikigami.value.slice(start, start + perPage)
+})
+
 // ===== FETCH DATA =====
 async function fetchAllShikigami() {
   const { data, error } = await supabase
@@ -195,6 +207,28 @@ onMounted(async () => {
         {{ isEnglish ? "Shikigami List" : "Danh sách Thức Thần" }}
       </h2>
       <div class="p-4">
+        <div class="flex justify-end items-center gap-2 mb-4 text-black">
+          <button
+            v-if="currentPage > 1"
+            class="px-3 py-1 border rounded cursor-pointer"
+            @click="currentPage--"
+          >
+            Prev
+          </button>
+
+          <span class="px-3 py-1">
+            {{ currentPage }} / {{ totalPages }}
+          </span>
+
+          <button
+            v-if="currentPage < totalPages"
+            class="px-3 py-1 border rounded cursor-pointer"
+            @click="currentPage++"
+          >
+            Next
+          </button>
+
+        </div>
         <table class="w-full" style="border: 1px solid #a51919">
           <thead>
             <tr style="background-color: #a51919; font-weight: bold">
@@ -214,7 +248,7 @@ onMounted(async () => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="shiki in sortedShikigami" :key="shiki.id" class="shikigami-row">
+            <tr v-for="shiki in paginatedShikigami" :key="shiki.id" class="shikigami-row">
               <td class="px-2 py-1 text-center text-black w-[75px]">{{ shiki.id }}</td>
               <td class="px-2 py-1 text-center w-[160px]" style="border-left: 1px solid #e0e0e0">
                 <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`"
@@ -256,9 +290,32 @@ onMounted(async () => {
             </tr>
           </tbody>
         </table>
+        <div class="flex justify-center items-center gap-2 mt-4 text-black">
+          <button
+            v-if="currentPage > 1"
+            class="px-3 py-1 border rounded cursor-pointer"
+            @click="currentPage--"
+          >
+            Prev
+          </button>
+
+          <span class="px-3 py-1">
+            {{ currentPage }} / {{ totalPages }}
+          </span>
+
+          <button
+            v-if="currentPage < totalPages"
+            class="px-3 py-1 border rounded cursor-pointer"
+            @click="currentPage++"
+          >
+            Next
+          </button>
+
+        </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <style scoped>
