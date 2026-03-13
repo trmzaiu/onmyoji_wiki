@@ -868,11 +868,12 @@ function parseSubstats(text) {
   return text
     .replace(/>>/g,' >> ')
     .replace(/>/g,' > ')
+    .replace(/\//g,' / ')
     .trim()
     .split(/\s+/)
     .map(token => {
 
-      if(token === '>' || token === '>>'){
+      if(token === '>' || token === '>>' || token === '/'){
         return { type:'arrow', value: token }
       }
 
