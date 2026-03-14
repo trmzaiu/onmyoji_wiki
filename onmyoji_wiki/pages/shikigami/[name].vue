@@ -1293,7 +1293,7 @@ watch(
 );
 
 watch(activeTab, async (newTab) => {
-  if (newTab === "gallery" && illustrations.value.length === 0) {
+  if (newTab === "Gallery" && illustrations.value.length === 0) {
     await fetchIllustrations(shikigami.value?.id);
   }
 });
