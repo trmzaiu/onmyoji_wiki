@@ -1261,7 +1261,6 @@ onMounted(async () => {
     fetchAllOnmyoji(),
     fetchConditions(),
     loadTags(),
-    fetchIllustrations(shikigami.value?.id),
   ]);
   
   subscribeRealtime();
