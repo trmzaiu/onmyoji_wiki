@@ -12,7 +12,7 @@ const listRef = ref(null);
 
 // ===== SORTING =====
 const sort = ref({ key: "id", asc: true });
-const rarityOrder = { SP: 5, SSR: 4, SR: 3, R: 2, N: 1 };
+const rarityOrder = { UR: 6, SP: 5, SSR: 4, SR: 3, R: 2, N: 1 };
 
 const sortedShikigami = computed(() => {
   return [...shikigamiList.value].sort((a, b) => {
@@ -48,7 +48,7 @@ function sortBy(key) {
 }
 
 const currentPage = ref(1)
-const perPage = 100
+const perPage = 50
 
 const totalPages = computed(() =>
   Math.ceil(sortedShikigami.value.length / perPage)

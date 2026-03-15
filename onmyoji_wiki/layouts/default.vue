@@ -118,14 +118,27 @@
       </div>
     </div>
 
-    <button
-      v-show="showBackToTop"
-      @click="scrollToTop"
-      class="back-to-top"
-      title="Back to Top"
-    >
-      ↑
-    </button>
+    <div>
+      <!-- Lên đầu -->
+      <button
+        v-show="showBackToTop"
+        @click="scrollToTop"
+        class="back-to-top"
+        title="Back to Top"
+      >
+        ↑
+      </button>
+
+      <!-- Xuống cuối -->
+      <button
+        v-show="showBackToTop"
+        @click="scrollToBottom"
+        class="back-to-bottom"
+        title="Scroll to Bottom"
+      >
+        ↓
+      </button>
+    </div>
 
     <main>
       <div class="main-container"><slot /></div>
@@ -198,6 +211,7 @@ export default {
       isDropdownOpen: false,
       showStickyNav: false,
       showBackToTop: false,
+      showBackToBottom: false,
     };
   },
   mounted() {
@@ -213,6 +227,9 @@ export default {
     },
     scrollToTop() {
       window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    scrollToBottom() {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     },
 
     openDropdown() {
@@ -474,8 +491,8 @@ export default {
 
 .back-to-top {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: 80px;
+  right: 20px;
   background: #891727;
   color: #fff;
   border: none;
@@ -490,6 +507,27 @@ export default {
 }
 
 .back-to-top:hover {
+  background: #d01f1f;
+}
+
+.back-to-bottom {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #891727;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  z-index: 3000;
+}
+
+.back-to-bottom:hover {
   background: #d01f1f;
 }
 
