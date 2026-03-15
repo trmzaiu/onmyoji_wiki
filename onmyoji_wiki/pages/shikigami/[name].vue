@@ -1204,7 +1204,6 @@ const saveSkill = async () => {
   if (editingSkillIndex.value === -1) return;
 
   updateTags();
-  updateNotes();
 
   shikigami.value.skills[editingSkillIndex.value] = {
     ...editingSkill.value,
@@ -1234,14 +1233,6 @@ const saveSkill = async () => {
 
 function updateTags() {
   editingSkill.tags = tagsInput.value
-    .split(",")
-    .map((x) => x.trim())
-    .filter((x) => x !== "" && !isNaN(x))
-    .map(Number);
-}
-
-function updateNotes() {
-  editingSkill.notes = notesInput.value
     .split(",")
     .map((x) => x.trim())
     .filter((x) => x !== "" && !isNaN(x))
@@ -2988,19 +2979,11 @@ const addCKeywordListeners = () => {
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4">
               <div>
                 <h3 class="text-md font-bold mt-5 text-black">Skill Tags</h3>
                 <div class="gap-4">
                   <input v-model="tagsInput" @input="updateTags"
-                    class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1" />
-                </div>
-              </div>
-
-              <div>
-                <h3 class="text-md font-bold mt-5 text-black">Skill Notes</h3>
-                <div class="gap-4">
-                  <input v-model="notesInput" @input="updateNotes"
                     class="w-full border border-[#a3a3a3] rounded text-[#aaa] px-2 py-1" />
                 </div>
               </div>
