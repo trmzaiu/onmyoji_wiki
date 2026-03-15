@@ -1206,25 +1206,18 @@ const saveSkill = async () => {
   updateTags();
 
   shikigami.value.skills[editingSkillIndex.value] = {
-    ...editingSkill.value,
-    levels: {
-      en: Array.isArray(editingSkill.value.levels.en)
-        ? editingSkill.value.levels.en.map((l) => ({ ...l }))
-        : editingSkill.value.levels.en, 
-      vn: Array.isArray(editingSkill.value.levels.vn)
-        ? editingSkill.value.levels.vn.map((l) => ({ ...l }))
-        : editingSkill.value.levels.vn,
-    },
-    tags: editingSkill.value.tags ? [...editingSkill.value.tags] : [],
-    notes: editingSkill.value.notes ? [...editingSkill.value.notes] : [],
+    ...editingSkill.value
   };
 
-  const { data, error } = await supabase
+  console.log("Saving:", shikigami.value.skills);
+
+  const { error } = await supabase
     .from("Shikigami")
     .update({ skills: shikigami.value.skills })
     .eq("id", shikigami.value.id);
 
   if (error) {
+    console.error(error);
     alert("Update failed!");
   } else {
     closeEditModal();
@@ -1232,7 +1225,7 @@ const saveSkill = async () => {
 };
 
 function updateTags() {
-  editingSkill.tags = tagsInput.value
+  editingSkill.value.tags = tagsInput.value
     .split(",")
     .map((x) => x.trim())
     .filter((x) => x !== "" && !isNaN(x))
