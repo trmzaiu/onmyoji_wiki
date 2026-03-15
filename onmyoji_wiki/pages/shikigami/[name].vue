@@ -2889,7 +2889,7 @@ const addCKeywordListeners = () => {
         <h2 class="session-title mt-5">
           {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mt-4">
+        <div class="grid grid-cols-2 gap-6 mt-4">
           <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden shadow-md relative aspect-video">
             <img :src="getImgUrl(img.name)" :alt="img.name" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" :title="img.name" @click="openModal(getImgUrl(img.name))"/>
             <div 
