@@ -1275,12 +1275,6 @@ watch(
   () => addCKeywordListeners()
 );
 
-watch(activeTab, async (newTab) => {
-  if (newTab === "Gallery") {
-    await fetchIllustrations(shikigami.value?.id);
-  }
-});
-
 const addCKeywordListeners = () => {
   nextTick(() => {
     document.querySelectorAll(".skill-keyword").forEach((el) => {
