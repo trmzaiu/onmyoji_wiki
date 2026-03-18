@@ -503,15 +503,22 @@ const processTextWithTooltips = (text) => {
   // 5) Step A: Preprocess effect keyword overrides: <b|a>id</b|a><n>count</n>
   // =========================================================
   processed.value = processed.value.replace(
-    /<(b|a|g|h|f)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g,
+    /<(b|a|g|h|f)>(\d+)<\/\1>(?:<n>([\s\S]*?)<\/n>)?/g,
     (match, tag, id, nValue) => {
       const note = effectById.get(String(id));
       if (!note) return match;
 
       const textEN = note.name?.en || "";
-      const textVN = (note.name?.vn || "").replace("{count}", nValue || "").trim();
 
-      effectKeywordOverrides.set(String(id), isEnglish.value ? textEN : textVN);
+      const textVN = (note.name?.vn || "")
+        .replace(/\{count\}/g, nValue ?? "")
+        .trim();
+
+      effectKeywordOverrides.set(
+        String(id),
+        isEnglish.value ? textEN : textVN
+      );
+
       return `<${tag}>${id}</${tag}>`;
     }
   );
