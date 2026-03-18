@@ -910,37 +910,37 @@ function parseSubstats(text) {
 }
 
 const roleMap = {
-  DPS: "bg-red-50 text-red-600 border-red-200",
-  "Weak DPS": "bg-red-50 text-red-400 border-red-200",
+  DPS: "bg-red-500",
+  "Weak DPS": "bg-red-400",
 
-  Counter: "bg-orange-50 text-orange-600 border-orange-200",
-  Dispel: "bg-yellow-50 text-yellow-600 border-yellow-200",
+  Counter: "bg-orange-500",
+  Dispel: "bg-yellow-500 text-black",
 
-  Puller: "bg-blue-50 text-blue-600 border-blue-200",
-  "Self Pull": "bg-blue-50 text-blue-400 border-blue-200",
-  Pusher: "bg-indigo-50 text-indigo-600 border-indigo-200",
+  Puller: "bg-blue-500",
+  "Self Pull": "bg-blue-400",
+  Pusher: "bg-indigo-500",
 
-  CC: "bg-purple-50 text-purple-600 border-purple-200",
+  CC: "bg-purple-500",
 
-  Healer: "bg-emerald-50 text-emerald-600 border-emerald-200",
-  Revive: "bg-green-50 text-green-600 border-green-200",
+  Healer: "bg-emerald-500",
+  Revive: "bg-green-500",
 
-  Shield: "bg-cyan-50 text-cyan-600 border-cyan-200",
+  Shield: "bg-cyan-500",
 
-  "Res Buffer": "bg-lime-50 text-lime-600 border-lime-200",
+  "Res Buffer": "bg-lime-500 text-black",
 
-  Orbs: "bg-pink-50 text-pink-600 border-pink-200",
+  Orbs: "bg-pink-500",
 
-  Support: "bg-gray-100 text-gray-700 border-gray-300",
-  "Special Support": "bg-gray-200 text-gray-800 border-gray-400",
+  Support: "bg-gray-500",
+  "Special Support": "bg-gray-700",
 
-  Utility: "bg-slate-100 text-slate-600 border-slate-300",
+  Utility: "bg-slate-500",
 
-  Hybrid: "bg-fuchsia-50 text-fuchsia-600 border-fuchsia-200",
+  Hybrid: "bg-fuchsia-500",
 
-  Unique: "bg-amber-50 text-amber-600 border-amber-200",
+  Unique: "bg-amber-500 text-black",
 
-  Meme: "bg-black text-white border-black",
+  Meme: "bg-black text-white",
 };
 
 const getRoleClass = (role) => {
@@ -2636,7 +2636,7 @@ const addCKeywordListeners = () => {
                 <span
                   v-for="role in parseRoles(build.role)"
                   :key="role"
-                  class="px-2 py-1 text-xs rounded-md border font-medium"
+                  class="px-3 py-[2px] text-xs rounded-full font-semibold text-white tracking-wide shadow-sm"
                   :class="getRoleClass(role)"
                 >
                   {{ role }}
