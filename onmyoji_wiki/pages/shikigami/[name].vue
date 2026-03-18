@@ -1204,22 +1204,36 @@ const saveSkill = async () => {
   if (editingSkillIndex.value === -1) return;
 
   updateTags();
+  updateNotes();
 
-  shikigami.value.skills[editingSkillIndex.value] = {
-    ...editingSkill.value
+  const updatedSkill = {
+    ...editingSkill.value,
+    levels: {
+      en: Array.isArray(editingSkill.value.levels.en)
+        ? editingSkill.value.levels.en.map(l => ({ ...l }))
+        : editingSkill.value.levels.en,
+      vn: Array.isArray(editingSkill.value.levels.vn)
+        ? editingSkill.value.levels.vn.map(l => ({ ...l }))
+        : editingSkill.value.levels.vn,
+    },
+    tags: [...(editingSkill.value.tags || [])],
+    notes: [...(editingSkill.value.notes || [])],
   };
 
-  console.log("Saving:", shikigami.value.skills);
+  shikigami.value.skills.splice(editingSkillIndex.value, 1, updatedSkill);
+
+  const payload = JSON.parse(JSON.stringify(shikigami.value.skills));
 
   const { error } = await supabase
     .from("Shikigami")
-    .update({ skills: shikigami.value.skills })
+    .update({ skills: payload })
     .eq("id", shikigami.value.id);
 
   if (error) {
     console.error(error);
-    alert("Update failed!");
+    alert(error.message);
   } else {
+    alert("Saved!");
     closeEditModal();
   }
 };
