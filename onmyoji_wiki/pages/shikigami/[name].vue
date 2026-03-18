@@ -909,6 +909,44 @@ function parseSubstats(text) {
 
 }
 
+const roleMap = {
+  DPS: "bg-red-50 text-red-600 border-red-200",
+  "Weak DPS": "bg-red-50 text-red-400 border-red-200",
+
+  Counter: "bg-orange-50 text-orange-600 border-orange-200",
+  Dispel: "bg-yellow-50 text-yellow-600 border-yellow-200",
+
+  Puller: "bg-blue-50 text-blue-600 border-blue-200",
+  "Self Pull": "bg-blue-50 text-blue-400 border-blue-200",
+  Pusher: "bg-indigo-50 text-indigo-600 border-indigo-200",
+
+  CC: "bg-purple-50 text-purple-600 border-purple-200",
+
+  Healer: "bg-emerald-50 text-emerald-600 border-emerald-200",
+  Revive: "bg-green-50 text-green-600 border-green-200",
+
+  Shield: "bg-cyan-50 text-cyan-600 border-cyan-200",
+
+  "Res Buffer": "bg-lime-50 text-lime-600 border-lime-200",
+
+  Orbs: "bg-pink-50 text-pink-600 border-pink-200",
+
+  Support: "bg-gray-100 text-gray-700 border-gray-300",
+  "Special Support": "bg-gray-200 text-gray-800 border-gray-400",
+
+  Utility: "bg-slate-100 text-slate-600 border-slate-300",
+
+  Hybrid: "bg-fuchsia-50 text-fuchsia-600 border-fuchsia-200",
+
+  Unique: "bg-amber-50 text-amber-600 border-amber-200",
+
+  Meme: "bg-black text-white border-black",
+};
+
+const getRoleClass = (role) => {
+  return roleMap[role] || "bg-gray-50 text-gray-600 border-gray-200";
+};
+
 const parseRoles = (roleStr) => {
   if (!roleStr) return [];
   return roleStr.split(/[/|]/).map(r => r.trim());
@@ -2599,7 +2637,7 @@ const addCKeywordListeners = () => {
                   v-for="role in parseRoles(build.role)"
                   :key="role"
                   class="px-2 py-1 text-xs rounded-md border font-medium"
-                  
+                  :class="getRoleClass(role)"
                 >
                   {{ role }}
                 </span>
