@@ -909,6 +909,11 @@ function parseSubstats(text) {
 
 }
 
+const parseRoles = (roleStr) => {
+  if (!roleStr) return [];
+  return roleStr.split(/[/|]/).map(r => r.trim());
+};
+
 async function fetchAllOnmyoji() {
   const { data, error } = await supabase
     .from("Onmyoji")
@@ -2582,10 +2587,25 @@ const addCKeywordListeners = () => {
             class="border border-[#a51919] rounded-xl p-5 bg-white shadow-sm"
           >
 
-            <!-- Build title -->
-            <h3 class="text-lg font-semibold mb-3 text-[#a51919]">
-              Build {{ build.no }}
-            </h3>
+            <div class="flex items-center justify-between mb-3">
+
+              <h3 class="text-lg font-semibold text-[#a51919]">
+                Build {{ build.no }}
+              </h3>
+
+              <!-- ROLE BADGES -->
+              <div class="flex gap-2">
+                <span
+                  v-for="role in parseRoles(build.role)"
+                  :key="role"
+                  class="px-2 py-1 text-xs rounded-md border font-medium"
+                  
+                >
+                  {{ role }}
+                </span>
+              </div>
+
+            </div>
 
             <!-- 2 / 4 / 6 stats -->
             <div class="mb-4">
