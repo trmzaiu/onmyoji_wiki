@@ -1247,7 +1247,6 @@ const saveSkill = async () => {
   if (editingSkillIndex.value === -1) return;
 
   updateTags();
-  updateNotes();
 
   const updatedSkill = {
     ...editingSkill.value,
