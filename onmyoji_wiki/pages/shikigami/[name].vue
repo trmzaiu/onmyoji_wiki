@@ -503,7 +503,7 @@ const processTextWithTooltips = (text) => {
   // 5) Step A: Preprocess effect keyword overrides: <b|a>id</b|a><n>count</n>
   // =========================================================
   processed.value = processed.value.replace(
-    /<(b|a|g)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g,
+    /<(b|a|g|h|f)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g,
     (match, tag, id, nValue) => {
       const note = effectById.get(String(id));
       if (!note) return match;
