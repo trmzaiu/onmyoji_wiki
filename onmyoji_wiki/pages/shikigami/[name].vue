@@ -455,7 +455,7 @@ const processTextWithTooltips = (text) => {
     let keywordForDisplay;
     let keywordForTooltip;
 
-    if (type === "b"||type === "g") {
+    if (type === "b" || type === "g") {
       const override = effectKeywordOverrides.get(String(note.id));
       keywordForDisplay = override ?? (isEnglish.value ? note.name?.en : (note.name?.vn || note.name?.en));
       keywordForTooltip = isEnglish.value
