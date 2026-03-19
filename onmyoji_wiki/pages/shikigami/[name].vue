@@ -455,7 +455,7 @@ const processTextWithTooltips = (text) => {
     let keywordForDisplay;
     let keywordForTooltip;
 
-    if (type === "b" || type === "g") {
+    if (type === "b") {
       const override = effectKeywordOverrides.get(String(note.id));
       keywordForDisplay = override ?? (isEnglish.value ? note.name?.en : (note.name?.vn || note.name?.en));
       keywordForTooltip = isEnglish.value
@@ -500,10 +500,10 @@ const processTextWithTooltips = (text) => {
   };
 
   // =========================================================
-  // 5) Step A: Preprocess effect keyword overrides: <b|a>id</b|a><n>count</n>
+  // 5) Step A: Preprocess effect keyword overrides: <b|h>id</b|h><n>count</n>
   // =========================================================
   processed.value = processed.value.replace(
-    /<(b|a|g|h|f)>(\d+)<\/\1>(?:<n>([\s\S]*?)<\/n>)?/g,
+    /<(b|a|h)>(\d+)<\/\1>(?:<n>([\s\S]*?)<\/n>)?/g,
     (match, tag, id, nValue) => {
       const note = effectById.get(String(id));
       if (!note) return match;
