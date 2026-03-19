@@ -1214,7 +1214,9 @@ onMounted(() => {
 
   if (hash.startsWith('Skill')) {
     activeTab.value = 'Main'
-    activeSkillIndex.value = parseInt(hash.split('Skill')[1]) || 0
+
+    const num = parseInt(hash.split('Skill')[1])
+    activeSkillIndex.value = isNaN(num) ? 0 : num - 1
   }
 
   if (hash === 'Evo' || hash === 'Link') {
@@ -1358,7 +1360,7 @@ const addCKeywordListeners = () => {
         }
 
         if (index !== -1) {
-          activeSkillIndex.value = index-1;
+          activeSkillIndex.value = index;
         }
       };
     });
