@@ -1358,7 +1358,7 @@ const addCKeywordListeners = () => {
         }
 
         if (index !== -1) {
-          activeSkillIndex.value = index;
+          activeSkillIndex.value = index-1;
         }
       };
     });
