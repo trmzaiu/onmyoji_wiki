@@ -319,7 +319,6 @@ const processTextWithTooltips = (text) => {
 
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
   const effectMap = new Map();                // name (lowercase) -> effect note
-  const effectKeywordOverrides = new Map();   // effectId -> display keyword (after <n> replace)
 
   const colorMap = {
     red: "#a63f37",
@@ -452,19 +451,27 @@ const processTextWithTooltips = (text) => {
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
     const color = note.color ? (colorMap[note.color] || "#a51919") : "#a51919";
 
-    let keywordForDisplay;
-    let keywordForTooltip;
+    const encodedDisplay = match.match(/data-display="(.*?)"/)?.[1];
+    const encodedTooltip = match.match(/data-tooltip="(.*?)"/)?.[1];
+
+    const overrideDisplay = encodedDisplay ? decodeURIComponent(encodedDisplay) : null;
+    const overrideTooltip = encodedTooltip ? decodeURIComponent(encodedTooltip) : null;
 
     if (type === "b" || type === "h") {
-      const override = effectKeywordOverrides.get(String(note.id));
-      keywordForDisplay = override ?? (isEnglish.value ? note.name?.en : (note.name?.vn || note.name?.en));
-      keywordForTooltip = isEnglish.value
-        ? note.name?.en
-        : (note.name?.vn?.replace("{count}", "").trim() || note.name?.en);
+      keywordForDisplay = overrideDisplay ?? (
+        isEnglish.value ? note.name?.en : (note.name?.vn || note.name?.en)
+      );
+
+      keywordForTooltip = overrideTooltip ?? (
+        isEnglish.value
+          ? note.name?.en
+          : (note.name?.vn?.replace("{count}", "").trim() || note.name?.en)
+      );
     } else {
       keywordForDisplay = isEnglish.value
         ? note.name?.en
         : (note.name?.vn?.replace("{count}", "").trim() || note.name?.en);
+
       keywordForTooltip = keywordForDisplay;
     }
 
@@ -514,10 +521,16 @@ const processTextWithTooltips = (text) => {
         .replace(/\{count\}/g, nValue ?? "")
         .trim();
 
-      effectKeywordOverrides.set(
-        String(id),
-        isEnglish.value ? textEN : textVN
-      );
+      const display = isEnglish.value ? textEN : textVN;
+
+      const tooltip = isEnglish.value
+        ? textEN
+        : (note.name?.vn?.replace(/\{count\}/g, "").trim() || textEN);
+
+      return `<${tag} 
+        data-display="${encodeURIComponent(display)}"
+        data-tooltip="${encodeURIComponent(tooltip)}"
+      >${id}</${tag}>`;
 
       return `<${tag}>${id}</${tag}>`;
     }
