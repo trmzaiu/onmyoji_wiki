@@ -1039,13 +1039,13 @@ let shikigamiChannel = null;
 let effectChannel = null;
 let illustrationChannel = null;
 
-setInterval(async () => {
+// setInterval(async () => {
 
-  if (document.visibilityState === "visible") {
-    await fetchShikigami();
-  }
+//   if (document.visibilityState === "visible") {
+//     await fetchShikigami();
+//   }
 
-}, 5000);
+// }, 5000);
 
 /* ---------------------- SUBSCRIBE ---------------------- */
 
@@ -2134,7 +2134,7 @@ const addCKeywordListeners = () => {
                       </div>
 
                       <!-- chữ đè lên -->
-                      <span class="relative z-10 text-[10px] text-white">
+                      <span class="relative z-10 text-[12px] text-white">
                         {{ tagMap?.[tagId]?.name }}
                       </span>
                     </div>
@@ -2304,7 +2304,7 @@ const addCKeywordListeners = () => {
                       <div class="absolute inset-0 tint-base" :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')">
                       </div>
 
-                      <span class="relative z-10 text-[10px] text-white">
+                      <span class="relative z-10 text-[12px] text-white">
                         {{ tagMap?.[tagId]?.name }}
                       </span>
                     </div>
