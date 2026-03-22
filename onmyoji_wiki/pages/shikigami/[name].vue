@@ -125,9 +125,9 @@ const getHPImage = (hp) => {
   return `/assets/stats/${rank}.webp`;
 };
 
-// SS: 15392 -> 15540, S: 12532 -> 15152, A: 11393 -> 12418, B: 10254 -> 11279, C: 9684 -> 10140, D: 0 -> 0
+// SS: 15380 -> 15540, S: 12532 -> 15152, A: 11393 -> 12418, B: 10254 -> 11279, C: 9115 -> 10140, D: 0 -> 0
 const getHPEvoRank = (hp) => {
-  if (hp >= 15392 && hp <= 15540) return "SS";
+  if (hp >= 15380 && hp <= 15540) return "SS";
   else if (hp >= 12532 && hp <= 15152) return "S";
   else if (hp >= 11393 && hp <= 12418) return "A";
   else if (hp >= 10254 && hp <= 11279) return "B";
@@ -1039,13 +1039,13 @@ let shikigamiChannel = null;
 let effectChannel = null;
 let illustrationChannel = null;
 
-// setInterval(async () => {
+setInterval(async () => {
 
-//   if (document.visibilityState === "visible") {
-//     await fetchShikigami();
-//   }
+  if (document.visibilityState === "visible") {
+    await fetchShikigami();
+  }
 
-// }, 5000);
+}, 5000);
 
 /* ---------------------- SUBSCRIBE ---------------------- */
 
