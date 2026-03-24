@@ -919,7 +919,7 @@ watch(activeMainTab, async (newTab) => {
 
                 <td>
                   <div class="flex justify-start">
-                    +{{ onmyoji.stats.Crit[1] - onmyoji.stats.Crit[0] }}
+                    +{{ onmyoji.stats.Crit[1] - onmyoji.stats.Crit[0] }}%
                   </div>
                 </td>
                 <td style="border-right: 1px solid #a51919"></td>
