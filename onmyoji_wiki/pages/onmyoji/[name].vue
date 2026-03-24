@@ -17,8 +17,8 @@ const tooltipData = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 const showTooltip = ref(false);
 
+const activeMainTab = ref(route.hash.replace("#", "") || "Main");
 const activeTab = ref(route.params.name.replace(/_/g, " ").toLowerCase());
-const activeMainTab = ref("main");
 const activeSkinTab = ref(route.params.name.replace(/_/g, " ").toLowerCase());
 
 const formattedName = route.params.name.replace(/_/g, " ");
@@ -38,8 +38,7 @@ const closeModal = () => {
 
 const { tagMap, loadTags } = useTags();
 
-const getImgUrl = (name) =>
-  `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
+const getImgUrl = (name) => `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
 
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
@@ -50,8 +49,8 @@ const processTextWithTooltips = (text) => {
   const processed = { value: text };
 
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
-  const effectMap = new Map();                // name (lowercase) -> effect note
-  const effectKeywordOverrides = new Map();   // effectId -> display keyword (after <n> replace)
+  const effectMap = new Map(); // name (lowercase) -> effect note
+  const effectKeywordOverrides = new Map(); // effectId -> display keyword (after <n> replace)
 
   const colorMap = {
     red: "#a63f37",
@@ -90,7 +89,9 @@ const processTextWithTooltips = (text) => {
     const shiki = shikigamiList.value.find((s) => String(s.id) === String(id));
     if (!shiki) return match;
 
-    const name = isEnglish.value ? (shiki.name?.en || "") : (shiki.name?.vn || shiki.name?.en || "");
+    const name = isEnglish.value
+      ? shiki.name?.en || ""
+      : shiki.name?.vn || shiki.name?.en || "";
     return `<span class="entity shikigami">${name}</span>`;
   };
 
@@ -99,7 +100,9 @@ const processTextWithTooltips = (text) => {
     const onm = onmyojiList.value.find((o) => String(o.id) === String(id));
     if (!onm) return match;
 
-    const name = isEnglish.value ? (onm.name?.en || "") : (onm.name?.vn || onm.name?.en || "");
+    const name = isEnglish.value
+      ? onm.name?.en || ""
+      : onm.name?.vn || onm.name?.en || "";
     return `<span class="entity onmyoji">${name}</span>`;
   };
 
@@ -114,8 +117,11 @@ const processTextWithTooltips = (text) => {
     const skill = onmyoji.value.skills[index - 1];
     if (!skill) return match;
 
-    const name = isEnglish.value ? (skill.name?.en || "") : (skill.name?.vn || skill.name?.en || "");
-    if (type === "c") return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
+    const name = isEnglish.value
+      ? skill.name?.en || ""
+      : skill.name?.vn || skill.name?.en || "";
+    if (type === "c")
+      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
     if (type === "m") return `<span class="skill-keyword text-[#c07b2a]">${name}</span>`;
     if (type === "o") return `<span>${name}</span>`;
     return match;
@@ -126,7 +132,8 @@ const processTextWithTooltips = (text) => {
     const [shikiIdStr, skillIndexStr] = String(content).split("-");
     const shikiId = parseInt(shikiIdStr, 10);
     const skillIndex = parseInt(skillIndexStr, 10);
-    if (isNaN(shikiId) || isNaN(skillIndex) || !shikigamiList?.value?.length) return match;
+    if (isNaN(shikiId) || isNaN(skillIndex) || !shikigamiList?.value?.length)
+      return match;
 
     const shiki = shikigamiList.value.find((s) => String(s.id) === String(shikiId));
     if (!shiki?.skills?.length) return match;
@@ -134,9 +141,12 @@ const processTextWithTooltips = (text) => {
     const skill = shiki.skills[skillIndex - 1];
     if (!skill) return match;
 
-    const name = isEnglish.value ? (skill.name?.en || "") : (skill.name?.vn || skill.name?.en || "");
+    const name = isEnglish.value
+      ? skill.name?.en || ""
+      : skill.name?.vn || skill.name?.en || "";
 
-    if (type === "d") return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
+    if (type === "d")
+      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
     if (type === "p") return `<span class="skill-keyword text-[#c07b2a]">${name}</span>`;
     return match;
   };
@@ -149,9 +159,10 @@ const processTextWithTooltips = (text) => {
     const index = parseInt(content, 10);
     if (isNaN(index) || !onmyoji.value?.skins?.length) return match;
 
-    const skin = onmyoji.value.rarity !== "SP"
-      ? onmyoji.value.skins[index + 1]
-      : onmyoji.value.skins[index];
+    const skin =
+      onmyoji.value.rarity !== "SP"
+        ? onmyoji.value.skins[index + 1]
+        : onmyoji.value.skins[index];
 
     if (!skin) return match;
 
@@ -160,10 +171,16 @@ const processTextWithTooltips = (text) => {
 
     if (isEnglish.value) {
       if (skin.name?.en) name = skin.name.en;
-      else if (skin.name?.cn) { name = skin.name.cn; extraClass = "lang-zh"; }
+      else if (skin.name?.cn) {
+        name = skin.name.cn;
+        extraClass = "lang-zh";
+      }
     } else {
       name = skin.name?.vn || "";
-      if (!name && skin.name?.cn) { name = skin.name.cn; extraClass = "lang-zh"; }
+      if (!name && skin.name?.cn) {
+        name = skin.name.cn;
+        extraClass = "lang-zh";
+      }
     }
 
     return `<span class="${extraClass}">${name}</span>`;
@@ -182,7 +199,7 @@ const processTextWithTooltips = (text) => {
     if (!note) return match;
 
     const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
-    const color = note.color ? (colorMap[note.color] || "#a51919") : "#a51919";
+    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
 
     let keywordForDisplay;
     let keywordForTooltip;
@@ -194,14 +211,15 @@ const processTextWithTooltips = (text) => {
       if (queue && queue.length) {
         override = queue.shift(); // 👈 lấy đúng thứ tự
       }
-      keywordForDisplay = override ?? (isEnglish.value ? note.name?.en : (note.name?.vn || note.name?.en));
+      keywordForDisplay =
+        override ?? (isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en);
       keywordForTooltip = isEnglish.value
         ? note.name?.en
-        : (note.name?.vn?.replace("{count}", "").trim() || note.name?.en);
+        : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
     } else {
       keywordForDisplay = isEnglish.value
         ? note.name?.en
-        : (note.name?.vn?.replace("{count}", "").trim() || note.name?.en);
+        : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
       keywordForTooltip = keywordForDisplay;
     }
 
@@ -246,9 +264,7 @@ const processTextWithTooltips = (text) => {
       if (!note) return match;
 
       const textEN = note.name?.en || "";
-      const textVN = (note.name?.vn || "")
-        .replace(/\{count\}/g, nValue ?? "")
-        .trim();
+      const textVN = (note.name?.vn || "").replace(/\{count\}/g, nValue ?? "").trim();
 
       const value = isEnglish.value ? textEN : textVN;
 
@@ -320,16 +336,22 @@ const processTextWithTooltips = (text) => {
   return processed.value;
 };
 
+function changeMainTab(tab) {
+  activeMainTab.value = tab;
+
+  history.replaceState(null, "", `${window.location.pathname}#${tab}`);
+}
+
 const imgs = computed(() => tooltipData.value?.images || []);
 
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
-  const effectById = new Map(effects.value.map(e => [e.id, e]));
+  const effectById = new Map(effects.value.map((e) => [e.id, e]));
 
   const getText = (descObj) => {
     if (typeof descObj === "string") return descObj;
-    return isEnglish.value ? (descObj?.en || "") : (descObj?.vn || "");
+    return isEnglish.value ? descObj?.en || "" : descObj?.vn || "";
   };
 
   const findNotes = (descObj, exclude = new Set()) => {
@@ -360,9 +382,9 @@ const matchedSubNotes = computed(() => {
   const rootId = tooltipData.value.id; // ✅ phải có
   const subs = findNotes(tooltipData.value.description, new Set([rootId]));
 
-  const subIds = new Set(subs.map(s => s.id));
+  const subIds = new Set(subs.map((s) => s.id));
 
-  return subs.map(sub => {
+  return subs.map((sub) => {
     const exclude = new Set([rootId, ...subIds, sub.id]); // chặn root + các sub + self
     const subNotes = findNotes(sub.description, exclude);
     return { ...sub, subNotes };
@@ -379,7 +401,7 @@ const handleMouseEnter = (e) => {
       ? JSON.parse(target.getAttribute("data-img"))
       : [],
     color: target.getAttribute("data-color"),
-    cn: target.getAttribute("data-name-cn"), 
+    cn: target.getAttribute("data-name-cn"),
   };
   updateTooltipPosition(e);
   showTooltip.value = true;
@@ -463,14 +485,42 @@ async function fetchIllustrations(onmyojiId) {
 }
 
 onMounted(async () => {
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  const saved = localStorage.getItem("lang");
+  if (saved) {
+    isEnglish.value = saved === "en";
+  }
+
   document.title = `${formattedName}`;
   await fetchAllEffects();
   await fetchOnmyoji();
   await loadTags();
 });
 
+async function handleVisibilityChange() {
+  if (document.visibilityState === "visible") {
+    console.log("Tab active → reconnect realtime");
+
+    // refresh data
+    await fetchAllEffects();
+    await fetchIllustrations(onmyoji.value?.id);
+  }
+}
+
 watch(tooltipData, (val) => {
   console.log("tooltipData:", val);
+});
+
+watch(
+  () => route.hash,
+  (hash) => {
+    activeMainTab.value = hash.replace("#", "") || "Main";
+  }
+);
+
+watch(isEnglish, (val) => {
+  localStorage.setItem("lang", val ? "en" : "vn");
 });
 
 // Watch for language changes to update tooltips
@@ -481,7 +531,7 @@ watch(isEnglish, async () => {
 });
 
 watch(activeMainTab, async (newTab) => {
-  if (newTab === "gallery" && illustrations.value.length === 0) {
+  if (newTab === "Gallery" && illustrations.value.length === 0) {
     await fetchIllustrations(onmyoji.value?.id);
   }
 });
@@ -506,12 +556,15 @@ watch(activeMainTab, async (newTab) => {
       <!-- Image + Name -->
       <div class="flex gap-6">
         <!-- Image -->
-        <div
-          class="flex justify-center w-2/3 hover:scale-115 transition-transform duration-200"
-        >
-          <img :src="`/assets/onmyoji/images/${route.params.name}.webp`" :alt="onmyoji.name.en"
-            class="max-h-[500px] object-contain"
-          />
+        <div class="w-2/3 mx-auto">
+          <!-- Images -->
+          <div class="flex justify-center items-center">
+            <img
+              :src="`/assets/onmyoji/images/${route.params.name}.webp`"
+              :alt="onmyoji.name.en"
+              class="max-h-full max-w-full object-contain transition-opacity hover:scale-115 transition-transform duration-300"
+            />
+          </div>
         </div>
 
         <!-- Name -->
@@ -582,175 +635,360 @@ watch(activeMainTab, async (newTab) => {
         <button
           class="flex py-2 px-4 text-center"
           :class="
-            activeMainTab === 'main'
+            activeMainTab === 'Main'
               ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
               : 'text-[#a3a3a3] cursor-pointer'
           "
-          @click="activeMainTab = 'main'"
+          @click="changeMainTab('Main')"
         >
           {{ isEnglish ? "Main" : "Chính Điện" }}
         </button>
         <button
           class="flex py-2 px-4 text-center"
           :class="
-            activeMainTab === 'gallery'
+            activeMainTab === 'Gallery'
               ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
               : 'text-[#a3a3a3] cursor-pointer'
           "
-          @click="activeMainTab = 'gallery'"
+          @click="changeMainTab('Gallery')"
         >
           {{ isEnglish ? "Gallery" : "Hoạ Phòng" }}
+        </button>
+        <button
+          class="flex py-2 px-4 text-center"
+          :class="
+            activeMainTab === 'Dialogue'
+              ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
+              : 'text-[#a3a3a3] cursor-pointer'
+          "
+          @click="changeMainTab('Dialogue')"
+        >
+          {{ isEnglish ? "Dialogue" : "Lời Thoại" }}
         </button>
       </div>
 
       <div
         class="w-full"
-        v-show="activeMainTab === 'main'"
-        :class="activeMainTab === 'main' ? 'opacity-100' : 'opacity-0'"
+        v-show="activeMainTab === 'Main'"
+        :class="[
+          activeMainTab === 'Main' ? 'opacity-100' : 'opacity-0',
+          isEnglish ? 'lang-en' : 'lang-vi',
+        ]"
       >
         <!-- Stats -->
-        <h2
-          class="session-title"
-          :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-        >
+        <h2 class="session-title">
           {{ isEnglish ? "Stats" : "Chỉ số" }}
         </h2>
-        <div
-          style="
-            display: block;
-            border: 1px solid #a51919;
-            padding: 0 20px;
-            margin-top: 80px;
-          "
-        >
-          <table class="stats">
+        <div class="mt-2" style="display: block">
+          <table class="stats" style="padding: 0 20px; border-bottom: 1px solid #a51919">
             <tbody>
-              <tr class="image-icon" style="color: #a51919">
+              <tr class="" style="color: #a51919">
                 <th></th>
-                <th rowspan="9">&nbsp;</th>
-                <th>
-                  <figure class="icon-img" style="position: relative">
-                    <img
-                      :src="`/assets/onmyoji/icons/${ route.params.name }_Icon.webp`"
-                      :alt="onmyoji.name.en"
-                      style="object-fit: contain"
-                      width="90"
-                    />
-                    <div
-                      style="
-                        color: #a51919;
-                        font-weight: bold;
-                        position: absolute;
-                        top: -50px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        width: 100%;
-                      "
-                    >
-                      <br />
-                      Level 60
-                    </div>
-                  </figure>
+                <th></th>
+                <th colspan="2">
+                  <div class="font-bold">
+                    <br />
+                    Level 60
+                  </div>
                 </th>
-                <th rowspan="9">&nbsp;</th>
-                <th style="padding: 0; margin: 0">
-                  <figure class="icon-img" style="position: relative">
-                    <img
-                      :src="`/assets/onmyoji/icons/${ route.params.name }_Icon2.webp`"
-                      :alt="onmyoji.name.en"
-                      style="object-fit: contain"
-                      width="90"
-                    />
-                    <div
-                      style="
-                        color: #a51919;
-                        font-weight: bold;
-                        position: absolute;
-                        top: -50px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        width: 100%;
-                      "
-                    >
-                      With Level <br />
-                      40 Totem
-                    </div>
-                  </figure>
+                <th colspan="2">
+                  <div class="font-bold">
+                    With Level <br />
+                    40 Totem
+                  </div>
                 </th>
                 <th></th>
-                <th rowspan="9">&nbsp;</th>
+                <th></th>
               </tr>
+              <tr style="color: #a51919">
+                <th></th>
+                <th></th>
+
+                <!-- Icon thường -->
+                <th colspan="2" style="position: relative">
+                  <figure
+                    style="
+                      position: absolute;
+                      top: -5px;
+                      left: 50%;
+                      transform: translateX(-50%);
+                    "
+                  >
+                    <img
+                      :src="`/assets/onmyoji/icons/${route.params.name}_Icon.webp`"
+                      :alt="onmyoji.name.jp[1]"
+                      style="
+                        object-fit: contain;
+                        border: 1px solid #a51919;
+                        padding: 4px;
+                        background: #fff;
+                      "
+                      width="90"
+                      @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
+                    />
+                  </figure>
+                </th>
+
+                <!-- Icon evo -->
+                <th colspan="2" style="position: relative">
+                  <figure
+                    style="
+                      position: absolute;
+                      top: -5px;
+                      left: 50%;
+                      transform: translateX(-50%);
+                    "
+                  >
+                    <img
+                      :src="`/assets/onmyoji/icons/${route.params.name}_Icon2.webp`"
+                      :alt="onmyoji.name.jp[1]"
+                      style="
+                        object-fit: contain;
+                        border: 1px solid #a51919;
+                        padding: 4px;
+                        background: #fff;
+                      "
+                      width="90"
+                      @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
+                    />
+                  </figure>
+                </th>
+
+                <th></th>
+                <th></th>
+              </tr>
+
               <tr>
-                <th class="label-cell">
+                <th colspan="1">&nbsp;</th>
+              </tr>
+
+              <tr
+                style="
+                  color: #a51919;
+                  border-left: 1px solid #a51919;
+                  border-top: 1px solid #a51919;
+                  border-right: 1px solid #a51919;
+                "
+              >
+                <th colspan="1">&nbsp;</th>
+              </tr>
+
+              <!-- ATK -->
+              <tr style="color: #a51919; border-left: 1px solid #a51919">
+                <th></th>
+                <th class="label-cell p-2">
                   <img src="/assets/stats/ATK.webp" alt="ATK" />
                   ATK
                 </th>
-                <td class="centered-number">{{ onmyoji.stats.ATK[0] }}</td>
-                <td class="centered-number">{{ onmyoji.stats.ATK[1] }}</td>
-                <td>+{{ onmyoji.stats.ATK[1] - onmyoji.stats.ATK[0] }}</td>
+
+                <td></td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">
+                    {{ onmyoji.stats.ATK[0] }}
+                  </div>
+                </td>
+
+                <td></td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">
+                    {{ onmyoji.stats.ATK[1] }}
+                  </div>
+                </td>
+
+                <td>
+                  <div class="flex justify-start">
+                    +{{ onmyoji.stats.ATK[1] - onmyoji.stats.ATK[0] }}
+                  </div>
+                </td>
+                <td style="border-right: 1px solid #a51919"></td>
               </tr>
-              <tr>
+
+              <!-- HP -->
+              <tr style="color: #a51919; border-left: 1px solid #a51919">
+                <th></th>
                 <th class="label-cell">
                   <img src="/assets/stats/HP.webp" alt="HP" />
                   HP
                 </th>
-                <td class="centered-number">{{ onmyoji.stats.HP[0] }}</td>
-                <td class="centered-number">{{ onmyoji.stats.HP[1] }}</td>
-                <td>+{{ onmyoji.stats.HP[1] - onmyoji.stats.HP[0] }}</td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">
+                    {{ onmyoji.stats.HP[0] }}
+                  </div>
+                </td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">
+                    {{ onmyoji.stats.HP[1] }}
+                  </div>
+                </td>
+
+                <td>
+                  <div class="flex justify-start">
+                    +{{ onmyoji.stats.HP[1] - onmyoji.stats.HP[0] }}
+                  </div>
+                </td>
+                <td style="border-right: 1px solid #a51919"></td>
               </tr>
-              <tr>
+
+              <!-- DEF -->
+              <tr style="color: #a51919; border-left: 1px solid #a51919">
+                <th></th>
                 <th class="label-cell">
                   <img src="/assets/stats/DEF.webp" alt="DEF" />
                   DEF
                 </th>
-                <td class="centered-number">{{ onmyoji.stats.DEF[0] }}</td>
-                <td class="centered-number">{{ onmyoji.stats.DEF[1] }}</td>
-                <td>+{{ onmyoji.stats.DEF[1] - onmyoji.stats.DEF[0] }}</td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">
+                    {{ onmyoji.stats.DEF[0] }}
+                  </div>
+                </td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">
+                    {{ onmyoji.stats.DEF[1] }}
+                  </div>
+                </td>
+
+                <td>
+                  <div class="flex justify-start">
+                    +{{ onmyoji.stats.DEF[1] - onmyoji.stats.DEF[0] }}
+                  </div>
+                </td>
+                <td style="border-right: 1px solid #a51919"></td>
               </tr>
-              <tr>
+
+              <!-- SPD -->
+              <tr style="color: #a51919; border-left: 1px solid #a51919">
+                <th></th>
                 <th class="label-cell">
                   <img src="/assets/stats/SPD.webp" alt="SPD" />
                   SPD
                 </th>
-                <td class="centered-number">{{ onmyoji.stats.SPD[0] }}</td>
-                <td class="centered-number">{{ onmyoji.stats.SPD[1] }}</td>
-                <td>+{{ onmyoji.stats.SPD[1] - onmyoji.stats.SPD[0] }}</td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">
+                    {{ onmyoji.stats.SPD[0] }}
+                  </div>
+                </td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">
+                    {{ onmyoji.stats.SPD[1] }}
+                  </div>
+                </td>
+
+                <td>
+                  <div class="flex justify-start">
+                    +{{ onmyoji.stats.SPD[1] - onmyoji.stats.SPD[0] }}
+                  </div>
+                </td>
+                <td style="border-right: 1px solid #a51919"></td>
               </tr>
-              <tr>
+
+              <!-- Crit -->
+              <tr style="color: #a51919; border-left: 1px solid #a51919">
+                <th></th>
                 <th class="label-cell">
                   <img src="/assets/stats/CRIT.webp" alt="CRIT" />
                   Crit
                 </th>
-                <td class="centered-number">{{ onmyoji.stats.Crit[0] }}%</td>
-                <td class="centered-number">{{ onmyoji.stats.Crit[1] }}%</td>
-                <td>+{{ onmyoji.stats.Crit[1] - onmyoji.stats.Crit[0] }}%</td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">{{ onmyoji.stats.Crit[0] }}%</div>
+                </td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">{{ onmyoji.stats.Crit[1] }}%</div>
+                </td>
+
+                <td>
+                  <div class="flex justify-start">
+                    +{{ onmyoji.stats.Crit[1] - onmyoji.stats.Crit[0] }}
+                  </div>
+                </td>
+                <td style="border-right: 1px solid #a51919"></td>
               </tr>
-              <tr>
+
+              <!-- CDMG -->
+              <tr style="color: #a51919; border-left: 1px solid #a51919">
+                <th></th>
                 <th class="label-cell">
                   <img src="/assets/stats/CDMG.webp" alt="CDMG" />
                   Crit DMG
                 </th>
-                <td class="centered-number">150%</td>
-                <td class="centered-number">150%</td>
-                <td>+0%</td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">150%</div>
+                </td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">150%</div>
+                </td>
+
+                <td>
+                  <div class="flex justify-start">+0%</div>
+                </td>
+                <td style="border-right: 1px solid #a51919"></td>
               </tr>
-              <tr>
+
+              <!-- HIT -->
+              <tr style="color: #a51919; border-left: 1px solid #a51919">
+                <th></th>
                 <th class="label-cell">
                   <img src="/assets/stats/HIT.webp" alt="HIT" />
                   Effects HIT
                 </th>
-                <td class="centered-number">0%</td>
-                <td class="centered-number">0%</td>
-                <td>+0%</td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">0%</div>
+                </td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">0%</div>
+                </td>
+
+                <td>
+                  <div class="flex justify-start">+0%</div>
+                </td>
+                <td style="border-right: 1px solid #a51919"></td>
               </tr>
-              <tr>
-                <th class="label-cell">
+
+              <!-- RES -->
+              <tr style="color: #a51919; border-left: 1px solid #a51919">
+                <th></th>
+                <th class="label-cell" style="border-bottom: none">
                   <img src="/assets/stats/RES.webp" alt="RES" />
                   Effects RES
                 </th>
-                <td class="centered-number">0%</td>
-                <td class="centered-number">0%</td>
-                <td>+0%</td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">0%</div>
+                </td>
+
+                <td>&nbsp;</td>
+                <td class="centered-number w-[100px]">
+                  <div class="flex justify-start">0%</div>
+                </td>
+
+                <td>
+                  <div class="flex justify-start">+0%</div>
+                </td>
+                <td style="border-right: 1px solid #a51919"></td>
               </tr>
             </tbody>
           </table>
@@ -793,7 +1031,12 @@ watch(activeMainTab, async (newTab) => {
               "
               class="skill-icon"
             >
-              <img :src="`/assets/onmyoji/skills/${route.params.name}_Skill${index+1}.webp`" :alt="skill.name.en" />
+              <img
+                :src="`/assets/onmyoji/skills/${route.params.name}_Skill${
+                  index + 1
+                }.webp`"
+                :alt="skill.name.en"
+              />
             </span>
             <span
               style="
@@ -828,12 +1071,10 @@ watch(activeMainTab, async (newTab) => {
                 </span>
                 <span class="flex" style="margin-left: 40px">
                   <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                  <img
-                    src="/assets/Onibi.webp"
-                    alt="Onibi" />
+                  <img src="/assets/Onibi.webp" alt="Onibi" />
                   0
                 </span>
-                <span style="margin-left: 25px;">
+                <span style="margin-left: 25px">
                   <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
                   {{ skill.cooldown }}
                 </span>
@@ -917,9 +1158,11 @@ watch(activeMainTab, async (newTab) => {
       </div>
 
       <div
-        class="w-full"
-        v-show="activeMainTab === 'gallery'"
-        :class="activeMainTab === 'gallery' ? 'opacity-100' : 'opacity-0'"
+        v-show="activeMainTab === 'Gallery'"
+        :class="[
+          activeMainTab === 'Gallery' ? 'opacity-100' : 'opacity-0',
+          isEnglish ? 'lang-en' : 'lang-vi',
+        ]"
       >
         <!-- Skins -->
         <h2
@@ -971,9 +1214,19 @@ watch(activeMainTab, async (newTab) => {
             :title="skin.name.en || skin.name.cn"
           >
             <img
-              :src="(index === 0) ? `/assets/onmyoji/images/${route.params.name}.webp` : `/assets/onmyoji/skins/${route.params.name}_Skin${index}.webp`"
+              :src="
+                index === 0
+                  ? `/assets/onmyoji/images/${route.params.name}.webp`
+                  : `/assets/onmyoji/skins/${route.params.name}_Skin${index}.webp`
+              "
               :alt="skin.name.en || skin.name.cn"
-              @click="openModal((index === 0) ? `/assets/onmyoji/images/${route.params.name}.webp` : `/assets/onmyoji/skins/${route.params.name}_Skin${index}.webp`)"
+              @click="
+                openModal(
+                  index === 0
+                    ? `/assets/onmyoji/images/${route.params.name}.webp`
+                    : `/assets/onmyoji/skins/${route.params.name}_Skin${index}.webp`
+                )
+              "
               class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
             />
             <p class="mt-4 text-center font-medium text-black">
@@ -999,9 +1252,17 @@ watch(activeMainTab, async (newTab) => {
             :title="skin.name.en || skin.name.cn"
           >
             <img
-              :src="`/assets/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${index+1}.webp`"
+              :src="`/assets/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${
+                index + 1
+              }.webp`"
               :alt="skin.name.en || skin.name.cn"
-              @click="openModal(`/assets/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${index+1}.webp`)"
+              @click="
+                openModal(
+                  `/assets/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${
+                    index + 1
+                  }.webp`
+                )
+              "
               class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
             />
             <p
@@ -1014,31 +1275,24 @@ watch(activeMainTab, async (newTab) => {
         </div>
 
         <!-- Modal -->
-          <div
-            v-if="isModalOpen"
-            class="fixed inset-0 z-50 flex items-center justify-center"
-          >
-            <!-- Overlay -->
-            <div
-              class="absolute inset-0 bg-black/50"
-              @click="closeModal"
-            ></div>
+        <div
+          v-if="isModalOpen"
+          class="fixed inset-0 z-50 flex items-center justify-center"
+        >
+          <!-- Overlay -->
+          <div class="absolute inset-0 bg-black/50" @click="closeModal"></div>
 
-            <!-- Modal content -->
-            <div class="relative z-10 bg-white max-w-3xl w-full p-4 rounded-lg shadow-2xl">
-              <button
-                class="absolute top-2 right-3 text-black text-[40px] cursor-pointer"
-                @click="closeModal"
-              >
-                ✕
-              </button>
-              <img
-                :src="selectedImage"
-                alt="Skin Preview"
-                class="w-full h-auto"
-              />
-            </div>
+          <!-- Modal content -->
+          <div class="relative z-10 bg-white max-w-3xl w-full p-4 rounded-lg shadow-2xl">
+            <button
+              class="absolute top-2 right-3 text-black text-[40px] cursor-pointer"
+              @click="closeModal"
+            >
+              ✕
+            </button>
+            <img :src="selectedImage" alt="Skin Preview" class="w-full h-auto" />
           </div>
+        </div>
 
         <!-- Skins Info -->
         <h2
@@ -1100,12 +1354,11 @@ watch(activeMainTab, async (newTab) => {
             </tr>
           </thead>
           <tbody>
-            <tr
-              class="text-black"
-              v-for="(skin, index) in onmyoji.skins"
-              :key="index"
-            >
-              <td class="px-2 py-1 text-center w-[105px]" style="border: 1px solid #a51919">
+            <tr class="text-black" v-for="(skin, index) in onmyoji.skins" :key="index">
+              <td
+                class="px-2 py-1 text-center w-[105px]"
+                style="border: 1px solid #a51919"
+              >
                 <img
                   :src="`/assets/onmyoji/skinsInfo/${route.params.name}_SkinInfo${index}.webp`"
                   :alt="skin.name.en || skin.name.cn"
@@ -1114,7 +1367,11 @@ watch(activeMainTab, async (newTab) => {
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 <div>{{ skin.name.en }}</div>
-                <div><span class="lang-zh">{{ skin.name.cn }}</span> {{ index === 0 ? '' : '-' }} <span class="lang-vi">{{ skin.name.vn }}</span></div>
+                <div>
+                  <span class="lang-zh">{{ skin.name.cn }}</span>
+                  {{ index === 0 ? "" : "-" }}
+                  <span class="lang-vi">{{ skin.name.vn }}</span>
+                </div>
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 <span class="lang-zh">{{ skin.artist }}</span>
@@ -1154,16 +1411,24 @@ watch(activeMainTab, async (newTab) => {
           </thead>
           <tbody>
             <tr class="text-black" v-for="(skin, index) in onmyoji.totem" :key="index">
-              <td class="px-2 py-1 text-center w-26 w-[105px]" style="border: 1px solid #a51919">
+              <td
+                class="px-2 py-1 text-center w-26 w-[105px]"
+                style="border: 1px solid #a51919"
+              >
                 <img
-                  :src="`/assets/onmyoji/totemsInfo/${onmyoji.totem[0].name.en}_SkinInfo${index+1}.webp`"
+                  :src="`/assets/onmyoji/totemsInfo/${onmyoji.totem[0].name.en}_SkinInfo${
+                    index + 1
+                  }.webp`"
                   :alt="skin.name.en || skin.name.cn"
                   class="w-24 h-24 object-contain mx-auto"
                 />
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 <div>{{ skin.name.en }}</div>
-                <div><span class="lang-zh">{{ skin.name.cn }}</span> - <span class="lang-vi">{{ skin.name.vn }}</span></div>
+                <div>
+                  <span class="lang-zh">{{ skin.name.cn }}</span> -
+                  <span class="lang-vi">{{ skin.name.vn }}</span>
+                </div>
               </td>
               <td class="px-2 py-1 text-center" style="border: 1px solid #a51919">
                 <span class="lang-zh">{{ skin.artist }}</span>
@@ -1176,13 +1441,24 @@ watch(activeMainTab, async (newTab) => {
         </table>
 
         <h2 class="session-title mt-5">
-            {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
+          {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 mt-4">
-          <div v-for="(img, index) in illustrations" :key="index" class="overflow-hidden shadow-md relative aspect-video">
-            <img :src="getImgUrl(img.name)" :alt="img.name" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" :title="img.name" @click="openModal(getImgUrl(img.name))"/>
-            <div 
-              class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md">
+          <div
+            v-for="(img, index) in illustrations"
+            :key="index"
+            class="overflow-hidden shadow-md relative aspect-video"
+          >
+            <img
+              :src="getImgUrl(img.name)"
+              :alt="img.name"
+              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              :title="img.name"
+              @click="openModal(getImgUrl(img.name))"
+            />
+            <div
+              class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md"
+            >
               {{ img.name }}
             </div>
           </div>
@@ -1191,23 +1467,37 @@ watch(activeMainTab, async (newTab) => {
     </div>
 
     <!-- Tooltip -->
-    <div v-if="showTooltip && tooltipData" class="tooltip" :style="{
-      left: tooltipPosition.x + 'px',
-      top: tooltipPosition.y + 'px',
-      borderColor: tooltipData.color,
-      boxShadow: '0 0 12px ' + tooltipData.color,
-      '--tooltip-color': tooltipData.color,
-    }" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
+    <div
+      v-if="showTooltip && tooltipData"
+      class="tooltip"
+      :style="{
+        left: tooltipPosition.x + 'px',
+        top: tooltipPosition.y + 'px',
+        borderColor: tooltipData.color,
+        boxShadow: '0 0 12px ' + tooltipData.color,
+        '--tooltip-color': tooltipData.color,
+      }"
+      :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+    >
       <!-- Note chính -->
       <div class="tooltip-title" :style="{ color: tooltipData.color }">
-        {{ tooltipData.name }} <span class="lang-zh" v-if="tooltipData.cn">({{ tooltipData.cn }})</span>
+        {{ tooltipData.name }}
+        <span class="lang-zh" v-if="tooltipData.cn">({{ tooltipData.cn }})</span>
       </div>
       <div v-if="imgs.length" class="tooltip-images pb-1">
-        <img v-for="(img, i) in imgs" :key="i" :src="'/assets/effects/' + img + '.webp'" :alt="img" class="tooltip-img rounded rounded-sm" />
+        <img
+          v-for="(img, i) in imgs"
+          :key="i"
+          :src="'/assets/effects/' + img + '.webp'"
+          :alt="img"
+          class="tooltip-img rounded rounded-sm"
+        />
       </div>
 
-      <div class="tooltip-description whitespace-pre-line" v-html="processTextWithTooltips(tooltipData.description)">
-      </div>
+      <div
+        class="tooltip-description whitespace-pre-line"
+        v-html="processTextWithTooltips(tooltipData.description)"
+      ></div>
 
       <!-- Nếu có subNotes match -->
       <div v-if="matchedSubNotes.length">
@@ -1215,34 +1505,52 @@ watch(activeMainTab, async (newTab) => {
         <div class="subnotes-container">
           <div v-for="sub in matchedSubNotes" :key="sub.id" class="subnote-block">
             <div class="subnote-title">
-              {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn
-                }})</span>
+              {{ isEnglish ? sub.name.en : sub.name.vn }}
+              <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn }})</span>
             </div>
-            <img v-if="sub.images" v-for="(img, i) in sub.images" :key="i" :src="'/assets/effects/' + img + '.webp'" :alt="img"
-              style="width: 32px; height: 32px; margin-bottom: 8px" />
-            <div class="subnote-description"
-              v-html="processTextWithTooltips(isEnglish ? sub.description.en : sub.description.vn)"></div>
+            <img
+              v-if="sub.images"
+              v-for="(img, i) in sub.images"
+              :key="i"
+              :src="'/assets/effects/' + img + '.webp'"
+              :alt="img"
+              style="width: 32px; height: 32px; margin-bottom: 8px"
+            />
+            <div
+              class="subnote-description"
+              v-html="
+                processTextWithTooltips(
+                  isEnglish ? sub.description.en : sub.description.vn
+                )
+              "
+            ></div>
 
             <!-- Sub-SubNotes -->
             <div v-if="sub.subNotes && sub.subNotes.length" class="mt-2">
-              <div 
-                v-for="subsub in sub.subNotes" :key="subsub.id"
-                class="subnote-block" 
-              >
+              <div v-for="subsub in sub.subNotes" :key="subsub.id" class="subnote-block">
                 <div class="subnote-title">
-                  {{ isEnglish ? subsub.name.en : subsub.name.vn }} 
+                  {{ isEnglish ? subsub.name.en : subsub.name.vn }}
                   <span class="lang-zh">({{ subsub.name.cn }})</span>
                 </div>
 
-                <img v-if="subsub.images" 
-                    v-for="(img, k) in subsub.images" 
-                    :key="k" 
-                    :src="'/assets/effects/' + img + '.webp'"
-                    :alt="img" 
-                    class="rounded rounded-sm" 
-                    style="width: 32px; height: 32px; margin-bottom: 8px" />
+                <img
+                  v-if="subsub.images"
+                  v-for="(img, k) in subsub.images"
+                  :key="k"
+                  :src="'/assets/effects/' + img + '.webp'"
+                  :alt="img"
+                  class="rounded rounded-sm"
+                  style="width: 32px; height: 32px; margin-bottom: 8px"
+                />
 
-                <div class="subnote-description" v-html="processTextWithTooltips(isEnglish ? subsub.description.en : subsub.description.vn)"></div>
+                <div
+                  class="subnote-description"
+                  v-html="
+                    processTextWithTooltips(
+                      isEnglish ? subsub.description.en : subsub.description.vn
+                    )
+                  "
+                ></div>
               </div>
             </div>
           </div>

@@ -28,7 +28,7 @@ const tooltipData = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 const showTooltip = ref(false);
 
-const activeTab = ref(route.hash.replace('#','') || 'Main')
+const activeTab = ref(route.hash.replace('#','') || 'Main');
 const activeSkillIndex = ref(0);
 
 const showEditModal = ref(false);
