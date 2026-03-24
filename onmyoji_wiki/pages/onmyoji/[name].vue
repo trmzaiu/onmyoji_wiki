@@ -722,6 +722,7 @@ watch(activeMainTab, async (newTab) => {
                         border: 1px solid #a51919;
                         padding: 4px;
                         background: #fff;
+                        max-width: none;
                       "
                       width="90"
                       @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
@@ -747,6 +748,7 @@ watch(activeMainTab, async (newTab) => {
                         border: 1px solid #a51919;
                         padding: 4px;
                         background: #fff;
+                        max-width: none;
                       "
                       width="90"
                       @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
