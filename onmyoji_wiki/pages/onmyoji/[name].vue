@@ -397,55 +397,37 @@ const matchedSubNotes = computed(() => {
 const handleMouseEnter = (e) => {
   const target = e.currentTarget;
   tooltipData.value = {
+    id: Number(target.getAttribute("data-id")),
     name: target.getAttribute("data-name"),
     description: target.getAttribute("data-desc"),
     images: target.getAttribute("data-img")
       ? JSON.parse(target.getAttribute("data-img"))
       : [],
     color: target.getAttribute("data-color"),
-    cn: target.getAttribute("data-name-cn"),
+    cn: target.getAttribute("data-name-cn"), 
   };
   updateTooltipPosition(e);
   showTooltip.value = true;
 };
+const handleMouseLeave = () => (showTooltip.value = false);
+const handleMouseMove = (e) => showTooltip.value && updateTooltipPosition(e);
+const updateTooltipPosition = (e) =>
+  (tooltipPosition.value = { x: e.clientX, y: e.clientY + 10 });
 
-const handleMouseLeave = () => {
-  showTooltip.value = false;
-  tooltipData.value = null;
-};
-
-const handleMouseMove = (event) => {
-  if (showTooltip.value) {
-    updateTooltipPosition(event);
-  }
-};
-
-const updateTooltipPosition = (event) => {
-  tooltipPosition.value = {
-    x: event.clientX + 10,
-    y: event.clientY + 10,
-  };
-};
-
-// Add event listeners to dynamically created tooltip spans
-const addTooltipListeners = () => {
-  const tooltipSpans = document.querySelectorAll(".effect-tooltip");
-  tooltipSpans.forEach((span) => {
+function addTooltipListeners() {
+  document.querySelectorAll(".effect-tooltip").forEach((span) => {
     span.addEventListener("mouseenter", handleMouseEnter);
     span.addEventListener("mouseleave", handleMouseLeave);
     span.addEventListener("mousemove", handleMouseMove);
   });
-};
-
-// Remove event listeners
-const removeTooltipListeners = () => {
-  const tooltipSpans = document.querySelectorAll(".effect-tooltip");
-  tooltipSpans.forEach((span) => {
+}
+function removeTooltipListeners() {
+  document.querySelectorAll(".effect-tooltip").forEach((span) => {
     span.removeEventListener("mouseenter", handleMouseEnter);
     span.removeEventListener("mouseleave", handleMouseLeave);
     span.removeEventListener("mousemove", handleMouseMove);
   });
-};
+}
 
 async function fetchAllEffects() {
   const { data, error } = await supabase
@@ -516,6 +498,8 @@ onMounted(async () => {
   await fetchAllEffects();
   await fetchOnmyoji();
   await loadTags();
+  await fetchAllOnmyoji();
+  await fetchAllShikigami();
 });
 
 async function handleVisibilityChange() {
