@@ -8,6 +8,8 @@ const route = useRoute();
 const supabase = useSupabase();
 
 const onmyoji = ref(null);
+const onmyojiList = ref([]);
+const shikigamiList = ref([]);
 const illustrations = ref([]);
 const effects = ref([]);
 
@@ -468,6 +470,24 @@ async function fetchOnmyoji() {
     await nextTick();
     addTooltipListeners();
   }
+}
+
+async function fetchAllOnmyoji() {
+  const { data, error } = await supabase
+    .from("Onmyoji")
+    .select("id, name")
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching onmyoji:", error);
+  else onmyojiList.value = data;
+}
+
+async function fetchAllShikigami() {
+  const { data, error } = await supabase
+    .from("Shikigami")
+    .select("id, name, skills")
+    .order("id", { ascending: true });
+  if (error) console.error("Error fetching shikigami:", error);
+  else shikigamiList.value = data;
 }
 
 async function fetchIllustrations(onmyojiId) {
