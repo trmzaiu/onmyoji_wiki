@@ -141,6 +141,32 @@ const processTextWithTooltips = (text) => {
     return match;
   };
 
+  // =========================================================
+  // 5) Step A: Preprocess effect keyword overrides: <b|h>id</b|h><n>count</n>
+  // =========================================================
+  processed.value = processed.value.replace(
+    /<(b|a|h)>(\d+)<\/\1>(?:<n>([\s\S]*?)<\/n>)?/g,
+    (match, tag, id, nValue) => {
+      const note = effectById.get(String(id));
+      if (!note) return match;
+
+      const textEN = note.name?.en || "";
+      const textVN = (note.name?.vn || "")
+        .replace(/\{count\}/g, nValue ?? "")
+        .trim();
+
+      const value = isEnglish.value ? textEN : textVN;
+
+      // 👇 push vào array thay vì overwrite
+      if (!effectKeywordOverrides.has(String(id))) {
+        effectKeywordOverrides.set(String(id), []);
+      }
+      effectKeywordOverrides.get(String(id)).push(value);
+
+      return `<${tag}>${id}</${tag}>`; // ✅ giữ nguyên format
+    }
+  );
+
   // === xử lý các tag đặc biệt ===
   processedText = processedText
     // <e>
