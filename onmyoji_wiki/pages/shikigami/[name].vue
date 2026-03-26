@@ -1015,6 +1015,8 @@ async function fetchShikigami() {
     await fetchSouls(soulIds);
 
   }
+
+  await fetchIllustrations(data.id);
 }
 
 async function fetchIllustrations(shikiId) {
@@ -1092,12 +1094,7 @@ function subscribeRealtime() {
 
           const shikiId = shikigami.value?.id;
 
-          if (!shikiId) return;
-
-          const newList = payload.new?.shiki || [];
-          const oldList = payload.old?.shiki || [];
-
-          if (newList.includes(shikiId) || oldList.includes(shikiId)) {
+          if (shikiId) {
             await fetchIllustrations(shikiId);
           }
 
@@ -1356,7 +1353,7 @@ watch(
 );
 
 watch(activeTab, async (newTab) => {
-  if (newTab === "Gallery" && illustrations.value.length === 0) {
+  if (newTab === "Gallery" || illustrations.value.length === 0) {
     await fetchIllustrations(shikigami.value?.id);
   }
 });
