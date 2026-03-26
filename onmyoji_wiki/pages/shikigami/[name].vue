@@ -1039,13 +1039,13 @@ let shikigamiChannel = null;
 let effectChannel = null;
 let illustrationChannel = null;
 
-setInterval(async () => {
+// setInterval(async () => {
 
-  if (document.visibilityState === "visible") {
-    await fetchShikigami();
-  }
+//   if (document.visibilityState === "visible") {
+//     await fetchShikigami();
+//   }
 
-}, 5000);
+// }, 5000);
 
 /* ---------------------- SUBSCRIBE ---------------------- */
 
@@ -1319,7 +1319,7 @@ onMounted(async () => {
     fetchShikigami(),
     fetchAllOnmyoji(),
     fetchConditions(),
-    fetchIllustrations(shikigami.value?.id),
+    
     loadTags(),
   ]);
   
@@ -1354,6 +1354,12 @@ watch(
   () => [shikigami.value, activeSkillIndex.value, isEnglish.value],
   () => addCKeywordListeners()
 );
+
+watch(activeMainTab, async (newTab) => {
+  if (newTab === "Gallery" && illustrations.value.length === 0) {
+    await fetchIllustrations(shikigami.value?.id);
+  }
+});
 
 const addCKeywordListeners = () => {
   nextTick(() => {
