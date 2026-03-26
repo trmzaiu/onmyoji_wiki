@@ -1355,7 +1355,7 @@ watch(
   () => addCKeywordListeners()
 );
 
-watch(activeMainTab, async (newTab) => {
+watch(activeTab, async (newTab) => {
   if (newTab === "Gallery" && illustrations.value.length === 0) {
     await fetchIllustrations(shikigami.value?.id);
   }
