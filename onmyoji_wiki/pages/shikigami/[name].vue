@@ -1195,8 +1195,6 @@ async function handleVisibilityChange() {
     // refresh data
     await fetchAllShikigami();
     await fetchAllEffects();
-    await fetchIllustrations(shikigami.value?.id);
-
     // reconnect realtime
     unsubscribeRealtime();
     subscribeRealtime();
