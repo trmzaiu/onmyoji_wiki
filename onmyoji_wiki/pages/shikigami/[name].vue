@@ -1319,6 +1319,7 @@ onMounted(async () => {
     fetchShikigami(),
     fetchAllOnmyoji(),
     fetchConditions(),
+    fetchIllustrations(shikigami.value?.id),
     loadTags(),
   ]);
   
