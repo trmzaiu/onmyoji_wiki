@@ -1041,13 +1041,13 @@ let shikigamiChannel = null;
 let effectChannel = null;
 let illustrationChannel = null;
 
-setInterval(async () => {
+// setInterval(async () => {
 
-  if (document.visibilityState === "visible") {
-    await fetchShikigami();
-  }
+//   if (document.visibilityState === "visible") {
+//     await fetchShikigami();
+//   }
 
-}, 5000);
+// }, 5000);
 
 /* ---------------------- SUBSCRIBE ---------------------- */
 
@@ -2085,8 +2085,9 @@ const addCKeywordListeners = () => {
                   font-size: 20px;
                   color: #a51919;
                   height: 70px;
-                  text-indent: 70px;
                   padding-bottom: 5px;
+                  padding-left: 65px;
+                  padding-right: 5px;
                 ">
                   <div class="skill-title">
                     <span class="skill-name">
@@ -2322,11 +2323,12 @@ const addCKeywordListeners = () => {
                 <span style="
                   display: table-cell;
                   vertical-align: bottom;
-                  font-size: 18px;
+                  font-size: 20px;
                   color: #a51919;
                   height: 65px;
-                  text-indent: 70px;
                   padding-bottom: 5px;
+                  padding-left: 65px;
+                  padding-right: 5px;
                 ">
                   <div class="skill-title">
                     <span class="skill-name">
