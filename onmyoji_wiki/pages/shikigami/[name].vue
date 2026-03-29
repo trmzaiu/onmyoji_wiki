@@ -2660,11 +2660,11 @@ const addCKeywordListeners = () => {
 
               <td v-if="shikigami.id===78" class="py-1 text-black table-cell w-[100px]">
                 <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
-                  <img src="/assets/Gold.webp" alt="Gold" class="max-h-full max-w-full object-contain" />
+                  <img :src="![153,154].includes(shikigami.id) ? '/assets/Gold.webp' : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo1.webp`" alt="Gold" class="max-h-full max-w-full object-contain" />
                   <span class="absolute bottom-0 right-0 text-white font-bold" style="
                     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                       1px 1px 0 #000;
-                  ">5000</span>
+                  ">{{![153,154].includes(shikigami.id) ? 5000 : ''}}</span>
                 </div>
               </td>
 
