@@ -48,6 +48,10 @@ const statMap = {
     en: "Effect HIT +15%",
     vn: "Tăng 15% Effect HIT",
   },
+  "Crit DMG": {
+    en: "Crit DMG +20%",
+    vn: "Tăng 20% Crit DMG",
+  }
 };
 
 function getPiece2(type) {
@@ -499,7 +503,7 @@ watch(isEnglish, async () => {
                       <li>Crit +8%</li>
                       <li>Effect RES +8%</li>
                       <li>Effect HIT +8%</li>
-                    </ul> 
+                    </ul>
                   </div>
                 </td>
               </tr>
