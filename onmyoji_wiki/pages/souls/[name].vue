@@ -16,7 +16,6 @@ const showTooltip = ref(false);
 const formattedName = route.params.name.replace(/_/g, " ");
 
 function addIngForm(word) {
-
   if (word.endsWith("e")) {
     return word.slice(0, -1);
   }
@@ -27,36 +26,34 @@ function addIngForm(word) {
 const statMap = {
   ATK: {
     en: "ATK Bonus 15%",
-    vn: "Tăng 15% ATK"
+    vn: "Tăng 15% ATK",
   },
   DEF: {
     en: "DEF Bonus 30%",
-    vn: "Tăng 30% DEF"
+    vn: "Tăng 30% DEF",
   },
   HP: {
     en: "HP Bonus 15%",
-    vn: "Tăng 15% HP"
+    vn: "Tăng 15% HP",
   },
   CRIT: {
     en: "Crit +15%",
-    vn: "Tăng 15% Crit"
+    vn: "Tăng 15% Crit",
   },
   RES: {
     en: "Effect RES +15%",
-    vn: "Tăng 15% Effect RES"
+    vn: "Tăng 15% Effect RES",
   },
   HIT: {
     en: "Effect HIT +15%",
-    vn: "Tăng 15% Effect HIT"
-  }
+    vn: "Tăng 15% Effect HIT",
+  },
 };
 
 function getPiece2(type) {
   // ưu tiên data từ DB trước
   if (soul.value?.effects?.piece2) {
-    return isEnglish.value
-      ? soul.value.effects.piece2.en
-      : soul.value.effects.piece2.vn;
+    return isEnglish.value ? soul.value.effects.piece2.en : soul.value.effects.piece2.vn;
   }
 
   // fallback theo type
@@ -103,19 +100,22 @@ const processTextWithTooltips = (text) => {
 
   const colorMap = { red: "#a63f37", blue: "#4994d4", yellow: "#c07b2a" };
 
-  processedText = processedText.replace(/<(b|a)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g, (match, tag, id, nValue) => {
-    const note = effectById.get(id);
-    if (!note) return match;
+  processedText = processedText.replace(
+    /<(b|a)>(\d+)<\/\1>(?:<n>(.*?)<\/n>)?/g,
+    (match, tag, id, nValue) => {
+      const note = effectById.get(id);
+      if (!note) return match;
 
-    let textVN = note.name?.vn;
-    let textEN = note.name?.en;
+      let textVN = note.name?.vn;
+      let textEN = note.name?.en;
 
-    textVN = textVN.replace("{count}", nValue || "").trim();
+      textVN = textVN.replace("{count}", nValue || "").trim();
 
-    effectKeywordOverrides.set(id, isEnglish.value ? textEN : textVN);
+      effectKeywordOverrides.set(id, isEnglish.value ? textEN : textVN);
 
-    return `<${tag}>${id}</${tag}>`;
-  });
+      return `<${tag}>${id}</${tag}>`;
+    }
+  );
 
   processedText = processedText.replace(/<n>.*?<\/n>/g, "");
 
@@ -137,12 +137,16 @@ const processTextWithTooltips = (text) => {
       const keywordOverride = effectKeywordOverrides.get(String(note.id));
       keywordForDisplay = keywordOverride
         ? keywordOverride
-        : (isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en);
+        : isEnglish.value
+        ? note.name?.en
+        : note.name?.vn || note.name?.en;
       keywordForTooltip = isEnglish.value
         ? note.name?.en
         : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
     } else {
-      keywordForDisplay = isEnglish.value ? note.name?.en : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
+      keywordForDisplay = isEnglish.value
+        ? note.name?.en
+        : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
       keywordForTooltip = keywordForDisplay;
     }
 
@@ -179,17 +183,18 @@ const processTextWithTooltips = (text) => {
                 data-color="${color}"
                 style="color:${color}">${keyword}</span>`;
     } else {
-      return (type === "i" || type === "l")
+      return type === "i" || type === "l"
         ? `<span>${keyword}</span>`
         : `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
     }
   };
 
   // === xử lý các tag đặc biệt ===
-  processedText = processedText
-    .replace(/<e>(.*?)<\/e>/g, (_, keyword) =>
+  processedText = processedText.replace(
+    /<e>(.*?)<\/e>/g,
+    (_, keyword) =>
       `<img src="/assets/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
-    )
+  );
 
   // f, g, b, a, h
   processedText = processedText.replace(
@@ -266,7 +271,7 @@ const handleMouseEnter = (e) => {
       ? JSON.parse(target.getAttribute("data-img"))
       : [],
     color: target.getAttribute("data-color"),
-    cn: target.getAttribute("data-name-cn"), 
+    cn: target.getAttribute("data-name-cn"),
   };
   updateTooltipPosition(e);
   showTooltip.value = true;
@@ -417,14 +422,12 @@ watch(isEnglish, async () => {
           <img
             :src="`/assets/souls/images/${soul.name.en.replace(/ /g, '_')}.webp`"
             :alt="soul.name.en"
-            class="max-h-[500px] object-contain hover:scale-110 transition-transform duration-300"
+            class="h-auto w-[350px] object-contain hover:scale-110 transition-transform duration-300"
           />
         </div>
 
         <div class="flex justify-end w-1/3">
-          <table
-            class="border border-gray-400 text-sm w-full max-w-[300px] max-h-[500px]"
-          >
+          <table class="border border-gray-400 text-sm w-full max-w-[300px]">
             <thead>
               <tr>
                 <th class="border border-red table-title p-2 relative" colspan="4">
@@ -434,7 +437,7 @@ watch(isEnglish, async () => {
             </thead>
             <tbody>
               <tr class="border border-red text-black">
-                <td class="px-4 py-2">
+                <td class="px-4 py-2" colspan="1">
                   <strong>CN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
@@ -467,6 +470,35 @@ watch(isEnglish, async () => {
                   <div class="lang-vi">{{ soul.name.vn }}</div>
                 </td>
               </tr>
+              <tr>
+                <td class="table-title-row" colspan="4">Effects</td>
+              </tr>
+              <tr v-if="soul.type !== 'Random Stat'" class="border border-red text-black">
+                <td class="px-4 py-2 border border-red text-center" colspan="2">
+                  <strong>Type</strong>
+                  <div>{{ soul.type }}</div>
+                </td>
+                <td class="px-4 py-2 border border-red text-center" colspan="2">
+                  <strong>Set 2</strong>
+                  <div v-html="processTextWithTooltips(getPiece2(soul.type))"></div>
+                </td>
+              </tr>
+              <tr v-else class="border border-red text-black">
+                <td class="px-4 py-2 border border-red" colspan="4">
+                  <strong>Type</strong>
+                  <div>
+                    <span>Increases a random base stat:</span>
+                    <ul class="list-disc pl-5 mt-1">
+                      <li>ATK Bonus 8%</li>
+                      <li>DEF Bonus 16%</li>
+                      <li>HP Bonus 8%</li>
+                      <li>Crit +8%</li>
+                      <li>Effect RES +8%</li>
+                      <li>Effect HIT +8%</li>
+                    </ul> 
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -479,29 +511,26 @@ watch(isEnglish, async () => {
         {{ isEnglish ? "Effects" : "Hiệu ứng" }}
       </h2>
 
-      <div v-if="soul.type === 'Random Stat'" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
-        <h3 class="px-3 text-red">{{ isEnglish ? "Fixed Stat" : "Chỉ số cố định" }}:</h3>
-        <p class="px-3 text-black">
-          {{ isEnglish ? 'Random Stat Bonus' : 'Tăng chỉ số ngẫu nhiên' }}
-        </p>
-      </div>
-
-      <div v-if="getPiece2(soul.type)" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
-        <h3 class="px-3 text-red">
-          {{ isEnglish ? "2-Piece Set Effect" : "Hiệu ứng bộ 2" }}:
-        </h3>
+      <div
+        v-if="soul.effects.piece2"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+      >
         <p
-          class="px-3 text-black"
-          v-html="processTextWithTooltips(getPiece2(soul.type))"
+          class="ps-3 text-black"
+          v-html="
+            isEnglish
+              ? processTextWithTooltips(soul.effects.piece2.en)
+              : processTextWithTooltips(soul.effects.piece2.vn)
+          "
         ></p>
       </div>
 
-      <div v-if="soul.effects.piece4" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
-        <h3 class="px-3 text-red">
-          {{ isEnglish ? "4-Piece Set Effect" : "Hiệu ứng bộ 4" }}:
-        </h3>
+      <div
+        v-if="soul.effects.piece4"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+      >
         <p
-          class="px-3 text-black"
+          class="ps-3 text-black"
           v-html="
             isEnglish
               ? processTextWithTooltips(soul.effects.piece4.en)
@@ -517,11 +546,11 @@ watch(isEnglish, async () => {
         {{ isEnglish ? "Obtainable" : "Có thể nhận" }}
       </h2>
 
-      <ul class="px-3 list-disc pl-6 text-black" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
-        <li
-          v-for="(item, index) in soul.obtainable"
-          :key="index"
-        >
+      <ul
+        class="px-3 list-disc pl-6 text-black"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+      >
+        <li v-for="(item, index) in soul.obtainable" :key="index">
           {{ item }}
         </li>
       </ul>
@@ -542,7 +571,8 @@ watch(isEnglish, async () => {
     >
       <!-- Note chính -->
       <div class="tooltip-title" :style="{ color: tooltipData.color }">
-        {{ tooltipData.name }} <span class="lang-zh" v-if="tooltipData.cn">({{ tooltipData.cn }})</span>
+        {{ tooltipData.name }}
+        <span class="lang-zh" v-if="tooltipData.cn">({{ tooltipData.cn }})</span>
       </div>
       <div v-if="imgs.length" class="tooltip-images pb-1">
         <img
@@ -565,7 +595,8 @@ watch(isEnglish, async () => {
         <div class="subnotes-container">
           <div v-for="(sub, idx) in matchedSubNotes" :key="idx" class="subnote-block">
             <div class="subnote-title">
-              {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn }})</span>
+              {{ isEnglish ? sub.name.en : sub.name.vn }}
+              <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn }})</span>
             </div>
             <img
               v-if="sub.images"
@@ -577,14 +608,21 @@ watch(isEnglish, async () => {
             />
             <div
               class="subnote-description"
-              v-html="processTextWithTooltips(isEnglish ? sub.description.en : sub.description.vn)"
+              v-html="
+                processTextWithTooltips(
+                  isEnglish ? sub.description.en : sub.description.vn
+                )
+              "
             ></div>
 
             <!-- Sub-SubNotes -->
             <div v-if="sub.subNotes && sub.subNotes.length" class="mt-2">
               <div v-for="(subsub, j) in sub.subNotes" :key="j" class="subnote-block">
                 <div class="subnote-title">
-                  {{ isEnglish ? subsub.name.en : subsub.name.vn }} <span class="lang-zh" v-if="subsub.name.cn">({{ subsub.name.cn }})</span>
+                  {{ isEnglish ? subsub.name.en : subsub.name.vn }}
+                  <span class="lang-zh" v-if="subsub.name.cn"
+                    >({{ subsub.name.cn }})</span
+                  >
                 </div>
                 <img
                   v-if="subsub.images"
@@ -596,14 +634,17 @@ watch(isEnglish, async () => {
                 />
                 <div
                   class="subnote-description"
-                  v-html="processBoldC(isEnglish ? subsub.description.en : subsub.description.vn)"
+                  v-html="
+                    processBoldC(
+                      isEnglish ? subsub.description.en : subsub.description.vn
+                    )
+                  "
                 ></div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
