@@ -36,7 +36,7 @@ const statMap = {
     en: "HP Bonus 15%",
     vn: "Tăng 15% HP",
   },
-  CRIT: {
+  Crit: {
     en: "Crit +15%",
     vn: "Tăng 15% Crit",
   },
