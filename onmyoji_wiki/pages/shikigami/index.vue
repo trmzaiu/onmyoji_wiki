@@ -48,7 +48,7 @@ function sortBy(key) {
 }
 
 const currentPage = ref(1)
-const perPage = 50
+const perPage = 100
 
 const totalPages = computed(() =>
   Math.ceil(sortedShikigami.value.length / perPage)
