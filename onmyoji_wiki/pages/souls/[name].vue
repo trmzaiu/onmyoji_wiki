@@ -488,7 +488,7 @@ watch(isEnglish, async () => {
 
       <div v-if="getPiece2(soul.type)" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <h3 class="px-3 text-red">
-          {{ isEnglish ? "2-Piece Set Effect" : "Hiệu ứng 2 mảnh" }}:
+          {{ isEnglish ? "2-Piece Set Effect" : "Hiệu ứng bộ 2" }}:
         </h3>
         <p
           class="px-3 text-black"
@@ -498,7 +498,7 @@ watch(isEnglish, async () => {
 
       <div v-if="soul.effects.piece4" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <h3 class="px-3 text-red">
-          {{ isEnglish ? "4-Piece Set Effect" : "Hiệu ứng 4 mảnh" }}:
+          {{ isEnglish ? "4-Piece Set Effect" : "Hiệu ứng bộ 4" }}:
         </h3>
         <p
           class="px-3 text-black"
