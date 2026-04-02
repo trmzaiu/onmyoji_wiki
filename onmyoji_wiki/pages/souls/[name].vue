@@ -24,6 +24,50 @@ function addIngForm(word) {
   return word;
 }
 
+const statMap = {
+  ATK: {
+    en: "ATK Bonus 15%",
+    vn: "Tăng 15% ATK"
+  },
+  DEF: {
+    en: "DEF Bonus 30%",
+    vn: "Tăng 30% DEF"
+  },
+  HP: {
+    en: "HP Bonus 15%",
+    vn: "Tăng 15% HP"
+  },
+  CRIT: {
+    en: "Crit +15%",
+    vn: "Tăng 15% Crit"
+  },
+  RES: {
+    en: "Effect RES +15%",
+    vn: "Tăng 15% Effect RES"
+  },
+  HIT: {
+    en: "Effect HIT +15%",
+    vn: "Tăng 15% Effect HIT"
+  }
+};
+
+function getPiece2(type) {
+  // ưu tiên data từ DB trước
+  if (soul.value?.effects?.piece2) {
+    return isEnglish.value
+      ? soul.value.effects.piece2.en
+      : soul.value.effects.piece2.vn;
+  }
+
+  // fallback theo type
+  const stat = statMap[type];
+  if (stat) {
+    return isEnglish.value ? stat.en : stat.vn;
+  }
+
+  return null;
+}
+
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
 
@@ -434,17 +478,13 @@ watch(isEnglish, async () => {
         </p>
       </div>
 
-      <div v-if="soul.effects.piece2" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
+      <div v-if="getPiece2(soul.type)" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <h3 class="px-3 text-red">
           {{ isEnglish ? "2-Piece Set Effect" : "Hiệu ứng 2 mảnh" }}:
         </h3>
         <p
           class="px-3 text-black"
-          v-html="
-            isEnglish
-              ? processTextWithTooltips(soul.effects.piece2.en)
-              : processTextWithTooltips(soul.effects.piece2.vn)
-          "
+          v-html="processTextWithTooltips(getPiece2(soul.type))"
         ></p>
       </div>
 
