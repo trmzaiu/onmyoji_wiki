@@ -387,6 +387,10 @@ onMounted(async () => {
   await fetchAllEffects();
   await nextTick();
   addTooltipListeners();
+  const saved = localStorage.getItem("lang");
+  if (saved) {
+    isEnglish.value = saved === "en";
+  }
 });
 
 watch(tooltipData, (val) => {
