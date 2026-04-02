@@ -335,6 +335,14 @@ async function fetchSoul() {
   }
 }
 
+setInterval(async () => {
+
+  if (document.visibilityState === "visible") {
+    await fetchSoul();
+  }
+
+}, 5000);
+
 let soulChannel = null;
 let effectChannel = null;
 

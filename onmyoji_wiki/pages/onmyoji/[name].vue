@@ -512,6 +512,14 @@ async function handleVisibilityChange() {
   }
 }
 
+setInterval(async () => {
+
+  if (document.visibilityState === "visible") {
+    await fetchOnmyoji();
+  }
+
+}, 5000);
+
 watch(tooltipData, (val) => {
   console.log("tooltipData:", val);
 });
