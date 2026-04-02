@@ -479,10 +479,10 @@ watch(isEnglish, async () => {
         {{ isEnglish ? "Effects" : "Hiệu ứng" }}
       </h2>
 
-      <div v-if="soul.effects.fixed" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
+      <div v-if="soul.type === 'Random Stat'" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
         <h3 class="px-3 text-red">{{ isEnglish ? "Fixed Stat" : "Chỉ số cố định" }}:</h3>
         <p class="px-3 text-black">
-          {{ isEnglish ? soul.effects.fixed.en : soul.effects.fixed.vn }}
+          {{ isEnglish ? 'Random Stat Bonus' : 'Tăng chỉ số ngẫu nhiên' }}
         </p>
       </div>
 
