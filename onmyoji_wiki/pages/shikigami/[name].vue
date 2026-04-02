@@ -3049,7 +3049,7 @@ const addCKeywordListeners = () => {
             <img :src="getImgUrl(img.name)" :alt="img.name" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" :title="img.name" @click="openModal(getImgUrl(img.name))"/>
             <div 
               class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md">
-              {{ img.name }}
+              {{ img.name.replace(/_/g, ' ') }}
             </div>
           </div>
         </div>
