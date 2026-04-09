@@ -958,7 +958,7 @@ const roleMap = {
 };
 
 const getRoleClass = (role) => {
-  return roleMap[role] || "bg-gray-50 text-gray-600 border-gray-200";
+  return roleMap[role] || "bg-gray-500 text-black border-gray-200";
 };
 
 const parseRoles = (roleStr) => {
