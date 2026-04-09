@@ -3100,7 +3100,7 @@ const addCKeywordListeners = () => {
                   <span class="lang-zh">({{ subsub.name.cn }})</span>
                 </div>
 
-                <div v-if="subsub.images" class="flex gap-2 mb-2">
+                <div v-if="subsub.images" class="tooltip-images flex gap-2 mb-2">
                   <img
                     v-for="(img, i) in subsub.images"
                     :key="i"
