@@ -2392,7 +2392,7 @@ const addCKeywordListeners = () => {
                     isEnglish ? skill.description.en : skill.description.vn
                   )
                 "></p>
-                <div v-if="shikigami.id===132 || shikigami.id === 141 && activeSkillIndex === 2">
+                <div v-if="(shikigami.id === 132 || shikigami.id === 141) && activeSkillIndex === 2">
                   <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
 
                   <b v-if="shikigami.id === 141" class="text-black mb-3 block cursor-pointer hover:text-[#a51919]" @click="activeSkillIndex = 1">
