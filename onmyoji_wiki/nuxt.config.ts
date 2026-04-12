@@ -31,4 +31,18 @@ export default defineNuxtConfig({
   css: [
     '/public/assets/css/fonts.css'
   ],
+  nitro: {
+    routeRules: {
+      '/_nuxt/**': {
+        headers: {
+          'cache-control': 'public, max-age=31536000, immutable'
+        }
+      },
+      '/images/**': {
+        headers: {
+          'cache-control': 'public, max-age=31536000'
+        }
+      }
+    }
+  }
 });
