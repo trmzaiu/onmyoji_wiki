@@ -2701,11 +2701,11 @@ const addCKeywordListeners = () => {
 
               <td v-else class="py-1 text-black table-cell w-[100px]">
                 <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
-                  <img :src="[144, 118,131].includes(shikigami.id) ? '/assets/Jade.webp' : ([71, 84,130].includes(shikigami.id) ? '/assets/Black_Daruma.webp' : `/assets/shikigami/shards/${route.params.name}_Shard.webp`)" :alt="shikigami.name.jp" class="max-h-full max-w-full object-contain" />
+                  <img :src="[144, 118,131].includes(shikigami.id) ? '/assets/Jade.webp' : ([71, 84,130,117].includes(shikigami.id) ? '/assets/Black_Daruma.webp' : `/assets/shikigami/shards/${route.params.name}_Shard.webp`)" :alt="shikigami.name.jp" class="max-h-full max-w-full object-contain" />
                   <span class="absolute bottom-0 right-0 text-white font-bold" style="
                     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                       1px 1px 0 #000;
-                  ">{{ (shikigami.id >= 201 && shikigami.id <= 214) ? 2 : ([71, 84,130].includes(shikigami.id) ? '' : 10) }}</span>
+                  ">{{ (shikigami.id >= 201 && shikigami.id <= 214) ? 2 : ([71, 84,130,117].includes(shikigami.id) ? '' : 10) }}</span>
                 </div>
               </td>
             </tr>
