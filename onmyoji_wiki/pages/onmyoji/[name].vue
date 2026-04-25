@@ -346,6 +346,15 @@ function changeMainTab(tab) {
 
 const imgs = computed(() => tooltipData.value?.images || []);
 
+function addIngForm(word) {
+
+  if (word.endsWith("e")) {
+    return word.slice(0, -1);
+  }
+
+  return word;
+}
+
 const matchedSubNotes = computed(() => {
   if (!tooltipData.value || !effects.value?.length) return [];
 
