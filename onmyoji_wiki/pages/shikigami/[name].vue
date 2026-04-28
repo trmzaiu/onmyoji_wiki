@@ -494,7 +494,7 @@ const processTextWithTooltips = (text) => {
         data-name="${keywordForTooltip || ""}"
         data-name-cn="${note.name?.cn || ""}"
         data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-        data-img='${JSON.stringify(note.images)}'
+        data-img='${JSON.stringify(note.images || [])}'
         data-color="${color}"
         style="color:${color}">${keyword}</span>`;
     }
