@@ -3141,7 +3141,7 @@ const addCKeywordListeners = () => {
                   <img
                     v-for="(img, i) in subsub.images"
                     :key="i"
-                    :src="'/assets/effects/' + img + '.webp'"
+                    :src="img"
                     :alt="img"
                     class="w-8 h-8"
                   />
