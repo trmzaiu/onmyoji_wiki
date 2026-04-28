@@ -3115,8 +3115,14 @@ const addCKeywordListeners = () => {
               {{ isEnglish ? sub.name.en : sub.name.vn }} <span class="lang-zh" v-if="sub.name.cn">({{ sub.name.cn
                 }})</span>
             </div>
-            <img v-if="sub.images" v-for="(img, i) in sub.images" :key="i" :src="'/assets/effects/' + img + '.webp'" :alt="img"
-              style="width: 32px; height: 32px; margin-bottom: 8px" />
+            <img
+              v-if="sub.images"
+              v-for="(img, i) in sub.images"
+              :key="i"
+              :src="img"
+              :alt="img"
+              style="width: 32px; height: 32px; margin-bottom: 8px"
+            />
             <div class="subnote-description"
               v-html="processTextWithTooltips(isEnglish ? sub.description.en : sub.description.vn)"></div>
 
