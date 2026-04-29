@@ -2784,7 +2784,7 @@ const addCKeywordListeners = () => {
             </div>
 
             <!-- Souls -->
-            <div class="grid grid-cols-6 gap-3 mb-4">
+            <div class="grid grid-cols-8 gap-3 mb-4">
 
               <router-link
                 v-for="id in build.souls"
