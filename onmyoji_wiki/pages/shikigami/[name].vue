@@ -906,6 +906,7 @@ function getStatClass(stat) {
 function parseSubstats(text) {
 
   return text
+    .replace(/=/g,' = ')
     .replace(/>>/g,' >> ')
     .replace(/>/g,' > ')
     .replace(/\//g,' / ')
