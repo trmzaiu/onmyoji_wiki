@@ -2967,14 +2967,14 @@ const addCKeywordListeners = () => {
                     <img
                       :src="
                         skin.name?.en === 'Default'
-                          ? (index === 0 && shikigami.id >= 201 && shikigami.id <= 217)
+                          ? (index === 0 && shikigami.id >= 201 && shikigami.id <= 217 || shikigami.id === 193)
                             ? `/assets/shikigami/shards/${route.params.name}_Shard.webp`
                             : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp`
                           : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`
                       "
                       :alt="skin.name?.en || skin.name?.cn"
                       class="w-full h-full object-contain"
-                      :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''"
+                      :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217 || shikigami.id === 193) ? 'scale-145' : ''"
                     />
                   </div>
                 </td>
@@ -2990,7 +2990,7 @@ const addCKeywordListeners = () => {
                       }.webp`"
                       :alt="skin.name?.en || skin.name?.cn"
                       class="w-full h-full object-contain"
-                      :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ? 'scale-145' : ''"
+                      :class="(index === 0 && shikigami.id >= 201 && shikigami.id <= 217 || shikigami.id === 193) ? 'scale-145' : ''"
                     />
                   </div>
                 </td>
