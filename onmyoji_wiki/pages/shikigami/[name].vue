@@ -3130,7 +3130,7 @@ const addCKeywordListeners = () => {
                 <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
                   <img
                     :src="
-                      [144, 118, 131].includes(shikigami.id)
+                      [144, 118, 131,95].includes(shikigami.id)
                         ? '/assets/Jade.webp'
                         : [71, 84, 130, 117, 111].includes(shikigami.id)
                         ? '/assets/Black_Daruma.webp'
