@@ -1,79 +1,184 @@
 <script setup>
 import { useSupabase } from "@/utils/useSupabase.ts";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 const supabase = useSupabase();
 
-// ===== STATE =====
+// ======================================================
+// STATE
+// ======================================================
+
 const shikigamiList = ref([]);
+const latestShikigami = ref([]);
+const tabLoading = ref(false);
+
 const isEnglish = ref(true);
 
-const listRef = ref(null);
+const rarities = ["All", "UR", "SP", "SSR", "SR", "R", "N", "Crossover", "Removed"];
 
-// ===== SORTING =====
-const sort = ref({ key: "id", asc: true });
-const rarityOrder = { UR: 6, SP: 5, SSR: 4, SR: 3, R: 2, N: 1 };
+const selectedRarity = ref("All");
 
-const sortedShikigami = computed(() => {
-  return [...shikigamiList.value].sort((a, b) => {
-    let aValue, bValue;
+// ======================================================
+// LAZY LOAD
+// ======================================================
 
-    switch (sort.value.key) {
-      case "name":
-        aValue = a.name?.jp?.[1]?.toLowerCase?.() || "";
-        bValue = b.name?.jp?.[1]?.toLowerCase?.() || "";
-        break;
-      case "rarity":
-        aValue = rarityOrder[a.rarity] || 0;
-        bValue = rarityOrder[b.rarity] || 0;
-        break;
-      default:
-        aValue = a[sort.value.key];
-        bValue = b[sort.value.key];
+const page = ref(0);
+
+const limit = 20;
+
+const loading = ref(false);
+
+const hasMore = ref(true);
+
+// ======================================================
+// FETCH
+// ======================================================
+
+async function fetchShikigami() {
+  if (loading.value || !hasMore.value) return;
+
+  loading.value = true;
+
+  const from = page.value * limit;
+  const to = from + limit - 1;
+
+  let query = supabase.from("Shikigami").select("*").order("id", { ascending: true });
+
+  if (selectedRarity.value === "Removed") {
+    query = query.eq("id", 229);
+  }
+
+  else if (
+    selectedRarity.value === "Crossover"
+  ) {
+    query = query.eq("crossover", true);
+  }
+
+  else if (
+    selectedRarity.value !== "All"
+  ) {
+    query = query
+      .eq("rarity", selectedRarity.value)
+      .neq("crossover", true)
+      .neq("id", 229);
+  }
+  
+  const { data, error } = await query.range(from, to);
+
+  if (error) {
+    console.error("Fetch error:", error);
+  } else {
+    // append
+    shikigamiList.value.push(...data);
+
+    // stop loading if no more data
+    if (data.length < limit) {
+      hasMore.value = false;
     }
 
-    if (aValue < bValue) return sort.value.asc ? -1 : 1;
-    if (aValue > bValue) return sort.value.asc ? 1 : -1;
-    return 0;
-  });
+    page.value++;
+  }
+
+  loading.value = false;
+}
+
+// ======================================================
+// RESET + REFETCH WHEN CHANGING TAB
+// ======================================================
+
+watch(selectedRarity, async () => {
+  tabLoading.value = true;
+
+  page.value = 0;
+
+  hasMore.value = true;
+
+  const oldList = [...shikigamiList.value];
+
+  shikigamiList.value = oldList;
+
+  await fetchShikigami();
+
+  tabLoading.value = false;
 });
 
-function sortBy(key) {
-  if (sort.value.key === key) {
-    sort.value.asc = !sort.value.asc;
-  } else {
-    sort.value.key = key;
-    sort.value.asc = true;
+// ======================================================
+// INFINITE SCROLL
+// ======================================================
+
+function handleScroll() {
+  const scrollBottom = window.innerHeight + window.scrollY;
+
+  const pageHeight = document.documentElement.offsetHeight;
+
+  // preload before reaching bottom
+  if (scrollBottom >= pageHeight - 300) {
+    fetchShikigami();
   }
 }
 
-const currentPage = ref(1)
-const perPage = 100
+function setupInfiniteScroll() {
+  window.addEventListener("scroll", handleScroll);
+}
 
-const totalPages = computed(() =>
-  Math.ceil(sortedShikigami.value.length / perPage)
-)
+// ======================================================
+// NEW RELEASES
+// ======================================================
 
-const paginatedShikigami = computed(() => {
-  const start = (currentPage.value - 1) * perPage
-  return sortedShikigami.value.slice(start, start + perPage)
-})
-
-// ===== FETCH DATA =====
-async function fetchAllShikigami() {
+async function fetchLatestShikigami() {
   const { data, error } = await supabase
     .from("Shikigami")
     .select("*")
-    .order("id", { ascending: true });
+    .order("id", { ascending: false })
+    .limit(20);
 
   if (error) {
-    console.error("Error fetching shikigami:", error);
-  } else {
-    shikigamiList.value = data;
+    console.error(error);
+    return;
   }
+
+  const now = new Date();
+
+  latestShikigami.value = data
+    .filter((shiki) => {
+      if (!shiki.date?.cn) return false;
+
+      const releaseDate = new Date(shiki.date.cn);
+
+      const diffDays = (now - releaseDate) / (1000 * 60 * 60 * 24);
+
+      return diffDays <= 30;
+    })
+    .sort((a, b) => new Date(b.date.cn) - new Date(a.date.cn));
 }
 
-// ===== REALTIME =====
+// ======================================================
+// SHIKIGAMI FILTERED BY RARITY
+// ======================================================
+
+const filteredShikigami = computed(() => {
+  if (selectedRarity.value === "Removed") {
+    return shikigamiList.value.filter((shiki) => shiki.id === 229);
+  }
+
+  if (selectedRarity.value === "Crossover") {
+    return shikigamiList.value.filter((shiki) => shiki.crossover === true);
+  }
+
+  if (selectedRarity.value === "All") {
+    return shikigamiList.value;
+  }
+
+  return shikigamiList.value.filter(
+    (shiki) =>
+      shiki.rarity === selectedRarity.value && !shiki.crossover && shiki.id !== 229
+  );
+});
+
+// ======================================================
+// REALTIME
+// ======================================================
+
 function setupRealtime() {
   const channel = supabase
     .channel("shikigami-changes")
@@ -87,17 +192,26 @@ function setupRealtime() {
       (payload) => {
         console.log("Realtime change:", payload);
 
+        // INSERT
         if (payload.eventType === "INSERT") {
-          shikigamiList.value.push(payload.new);
+          // avoid duplicates
+          const exists = shikigamiList.value.some((s) => s.id === payload.new.id);
+
+          if (!exists) {
+            shikigamiList.value.unshift(payload.new);
+          }
         }
 
+        // UPDATE
         if (payload.eventType === "UPDATE") {
           const index = shikigamiList.value.findIndex((s) => s.id === payload.new.id);
+
           if (index !== -1) {
             shikigamiList.value[index] = payload.new;
           }
         }
 
+        // DELETE
         if (payload.eventType === "DELETE") {
           shikigamiList.value = shikigamiList.value.filter(
             (s) => s.id !== payload.old.id
@@ -112,50 +226,31 @@ function setupRealtime() {
   });
 }
 
-// ===== INFO TEXTS =====
-const description = {
-  en:
-    "Shikigami are beings who have formed contracts with onmyouji to be summoned to their aid.",
-  vn:
-    "Thức Thần là những sinh linh đã ký kết khế ước với Âm Dương Sư để được triệu hồi hỗ trợ họ.",
-};
+// ======================================================
+// LIFECYCLE
+// ======================================================
 
-const introduction = {
-  en: `Shikigami are the beings summoned by the onmyouji to assist them. They form contracts which is recorded in a contract book. Shards of the contract book or a complete contract book (both the same rarity as the shikigami) for a shikigami may also be obtained to contract with the shikigami.
-
-Once summoned, shikigami are found in the shikigami records.
-
-In battle, shikigami are summoned through a medium like paper doll.`,
-  vn: `Thức Thần là những sinh linh được Âm Dương Sư triệu hồi để hỗ trợ họ. Việc triệu hồi được thực hiện thông qua khế ước, được ghi lại trong Sách Khế Ước. Người chơi có thể thu thập mảnh khế ước hoặc Sách Khế Ước hoàn chỉnh (cùng độ hiếm với Thức Thần) để ký kết và triệu hồi Thức Thần đó.
-
-Sau khi được triệu hồi, Thức Thần sẽ xuất hiện trong Hồ Sơ Thức Thần.
-
-Trong trận chiến, Thức Thần được gọi ra thông qua trung giới như búp bê giấy.`,
-};
-
-const rarity = {
-  en: `Shikigami have SP, SSR, SR, R, and N rarity. Rarity affects the number of shards needed to summon the shikigami and their rates in summoning.
-
-N rarity technically has the distinctions of "materials" i.e. daruma, and "gekota."`,
-  vn: `Thức Thần được chia thành các độ hiếm: SP, SSR, SR, R và N. Độ hiếm ảnh hưởng đến số mảnh cần để triệu hồi Thức Thần cũng như tỉ lệ xuất hiện khi triệu hồi.
-
-Độ hiếm N thì được phân loại riêng thành: Nguyên liệu (ví dụ: Daruma), và Gekota.`,
-};
-
-// ===== LIFECYCLE =====
 onMounted(async () => {
   document.title = "Shikigami";
-  await fetchAllShikigami();
+
+  await Promise.all([fetchLatestShikigami(), fetchShikigami()]);
+
+  setupInfiniteScroll();
+
   setupRealtime();
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
 });
 </script>
 
 <template>
-  <div class="main-container" v-if="shikigamiList.length" ref="listRef">
-    <div class="content-section flex flex-col gap-4">
-      <!-- Hàng 1: Tiêu đề -->
+  <div class="container" v-if="shikigamiList.length">
+    <div class="content-section">
+      <!-- Header -->
       <div class="header-row">
-        <div class="character-title">Shikigami</div>
+        <div class="title">Shikigami</div>
 
         <label class="toggle-switch" title="Switch Language">
           <input type="checkbox" v-model="isEnglish" />
@@ -167,294 +262,412 @@ onMounted(async () => {
         </label>
       </div>
 
-      <p
-        class="text-medium text-black"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? description.en : description.vn }}
-      </p>
-
+      <!-- New Release  -->
       <h2
-        class="session-title mt-5"
+        class="session-title mb-5"
         :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
       >
-        {{ isEnglish ? "Introduction" : "Giới thiệu" }}
+        {{ isEnglish ? "New Releases" : "Mới Ra Mắt" }}
       </h2>
-      <p
-        class="text-medium text-black whitespace-pre-line text-justify"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? introduction.en : introduction.vn }}
-      </p>
 
-      <h2
-        class="session-title mt-5"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? "Rarity" : "Độ hiếm" }}
-      </h2>
-      <p
-        class="text-medium text-black whitespace-pre-line text-justify"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? rarity.en : rarity.vn }}
-      </p>
+      <div class="latest-shiki-list">
+        <div v-for="shiki in latestShikigami" :key="shiki.id" class="latest-shiki-item">
+          <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
+            <div class="shiki-image-wrapper">
+              <img
+                :src="`/assets/shikigami/shards/${shiki.name.jp[1].replace(
+                  / /g,
+                  '_'
+                )}_Shard.webp`"
+                :alt="shiki.name.jp[1]"
+                class="w-24 h-24 object-contain"
+                @error="(event) => (event.target.src = '/assets/Unknown_Shard.webp')"
+              />
 
+              <img
+                :src="`/assets/rarity/${shiki.rarity}.webp`"
+                :alt="shiki.rarity"
+                class="rarity-badge"
+              />
+
+              <img
+                :src="`/assets/rarity/${shiki.rarity}.webp`"
+                :alt="shiki.rarity"
+                class="rarity-badge-shadow"
+              />
+            </div>
+          </a>
+          <div class="flex flex-col items-center">
+            <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
+              {{ shiki.name.jp[1] }}
+            </a>
+            <span>{{ shiki.name.cn[0] }}</span>
+            <span>released on {{ shiki.date.cn }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shikigame List -->
       <h2
-        class="session-title mt-5"
+        class="session-title mt-5 mb-5"
         :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
       >
         {{ isEnglish ? "Shikigami List" : "Danh sách Thức Thần" }}
       </h2>
-      <div class="p-4">
-        <div class="flex justify-end items-center gap-2 mb-4 text-black">
-          <button
-            v-if="currentPage > 1"
-            class="px-3 py-1 border rounded cursor-pointer"
-            @click="currentPage--"
-          >
-            Prev
-          </button>
+      <div class="tabs">
+        <button
+          v-for="rarity in rarities"
+          :key="rarity"
+          :class="{ active: selectedRarity === rarity }"
+          @click="selectedRarity = rarity"
+        >
+          {{ rarity }}
+        </button>
+      </div>
 
-          <span class="px-3 py-1">
-            {{ currentPage }} / {{ totalPages }}
-          </span>
+      <TransitionGroup name="shiki-fade" tag="div" class="shiki-list">
+        <div v-for="shiki in filteredShikigami" :key="shiki.id" class="shiki-item">
+          <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
+            <div class="shiki-image-wrapper">
+              <img
+                :src="`/assets/shikigami/shards/${shiki.name.jp[1].replace(
+                  / /g,
+                  '_'
+                )}_Shard.webp`"
+                :alt="shiki.name.jp[1]"
+                class="w-24 h-24 object-contain"
+                @error="(event) => (event.target.src = '/assets/Unknown_Shard.webp')"
+              />
 
-          <button
-            v-if="currentPage < totalPages"
-            class="px-3 py-1 border rounded cursor-pointer"
-            @click="currentPage++"
-          >
-            Next
-          </button>
+              <img
+                :src="`/assets/rarity/${shiki.rarity}.webp`"
+                :alt="shiki.rarity"
+                class="rarity-badge"
+              />
 
+              <img
+                :src="`/assets/rarity/${shiki.rarity}.webp`"
+                :alt="shiki.rarity"
+                class="rarity-badge-shadow"
+              />
+            </div>
+          </a>
+          <div class="flex flex-col items-center">
+            <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
+              {{ shiki.name.jp[1] }}
+            </a>
+            <span>{{ shiki.name.cn[0] }}</span>
+          </div>
         </div>
-        <table class="w-full" style="border: 1px solid #a51919">
-          <thead>
-            <tr style="background-color: #a51919; font-weight: bold">
-              <th class="px-2 py-1 cursor-pointer" @click="sortBy('id')">
-                ID
-                <span v-if="sort.key === 'id'">{{ sort.asc ? "▲" : "▼" }}</span>
-              </th>
-              <th class="px-2 py-1">{{ isEnglish ? "Image" : "Ảnh" }}</th>
-              <th class="px-2 py-1 cursor-pointer" @click="sortBy('name')">
-                {{ isEnglish ? "Name" : "Tên" }}
-                <span v-if="sort.key === 'name'">{{ sort.asc ? "▲" : "▼" }}</span>
-              </th>
-              <th class="px-2 py-1 cursor-pointer" @click="sortBy('rarity')">
-                {{ isEnglish ? "Rarity" : "Độ hiếm" }}
-                <span v-if="sort.key === 'rarity'">{{ sort.asc ? "▲" : "▼" }}</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="shiki in paginatedShikigami" :key="shiki.id" class="shikigami-row">
-              <td class="px-2 py-1 text-center text-black w-[75px]">{{ shiki.id }}</td>
-              <td class="px-2 py-1 text-center w-[160px]" style="border-left: 1px solid #e0e0e0">
-                <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`"
-                  ><img
-                    :src="`/assets/shikigami/shards/${shiki.name.jp[1].replace(/ /g, '_')}_Shard.webp`"
-                    :alt="shiki.name.jp[1]"
-                    class="w-16 h-16 object-contain mx-auto"
-                    @error="event => event.target.src = '/assets/Unknown_Shard.webp'"
-                /></a>
-              </td>
+      </TransitionGroup>
 
-              <td
-                class="px-2 py-1 text-center"
-                style="border-left: 1px solid #e0e0e0"
-              >
-                <div class="text-red hover:text-red-500 font-semibold">
-                  <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">{{
-                    shiki.name.jp[1]
-                  }}</a>
-                </div>
-                <div class="text-black text-sm">
-                  <span class="stkaiti">{{
-                    shiki.name.cn[0] === shiki.name.jp[0]
-                      ? shiki.name.cn[0]
-                      : shiki.name.cn[0] + " — " + shiki.name.jp[0]
-                  }}</span>
-                  {{ shiki.name.en === shiki.name.jp[1] ? "" : "— " + shiki.name.en }} —
-                  <span class="lang-vi">{{ shiki.name.vn }}</span>
-                </div>
-              </td>
-
-              <td class="px-2 py-1 text-center w-[150px]" style="border-left: 1px solid #e0e0e0">
-                <img
-                  :src="`/assets/rarity/${shiki.rarity}.webp`"
-                  :alt="shiki.rarity"
-                  class="w-16 h-16 object-contain mx-auto"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="flex justify-center items-center gap-2 mt-4 text-black">
-          <button
-            v-if="currentPage > 1"
-            class="px-3 py-1 border rounded cursor-pointer"
-            @click="currentPage--"
-          >
-            Prev
-          </button>
-
-          <span class="px-3 py-1">
-            {{ currentPage }} / {{ totalPages }}
-          </span>
-
-          <button
-            v-if="currentPage < totalPages"
-            class="px-3 py-1 border rounded cursor-pointer"
-            @click="currentPage++"
-          >
-            Next
-          </button>
-
-        </div>
+      <div class="loading-dots mt-10" v-if="loading">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
     </div>
   </div>
-
 </template>
 
-<style scoped>
+<style scoped src="@/pages/styles.css"></style>
 
-.stkaiti {
-  font-family: "stkaiti", serif;
+<style scoped>
+/* Tabs */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+
+  padding-bottom: 30px;
+}
+
+.tabs button {
+  position: relative;
+
+  min-width: 60px;
+  padding: 7px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 6px;
+
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.15));
+
+  color: var(--text-secondary);
+
+  font-family: "Bona Nova SC", serif;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+
+  cursor: pointer;
+
+  transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s,
+    color 0.2s;
+
+  overflow: hidden;
+}
+
+.tabs button::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.06),
+    transparent
+  );
+
+  transform: translateX(-100%);
+  transition: transform 0.4s;
+}
+
+.tabs button:hover::before {
+  transform: translateX(100%);
+}
+
+.tabs button:hover:not(.active) {
+  border-color: var(--text-primary);
+
+  background: linear-gradient(
+    to right,
+    rgba(165, 25, 25, 0.18),
+    rgba(255, 255, 255, 0.03)
+  );
+
+  color: #fff;
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 0 10px rgba(165, 25, 25, 0.25), inset 0 0 12px rgba(165, 25, 25, 0.08);
+}
+
+.tabs .active {
+  background: linear-gradient(to right, rgba(165, 25, 25, 0.35), rgba(165, 25, 25, 0.12));
+
+  border-color: var(--text-primary);
+
+  color: #fff;
+
+  box-shadow: 0 0 14px rgba(165, 25, 25, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.04);
+
+  cursor: default;
+}
+
+.tabs button:last-child {
+  width: auto;
+  padding-inline: 18px;
+}
+
+/* Latest Shikigami */
+.latest-shiki-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.latest-shiki-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 300px;
+}
+
+.shiki-image-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.shiki-image-wrapper > img:first-child {
+  object-fit: contain;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.latest-shiki-item .shiki-image-wrapper > img:first-child {
+  width: 100px;
+  height: 100px;
+}
+
+.latest-shiki-item:hover .shiki-image-wrapper > img:first-child {
+  border-color: var(--text-primary);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px var(--text-primary);
+}
+
+.latest-shiki-item a {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: center;
+  transition: color 0.2s;
+  font-family: "Bona Nova SC", serif;
+  font-size: 20px;
+}
+
+.latest-shiki-item:hover a {
+  color: var(--text-primary);
+}
+
+.latest-shiki-item span {
+  color: var(--text-tertiary);
+  font-weight: 500;
+  text-align: center;
+  font-family: "Noto Serif SC", serif;
+  cursor: pointer;
+}
+
+.latest-shiki-item span:first-of-type {
   font-size: 16px;
 }
 
-.lang-vi {
-  font-family: "Nunito", serif;
-  font-weight: 600;
+.latest-shiki-item span:last-of-type {
+  font-size: 13px;
 }
 
-.main-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  gap: 30px;
+.latest-shiki-item:hover span {
+  color: var(--text-primary);
+  opacity: 0.8;
 }
 
-.content-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid #3a3a3a4d;
-}
-
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.character-title {
-  font-family: "Rubik", sans-serif;
-  font-size: 42px;
-  font-weight: medium;
-  color: #3a3a3a;
-  margin-bottom: 10px;
-}
-
-.toggle-switch {
-  position: relative;
-  width: 44px;
-  height: 22px;
-  flex-shrink: 0;
-}
-
-.toggle-switch input[type="checkbox"] {
-  opacity: 0;
-  width: 0;
-  height: 0;
+/* Rarity Badge */
+.rarity-badge,
+.rarity-badge-shadow {
   position: absolute;
-}
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  background-color: #ccc;
-  border-radius: 22px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.4s;
-}
+  bottom: -4px;
+  right: -4px;
 
-.slider::before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
+  object-fit: contain;
   border-radius: 50%;
-  transition: 0.3s;
 }
 
-.toggle-switch input:checked + .slider {
-  background-color: #a51919;
-}
-.toggle-switch input:checked + .slider::before {
-  transform: translateX(22px);
+.rarity-badge {
+  width: 36px;
+  height: 36px;
+
+  z-index: 2;
 }
 
-.toggle-labels {
-  position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 0;
+.rarity-badge-shadow {
+  width: 42px;
+  height: 42px;
+
+  bottom: -7px;
+  right: -7px;
+
+  filter: blur(5px);
+  opacity: 0.5;
+
+  z-index: 1;
+
+  transform: scale(1.1);
+}
+
+/* Shikigami List */
+.shiki-fade-enter-active,
+.shiki-fade-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.shiki-fade-enter-from,
+.shiki-fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.shiki-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px 20px;
+}
+
+.shiki-item {
   display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-  font-size: 10px;
-  font-weight: bold;
-  color: white;
-  padding: 0 5px;
-  pointer-events: none;
-  user-select: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
-.border-red {
-  border: 1px solid #a51919;
+.shiki-item:hover .shiki-image-wrapper > img:first-child {
+  border-color: var(--text-primary);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px var(--text-primary);
 }
 
-.text-red {
-  color: #a51919;
+.shiki-item a {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: center;
+  transition: color 0.2s;
+  font-family: "Bona Nova SC", serif;
+  font-size: 18px;
 }
 
-.session-title {
-  color: #3a3a3a;
-  font-size: 24px;
-  font-weight: 500;
-  overflow: auto;
-  padding: 6px 0;
-  border-bottom: 0.5px solid #9c9c9c;
+.shiki-item:hover a {
+  color: var(--text-primary);
 }
 
-.lang-en .session-title {
-  font-family: "Rubik", sans-serif;
-}
-.lang-vi .session-title {
-  font-family: "Nunito", sans-serif;
-}
-
-.shikigami-row {
-  border-bottom: 1px solid #eee;
+.shiki-item span {
+  color: var(--text-tertiary);
+  text-align: center;
+  font-family: "Noto Serif SC", serif;
+  font-size: 14px;
+  cursor: default;
 }
 
-.shikigami-row:last-child {
-  border-bottom: none;
+.shiki-item:hover span {
+  color: var(--text-primary);
+  opacity: 0.8;
 }
 
-.shikigami-row:hover {
-  background-color: #f8f8f8;
+/* Loading Dots */
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  padding: 30px 0;
+}
+
+.loading-dots span {
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+  background: var(--text-primary);
+
+  animation: bounce 0.6s infinite alternate;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+
+  to {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
 }
 </style>

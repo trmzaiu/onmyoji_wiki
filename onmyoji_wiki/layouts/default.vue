@@ -248,12 +248,13 @@ export default {
 };
 </script>
 
+<style src="@/pages/styles.css"></style>
+
 <style>
 #app {
   font-family: "Rubik", "Nunito", "Noto Sans TC", "stkaiti", sans-serif;
   background: #891727;
   color: #f4f1e8;
-  min-height: 100vh;
 }
 
 #app.lang-en {
@@ -300,7 +301,7 @@ export default {
 }
 
 .nav-container {
-  width: 950px; /* Giới hạn độ rộng */
+  width: 100%; /* Giới hạn độ rộng */
   margin: 0 auto; /* Nằm giữa màn hình */
   display: flex;
   justify-content: flex-start; /* Cho nội dung canh trái */
@@ -428,67 +429,6 @@ export default {
   color: #3a3a3a;
 }
 
-.toggle-switch {
-  position: relative;
-  width: 44px;
-  height: 22px;
-  flex-shrink: 0;
-}
-
-.toggle-switch input[type="checkbox"] {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  background-color: #ccc;
-  border-radius: 22px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.4s;
-}
-
-.slider::before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.3s;
-}
-
-.toggle-switch input:checked + .slider {
-  background-color: #a51919;
-}
-.toggle-switch input:checked + .slider::before {
-  transform: translateX(22px);
-}
-
-.toggle-labels {
-  position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 0;
-  display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-  font-size: 10px;
-  font-weight: bold;
-  color: white;
-  padding: 0 5px;
-  pointer-events: none;
-  user-select: none;
-}
-
 .back-to-top {
   position: fixed;
   bottom: 80px;
@@ -529,13 +469,5 @@ export default {
 
 .back-to-bottom:hover {
   background: #d01f1f;
-}
-
-.main-container {
-  max-width: 950px;
-  margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  gap: 30px;
 }
 </style>

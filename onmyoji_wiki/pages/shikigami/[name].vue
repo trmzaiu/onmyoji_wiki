@@ -3843,7 +3843,9 @@ const addCKeywordListeners = () => {
   </div>
 </template>
 
-<style>
+<style src="@/pages/styles.css"></style>
+
+<style scoped>
 .shikigami-profile {
   display: flex;
   border: 2px solid #a51919;
@@ -4016,28 +4018,7 @@ const addCKeywordListeners = () => {
   letter-spacing: 1px;
 }
 
-.content-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid #3a3a3a4d;
-}
 
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.character-title {
-  font-family: "Rubik", sans-serif;
-  font-size: 42px;
-  font-weight: medium;
-  color: #3a3a3a;
-  margin-bottom: 10px;
-}
 
 .toggle-switch {
   position: relative;
@@ -4126,15 +4107,6 @@ const addCKeywordListeners = () => {
 
 .table-cell {
   border: 1px solid #a51919;
-}
-
-.session-title {
-  color: #3a3a3a;
-  font-size: 24px;
-  font-weight: 500;
-  overflow: auto;
-  padding: 6px 0;
-  border-bottom: 0.5px solid #9c9c9c;
 }
 
 .lang-en {
