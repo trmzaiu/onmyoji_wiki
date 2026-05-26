@@ -6,13 +6,12 @@
 
   --text-primary: #a51919;
   --text-secondary: #ffffff;
-  --text-tertiary: #b0b0b0;
+  --text-tertiary: #f4f1e8;
 }
 
 /* Font */
-.stkaiti {
-  font-family: "stkaiti", serif;
-  font-size: 16px;
+.lang-zh {
+  font-family: "stkaiti", sans-serif;
 }
 
 /* Layout */
@@ -24,7 +23,7 @@
   margin: 0 auto;
 
   display: grid;
-  gap: 30px;
+  
 
   box-sizing: border-box;
 }
@@ -133,7 +132,7 @@
   color: var(--text-secondary);
 
   padding: 8px 14px;
-  margin: 30px 0;
+  margin: 50px 0 30px 0;
 
   border-left: 3px solid var(--text-primary);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -167,3 +166,40 @@
     transparent
   );
 }
+
+/* Table Name*/
+.table-title th {
+  font-weight: bold;
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 8px;
+  font-family: "Bona Nova SC", serif;
+  font-size: 20px;
+}
+
+.table-row td {
+  padding: 8px;
+  color: var(--text-secondary);
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 14px;
+}
+
+.table-row strong {
+  color: var(--text-tertiary);
+}
+
+.table-row .lang-zh {
+  font-size: 18px;
+}
+
+.table-title-row {
+  font-family: "Fira Sans", sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.table-cell {
+  font-family: "Fira Sans", sans-serif;
+  font-size: 14px;
+}
+

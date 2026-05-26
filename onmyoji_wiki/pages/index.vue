@@ -1,14 +1,13 @@
 <script setup></script>
 
 <template>
-  <div class="main-container">
+  <div class="container">
     <div class="content-section flex flex-col gap-4">
-      <!-- Hàng 1: Tiêu đề -->
       <div class="header-row">
-        <div class="character-title">Home</div>
+        <div class="title">Home</div>
       </div>
 
-      <div class="text-black">
+      <div>
         <b>Onmyoji </b>is a 3D RPG developed by NetEase Games. Follow the legendary
         onmyoji <b><a href="/onmyoji/Seimei" class="text-[#a51919]">Seimei</a></b> in his
         in his journey to recover his lost memories while encountering demons of all
@@ -94,13 +93,13 @@
                 <a class="cursor-pointer" href="/onmyoji">
                   <img src="/assets/stats/Onmyoji.webp" alt="Onmyoji" />
                 </a>
-                <span><a href="/onmyoji" class="text-black hover:text-[#a51919]">Onmyoji</a></span>
+                <span><a href="/onmyoji">Onmyoji</a></span>
               </div>
               <div class="cell">
                 <a class="cursor-pointer" href="/shikigami">
                   <img src="/assets/stats/Shikigami.webp" alt="Shikigami" />
                 </a>
-                <span><a href="/shikigami" class="text-black hover:text-[#a51919]">Shikigami</a></span>
+                <span><a href="/shikigami">Shikigami</a></span>
               </div>
             </div>
           </td>
@@ -129,7 +128,7 @@
                 <a class="cursor-pointer" href="/pets">
                   <img src="/assets/stats/Pets.webp" alt="Pets" />
                 </a>
-                <span><a href="/pets" class="text-black hover:text-[#a51919]">Pets</a></span>
+                <span><a href="/pets">Pets</a></span>
               </div>
               <div class="cell">
                 <img src="/assets/stats/Duel.webp" alt="Duel" />
@@ -139,7 +138,7 @@
                 <a class="cursor-pointer" href="/souls">
                   <img src="/assets/stats/Souls.webp" alt="Souls" />
                 </a>
-                <span><a href="/souls" class="text-black hover:text-[#a51919]">Souls</a></span>
+                <span><a href="/souls">Souls</a></span>
               </div>
             </div>
           </td>
@@ -151,39 +150,27 @@
   </div>
 </template>
 
+<style scoped src="@/pages/styles.css"></style>
+
 <style scoped>
-.main-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  gap: 30px;
-}
-
-.content-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid #3a3a3a4d;
-}
-
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
 .cell {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
 }
 
 .cell span {
-  color: black;
+  color: var(--text-secondary);
   font-weight: 800;
+  cursor: pointer;
+  font-family: "Bona Nova SC", serif;
 }
+
+.cell:hover span {
+  color: var(--text-primary);
+}
+
+
 </style>

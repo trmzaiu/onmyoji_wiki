@@ -496,7 +496,6 @@ const processTextWithTooltips = (text) => {
 
     let keyword = keywordForDisplay || "";
 
-    // grammar / casing rules
     if (type === "f" || type === "l") {
       if (keyword.startsWith("HP ")) keyword = "HP " + keyword.slice(3).toLowerCase();
       else if (keyword.toUpperCase() === "HP") keyword = "HP";
@@ -539,13 +538,12 @@ const processTextWithTooltips = (text) => {
 
       const value = isEnglish.value ? textEN : textVN;
 
-      // 👇 push vào array thay vì overwrite
       if (!effectKeywordOverrides.has(String(id))) {
         effectKeywordOverrides.set(String(id), []);
       }
       effectKeywordOverrides.get(String(id)).push(value);
 
-      return `<${tag}>${id}</${tag}>`; // ✅ giữ nguyên format
+      return `<${tag}>${id}</${tag}>`;
     }
   );
 
@@ -665,13 +663,13 @@ const matchedSubNotes = computed(() => {
     return res;
   };
 
-  const rootId = tooltipData.value.id; // ✅ phải có
+  const rootId = tooltipData.value.id;
   const subs = findNotes(tooltipData.value.description, new Set([rootId]));
 
   const subIds = new Set(subs.map((s) => s.id));
 
   return subs.map((sub) => {
-    const exclude = new Set([rootId, ...subIds, sub.id]); // chặn root + các sub + self
+    const exclude = new Set([rootId, ...subIds, sub.id]);
     const subNotes = findNotes(sub.description, exclude);
     return { ...sub, subNotes };
   });
@@ -691,14 +689,12 @@ const highlightProfileText = (profile) => {
     let targetType = null;
     let targetData = null;
 
-    // check onmyoji dạng o-<id>
     const onmyojiMatch = content.match(/^o-(\d+)$/i);
     if (onmyojiMatch) {
       const id = parseInt(onmyojiMatch[1], 10);
       targetData = onmyojiList.value?.find((o) => o.id === id);
       if (targetData) targetType = "onmyoji";
     } else {
-      // mặc định là shikigami id
       const shikiId = parseInt(content, 10);
       if (!isNaN(shikiId)) {
         targetData = shikigamiList.value?.find((s) => s.id === shikiId);
@@ -727,7 +723,6 @@ const highlightProfileText = (profile) => {
     let targetType = null;
     let targetData = null;
 
-    // check onmyoji dạng o-<id>
     const onmyojiMatch = content.match(/^o-(\d+)$/i);
     if (onmyojiMatch) {
       const id = parseInt(onmyojiMatch[1], 10);
@@ -1360,11 +1355,11 @@ const addCKeywordListeners = () => {
 </script>
 
 <template>
-  <div v-if="shikigami">
+  <div class="container" v-if="shikigami">
     <div class="content-section flex flex-col gap-4">
       <!-- Name -->
       <div class="header-row">
-        <div class="character-title">{{ shikigami.name.jp[1] }}</div>
+        <div class="title">{{ shikigami.name.jp[1] }}</div>
         <label class="toggle-switch" title="Switch Language">
           <input type="checkbox" v-model="isEnglish" />
           <span class="slider"></span>
@@ -1375,16 +1370,13 @@ const addCKeywordListeners = () => {
         </label>
       </div>
 
-      <!-- Image + Name -->
       <div class="flex gap-6">
-        <!-- Image -->
-        <div class="w-2/3 mx-auto">
-          <!-- Images -->
-          <div class="flex justify-center items-center">
+        <div class="character-image-wrapper">
+          <div class="character-image-box">
             <img
               :src="`/assets/shikigami/images/${route.params.name}.webp`"
               :alt="shikigami.name.jp[1]"
-              class="max-h-full max-w-full object-contain transition-opacity hover:scale-115 transition-transform duration-300"
+              class="character-image"
             />
           </div>
         </div>
@@ -1394,7 +1386,7 @@ const addCKeywordListeners = () => {
           <table class="w-full">
             <thead>
               <tr class="table-title">
-                <th class="p-2 relative text-[20px]" colspan="4">
+                <th class="p-2 relative" colspan="4">
                   <div>{{ shikigami.name.jp[1] }}</div>
                   <img
                     :src="`/assets/rarity/${shikigami.rarity}.webp`"
@@ -1409,7 +1401,7 @@ const addCKeywordListeners = () => {
               </tr>
             </thead>
             <tbody>
-              <tr class="table-row text-sm">
+              <tr class="table-row">
                 <td class="px-4 py-2">
                   <strong>CN</strong>
                 </td>
@@ -1418,7 +1410,7 @@ const addCKeywordListeners = () => {
                   <div>{{ shikigami.name.cn[1] }}</div>
                 </td>
               </tr>
-              <tr class="table-row text-sm">
+              <tr class="table-row">
                 <td class="px-4 py-2">
                   <strong>JP</strong>
                 </td>
@@ -1427,7 +1419,7 @@ const addCKeywordListeners = () => {
                   <div>{{ shikigami.name.jp[1] }}</div>
                 </td>
               </tr>
-              <tr class="table-row text-sm">
+              <tr class="table-row">
                 <td class="px-4 py-2">
                   <strong>GL</strong>
                 </td>
@@ -1435,18 +1427,18 @@ const addCKeywordListeners = () => {
                   <div>{{ shikigami.name.en }}</div>
                 </td>
               </tr>
-              <tr class="table-row text-sm">
+              <tr class="table-row">
                 <td class="px-4 py-2">
                   <strong>VN</strong>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div class="lang-vi font-[500]">{{ shikigami.name.vn }}</div>
+                  <div>{{ shikigami.name.vn }}</div>
                 </td>
               </tr>
               <tr>
                 <td class="table-title-row" colspan="4">Voice Actor</td>
               </tr>
-              <tr class="table-row text-sm">
+              <tr class="table-row">
                 <td class="px-4 py-2">
                   <strong>{{
                     shikigami.id === 257 || shikigami.id === 256 ? "CN" : "JP"
@@ -1482,7 +1474,7 @@ const addCKeywordListeners = () => {
                       :title="material.name"
                     />
                     <span
-                      class="absolute bottom-0 right-0 text-white font-bold"
+                      class="absolute bottom-0 right-0"
                       style="
                         text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
                           1px 1px 0 #000;
@@ -1512,19 +1504,15 @@ const addCKeywordListeners = () => {
                             / /g,
                             '_'
                           )}_Shard.webp`"
-                          :alt="ver"
                           class="h-16 w-16 object-contain mb-1"
                           @error="
                             (event) => (event.target.src = '/assets/Unknown_Shard.webp')
                           "
                         />
                       </a>
-                      <router-link
-                        :to="`/shikigami/${ver.replace(/ /g, '_')}`"
-                        class="text-black text-center font-bold hover:text-[#a51919] text-[14px]"
-                      >
+                      <a :href="`/shikigami/${ver.replace(/ /g, '_')}`">
                         {{ ver }}
-                      </router-link>
+                      </a>
                     </div>
                   </div>
                 </td>
@@ -1532,14 +1520,14 @@ const addCKeywordListeners = () => {
               <tr>
                 <td class="table-title-row" colspan="4">Release Date</td>
               </tr>
-              <tr class="table-row text-sm">
+              <tr class="table-row">
                 <td class="px-4 py-2">
                   <p>CN</p>
                   <p v-if="shikigami.date.en">GL</p>
                 </td>
                 <td class="px-4 py-2" colspan="3">
-                  <div class="font-[500]">{{ shikigami.date.cn }}</div>
-                  <div v-if="shikigami.date.en" class="font-[500]">
+                  <div>{{ shikigami.date.cn }}</div>
+                  <div v-if="shikigami.date.en">
                     {{ shikigami.date.en }}
                   </div>
                 </td>
@@ -1551,46 +1539,32 @@ const addCKeywordListeners = () => {
 
       <!-- Profile -->
       <div
-        class="text-black text-justify mt-2 whitespace-pre-line"
+        class="profile-section"
         v-if="shikigami.profile !== null"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
         v-html="highlightProfileText(shikigami.profile, isEnglish)"
       ></div>
 
       <!-- Content -->
-      <div
-        class="flex border-b border-gray-300 mt-5"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
+      <div class="tabs">
         <button
-          class="flex py-2 px-4 text-center"
-          :class="
-            activeTab === 'Main'
-              ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-              : 'text-[#a3a3a3] cursor-pointer'
-          "
+          class="tab-button"
+          :class="{ active: activeTab === 'Main' }"
           @click="changeTab('Main')"
         >
           {{ isEnglish ? "Main" : "Chính Điện" }}
         </button>
+
         <button
-          class="flex py-2 px-4 text-center"
-          :class="
-            activeTab === 'Gallery'
-              ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-              : 'text-[#a3a3a3] cursor-pointer'
-          "
+          class="tab-button"
+          :class="{ active: activeTab === 'Gallery' }"
           @click="changeTab('Gallery')"
         >
           {{ isEnglish ? "Gallery" : "Hoạ Phòng" }}
         </button>
+
         <button
-          class="flex py-2 px-4 text-center"
-          :class="
-            activeTab === 'Dialogue'
-              ? 'border-b-2 border-[#a51919] text-[#a51919] font-semibold'
-              : 'text-[#a3a3a3] cursor-pointer'
-          "
+          class="tab-button"
+          :class="{ active: activeTab === 'Dialogue' }"
           @click="changeTab('Dialogue')"
         >
           {{ isEnglish ? "Dialogue" : "Lời Thoại" }}
@@ -1601,25 +1575,22 @@ const addCKeywordListeners = () => {
       <div
         class="w-full"
         v-show="activeTab === 'Main'"
-        :class="[
-          activeTab === 'Main' ? 'opacity-100' : 'opacity-0',
-          isEnglish ? 'lang-en' : 'lang-vi',
-        ]"
+        :class="activeTab === 'Main' ? 'opacity-100' : 'opacity-0'"
       >
         <!-- Stats -->
-        <h2 class="session-title">
+        <h2 class="session-title top-0">
           {{ isEnglish ? "Stats" : "Chỉ số" }}
         </h2>
-        <div class="mt-2" style="display: block">
-          <table class="stats" style="padding: 0 20px; border-bottom: 1px solid #a51919">
+        <div class="stats-wrapper">
+          <table class="stats-table">
             <tbody>
               <!-- HEADER -->
-              <tr class="" style="color: #a51919">
+              <tr class="stats-header">
                 <th></th>
                 <th></th>
 
                 <th colspan="2">
-                  <div class="font-bold">
+                  <div class="stats-title">
                     {{
                       shikigami.rarity !== "SP" &&
                       shikigami.rarity !== "UR" &&
@@ -1635,7 +1606,7 @@ const addCKeywordListeners = () => {
                 </th>
 
                 <th colspan="2" v-if="hasLevel40">
-                  <div class="font-bold">
+                  <div class="stats-title">
                     {{
                       shikigami.rarity !== "SP" &&
                       shikigami.rarity !== "UR" &&
@@ -1655,43 +1626,24 @@ const addCKeywordListeners = () => {
               </tr>
 
               <!-- ICON -->
-              <tr style="color: #a51919">
+              <tr class="stats-header">
                 <th></th>
                 <th></th>
 
-                <th colspan="2" style="position: relative">
-                  <figure
-                    style="
-                      position: absolute;
-                      top: -5px;
-                      left: 50%;
-                      transform: translateX(-50%);
-                    "
-                  >
+                <th colspan="2" class="icon-cell">
+                  <figure class="stats-figure">
                     <img
                       :src="`/assets/shikigami/icons/${route.params.name}_Icon.webp`"
                       :alt="shikigami.name.jp[1]"
-                      style="
-                        object-fit: contain;
-                        border: 1px solid #a51919;
-                        padding: 4px;
-                        background: #fff;
-                      "
+                      class="stats-icon"
                       width="90"
                       @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
                     />
                   </figure>
                 </th>
 
-                <th colspan="2" v-if="hasLevel40" style="position: relative">
-                  <figure
-                    style="
-                      position: absolute;
-                      top: -5px;
-                      left: 50%;
-                      transform: translateX(-50%);
-                    "
-                  >
+                <th colspan="2" v-if="hasLevel40" class="icon-cell">
+                  <figure class="stats-figure">
                     <img
                       :src="`/assets/shikigami/icons/${route.params.name}_Icon${
                         shikigami.rarity !== 'SP' &&
@@ -1701,12 +1653,7 @@ const addCKeywordListeners = () => {
                           : ''
                       }.webp`"
                       :alt="shikigami.name.jp[1]"
-                      style="
-                        object-fit: contain;
-                        border: 1px solid #a51919;
-                        padding: 4px;
-                        background: #fff;
-                      "
+                      class="stats-icon"
                       width="90"
                       @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
                     />
@@ -1719,63 +1666,55 @@ const addCKeywordListeners = () => {
 
               <!-- SPACING -->
               <tr>
-                <th colspan="8">&nbsp;</th>
+                <th colspan="8" class="spacing-row"></th>
               </tr>
 
-              <tr
-                style="
-                  color: #a51919;
-                  border-left: 1px solid #a51919;
-                  border-top: 1px solid #a51919;
-                  border-right: 1px solid #a51919;
-                "
-              >
-                <th colspan="8">&nbsp;</th>
+              <!-- BORDER -->
+              <tr class="top-border-row spacing-row">
+                <th colspan="8"></th>
               </tr>
 
               <!-- ATK -->
-              <tr style="color: #a51919; border-left: 1px solid #a51919">
-                <th></th>
+              <tr class="stats-row">
+                <th>&nbsp;</th>
 
-                <th class="label-cell p-2">
-                  <img src="/assets/stats/ATK.webp" alt="ATK" />
+                <th class="label-cell">
+                  <img src="/assets/stats/ATK.webp" alt="ATK"/>
                   ATK
                 </th>
 
-                <td class="centered-number">
-                  <div class="flex justify-end">
+                <td>
+                  <div class="rank-cell">
                     <img
                       :src="getATKImage(shikigami.stats.ATK[0])"
                       :alt="getATKRank(shikigami.stats.ATK[0])"
-                      class="w-6 h-6"
                     />
                   </div>
                 </td>
 
-                <td class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td>
+                  <div class="value-cell">
                     {{ shikigami.stats.ATK[0] }}
                   </div>
                 </td>
 
-                <td v-if="hasLevel40" class="centered-number">
-                  <div class="flex justify-end">
+                <td v-if="hasLevel40">
+                  <div class="rank-cell">
                     <img
                       :src="getATKEvoImage(shikigami.stats.ATK[1])"
                       :alt="getATKEvoRank(shikigami.stats.ATK[1])"
-                      class="w-6 h-6"
                     />
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40" class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td v-if="hasLevel40">
+                  <div class="value-cell">
                     {{ shikigami.stats.ATK[1] }}
 
                     <span
                       v-if="shikigami.evolution && shikigami.evolution.no === 1"
-                      class="text-[#c85a5a]"
+                      class="increase-cell"
                     >
                       +{{
                         Math.round(
@@ -1788,7 +1727,7 @@ const addCKeywordListeners = () => {
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="flex justify-start">
+                  <div class="bonus-stat">
                     +{{
                       Math.round(
                         shikigami.stats.ATK[1] *
@@ -1802,11 +1741,11 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td style="border-right: 1px solid #a51919"></td>
+                <td class="right-border"></td>
               </tr>
 
               <!-- HP -->
-              <tr style="color: #a51919; border-left: 1px solid #a51919">
+              <tr class="stats-row">
                 <th></th>
 
                 <th class="label-cell">
@@ -1814,8 +1753,8 @@ const addCKeywordListeners = () => {
                   HP
                 </th>
 
-                <td class="centered-number">
-                  <div class="flex justify-end">
+                <td>
+                  <div class="rank-cell">
                     <img
                       :src="getHPImage(shikigami.stats.HP[0])"
                       :alt="getHPRank(shikigami.stats.HP[0])"
@@ -1824,14 +1763,14 @@ const addCKeywordListeners = () => {
                   </div>
                 </td>
 
-                <td class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td>
+                  <div class="value-cell">
                     {{ shikigami.stats.HP[0] }}
                   </div>
                 </td>
 
-                <td v-if="hasLevel40" class="centered-number">
-                  <div class="flex justify-end">
+                <td v-if="hasLevel40">
+                  <div class="rank-cell">
                     <img
                       :src="getHPEvoImage(shikigami.stats.HP[1])"
                       :alt="getHPEvoRank(shikigami.stats.HP[1])"
@@ -1841,13 +1780,13 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40" class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td v-if="hasLevel40">
+                  <div class="value-cell">
                     {{ shikigami.stats.HP[1] }}
 
                     <span
                       v-if="shikigami.evolution && shikigami.evolution.no === 4"
-                      class="text-[#c85a5a]"
+                      class="increase-cell"
                     >
                       +{{
                         Math.round(
@@ -1860,7 +1799,7 @@ const addCKeywordListeners = () => {
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="flex justify-start">
+                  <div class="bonus-stat">
                     +{{
                       Math.round(
                         shikigami.stats.HP[1] *
@@ -1874,11 +1813,11 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td style="border-right: 1px solid #a51919"></td>
+                <td class="right-border"></td>
               </tr>
 
               <!-- DEF -->
-              <tr style="color: #a51919; border-left: 1px solid #a51919">
+              <tr class="stats-row">
                 <th></th>
 
                 <th class="label-cell">
@@ -1887,7 +1826,7 @@ const addCKeywordListeners = () => {
                 </th>
 
                 <td class="centered-number">
-                  <div class="flex justify-end">
+                  <div class="rank-cell">
                     <img
                       :src="getDEFImage(shikigami.stats.DEF[0])"
                       :alt="getDEFRank(shikigami.stats.DEF[0])"
@@ -1897,13 +1836,13 @@ const addCKeywordListeners = () => {
                 </td>
 
                 <td class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                  <div class="value-cell">
                     {{ shikigami.stats.DEF[0] }}
                   </div>
                 </td>
 
                 <td v-if="hasLevel40" class="centered-number">
-                  <div class="flex justify-end">
+                  <div class="rank-cell">
                     <img
                       :src="getDEFEvoImage(shikigami.stats.DEF[1])"
                       :alt="getDEFEvoRank(shikigami.stats.DEF[1])"
@@ -1914,14 +1853,14 @@ const addCKeywordListeners = () => {
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40" class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                  <div class="value-cell">
                     {{ shikigami.stats.DEF[1] }}
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="flex justify-start">
+                  <div class="bonus-stat">
                     +{{
                       Math.round(
                         shikigami.stats.DEF[1] *
@@ -1935,11 +1874,11 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td style="border-right: 1px solid #a51919"></td>
+                <td class="right-border"></td>
               </tr>
 
               <!-- SPD -->
-              <tr style="color: #a51919; border-left: 1px solid #a51919">
+              <tr class="stats-row">
                 <th></th>
 
                 <th class="label-cell">
@@ -1947,40 +1886,39 @@ const addCKeywordListeners = () => {
                   SPD
                 </th>
 
-                <td class="centered-number">
-                  <div class="flex justify-end">
+                <td>
+                  <div class="rank-cell">
                     <img
                       :src="getSPDImage(shikigami.stats.SPD[0])"
                       :alt="getSPDRank(shikigami.stats.SPD[0])"
-                      class="w-6 h-6"
                     />
                   </div>
                 </td>
 
-                <td class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td>
+                  <div class="value-cell">
                     {{ shikigami.stats.SPD[0] }}
                   </div>
                 </td>
 
-                <td v-if="hasLevel40" class="centered-number">
-                  <div class="flex justify-end">
+                <td v-if="hasLevel40">
+                  <div class="rank-cell">
                     <img
                       :src="getSPDImage(shikigami.stats.SPD[1])"
                       :alt="getSPDRank(shikigami.stats.SPD[1])"
-                      class="w-6 h-6"
+
                     />
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40" class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td v-if="hasLevel40">
+                  <div class="value-cell">
                     {{ shikigami.stats.SPD[1] }}
 
                     <span
                       v-if="shikigami.evolution && shikigami.evolution.no === 7"
-                      class="text-[#c85a5a]"
+                      class="increase-cell"
                     >
                       +{{ shikigami.evolution.count }}
                     </span>
@@ -1989,7 +1927,7 @@ const addCKeywordListeners = () => {
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="flex justify-start">
+                  <div class="bonus-stat">
                     +{{
                       (shikigami.evolution && shikigami.evolution.no === 7
                         ? shikigami.stats.SPD[1] + shikigami.evolution.count
@@ -1999,11 +1937,11 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td style="border-right: 1px solid #a51919"></td>
+                <td class="right-border"></td>
               </tr>
 
               <!-- CRIT -->
-              <tr style="color: #a51919; border-left: 1px solid #a51919">
+              <tr class="stats-row">
                 <th></th>
 
                 <th class="label-cell">
@@ -2011,8 +1949,8 @@ const addCKeywordListeners = () => {
                   Crit
                 </th>
 
-                <td class="centered-number">
-                  <div class="flex justify-end">
+                <td>
+                  <div class="rank-cell">
                     <img
                       :src="getCritImage(shikigami.stats.Crit[0])"
                       :alt="getCritRank(shikigami.stats.Crit[0])"
@@ -2021,12 +1959,14 @@ const addCKeywordListeners = () => {
                   </div>
                 </td>
 
-                <td class="centered-number w-[100px]">
-                  <div class="flex justify-start">{{ shikigami.stats.Crit[0] }}%</div>
+                <td>
+                  <div class="value-cell">
+                    {{ shikigami.stats.Crit[0] }}%
+                  </div>
                 </td>
 
-                <td v-if="hasLevel40" class="centered-number">
-                  <div class="flex justify-end">
+                <td v-if="hasLevel40">
+                  <div class="rank-cell">
                     <img
                       :src="getCritImage(shikigami.stats.Crit[1])"
                       :alt="getCritRank(shikigami.stats.Crit[1])"
@@ -2036,13 +1976,15 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40" class="centered-number w-[100px]">
-                  <div class="flex justify-start">{{ shikigami.stats.Crit[1] }}%</div>
+                <td v-if="hasLevel40">
+                  <div class="value-cell">
+                    {{ shikigami.stats.Crit[1] }}%
+                  </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="flex justify-start">
+                  <div class="bonus-stat">
                     +{{
                       (shikigami.evolution && shikigami.evolution.no === 6
                         ? shikigami.stats.Crit[1] + shikigami.evolution.count
@@ -2052,11 +1994,11 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td style="border-right: 1px solid #a51919"></td>
+                <td class="right-border"></td>
               </tr>
 
               <!-- CDMG -->
-              <tr style="color: #a51919; border-left: 1px solid #a51919">
+              <tr class="stats-row">
                 <th></th>
 
                 <th class="label-cell">
@@ -2064,26 +2006,26 @@ const addCKeywordListeners = () => {
                   Crit DMG
                 </th>
 
-                <td class="centered-number"></td>
+                <td></td>
 
-                <td class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td>
+                  <div class="value-cell">
                     {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[0] : "150" }}%
                   </div>
                 </td>
 
-                <td v-if="hasLevel40" class="centered-number"></td>
+                <td v-if="hasLevel40"></td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40" class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td v-if="hasLevel40">
+                  <div class="value-cell">
                     {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] : "150" }}%
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="flex justify-start">
+                  <div class="bonus-stat">
                     +{{
                       shikigami.stats.CritDMG
                         ? shikigami.stats.CritDMG[1] - shikigami.stats.CritDMG[0]
@@ -2093,11 +2035,11 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td style="border-right: 1px solid #a51919"></td>
+                <td class="right-border"></td>
               </tr>
 
               <!-- HIT -->
-              <tr style="color: #a51919; border-left: 1px solid #a51919">
+              <tr class="stats-row">
                 <th></th>
 
                 <th class="label-cell">
@@ -2105,19 +2047,19 @@ const addCKeywordListeners = () => {
                   Effects HIT
                 </th>
 
-                <td class="centered-number"></td>
+                <td></td>
 
-                <td class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td>
+                  <div class="value-cell">
                     {{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[0] : "0" }}%
                   </div>
                 </td>
 
-                <td v-if="hasLevel40" class="centered-number"></td>
+                <td v-if="hasLevel40"></td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40" class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td v-if="hasLevel40">
+                  <div class="value-cell">
                     {{
                       (shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : 0) +
                       (shikigami.evolution && shikigami.evolution.no === 9
@@ -2129,7 +2071,7 @@ const addCKeywordListeners = () => {
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="flex justify-start">
+                  <div class="bonus-stat">
                     +{{
                       (shikigami.stats.EffectHIT
                         ? shikigami.stats.EffectHIT[1] - shikigami.stats.EffectHIT[0]
@@ -2142,11 +2084,11 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td style="border-right: 1px solid #a51919"></td>
+                <td class="right-border"></td>
               </tr>
 
               <!-- RES -->
-              <tr style="color: #a51919; border-left: 1px solid #a51919">
+              <tr class="stats-row">
                 <th></th>
 
                 <th class="label-cell">
@@ -2154,19 +2096,19 @@ const addCKeywordListeners = () => {
                   Effects RES
                 </th>
 
-                <td class="centered-number"></td>
+                <td></td>
 
-                <td class="centered-number w-[100px]">
+                <td class="value-cell">
                   <div class="flex justify-start">
                     {{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[0] : "0" }}%
                   </div>
                 </td>
 
-                <td v-if="hasLevel40" class="centered-number"></td>
+                <td v-if="hasLevel40"></td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40" class="centered-number w-[100px]">
-                  <div class="flex justify-start">
+                <td v-if="hasLevel40">
+                  <div class="value-cell">
                     {{
                       (shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : 0) +
                       (shikigami.evolution && shikigami.evolution.no === 10
@@ -2178,7 +2120,7 @@ const addCKeywordListeners = () => {
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="flex justify-start">
+                  <div class="bonus-stat">
                     +{{
                       (shikigami.stats.EffectRES
                         ? shikigami.stats.EffectRES[1] - shikigami.stats.EffectRES[0]
@@ -2191,26 +2133,24 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td style="border-right: 1px solid #a51919"></td>
+                <td class="right-border"></td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <!-- Skills -->
-        <h2 class="session-title mt-5">
+        <h2 class="session-title">
           {{ isEnglish ? "Skills" : "Kĩ năng" }}
         </h2>
-        <div class="flex border-b border-gray-300 mb-4 mt-2">
+        <div class="tabs mb-5">
           <button
             v-for="(skill, index) in shikigami.skills.slice(0, 3)"
             :key="index"
             @click="changeSkill(index)"
             :class="[
-              'px-4 py-2',
-              activeSkillIndex === index
-                ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
-                : 'text-[#a3a3a3] cursor-pointer',
+              'tab-skill-button px-4 py-2',
+              { active: activeSkillIndex === index }
             ]"
           >
             <template v-if="index === 1 && shikigami.skills[3]?.tab === 2">
@@ -2250,10 +2190,8 @@ const addCKeywordListeners = () => {
             v-if="!['SP', 'UR', 'N'].includes(shikigami.rarity) && shikigami.id !== 193"
             @click="changeSkill(3)"
             :class="[
-              'px-4 py-2',
-              activeSkillIndex === 3
-                ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
-                : 'text-[#a3a3a3] cursor-pointer',
+              'tab-skill-button px-4 py-2',
+              { active: activeSkillIndex === 3 }
             ]"
           >
             Evolution Effect
@@ -2262,622 +2200,520 @@ const addCKeywordListeners = () => {
             v-if="shikigami.rarity === 'UR'"
             @click="changeSkill(3)"
             :class="[
-              'px-4 py-2',
-              activeSkillIndex === 3
-                ? 'font-bold border-b-2 border-[#a51919] text-[#a51919]'
-                : 'text-[#a3a3a3] cursor-pointer',
+              'tab-skill-button px-4 py-2',
+              { active: activeSkillIndex === 3 }
             ]"
           >
             Linked
           </button>
         </div>
         <div v-if="activeSkillIndex < 3">
-          <div>
-            <div style="position: relative; padding-left: 40px; margin-bottom: 20px">
-              <!-- Skill icon + title -->
-              <div>
-                <span
-                  style="
-                    background-color: #fff;
-                    overflow: hidden;
-                    border-radius: 100%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 95px;
-                    height: 95px;
-                    border: 1px solid #a51919;
-                    padding: 5px;
-                  "
+          <div class="skill-section">
+            <!-- Skill icon + title -->
+            <div class="skill-top">
+              <span class="skill-icon-wrapper">
+                <img
+                  :src="`/assets/shikigami/skills/${route.params.name}_Skill${
+                    activeSkillIndex + 1
+                  }.webp`"
+                  :alt="shikigami.skills[activeSkillIndex].name.en"
+                  :title="shikigami.skills[activeSkillIndex].name.en"
+                />
+              </span>
+              <span class="skill-heading">
+                <div class="skill-title">
+                  <span class="skill-name">
+                    {{
+                      isEnglish
+                        ? shikigami.skills[activeSkillIndex].name.en
+                        : shikigami.skills[activeSkillIndex].name.vn
+                    }}
+                  </span>
+                  <span class="skill-sub-name">
+                    ({{
+                      shikigami.skills[activeSkillIndex].name.cn ===
+                      shikigami.skills[activeSkillIndex].name.jp
+                        ? shikigami.skills[activeSkillIndex].name.cn
+                        : shikigami.skills[activeSkillIndex].name.cn +
+                          " / " +
+                          shikigami.skills[activeSkillIndex].name.jp
+                    }})
+                  </span>
+                  <button
+                    class="skill-edit-btn"
+                    @click="editSkill(shikigami.skills[activeSkillIndex])"
+                  >
+                    <i class="fas fa-edit"></i>
+                    <!-- dùng font-awesome -->
+                  </button>
+                </div>
+              </span>
+            </div>
+
+            <!-- Skill description -->
+            <div class="skill-content">
+              <div class="skill-header">
+                <div class="skill-badges">
+                  <div
+                    v-for="tagId in shikigami.skills[activeSkillIndex].tags"
+                    :key="tagId"
+                    class="skill-badge"
+                  >
+                    <div
+                      class="skill-badge-bg tint-base"
+                      :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
+                    ></div>
+
+                    <span class="skill-badge-text">
+                      {{ tagMap?.[tagId]?.name }}
+                    </span>
+                  </div>
+                </div>
+                <div class="skill-info">
+                  <span v-if="shikigami.skills[activeSkillIndex].cooldown !== 0">
+                    <b>CD:</b>
+                    {{ shikigami.skills[activeSkillIndex].cooldown }}
+                  </span>
+                  <span>
+                    {{ shikigami.skills[activeSkillIndex].onibi }}
+                    <img src="/assets/Onibi.webp" alt="Onibi" />
+                  </span>
+                </div>
+                
+              </div>
+              <hr class="skill-divider" />
+
+              <div class="skill-voice-wrapper" v-if="shikigami.skills[activeSkillIndex].voice">
+                <p class="skill-voice">
+                  "{{ shikigami.skills[activeSkillIndex].voice }}"
+                </p>
+              </div>
+              <p
+                class="skill-description"
+                v-html="
+                  processTextWithTooltips(
+                    isEnglish
+                      ? shikigami.skills[activeSkillIndex].description.en
+                      : shikigami.skills[activeSkillIndex].description.vn
+                  )
+                "
+              ></p>
+
+              <div v-if="shikigami.id === 107 && activeSkillIndex === 0">
+                <hr class="skill-divider" />
+
+                <b
+                  class="sub-skill-title"
+                  @click="activeSkillIndex = 1"
                 >
-                  <img
-                    :src="`/assets/shikigami/skills/${route.params.name}_Skill${
-                      activeSkillIndex + 1
-                    }.webp`"
-                    :alt="shikigami.skills[activeSkillIndex].name.en"
-                    :title="shikigami.skills[activeSkillIndex].name.en"
-                  />
-                </span>
-                <span
-                  style="
-                    display: table-cell;
-                    vertical-align: bottom;
-                    font-weight: 900;
-                    font-size: 20px;
-                    color: #a51919;
-                    height: 70px;
-                    padding-bottom: 5px;
-                    padding-left: 65px;
-                    padding-right: 5px;
-                  "
-                >
-                  <div class="skill-title">
-                    <span class="skill-name">
+                  {{
+                    isEnglish
+                      ? shikigami.skills[1].name.en
+                      : shikigami.skills[1].name.vn
+                  }}
+                </b>
+
+                <div class="sub-skill-grid">
+                  <div
+                    v-for="i in [4, 5, 6, 7]"
+                    :key="i"
+                    class="sub-skill-item"
+                  >
+                    <img
+                      :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
+                        i - 3
+                      }.webp`"
+                    />
+
+                    <span
+                      class="sub-skill-name"
+                      @click="activeSkillIndex = 1"
+                    >
                       {{
                         isEnglish
-                          ? shikigami.skills[activeSkillIndex].name.en
-                          : shikigami.skills[activeSkillIndex].name.vn
+                          ? shikigami.skills[i - 1].name.en.split(" ")[0]
+                          : shikigami.skills[i - 1].name.vn
+                              .split(" ")
+                              .slice(0, 2)
+                              .join(" ")
                       }}
                     </span>
-                    <span class="skill-sub-name lang-zh">
-                      ({{
-                        shikigami.skills[activeSkillIndex].name.cn ===
-                        shikigami.skills[activeSkillIndex].name.jp
-                          ? shikigami.skills[activeSkillIndex].name.cn
-                          : shikigami.skills[activeSkillIndex].name.cn +
-                            " / " +
-                            shikigami.skills[activeSkillIndex].name.jp
-                      }})
-                    </span>
-                    <button
-                      class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
-                      @click="editSkill(shikigami.skills[activeSkillIndex])"
-                    >
-                      <i class="fas fa-edit"></i>
-                      <!-- dùng font-awesome -->
-                    </button>
                   </div>
-                </span>
+                </div>
               </div>
 
-              <!-- Skill description -->
-              <div style="padding: 10px 20px; border: 1px solid #a51919">
-                <div class="text-black pb-5 skill-header">
-                  <div class="skill-info flex">
-                    <span style="margin-left: 25px">
-                      <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
-                      {{ shikigami.skills[activeSkillIndex].type }}
-                    </span>
-                    <span class="flex" style="margin-left: 40px">
-                      <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                      <img src="/assets/Onibi.webp" alt="Onibi" />
-                      {{ shikigami.skills[activeSkillIndex].onibi }}
-                    </span>
-                    <span style="margin-left: 40px">
-                      <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
-                      {{ shikigami.skills[activeSkillIndex].cooldown }}
-                    </span>
-                  </div>
-                  <div class="skill-badges flex flex-wrap gap-2">
-                    <div
-                      v-for="tagId in shikigami.skills[activeSkillIndex].tags"
-                      :key="tagId"
-                      class="relative inline-flex items-center justify-center w-25 h-6 overflow-hidden rounded-md"
-                    >
-                      <!-- brush nền -->
-                      <div
-                        class="absolute inset-0 tint-base"
-                        :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
-                      ></div>
+              <div v-if="shikigami.id === 107 && activeSkillIndex === 2">
+                <hr class="skill-divider" />
 
-                      <!-- chữ đè lên -->
-                      <span class="relative z-10 text-[12px] text-white">
-                        {{ tagMap?.[tagId]?.name }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+                <b
+                  class="sub-skill-title"
+                  @click="activeSkillIndex = 1"
+                >
+                  {{
+                    isEnglish
+                      ? shikigami.skills[1].name.en
+                      : shikigami.skills[1].name.vn
+                  }}
+                </b>
 
-                <div class="w-[80%] mx-auto">
-                  <p
-                    class="text-center text-[#a3a3a3] voice-font"
-                    v-if="shikigami.skills[activeSkillIndex].voice"
+                <div class="sub-skill-grid">
+                  <div
+                    v-for="i in [4, 5, 6, 7]"
+                    :key="i"
+                    class="sub-skill-item"
                   >
-                    "{{ shikigami.skills[activeSkillIndex].voice }}"
-                  </p>
+                    <img
+                      :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
+                        i + 1
+                      }.webp`"
+                    />
+
+                    <span
+                      class="sub-skill-name"
+                      @click="activeSkillIndex = 1"
+                    >
+                      {{
+                        isEnglish
+                          ? shikigami.skills[i - 1].name.en.split(" ")[0]
+                          : shikigami.skills[i - 1].name.vn
+                              .split(" ")
+                              .slice(0, 2)
+                              .join(" ")
+                      }}
+                    </span>
+                  </div>
                 </div>
+              </div>
+
+              <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
+                <hr class="skill-divider" />
+
+                <b
+                  class="sub-skill-title"
+                  @click="activeSkillIndex = 1"
+                >
+                  {{
+                    isEnglish
+                      ? shikigami.skills[1].name.en
+                      : shikigami.skills[1].name.vn
+                  }}
+                </b>
+
+                <div class="sub-skill-grid">
+                  <div
+                    v-for="i in [4, 5, 6, 7]"
+                    :key="i"
+                    class="sub-skill-item"
+                  >
+                    <img
+                      :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
+                        i - 3
+                      }.webp`"
+                    />
+
+                    <span
+                      class="sub-skill-name"
+                      @click="activeSkillIndex = 1"
+                    >
+                      {{
+                        isEnglish
+                          ? shikigami.skills[i - 1].name.en
+                          : shikigami.skills[i - 1].name.vn
+                      }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="shikigami.id === 141 && activeSkillIndex === 1">
+                <hr class="skill-divider" />
+
+                <b class="text-black mb-3 block cursor-pointer hover:text-[#a51919]">
+                  {{ isEnglish ? "Knots" : "Duyên Kết" }}
+                </b>
+
+                <div class="sub-skill-grid">
+                  <div
+                    v-for="i in [1, 2, 3, 4]"
+                    :key="i"
+                    class="sub-skill-item"
+                  >
+                    <img
+                      :src="`/assets/shikigami/skills/${route.params.name}_Knot${i}.webp`"
+                    />
+
+                    <span
+                      class="sub-skill-name"
+                    >
+                      {{ isEnglish ? "Type " + i : "Loại " + i }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="skill-divider" />
+              <table class="skill-level-table"
+                v-if="
+                  Array.isArray(
+                    isEnglish
+                      ? shikigami.skills[activeSkillIndex].levels.en
+                      : shikigami.skills[activeSkillIndex].levels.vn
+                  )
+                "
+              >
+                <tbody>
+                  <tr>
+                    <th class="level-column">
+                      {{ isEnglish ? "Level" : "Cấp" }}
+                    </th>
+                    <th>
+                      {{ isEnglish ? "Effect" : "Hiệu ứng" }}
+                    </th>
+                  </tr>
+                  <tr
+                    v-for="lvl in isEnglish
+                      ? shikigami.skills[activeSkillIndex].levels.en
+                      : shikigami.skills[activeSkillIndex].levels.vn"
+                    :key="lvl.level"
+                  >
+                    <td class="level-cell">{{ lvl.level }}</td>
+                    <td
+                      class="effect-cell"
+                      v-html="processTextWithTooltips(lvl.effect)"
+                    ></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-else>
                 <p
-                  class="whitespace-pre-line text-justify"
-                  style="
-                    margin: 0;
-                    font-size: 16px;
-                    line-height: 1.5;
-                    color: #444;
-                    padding: 10px 0;
-                  "
+                  class="no-level"
                   v-html="
                     processTextWithTooltips(
-                      isEnglish
-                        ? shikigami.skills[activeSkillIndex].description.en
-                        : shikigami.skills[activeSkillIndex].description.vn
-                    )
-                  "
-                ></p>
-
-                <div v-if="shikigami.id === 107 && activeSkillIndex === 0">
-                  <hr
-                    style="border: none; border-top: 1px solid #a51919; margin: 8px 0"
-                  />
-
-                  <b
-                    class="text-black mb-3 block cursor-pointer hover:text-[#a51919]"
-                    @click="activeSkillIndex = 1"
-                  >
-                    {{
-                      isEnglish
-                        ? shikigami.skills[1].name.en
-                        : shikigami.skills[1].name.vn
-                    }}
-                  </b>
-
-                  <div class="flex justify-center gap-6">
-                    <div
-                      v-for="i in [4, 5, 6, 7]"
-                      :key="i"
-                      class="flex flex-col items-center"
-                    >
-                      <img
-                        :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
-                          i - 3
-                        }.webp`"
-                        class="w-24 h-24 object-contain mb-1"
-                      />
-
-                      <span
-                        class="text-black text-sm cursor-pointer hover:text-[#a51919]"
-                        @click="activeSkillIndex = 1"
-                      >
-                        {{
-                          isEnglish
-                            ? shikigami.skills[i - 1].name.en.split(" ")[0]
-                            : shikigami.skills[i - 1].name.vn
-                                .split(" ")
-                                .slice(0, 2)
-                                .join(" ")
-                        }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="shikigami.id === 107 && activeSkillIndex === 2">
-                  <hr
-                    style="border: none; border-top: 1px solid #a51919; margin: 8px 0"
-                  />
-
-                  <b
-                    class="text-black mb-3 block cursor-pointer hover:text-[#a51919]"
-                    @click="activeSkillIndex = 1"
-                  >
-                    {{
-                      isEnglish
-                        ? shikigami.skills[1].name.en
-                        : shikigami.skills[1].name.vn
-                    }}
-                  </b>
-
-                  <div class="flex justify-center gap-6">
-                    <div
-                      v-for="i in [4, 5, 6, 7]"
-                      :key="i"
-                      class="flex flex-col items-center"
-                    >
-                      <img
-                        :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
-                          i + 1
-                        }.webp`"
-                        class="w-24 h-24 object-contain mb-1"
-                      />
-
-                      <span
-                        class="text-black text-sm cursor-pointer hover:text-[#a51919]"
-                        @click="activeSkillIndex = 1"
-                      >
-                        {{
-                          isEnglish
-                            ? shikigami.skills[i - 1].name.en.split(" ")[0]
-                            : shikigami.skills[i - 1].name.vn
-                                .split(" ")
-                                .slice(0, 2)
-                                .join(" ")
-                        }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
-                  <hr
-                    style="border: none; border-top: 1px solid #a51919; margin: 8px 0"
-                  />
-
-                  <b
-                    class="text-black mb-3 block cursor-pointer hover:text-[#a51919]"
-                    @click="activeSkillIndex = 1"
-                  >
-                    {{
-                      isEnglish
-                        ? shikigami.skills[1].name.en
-                        : shikigami.skills[1].name.vn
-                    }}
-                  </b>
-
-                  <div class="flex justify-center gap-6">
-                    <div
-                      v-for="i in [4, 5, 6, 7]"
-                      :key="i"
-                      class="flex flex-col items-center"
-                    >
-                      <img
-                        :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
-                          i - 3
-                        }.webp`"
-                        class="w-24 h-24 object-contain mb-1"
-                      />
-
-                      <span
-                        class="text-black text-sm cursor-pointer hover:text-[#a51919]"
-                        @click="activeSkillIndex = 1"
-                      >
-                        {{
-                          isEnglish
-                            ? shikigami.skills[i - 1].name.en
-                            : shikigami.skills[i - 1].name.vn
-                        }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="shikigami.id === 141 && activeSkillIndex === 1">
-                  <hr
-                    style="border: none; border-top: 1px solid #a51919; margin: 8px 0"
-                  />
-
-                  <b class="text-black mb-3 block cursor-pointer hover:text-[#a51919]">
-                    {{ isEnglish ? "Knots" : "Duyên Kết" }}
-                  </b>
-
-                  <div class="flex justify-center gap-6">
-                    <div
-                      v-for="i in [1, 2, 3, 4]"
-                      :key="i"
-                      class="flex flex-col items-center"
-                    >
-                      <img
-                        :src="`/assets/shikigami/skills/${route.params.name}_Knot${i}.webp`"
-                        class="w-24 h-24 object-contain mb-1"
-                      />
-
-                      <span
-                        class="text-black text-sm cursor-pointer hover:text-[#a51919]"
-                      >
-                        {{ isEnglish ? "Type " + i : "Loại " + i }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-                <table
-                  style="width: 100%; border-collapse: collapse; font-size: 16px"
-                  v-if="
-                    Array.isArray(
                       isEnglish
                         ? shikigami.skills[activeSkillIndex].levels.en
                         : shikigami.skills[activeSkillIndex].levels.vn
                     )
                   "
-                >
-                  <tbody>
-                    <tr style="color: #a51919; font-weight: bold">
-                      <th style="padding: 6px; text-align: left; width: 70px">
-                        {{ isEnglish ? "Level" : "Cấp" }}
-                      </th>
-                      <th style="padding: 6px 10px; text-align: left">
-                        {{ isEnglish ? "Effect" : "Hiệu ứng" }}
-                      </th>
-                    </tr>
-                    <tr
-                      v-for="lvl in isEnglish
-                        ? shikigami.skills[activeSkillIndex].levels.en
-                        : shikigami.skills[activeSkillIndex].levels.vn"
-                      :key="lvl.level"
-                      style="color: #444"
-                    >
-                      <td style="padding: 6px 10px">{{ lvl.level }}</td>
-                      <td
-                        class="text-justify"
-                        style="padding: 6px 10px"
-                        v-html="processTextWithTooltips(lvl.effect)"
-                      ></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div v-else>
-                  <p
-                    style="color: #666666"
-                    class="no-level"
-                    v-html="
-                      processTextWithTooltips(
-                        isEnglish
-                          ? shikigami.skills[activeSkillIndex].levels.en
-                          : shikigami.skills[activeSkillIndex].levels.vn
-                      )
-                    "
-                  ></p>
-                </div>
+                ></p>
               </div>
             </div>
+          </div>
 
-            <div
-              v-for="({ skill, i }, index) in shikigami.skills
-                .map((s, i) => ({ skill: s, i }))
-                .filter(({ skill, i }) => i >= 3 && skill?.tab === activeSkillIndex + 1)"
-              :key="'extra-' + i"
-              style="
-                position: relative;
-                padding-left: 40px;
-                margin-bottom: 20px;
-                margin-top: 50px;
-              "
-            >
-              <!-- Skill icon + title -->
-              <div>
-                <span
-                  style="
-                    background-color: #fff;
-                    overflow: hidden;
-                    border-radius: 100%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 95px;
-                    height: 95px;
-                    border: 1px solid #a51919;
-                    padding: 5px;
-                  "
-                >
-                  <img
-                    :src="`/assets/shikigami/skills/${route.params.name}_Skill${
-                      i + 1
-                    }.webp`"
-                    :alt="skill.name.en"
-                    :title="skill.name.en"
-                  />
-                </span>
-                <span
-                  style="
-                    display: table-cell;
-                    vertical-align: bottom;
-                    font-size: 20px;
-                    color: #a51919;
-                    height: 65px;
-                    padding-bottom: 5px;
-                    padding-left: 65px;
-                    padding-right: 5px;
-                  "
-                >
-                  <div class="skill-title">
-                    <span class="skill-name">
-                      {{ isEnglish ? skill.name.en : skill.name.vn }}
+          <div
+            v-for="({ skill, i }, index) in shikigami.skills
+              .map((s, i) => ({ skill: s, i }))
+              .filter(({ skill, i }) => i >= 3 && skill?.tab === activeSkillIndex + 1)"
+            :key="'extra-' + i"
+            style="
+              position: relative;
+              padding-left: 40px;
+              margin-bottom: 20px;
+              margin-top: 50px;
+            "
+          >
+            <!-- Skill icon + title -->
+            <div>
+              <span
+                style="
+                  background-color: #fff;
+                  overflow: hidden;
+                  border-radius: 100%;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 95px;
+                  height: 95px;
+                  border: 1px solid #a51919;
+                  padding: 5px;
+                "
+              >
+                <img
+                  :src="`/assets/shikigami/skills/${route.params.name}_Skill${
+                    i + 1
+                  }.webp`"
+                  :alt="skill.name.en"
+                  :title="skill.name.en"
+                />
+              </span>
+              <span
+                style="
+                  display: table-cell;
+                  vertical-align: bottom;
+                  font-size: 20px;
+                  color: #a51919;
+                  height: 65px;
+                  padding-bottom: 5px;
+                  padding-left: 65px;
+                  padding-right: 5px;
+                "
+              >
+                <div class="skill-title">
+                  <span class="skill-name">
+                    {{ isEnglish ? skill.name.en : skill.name.vn }}
+                  </span>
+                  <span class="skill-sub-name lang-zh">
+                    ({{
+                      skill.name.cn === skill.name.jp
+                        ? skill.name.cn
+                        : skill.name.cn + " / " + skill.name.jp
+                    }})
+                  </span>
+                  <button
+                    class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
+                    @click="editSkill(skill)"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </div>
+              </span>
+            </div>
+
+            <!-- Skill description -->
+            <div class="skill-content">
+              <div class="skill-header">
+                <div class="skill-badges">
+                  <div
+                    v-for="tagId in skill.tags"
+                    :key="tagId"
+                    class="skill-badge"
+                  >
+                    <div
+                      class="skill-badge-bg tint-base"
+                      :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
+                    ></div>
+
+                    <span class="skill-badge-text">
+                      {{ tagMap?.[tagId]?.name }}
                     </span>
-                    <span class="skill-sub-name lang-zh">
-                      ({{
-                        skill.name.cn === skill.name.jp
-                          ? skill.name.cn
-                          : skill.name.cn + " / " + skill.name.jp
-                      }})
-                    </span>
-                    <button
-                      class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
-                      @click="editSkill(skill)"
-                    >
-                      <i class="fas fa-edit"></i>
-                    </button>
                   </div>
-                </span>
+                </div>
+                <div class="skill-info">
+                  <span v-if="shikigami.skills[activeSkillIndex].cooldown !== 0">
+                    <b>CD:</b>
+                    {{ skill.cooldown }}
+                  </span>
+                  <span>
+                  {{ skill.onibi }}
+                    <img src="/assets/Onibi.webp" alt="Onibi" />
+                  </span>
+                  
+                </div>
+                
+              </div>
+              <hr class="skill-divider" />
+
+              <div class="skill-voice-wrapper" v-if="skill.voice">
+                <p class="skill-voice">
+                  "{{ skill?.voice }}"
+                </p>
+              </div>
+              <p class="skill-description"
+                v-html="
+                  processTextWithTooltips(
+                    isEnglish ? skill.description.en : skill.description.vn
+                  )
+                "
+              ></p>
+              <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
+                <hr
+                  style="border: none; border-top: 1px solid #a51919; margin: 8px 0"
+                />
+
+                <b
+                  class="sub-skill-title"
+                  @click="activeSkillIndex = 1"
+                >
+                  {{
+                    isEnglish
+                      ? shikigami.skills[1].name.en
+                      : shikigami.skills[1].name.vn
+                  }}
+                </b>
+
+                <div class="sub-skill-grid">
+                  <div
+                    v-for="i in [4, 5, 6, 7]"
+                    :key="i"
+                    class="sub-skill-item"
+                  >
+                    <img
+                      :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
+                        i + 1
+                      }.webp`"
+                      class="w-24 h-24 object-contain mb-1"
+                    />
+
+                    <span
+                      class="text-black text-sm cursor-pointer hover:text-[#a51919]"
+                      @click="activeSkillIndex = 1"
+                    >
+                      {{
+                        isEnglish
+                          ? shikigami.skills[i - 1].name.en
+                          : shikigami.skills[i - 1].name.vn
+                      }}
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              <!-- Skill description -->
-              <div style="padding: 10px 25px; border: 1px solid #a51919">
-                <div class="text-black pb-5 skill-header">
-                  <div class="skill-info flex">
-                    <span style="margin-left: 45px">
-                      <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
-                      {{ skill.type }}
-                    </span>
-                    <span class="flex" style="margin-left: 45px">
-                      <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                      <img src="/assets/Onibi.webp" alt="Onibi" />
-                      {{ skill.onibi }}
-                    </span>
-                    <span style="margin-left: 45px">
-                      <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
-                      {{ skill.cooldown }}
-                    </span>
-                  </div>
-                  <div class="skill-badges flex flex-wrap gap-2">
-                    <div
-                      v-for="tagId in skill.tags"
-                      :key="tagId"
-                      class="relative inline-flex items-center justify-center w-25 h-6 overflow-hidden rounded-md"
-                    >
-                      <div
-                        class="absolute inset-0 tint-base"
-                        :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
-                      ></div>
-
-                      <span class="relative z-10 text-[12px] text-white">
-                        {{ tagMap?.[tagId]?.name }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-                <div class="w-[80%] mx-auto" v-if="skill.voice">
-                  <p class="text-center text-[#a3a3a3] voice-font">
-                    "{{ skill?.voice }}"
-                  </p>
-                </div>
+              <hr class="skill-divider" />
+              <table
+                style="width: 100%; border-collapse: collapse; font-size: 16px"
+                v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)"
+              >
+                <tbody>
+                  <tr style="color: #a51919; font-weight: bold">
+                    <th style="padding: 6px; text-align: left; width: 70px">
+                      {{ isEnglish ? "Level" : "Cấp" }}
+                    </th>
+                    <th style="padding: 6px 10px; text-align: left">
+                      {{ isEnglish ? "Effect" : "Hiệu ứng" }}
+                    </th>
+                  </tr>
+                  <tr
+                    v-for="lvl in isEnglish ? skill.levels.en : skill.levels.vn"
+                    :key="lvl.level"
+                    style="color: #444"
+                  >
+                    <td style="padding: 6px 10px">{{ lvl.level }}</td>
+                    <td
+                      class="text-justify"
+                      style="padding: 6px 10px"
+                      v-html="processTextWithTooltips(lvl.effect)"
+                    ></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-else>
                 <p
-                  class="whitespace-pre-line text-justify"
-                  style="
-                    margin: 0;
-                    font-size: 16px;
-                    line-height: 1.5;
-                    color: #444;
-                    padding: 10px 0;
-                  "
+                  class="no-level"
                   v-html="
                     processTextWithTooltips(
-                      isEnglish ? skill.description.en : skill.description.vn
+                      isEnglish ? skill.levels.en : skill.levels.vn
                     )
                   "
                 ></p>
-                <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
-                  <hr
-                    style="border: none; border-top: 1px solid #a51919; margin: 8px 0"
-                  />
-
-                  <b
-                    class="text-black mb-3 block cursor-pointer hover:text-[#a51919]"
-                    @click="activeSkillIndex = 1"
-                  >
-                    {{
-                      isEnglish
-                        ? shikigami.skills[1].name.en
-                        : shikigami.skills[1].name.vn
-                    }}
-                  </b>
-
-                  <div class="flex justify-center gap-6">
-                    <div
-                      v-for="i in [4, 5, 6, 7]"
-                      :key="i"
-                      class="flex flex-col items-center"
-                    >
-                      <img
-                        :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
-                          i + 1
-                        }.webp`"
-                        class="w-24 h-24 object-contain mb-1"
-                      />
-
-                      <span
-                        class="text-black text-sm cursor-pointer hover:text-[#a51919]"
-                        @click="activeSkillIndex = 1"
-                      >
-                        {{
-                          isEnglish
-                            ? shikigami.skills[i - 1].name.en
-                            : shikigami.skills[i - 1].name.vn
-                        }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
-                <table
-                  style="width: 100%; border-collapse: collapse; font-size: 16px"
-                  v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)"
-                >
-                  <tbody>
-                    <tr style="color: #a51919; font-weight: bold">
-                      <th style="padding: 6px; text-align: left; width: 70px">
-                        {{ isEnglish ? "Level" : "Cấp" }}
-                      </th>
-                      <th style="padding: 6px 10px; text-align: left">
-                        {{ isEnglish ? "Effect" : "Hiệu ứng" }}
-                      </th>
-                    </tr>
-                    <tr
-                      v-for="lvl in isEnglish ? skill.levels.en : skill.levels.vn"
-                      :key="lvl.level"
-                      style="color: #444"
-                    >
-                      <td style="padding: 6px 10px">{{ lvl.level }}</td>
-                      <td
-                        class="text-justify"
-                        style="padding: 6px 10px"
-                        v-html="processTextWithTooltips(lvl.effect)"
-                      ></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div v-else>
-                  <p
-                    style="color: #666666"
-                    class="no-level"
-                    v-html="
-                      processTextWithTooltips(
-                        isEnglish ? skill.levels.en : skill.levels.vn
-                      )
-                    "
-                  ></p>
-                </div>
               </div>
             </div>
           </div>
         </div>
         <div v-else>
           <div v-if="shikigami.rarity === 'UR'">
-            <div style="position: relative; padding-left: 40px; margin-bottom: 20px">
+            <div class="skill-section">
               <!-- Skill icon + title -->
-              <div>
-                <span
-                  style="
-                    background-color: #fff;
-                    overflow: hidden;
-                    border-radius: 100%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 95px;
-                    height: 95px;
-                    border: 1px solid #a51919;
-                    padding: 5px;
-                  "
-                >
+              <div class="skill-top">
+                <span class="skill-icon-wrapper">
                   <img
                     :src="`/assets/shikigami/skills/${route.params.name}_Skill0.webp`"
                     :alt="shikigami.skills.find((s) => s.type === 'Linked').name.en"
                     :title="shikigami.skills.find((s) => s.type === 'Linked').name.en"
                   />
                 </span>
-                <span
-                  style="
-                    display: table-cell;
-                    vertical-align: bottom;
-                    font-weight: 900;
-                    font-size: 20px;
-                    color: #a51919;
-                    height: 70px;
-                    text-indent: 70px;
-                    padding-bottom: 5px;
-                  "
-                >
+                <span class="skill-heading">
                   <div class="skill-title">
                     <span class="skill-name">
                       {{
@@ -2886,7 +2722,7 @@ const addCKeywordListeners = () => {
                           : shikigami.skills.find((s) => s.type === "Linked").name.vn
                       }}
                     </span>
-                    <span class="skill-sub-name lang-zh">
+                    <span class="skill-sub-name">
                       ({{
                         shikigami.skills.find((s) => s.type === "Linked").name.cn ===
                         shikigami.skills.find((s) => s.type === "Linked").name.jp
@@ -2897,7 +2733,7 @@ const addCKeywordListeners = () => {
                       }})
                     </span>
                     <button
-                      class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
+                      class="skill-edit-btn"
                       @click="
                         editSkill(shikigami.skills.find((s) => s.type === 'Linked'))
                       "
@@ -2910,59 +2746,47 @@ const addCKeywordListeners = () => {
               </div>
 
               <!-- Skill description -->
-              <div style="padding: 10px 20px; border: 1px solid #a51919">
-                <div class="text-black pb-5 skill-header">
-                  <div class="skill-info flex">
-                    <span style="margin-left: 25px">
-                      <b>{{ isEnglish ? "Type" : "Loại" }}:</b>
-                      {{ shikigami.skills.find((s) => s.type === "Linked").type }}
-                    </span>
-                    <span class="flex" style="margin-left: 40px">
-                      <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                      <img src="/assets/Onibi.webp" alt="Onibi" />
-                      {{ shikigami.skills.find((s) => s.type === "Linked").onibi }}
-                    </span>
-                    <span style="margin-left: 40px">
-                      <b>{{ isEnglish ? "Cooldown" : "Hồi chiêu" }}:</b>
-                      {{ shikigami.skills.find((s) => s.type === "Linked").cooldown }}
-                    </span>
-                  </div>
+              <div class="skill-content">
+                <div class="skill-header">
                   <div class="skill-badges flex flex-wrap gap-2">
                     <div
                       v-for="tagId in shikigami.skills.find((s) => s.type === 'Linked')
                         .tags"
                       :key="tagId"
-                      class="relative inline-flex items-center justify-center w-25 h-6 overflow-hidden rounded-md"
+                      class="skill-badge"
                     >
                       <!-- brush nền -->
                       <div
-                        class="absolute inset-0 tint-base"
+                        class="skill-badge-bg tint-base"
                         :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
                       ></div>
 
-                      <!-- chữ đè lên -->
-                      <span class="relative z-10 text-[10px] text-white">
+                      <span class="skill-badge-text">
                         {{ tagMap?.[tagId]?.name }}
                       </span>
                     </div>
                   </div>
+                  <div class="skill-info">
+                    <span v-if="shikigami.skills[activeSkillIndex].cooldown !== 0">
+                      <b>CD:</b>
+                      {{ shikigami.skills.find((s) => s.type === "Linked").cooldown }}
+                    </span>
+                    <span>
+                      {{ shikigami.skills.find((s) => s.type === "Linked").onibi }}
+                      <img src="/assets/Onibi.webp" alt="Onibi" />
+                    </span>
+                    
+                  </div>
+                  
                 </div>
-                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+                <hr class="skill-divider" />
 
-                <div class="w-[80%] mx-auto">
-                  <p class="text-center text-[#a3a3a3] voice-font">
+                <div class="skill-voice-wrapper">
+                  <p class="skill-voice">
                     "{{ shikigami.skills.find((s) => s.type === "Linked").voice }}"
                   </p>
                 </div>
-                <p
-                  class="whitespace-pre-line text-justify"
-                  style="
-                    margin: 0;
-                    font-size: 16px;
-                    line-height: 1.5;
-                    color: #444;
-                    padding: 10px 0;
-                  "
+                <p class="skill-description"
                   v-html="
                     processTextWithTooltips(
                       isEnglish
@@ -2971,10 +2795,9 @@ const addCKeywordListeners = () => {
                     )
                   "
                 ></p>
-                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+                <hr class="skill-divider" />
                 <div>
                   <p
-                    style="color: #a3a3a3"
                     class="no-level"
                     v-html="
                       processTextWithTooltips(
@@ -2985,7 +2808,7 @@ const addCKeywordListeners = () => {
                     "
                   ></p>
                 </div>
-                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+                <hr class="skill-divider" />
                 <table
                   style="width: 100%; border-collapse: collapse; font-size: 16px"
                   v-if="
@@ -3023,7 +2846,6 @@ const addCKeywordListeners = () => {
                 </table>
                 <div v-else>
                   <p
-                    style="color: #666666"
                     class="no-level"
                     v-html="
                       processTextWithTooltips(
@@ -3037,50 +2859,43 @@ const addCKeywordListeners = () => {
               </div>
             </div>
           </div>
-          <div v-else style="padding: 10px; border: 1px solid #a51919">
+          <div v-else class="evolution-box">
             <p
-              class="whitespace-pre-line text-justify"
-              style="
-                margin: 0;
-                font-size: 15px;
-                line-height: 1.5;
-                color: #444;
-                padding: 10px 0;
-              "
+              class="evolution-text"
               v-html="renderEvoText(shikigami.evolution)"
             ></p>
           </div>
         </div>
 
         <!-- Biography Unlock -->
-        <h2 class="session-title mt-5" v-if="shikigami.id !== 193">
+        <h2 class="session-title" v-if="shikigami.id !== 193">
           {{ isEnglish ? "Biography Unlock" : "Mở khoá Tiểu sử" }}
         </h2>
         <table
-          class="w-full mt-4"
-          style="border: 1px solid #a51919"
+          class="bio-table"
           v-if="shikigami.id !== 193"
         >
           <thead>
             <tr>
-              <th class="table-title">No.</th>
+              <th class="table-title no-column">No.</th>
               <th class="table-title">
                 {{ isEnglish ? "Unlock Conditions" : "Điều kiện mở khóa" }}
               </th>
-              <th class="table-title">
+              <th class="table-title reward-column">
                 {{ isEnglish ? "Rewards" : "Phần thưởng" }}
               </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="text-black table-cell text-center w-[50px]">1</td>
-              <td class="text-black table-cell px-3">
+              <td class="table-cell bio-number">1</td>
+
+              <td class="table-cell bio-text">
                 <span v-html="renderBioText(shikigami.biography[0])"></span>
               </td>
 
-              <td class="py-1 text-black table-cell w-[100px]">
-                <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
+              <td class="table-cell reward-cell">
+                <div class="reward-box">
                   <img
                     :src="
                       ![153, 154].includes(shikigami.id)
@@ -3088,63 +2903,49 @@ const addCKeywordListeners = () => {
                         : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo1.webp`
                     "
                     alt="Gold"
-                    class="max-h-full max-w-full object-contain"
+                    class="reward-icon"
                   />
-                  <span
-                    class="absolute bottom-0 right-0 text-white font-bold"
-                    style="
-                      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-                        1px 1px 0 #000;
-                    "
-                    >{{ ![153, 154].includes(shikigami.id) ? 5000 : "" }}</span
+                  <span class="reward-amount">
+                    {{ ![153, 154].includes(shikigami.id) ? 5000 : "" }}</span
                   >
                 </div>
               </td>
             </tr>
 
             <tr>
-              <td class="text-black table-cell text-center w-[50px]">2</td>
-              <td class="text-black table-cell px-3">
+              <td class="table-cell bio-number">2</td>
+              <td class="table-cell bio-text">
                 <span v-html="renderBioText(shikigami.biography[1])"></span>
               </td>
 
-              <td v-if="shikigami.id === 78" class="py-1 text-black table-cell w-[100px]">
-                <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
+              <td v-if="shikigami.id === 78" class="table-cell reward-cell">
+                <div class="reward-box">
                   <img
                     src="/assets/Gold.webp"
                     alt="Gold"
-                    class="max-h-full max-w-full object-contain"
+                    class="reward-icon"
                   />
-                  <span
-                    class="absolute bottom-0 right-0 text-white font-bold"
-                    style="
-                      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-                        1px 1px 0 #000;
-                    "
-                    >5000</span
+                  <span class="reward-amount">
+                    5000</span
                   >
                 </div>
               </td>
 
-              <td v-else class="py-1 text-black table-cell w-[100px]">
-                <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
+              <td v-else class="table-cell reward-cell">
+                <div class="reward-box">
                   <img
                     :src="
-                      [144, 118, 131,95].includes(shikigami.id)
+                      [144, 118, 131, 95].includes(shikigami.id)
                         ? '/assets/Jade.webp'
                         : [71, 84, 130, 117, 111].includes(shikigami.id)
                         ? '/assets/Black_Daruma.webp'
                         : `/assets/shikigami/shards/${route.params.name}_Shard.webp`
                     "
                     :alt="shikigami.name.jp"
-                    class="max-h-full max-w-full object-contain"
+                    class="reward-icon"
                   />
                   <span
-                    class="absolute bottom-0 right-0 text-white font-bold"
-                    style="
-                      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-                        1px 1px 0 #000;
-                    "
+                    class="reward-amount"
                     >{{
                       shikigami.id >= 201 && shikigami.id <= 214
                         ? 2
@@ -3158,13 +2959,13 @@ const addCKeywordListeners = () => {
             </tr>
 
             <tr>
-              <td class="text-black table-cell text-center w-[50px]">3</td>
-              <td class="text-black table-cell px-3">
+              <td class="table-cell bio-number">3</td>
+              <td class="table-cell bio-text px-3">
                 <span v-html="renderBioText(shikigami.biography[2])"></span>
               </td>
 
-              <td class="py-1 text-black table-cell w-[100px]">
-                <div class="w-12 h-12 flex items-center justify-center mx-auto relative">
+              <td class="table-cell reward-cell">
+                <div class="reward-box">
                   <img
                     :src="
                       ![144, 118, 131, 111].includes(shikigami.id)
@@ -3172,14 +2973,10 @@ const addCKeywordListeners = () => {
                         : `/assets/shikigami/shards/${route.params.name}_Shard.webp`
                     "
                     alt="Jade"
-                    class="max-h-full max-w-full object-contain"
+                    class="reward-icon"
                   />
                   <span
-                    class="absolute bottom-0 right-0 text-white font-bold"
-                    style="
-                      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-                        1px 1px 0 #000;
-                    "
+                    class="reward-amount"
                     >10</span
                   >
                 </div>
@@ -3188,28 +2985,28 @@ const addCKeywordListeners = () => {
           </tbody>
         </table>
 
-        <h2 class="session-title mt-5" v-if="shikigami.id !== 193">
+        <h2 class="session-title" v-if="shikigami.id !== 193">
           {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
         </h2>
 
         <div
-          v-if="shikigami.build?.length && shikigami.id !== 193"
-          class="space-y-6 mt-4"
+          v-if="shikigami.build?.length"
+          class="build-list"
         >
           <div
             v-for="build in shikigami.build"
             :key="build.no"
-            class="border border-[#a51919] rounded-xl p-5 bg-white shadow-sm"
+            class="build-card"
           >
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-lg font-semibold text-[#a51919]">Build {{ build.no }}</h3>
+            <div class="build-header">
+              <h3 class="build-title">Build {{ build.no }}</h3>
 
               <!-- ROLE BADGES -->
-              <div class="flex gap-2">
+              <div class="build-roles">
                 <span
                   v-for="role in parseRoles(build.role)"
                   :key="role"
-                  class="px-3 py-[2px] text-xs rounded-full font-semibold text-white tracking-wide shadow-sm"
+                  class="build-role-badge"
                   :class="getRoleClass(role)"
                 >
                   {{ role }}
@@ -3218,39 +3015,39 @@ const addCKeywordListeners = () => {
             </div>
 
             <!-- 2 / 4 / 6 stats -->
-            <div class="mb-4">
+            <div class="build-main-stats">
               <span
                 v-for="(stat, index) in parseStats(build.indicate)"
                 :key="index"
-                class="inline-block mr-2"
+                class="build-stat-group"
               >
                 <span
                   v-for="s in stat"
                   :key="s"
-                  class="inline-block px-2 py-1 rounded-md border mr-1"
+                  class="build-stat"
                   :class="getStatClass(s)"
                 >
                   {{ s }}
                 </span>
 
-                <span v-if="index < 2" class="text-gray-400 mx-1">/</span>
+                <span v-if="index < 2" class="build-divider">/</span>
               </span>
             </div>
 
             <!-- Souls -->
-            <div class="grid grid-cols-8 gap-3 mb-4">
+            <div class="build-souls-grid">
               <router-link
                 v-for="id in build.souls"
                 :key="id"
                 :to="`/souls/${getSoulSlug(id)}`"
-                class="flex flex-col items-center text-center"
+                class="build-soul-item"
               >
                 <img
                   :src="`/assets/souls/icons/${getSoulSlug(id)}_Icon.webp`"
-                  class="w-14 h-14 rounded-full hover:scale-110 transition duration-200"
+                  class="build-soul-icon"
                 />
 
-                <span class="text-xs mt-1 text-gray-700">
+                <span class="build-soul-name">
                   {{ getSoulName(id) }}
                 </span>
               </router-link>
@@ -3259,33 +3056,33 @@ const addCKeywordListeners = () => {
             <!-- Substats -->
             <div
               v-if="build.substats"
-              class="text-sm text-black mb-2 flex items-center flex-wrap gap-1"
+              class="build-substats"
             >
-              <span class="font-bold mr-2">Substats:</span>
+              <span class="build-label">Substats:</span>
 
               <template v-for="(item, i) in parseSubstats(build.substats)" :key="i">
                 <span
                   v-if="item.type === 'stat'"
-                  class="px-2 py-1 text-xs border rounded-md"
+                  class="build-stat"
                   :class="getStatClass(item.value)"
                 >
                   {{ item.value }}
                 </span>
 
-                <span v-else class="text-gray-400 text-xs px-1">
+                <span v-else class="build-separator">
                   {{ item.value }}
                 </span>
               </template>
             </div>
 
             <!-- Breakpoint -->
-            <div v-if="build.breakpoint" class="mb-3 text-black">
-              <span class="font-bold text-sm mr-2">Breakpoint:</span>
+            <div v-if="build.breakpoint" class="build-breakpoint">
+              <span class="build-label">Breakpoint:</span>
 
               <span
                 v-for="tag in build.breakpoint.split('|').map((t) => t.trim())"
                 :key="tag"
-                class="inline-block bg-gray-100 border text-xs px-2 py-1 rounded-md mr-1 mb-1"
+                class="build-breakpoint-tag"
               >
                 {{ tag }}
               </span>
@@ -3294,9 +3091,9 @@ const addCKeywordListeners = () => {
             <!-- Note -->
             <div
               v-if="build.note"
-              class="text-sm text-gray-600 bg-gray-50 border rounded-md p-2"
+              class="build-note"
             >
-              <span class="italic whitespace-pre-line">{{ build.note }}</span>
+              <span class="build-note-text">{{ build.note }}</span>
             </div>
           </div>
         </div>
@@ -3824,7 +3621,7 @@ const addCKeywordListeners = () => {
             </div>
           </div>
         </div>
-        <div class="flex justify-end gap-2 mt-5">
+        <div class="rank-cell gap-2 mt-5">
           <button
             class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 rounded-md text-black cursor-pointer"
             @click="closeEditModal"
@@ -3843,381 +3640,411 @@ const addCKeywordListeners = () => {
   </div>
 </template>
 
-<style src="@/pages/styles.css"></style>
+<style scoped src="@/pages/styles.css"></style>
 
 <style scoped>
-.shikigami-profile {
-  display: flex;
-  border: 2px solid #a51919;
-  border-radius: 6px;
-  min-height: 400px;
-  background: #fff;
-  align-items: stretch; /* Đảm bảo tất cả panel có cùng chiều cao */
-  max-height: 475px;
-  width: 840px;
+/* Image */
+.character-image-wrapper {
+  width: 66.666667%;
+  margin: 0 auto;
 }
 
-.hide-scrollbar {
-  -ms-overflow-style: none; /* IE, Edge */
-  scrollbar-width: none; /* Firefox */
-}
-.hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-/* Left panel */
-.left-panel {
-  flex: 0 0 auto;
-  padding: 20px;
-}
-.cv-box {
-  position: relative;
-  width: 60px;
-}
-.cv-bg {
-  width: 100%;
-  display: block;
-  border-radius: 6px;
-}
-.cv-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.character-image-box {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  color: white;
-}
-.cv-text {
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-  font-size: 14px;
-  text-align: center;
-}
-.cv-audio {
-  margin-top: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.75rem;
-  color: white;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-.cv-audio:hover {
-  transform: scale(1.2);
-  color: #ffd369;
-}
 
-/* Middle panel */
-.bio-panel {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  padding: 20px 6px 20px 20px;
-  max-width: 640px;
-}
-
-.bio-panel-text {
-  overflow-x: auto;
-  direction: rtl; /* Đưa scroll về bên phải */
-  text-align: left; /* Căn text về bên phải */
-}
-
-/* Tùy chỉnh scroll bar (tùy chọn) */
-.bio-panel-text::-webkit-scrollbar {
-  height: 8px;
-}
-
-.bio-panel-text::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-.bio-panel-text::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-.bio-panel-text::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-.bio-text-vertical {
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-  font-size: 14px;
-  line-height: 3;
-  letter-spacing: 2.5px;
-  margin: 0;
-  display: inline-block;
-  white-space: nowrap;
-  direction: ltr;
-}
-.bio-text-vertical span {
-  height: 430px;
-  display: block;
-  border-left: 1px dashed #929191;
-  padding-left: 6px;
-  margin-left: 6px;
-}
-
-.bio-text-vertical span.punct {
-  padding-top: 2px;
-  display: inline-block;
-}
-
-/* Right panel */
-.right-panel {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding: 20px 20px 20px 0;
-}
-.right-container {
-  height: 100%;
-  border-left: 2px solid #aaa;
-  padding-left: 20px;
-}
-.tabs {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 475px;
-}
-.tab-name {
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-  font-weight: bold;
-  margin-bottom: 12px;
-  letter-spacing: 2px;
-  color: #a51919;
-  font-size: 20px;
-}
-.tab {
-  writing-mode: vertical-rl;
-  padding: 6px 0;
-  cursor: pointer;
-  color: #555;
-  transition: color 0.2s, font-weight 0.2s;
-}
-.tab.active {
-  color: #4994d4;
-  font-weight: bold;
-}
-
-.lang-zh {
-  font-family: "stkaiti", sans-serif;
-}
-
-.voice-font {
-  font-family: "Inconsolata", monospace;
-  letter-spacing: 1px;
-}
-
-
-
-.toggle-switch {
   position: relative;
-  width: 44px;
-  height: 22px;
-  flex-shrink: 0;
 }
 
-.toggle-switch input[type="checkbox"] {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  background-color: #ccc;
-  border-radius: 22px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.4s;
-}
-
-.slider::before {
-  position: absolute;
+/* Glow background */
+.character-image-box::before {
   content: "";
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.3s;
-}
 
-.toggle-switch input:checked + .slider {
-  background-color: #a51919;
-}
-.toggle-switch input:checked + .slider::before {
-  transform: translateX(22px);
-}
-
-.toggle-labels {
   position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 0;
-  display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-  font-size: 10px;
-  font-weight: bold;
-  color: white;
-  padding: 0 5px;
-  pointer-events: none;
-  user-select: none;
+
+  width: 70%;
+  height: 70%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(165, 25, 25, 0.2) 0%,
+      rgba(165, 25, 25, 0.05) 45%,
+      transparent 75%
+    );
+
+  filter: blur(20px);
+
+  z-index: 0;
 }
 
-.table-title {
-  font-weight: bold;
-  color: #f4f1e8;
-  text-align: center;
-  padding: 8px;
-  background-color: #a51919;
-  border: 1px solid #a51919;
+.character-image {
+  position: relative;
+  z-index: 1;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease;
+}
+
+.character-image:hover {
+  transform: scale(1.08);
+
+  filter:
+    drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25))
+    drop-shadow(0 0 18px rgba(165, 25, 25, 0.25));
+}
+
+/* Table Name */
+.table-row a {
+  font-family: "Bona Nova SC", serif;
+  font-size: 15px;
+  margin-top: 4px;
 }
 
 .table-title-row {
-  font-weight: bold;
-  font-size: 14px !important;
-  color: #f4f1e8;
-  text-align: center;
-  padding: 5px !important;
-  background-color: #a51919;
-  border: 1px solid #a51919;
-}
-
-.table-row {
-  border: 1px solid #a51919;
-  color: #333;
+  font-size: 15px;
 }
 
 .table-cell {
   border: 1px solid #a51919;
 }
 
-.lang-en {
-  font-family: "Rubik", sans-serif;
-}
-.lang-vi {
-  font-family: "Nunito", serif;
+/* Profile */
+.profile-section {
+  margin-top: 8px;
+
+  white-space: pre-line;
+  text-align: justify;
 }
 
-.image-icon {
+/* Tab Menu */
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 2px solid #e5e7eb27;
+}
+
+.tab-button, .tab-skill-button {
+  font-family: "Bona Nova SC", serif;
   position: relative;
-  top: -40px;
-}
 
-.icon-img {
-  z-index: 10;
-  border: 1px solid #a51919;
-  padding: 5px;
-  background: #fff;
-}
-
-.stats {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-  overflow: visible;
-}
-
-.stats tbody th.label-cell {
-  font-weight: bold;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #333;
+  justify-content: center;
+
+  padding: 10px 18px;
+
+  font-size: 20px;
+  font-weight: 500;
+  color: #a3a3a3;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  transition: color 0.25s ease, background 0.25s ease, transform 0.2s ease;
 }
 
-.stats tbody td.centered-number {
-  text-align: center;
-  color: #444;
+.tab-button:hover, .tab-skill-button:hover {
+  color: #f5f5f5;
+  background: rgba(255, 255, 255, 0.04);
 }
 
-.stats th,
-.stats td {
-  padding: 6px 10px;
+.tab-button.active, .tab-skill-button.active {
+  color: #a51919;
+  font-weight: 600;
 }
 
-.stats th {
-  font-weight: normal;
+.tab-button.active::after, .tab-skill-button.active::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+
+  width: 100%;
+  height: 2px;
+
+  background: #a51919;
+  border-radius: 999px;
 }
 
-.stats .image-icon {
-  text-align: center;
-  vertical-align: middle;
+.tab-button:active, .tab-skill-button:active {
+  transform: scale(0.96);
 }
 
-.stats .image-icon figure {
-  display: inline-block;
-  margin: 5px 0 0;
+.top-0 {
+  margin-top: 0;
 }
 
-.stats tr:nth-child(1) th {
-  font-size: 16px;
+/* Stats */
+.stats-wrapper {
+  display: block;
 }
 
-.stats tr:nth-child(n + 2) td:nth-last-child(1) {
+.stats-table {
+  width: 100%;
+
+  padding: 0 20px;
+
+  border-bottom: 1px solid #a51919;
+}
+
+.stats-header {
   color: #a51919;
 }
 
-.stats img {
+.stats-title {
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.5;
+  padding-bottom: 8px;
+}
+
+.icon-cell {
+  position: relative;
+}
+
+.stats-figure {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.stats-icon {
+  object-fit: contain;
+
+  border: 1px solid #a51919;
+
+  padding: 4px;
+  background: #121212;
+}
+
+.spacing-row {
+  height: 40px;
+}
+
+.top-border-row {
+  border: 1px solid #a51919;
+  border-bottom: none;
+}
+
+.stats-row {
+  border-left: 1px solid #a51919;
+}
+
+.label-cell {
+  padding: 12px 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 1px solid #e5e7eb27;
+}
+
+.label-cell img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.rank-cell {
+  display: flex;
+  justify-self: end;
+  padding-right: 10px;
+}
+
+.rank-cell img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.value-cell {
+  width: 100px;
+}
+
+.increase-cell {
+  text-align: left;
   vertical-align: middle;
+
+  color: #c85a5a;
 }
 
-.stats th[colspan="2"] {
-  border: none;
-}
-
-.stats td {
-  border: none;
+.bonus-stat {
+  color: #a51919;
+  margin-left: 4px;
 }
 
 .empty-cell {
   width: 100px;
 }
 
-.skill-name {
+.right-border {
+  border-right: 1px solid #a51919;
+}
+
+/* Skill */
+.tab-skill-button {
+  font-family: "Fira Sans", sans-serif;
+  font-size: 18px;
+  padding: 6px 12px;
+}
+
+.skill-section {
+  position: relative;
+  padding-left: 40px;
+  margin-bottom: 20px;
+}
+
+.skill-section.extra-skill {
+  margin-top: 50px;
+}
+
+/* =========================
+   Skill Header
+========================= */
+
+.skill-top {
+  position: relative;
+}
+
+.skill-icon-wrapper {
+  position: absolute;
+  top: 0;
+  left: -40px;
+
+  width: 95px;
+  height: 95px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  border-radius: 999px;
+
+  background: #fff;
+  border: 1px solid #a51919;
+
+  padding: 5px;
+}
+
+.skill-icon-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.skill-heading {
+  display: table-cell;
+  vertical-align: bottom;
+
+  height: 60px;
+
+  padding:
+    0 5px 5px 65px;
+
+  font-size: 20px;
   font-weight: 900;
+  color: #a51919;
+}
+
+.skill-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-name {
+  font-family: "Bona Nova SC", serif;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .skill-sub-name {
-  font-weight: 600;
+  font-family: "stkaiti", sans-serif;
+  font-size: 15px;
+  padding-top: 4px;
+}
+
+.skill-edit-btn {
+  font-size: 18px;
+  color: #a51919;
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+}
+
+.skill-edit-btn:hover {
+  color: #696868;
+}
+
+/* =========================
+  Skill Content
+========================= */
+
+.skill-content {
+  border: 1px solid #a51919;
+  padding: 10px 20px;
+
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .skill-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 20px;
-}
-
-.skill-info span {
-  font-size: smaller;
-  margin-left: 45px;
-  text-align: center;
+  padding: 5px 0 5px 20px;
 }
 
 .skill-badges {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+.skill-badge {
+  position: relative;
+
+  width: 100px;
+  height: 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.skill-badge-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.skill-badge-text {
+  position: relative;
+  z-index: 10;
+
+  font-size: 12px;
+  color: #fff;
 }
 
 .tint-base {
@@ -4229,6 +4056,8 @@ const addCKeywordListeners = () => {
   mask-repeat: no-repeat;
   mask-size: cover;
   mask-position: center;
+  position: absolute;
+  inset: 0;
 }
 
 /* Các màu tint */
@@ -4246,6 +4075,509 @@ const addCKeywordListeners = () => {
 
 .tint-yellow {
   background-color: #c07b2a;
+}
+
+.skill-info {
+  display: flex;
+}
+
+.skill-info span {
+  display: flex;
+  align-items: center;
+}
+
+.skill-info b {
+  padding-right: 6px;
+}
+
+.skill-info img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.skill-divider {
+  border: none;
+  border-top: 1px solid #a51919;
+  margin: 8px 0;
+}
+
+.skill-voice-wrapper {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.skill-voice {
+  text-align: center;
+  color: #a3a3a3;
+  font-family: "Inconsolata", monospace;
+  letter-spacing: 1px;
+}
+
+.skill-description {
+
+  padding: 10px 2px;
+
+  font-size: 15px;
+  line-height: 1.6;
+  color: #fff;
+
+  white-space: pre-line;
+  text-align: justify;
+}
+
+/* =========================
+   Sub Skills
+========================= */
+
+.sub-skill-title {
+  font-family: "Bona Nova SC", serif;
+  display: block;
+
+  margin-bottom: 12px;
+  padding-left: 10px;
+
+  color: #fff;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.sub-skill-title:hover {
+  color: #a51919;
+}
+
+.sub-skill-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.sub-skill-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sub-skill-item img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+
+  margin-bottom: 6px;
+
+  transition: transform 0.25s ease;
+}
+
+.sub-skill-item:hover img {
+  transform: scale(1.05);
+}
+
+.sub-skill-name {
+  font-size: 15px;
+  color: #fff;
+  font-family: "Bona Nova SC", serif;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.sub-skill-item:hover .sub-skill-name {
+  color: #a51919;
+}
+
+/* =========================
+   Skill Level Table
+========================= */
+
+.skill-level-table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  font-size: 15px;
+}
+
+.skill-level-table th {
+  padding: 6px 10px;
+
+  text-align: left;
+
+  color: #a51919;
+  font-weight: 700;
+}
+
+.skill-level-table td {
+  padding: 6px 10px;
+
+  color: #fff;
+
+  vertical-align: top;
+}
+
+.skill-level-table tr:hover td {
+  background: rgba(165, 25, 25, 0.04);
+}
+
+.level-column {
+  width: 70px;
+}
+
+.level-cell {
+  text-align: center;
+}
+
+.no-level {
+  color: #666;
+}
+
+.evolution-box {
+  padding: 12px 16px;
+
+  border: 1px solid #a51919;
+  border-radius: 10px;
+
+  background: rgba(165, 25, 25, 0.03); 
+}
+
+.evolution-text {
+  margin: 0;
+  padding: 10px 0;
+
+  font-size: 15px;
+  line-height: 1.7;
+  color: #fff;
+
+  white-space: pre-line;
+  text-align: justify;
+}
+
+/* Bio */
+.bio-table {
+  width: 100%;
+  margin-top: 16px;
+  border-spacing: 0;
+  outline: 1px solid #a51919;
+  overflow: hidden;
+}
+
+.bio-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* =========================
+   Columns
+========================= */
+
+.no-column {
+  width: 50px;
+}
+
+.reward-column {
+  width: 120px;
+}
+
+/* =========================
+   Cells
+========================= */
+
+.bio-table .table-title {
+  padding: 12px;
+
+  background: rgba(165, 25, 25, 0.08);
+
+  color: #a51919;
+  font-weight: 700;
+  text-align: center;
+}
+
+.bio-table .table-cell {
+  font-family: "Noto Sans", sans-serif;
+  font-size: 15px;
+  padding: 4px 12px;
+  color: #fff;
+  vertical-align: middle;
+}
+
+.bio-number {
+  text-align: center;
+  font-weight: 700;
+}
+
+.bio-text {
+  line-height: 1.6;
+}
+
+.reward-cell {
+  text-align: center;
+}
+
+/* =========================
+   Reward
+========================= */
+
+.reward-box {
+  position: relative;
+
+  width: 50px;
+  height: 50px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reward-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+
+  transition: transform 0.25s ease;
+}
+
+.reward-amount {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
+/* Soul */
+.build-list {
+  margin-top: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* =========================
+   Card
+========================= */
+
+.build-card {
+  padding: 20px;
+
+  border: 1px solid #a51919;
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.015)
+    );
+
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.build-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #c93030;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.18),
+    0 0 12px rgba(165, 25, 25, 0.12);
+}
+
+/* =========================
+   Header
+========================= */
+
+.build-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 14px;
+}
+
+.build-title {
+  font-family: "Bona Nova SC", serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #a51919;
+}
+
+.build-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.build-role-badge {
+  padding: 4px 12px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
+  color: #fff;
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================
+   Stats
+========================= */
+
+.build-main-stats {
+  margin-bottom: 18px;
+}
+
+.build-stat-group {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.build-stat {
+  display: inline-block;
+
+  margin-right: 6px;
+  padding: 5px 10px;
+
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.build-divider,
+.build-separator {
+  color: #888;
+  font-size: 13px;
+}
+
+/* =========================
+   Souls
+========================= */
+
+.build-souls-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+.build-soul-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  text-decoration: none;
+}
+
+.build-soul-icon {
+  width: 56px;
+  height: 56px;
+
+  border-radius: 999px;
+
+  transition:
+    transform 0.22s ease,
+    filter 0.22s ease;
+}
+
+.build-soul-item:hover .build-soul-icon {
+  transform: scale(1.1);
+
+  filter:
+    drop-shadow(0 0 8px rgba(165, 25, 25, 0.28));
+}
+
+.build-soul-name {
+  margin-top: 6px;
+
+  font-size: 12px;
+  color: #fff;
+}
+
+/* =========================
+   Substats / Breakpoint
+========================= */
+
+.build-substats,
+.build-breakpoint {
+  margin-bottom: 14px;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  font-size: 14px;
+  color: #fff;
+}
+
+.build-label {
+  margin-right: 4px;
+
+  font-weight: 700;
+}
+
+.build-breakpoint-tag {
+  padding: 4px 10px;
+
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  background: rgba(255, 255, 255, 0.04);
+
+  font-size: 12px;
+}
+
+/* =========================
+   Note
+========================= */
+
+.build-note {
+  padding: 12px 14px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.build-note-text {
+  font-size: 14px;
+  line-height: 1.6;
+
+  color: #bdbdbd;
+
+  white-space: pre-line;
+  font-style: italic;
 }
 
 /* Tooltip Styles */
@@ -4329,17 +4661,6 @@ const addCKeywordListeners = () => {
   line-height: 1.3;
 }
 
-@keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Ensure tooltip appears above other elements */
 .tooltip::before {
   content: "";
@@ -4363,102 +4684,5 @@ const addCKeywordListeners = () => {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-bottom: 5px solid #ffffff;
-}
-
-.build-section {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.build-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
-}
-
-.build-block {
-  min-width: 220px;
-}
-
-.build-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  opacity: 0.8;
-  margin-bottom: 0.25rem;
-}
-
-.build-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.build-tag {
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.build-soul {
-  font-size: 0.9rem;
-  opacity: 0.9;
-}
-
-.build-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
-}
-
-.build-card {
-  border-radius: 0.75rem;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(6px);
-}
-
-.build-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.build-mode {
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-}
-
-.build-line {
-  display: flex;
-  gap: 0.25rem;
-  font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-}
-
-.build-label-small {
-  font-weight: 600;
-}
-
-.build-value {
-  opacity: 0.9;
-}
-
-.build-breakpoint {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.build-list {
-  margin: 0.25rem 0 0;
-  padding-left: 1.1rem;
 }
 </style>

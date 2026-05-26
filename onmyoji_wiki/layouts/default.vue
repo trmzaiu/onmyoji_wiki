@@ -2,27 +2,15 @@
   <div id="app">
     <header class="header">
       <div class="nav-container">
-        <div class="nav-content grid grid-cols-[auto_1fr] gap-x-4">
+        <div class="nav-content">
           <!-- Logo -->
-          <div class="row-span-3 flex items-start">
-            <img
-              src="/images/Logo.webp"
-              alt="Onmyoji Logo"
-              class="max-w-[200px] h-auto"
-            />
-          </div>
-
-          <!-- Text -->
-          <div class="p-2">&nbsp;</div>
-          <div>
-            <span class="text-xl font-bold text-black">Onmyoji Wiki</span>
+          <div class="flex items-start">
+            <img src="/images/Logo.webp" alt="Onmyoji Logo" />
           </div>
 
           <!-- Nav -->
-          <nav
-            class="flex space-x-5 text-sm font-semibold text-black uppercase px-2 mx-auto"
-          >
-            <div class="nav-menu flex space-x-6">
+          <nav>
+            <div class="nav-menu">
               <NuxtLink to="/" class="nav-item">ExpLore</NuxtLink>
               <!-- Dropdown -->
               <div class="dropdown" @mouseleave="closeDropdown">
@@ -65,56 +53,66 @@
       </div>
     </header>
 
-    <div
-      v-show="showStickyNav"
-      class="sticky-nav fixed top-0 left-0 w-full bg-[#891727] text-white shadow-md z-[2000] transition-all duration-300"
-    >
-      <div class="max-w-[1200px] mx-auto flex items-center px-6 py-3">
-        <img
-          src="/images/Logo.webp"
-          alt="Logo"
-          style="height: 50px; padding-left: 20px; padding-right: 20px"
-        />
+    <div v-show="showStickyNav" class="sticky-nav">
+      <div class="nav-container">
+        <div class="nav-content sticky-content">
+          <!-- Logo -->
+          <div class="flex items-start">
+            <img src="/images/Logo.webp" alt="Onmyoji Logo" />
+          </div>
 
-        <nav class="flex flex-1 text-sm font-semibold uppercase mx-auto">
-          <div class="nav-menu flex space-x-6">
-            <NuxtLink to="/" class="hover:text-gray-200">Explore</NuxtLink>
-            <div class="dropdown" @mouseleave="closeDropdown">
-              <button
-                class="hover:text-gray-200 cursor-pointer dropdown-toggle"
-                @mouseenter="openDropdown"
-                @click="toggleDropdown"
-              >
-                ONMYOJI
-                <span class="dropdown-arrow">▼</span>
-              </button>
+          <!-- Nav -->
+          <nav>
+            <div class="nav-menu">
+              <NuxtLink to="/" class="nav-item"> Explore </NuxtLink>
 
-              <div class="dropdown-menu" :class="{ active: isDropdownOpen }">
-                <!-- Factions -->
-                <div class="dropdown-item">
-                  <NuxtLink to="/onmyoji/Seimei" class="submenu-label">Seimei</NuxtLink>
-                  <NuxtLink to="/onmyoji/Kagura" class="submenu-label">Kagura</NuxtLink>
-                  <NuxtLink to="/onmyoji/Hiromasa" class="submenu-label"
-                    >Hiromasa</NuxtLink
-                  >
-                  <NuxtLink to="/onmyoji/Yao_Bikuni" class="submenu-label"
-                    >Yao Bikuni</NuxtLink
-                  >
-                  <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label"
-                    >Yorimitsu</NuxtLink
-                  >
-                  <NuxtLink to="/onmyoji/Fujiwara_no_Michinaga" class="submenu-label"
-                    >Michinaga</NuxtLink
-                  >
+              <div class="dropdown" @mouseleave="closeDropdown">
+                <button
+                  class="nav-item dropdown-toggle"
+                  @mouseenter="openDropdown"
+                  @click="toggleDropdown"
+                >
+                  Onmyoji
+                  <span class="dropdown-arrow"> ▼ </span>
+                </button>
+
+                <div class="dropdown-menu" :class="{ active: isDropdownOpen }">
+                  <div class="dropdown-item">
+                    <NuxtLink to="/onmyoji/Seimei" class="submenu-label">
+                      Seimei
+                    </NuxtLink>
+
+                    <NuxtLink to="/onmyoji/Kagura" class="submenu-label">
+                      Kagura
+                    </NuxtLink>
+
+                    <NuxtLink to="/onmyoji/Hiromasa" class="submenu-label">
+                      Hiromasa
+                    </NuxtLink>
+
+                    <NuxtLink to="/onmyoji/Yao_Bikuni" class="submenu-label">
+                      Yao Bikuni
+                    </NuxtLink>
+
+                    <NuxtLink to="/onmyoji/Minamoto_no_Yorimitsu" class="submenu-label">
+                      Yorimitsu
+                    </NuxtLink>
+
+                    <NuxtLink to="/onmyoji/Fujiwara_no_Michinaga" class="submenu-label">
+                      Michinaga
+                    </NuxtLink>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <NuxtLink to="/shikigami" class="hover:text-gray-200">Shikigami</NuxtLink>
-            <NuxtLink to="/souls" class="hover:text-gray-200">Souls</NuxtLink>
-            <NuxtLink to="/pets" class="hover:text-gray-200">Pets</NuxtLink>
-          </div>
-        </nav>
+              <NuxtLink to="/shikigami" class="nav-item"> Shikigami </NuxtLink>
+
+              <NuxtLink to="/souls" class="nav-item"> Souls </NuxtLink>
+
+              <NuxtLink to="/pets" class="nav-item"> Pets </NuxtLink>
+            </div>
+          </nav>
+        </div>
       </div>
     </div>
 
@@ -144,61 +142,94 @@
       <div class="main-container"><slot /></div>
     </main>
 
-    <footer class="footer bg-[#891727] text-white py-10 mt-20">
-      <div class="max-w-[1200px] mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Logo & Info -->
-        <div class="footer-logo flex flex-col items-start space-y-3">
-          <img src="/images/Logo.webp" alt="Onmyoji Logo" class="h-16 w-auto" />
-          <p class="text-sm">
-            Onmyoji Wiki – Thế giới đầy bí ẩn của Onmyoji và Shikigami.
+    <footer
+      class="footer mt-20 border-t border-white/10 bg-gradient-to-b from-[#891727] to-[#5f0f1a] text-white"
+    >
+      <div
+        class="mx-auto grid max-w-[1200px] grid-cols-1 gap-10 px-6 py-12 md:grid-cols-3"
+      >
+        <!-- Logo -->
+        <div class="flex flex-col gap-4">
+          <img
+            src="/images/Logo.webp"
+            alt="Onmyoji Wiki Logo"
+            class="h-16 w-fit"
+          />
+
+          <p class="max-w-[280px] text-sm leading-6 text-gray-300">
+            Explore the world of Onmyoji, Shikigami, Souls, and more in one simple
+            and organized wiki.
           </p>
         </div>
 
-        <!-- Quick Links -->
-        <div class="footer-links">
-          <h3 class="font-bold mb-3">Quick Links</h3>
-          <ul class="space-y-2">
-            <li><NuxtLink to="/" class="hover:underline">Explore</NuxtLink></li>
-            <li><NuxtLink to="/onmyoji" class="hover:underline">Onmyoji</NuxtLink></li>
+        <!-- Navigation -->
+        <div>
+          <h3 class="mb-4 text-lg font-semibold">Navigation</h3>
+
+          <ul class="space-y-3 text-sm text-gray-300">
             <li>
-              <NuxtLink to="/shikigami" class="hover:underline">Shikigami</NuxtLink>
+              <NuxtLink
+                to="/"
+                class="transition hover:pl-1 hover:text-white"
+              >
+                Home
+              </NuxtLink>
             </li>
-            <li><NuxtLink to="/souls" class="hover:underline">Souls</NuxtLink></li>
-            <li><NuxtLink to="/pets" class="hover:underline">Pets</NuxtLink></li>
+
+            <li>
+              <NuxtLink
+                to="/onmyoji"
+                class="transition hover:pl-1 hover:text-white"
+              >
+                Onmyoji
+              </NuxtLink>
+            </li>
+
+            <li>
+              <NuxtLink
+                to="/shikigami"
+                class="transition hover:pl-1 hover:text-white"
+              >
+                Shikigami
+              </NuxtLink>
+            </li>
+
+            <li>
+              <NuxtLink
+                to="/souls"
+                class="transition hover:pl-1 hover:text-white"
+              >
+                Souls
+              </NuxtLink>
+            </li>
+
+            <li>
+              <NuxtLink
+                to="/pets"
+                class="transition hover:pl-1 hover:text-white"
+              >
+                Pets
+              </NuxtLink>
+            </li>
           </ul>
         </div>
 
-        <!-- Social Media -->
-        <div class="footer-social">
-          <h3 class="font-bold mb-3">Follow Us</h3>
-          <div class="flex space-x-4">
-            <a
-              href="#"
-              class="hover:text-gray-300"
-              target="_blank"
-              rel="noopener noreferrer"
-              >🐦 Twitter</a
-            >
-            <a
-              href="#"
-              class="hover:text-gray-300"
-              target="_blank"
-              rel="noopener noreferrer"
-              >📘 Facebook</a
-            >
-            <a
-              href="#"
-              class="hover:text-gray-300"
-              target="_blank"
-              rel="noopener noreferrer"
-              >📸 Instagram</a
-            >
-          </div>
+        <!-- Info -->
+        <div>
+          <h3 class="mb-4 text-lg font-semibold">About</h3>
+
+          <p class="text-sm leading-6 text-gray-300">
+            Fan-made Onmyoji Wiki built for learning, exploring characters, and
+            finding useful game information quickly.
+          </p>
         </div>
       </div>
 
-      <div class="mt-8 text-center text-sm text-gray-300">
-        &copy; 2025 Onmyoji Wiki. All rights reserved.
+      <!-- Bottom -->
+      <div
+        class="border-t border-white/10 px-6 py-5 text-center text-sm text-gray-400"
+      >
+        © 2025 Onmyoji Wiki. All rights reserved.
       </div>
     </footer>
   </div>
@@ -252,31 +283,12 @@ export default {
 
 <style>
 #app {
-  font-family: "Rubik", "Nunito", "Noto Sans TC", "stkaiti", sans-serif;
+  font-family: "Noto Sans", sans-serif;
   background: #891727;
   color: #f4f1e8;
 }
 
-#app.lang-en {
-  font-family: "Rubik", sans-serif;
-}
-
-#app.lang-vi {
-  font-family: "Nunito", sans-serif;
-}
-
-#app.lang-zh {
-  font-family: "Noto Sans TC", sans-serif;
-}
-
-.footer a {
-  transition: color 0.3s ease;
-}
-.footer a:hover {
-  color: #d0d0d0;
-}
-
-/* Header Styles */
+/* Header */
 .header {
   position: relative;
   background: url("/images/Background.png") center center no-repeat;
@@ -300,174 +312,319 @@ export default {
   z-index: 2;
 }
 
+/* Nav */
 .nav-container {
-  width: 100%; /* Giới hạn độ rộng */
-  margin: 0 auto; /* Nằm giữa màn hình */
-  display: flex;
-  justify-content: flex-start; /* Cho nội dung canh trái */
-  align-items: center;
-  padding: 0 20px;
+  width: 100%;
+  max-width: 1280px;
+
+  margin: 0 auto;
+  padding: 0 18px;
+
+  position: relative;
+  z-index: 10;
 }
 
 .nav-content {
   display: grid;
   grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: 20px;
 }
 
+/* Logo */
+.nav-content img {
+  width: 200px;
+  height: auto;
+}
+
+/* Nav Menu */
 .nav-menu {
   display: flex;
-  list-style: none;
-  gap: 30px;
   align-items: center;
+  gap: 10px;
 }
 
-.nav-item {
-  color: #0e191a;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+.nav-item,
+.dropdown-toggle {
+  position: relative;
+
+  color: rgba(0, 0, 0, 0.88);
+
+  font-family: "Fira Sans", sans-serif;
+
+  font-size: 18px;
+
   text-transform: uppercase;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-  border: none;
-  background: none;
+  text-decoration: none;
+
+  padding: 10px 18px;
+
+  transition: color 0.25s ease;
+
+  overflow: hidden;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-.nav-item:hover {
-  color: #d0d0d0;
+/* hover glow */
+.nav-item::before,
+.dropdown-toggle::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  transform: translateX(-120%);
+  transition: transform 0.5s ease;
 }
 
-/* Dropdown Styles */
+.nav-item:hover::before,
+.dropdown-toggle:hover::before {
+  transform: translateX(120%);
+}
+
+.nav-item:hover,
+.dropdown-toggle:hover {
+  color: #fff;
+
+  transform: translateY(-2px);
+}
+
+/* active route */
+.router-link-active {
+  color: #fff !important;
+}
+
+/* Dropdown */
 .dropdown {
   position: relative;
 }
 
-.dropdown-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .dropdown-arrow {
   font-size: 10px;
-  transition: transform 0.3s ease;
-}
+  opacity: 0.8;
 
-.dropdown.active .dropdown-arrow {
-  transform: rotate(180deg);
+  transition: transform 0.25s ease;
 }
 
 .dropdown-menu {
   position: absolute;
+
   top: 100%;
   left: 0;
-  background: #d0d0d0;
-  min-width: 250px;
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(187, 184, 184, 0.3);
+
+  min-width: 260px;
+
+  padding: 10px;
+
+  border-radius: 10px;
+
+  background: linear-gradient(to bottom, rgba(35, 35, 35, 0.98), rgba(20, 20, 20, 0.98));
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(165, 25, 25, 0.15);
+
+  backdrop-filter: blur(10px);
+
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.3s ease;
+
+   transform:
+    translateY(6px)
+    scale(0.98);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s;
+
   z-index: 1000;
-  margin-top: 0px;
+}
+
+.dropdown::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 100%;
+
+  width: 100%;
+  height: 14px;
 }
 
 .dropdown-menu.active {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+
+  transform:
+    translateY(0)
+    scale(1);
 }
 
 .dropdown-item {
-  display: block;
-  padding: 12px 20px;
-  color: #0e191a;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(187, 184, 184, 0.3);
-  transition: all 0.3s ease;
-  font-size: 14px;
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.dropdown-item:hover {
-  color: #3a3a3a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: "Fira Sans", sans-serif;
 }
 
 .submenu-label {
-  display: block;
-  padding: 8px;
-  color: #3a3a3a;
-  text-decoration: none;
-}
+  color: rgba(255, 255, 255, 0.82);
 
-.submenu-label:last-child {
-  border-bottom: none;
+  padding: 10px 12px;
+
+  border-radius: 6px;
+
+  transition: background 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
 }
 
 .submenu-label:hover {
-  color: #3a3a3a;
-  padding-left: 10px;
+  background: rgba(165, 25, 25, 0.18);
+
+  color: #fff;
+
+  padding-left: 18px;
 }
 
-/* Active Link Styles */
-.nav-item.router-link-active,
-.dropdown-item.router-link-active,
-.submenu-item.router-link-active {
-  color: #3a3a3a;
+/* Sticky Nav */
+.sticky-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+
+  background: linear-gradient(to bottom, rgba(25, 25, 25, 0.96), rgba(137, 23, 39, 0.96));
+
+  backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45), 0 0 20px rgba(165, 25, 25, 0.12);
+
+  z-index: 2000;
+
+  animation: stickySlideDown 0.35s ease;
+}
+
+.sticky-content {
+  align-items: center;
+
+  padding: 10px 0;
+}
+
+.sticky-nav img {
+  width: 120px;
+  height: auto;
+
+  transition: transform 0.3s ease;
+}
+
+.sticky-nav .nav-item,
+.sticky-nav .dropdown-toggle {
+  font-size: 16px;
+
+  padding: 8px 16px;
+}
+
+@keyframes stickySlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+.footer a {
+  transition: color 0.3s ease;
+}
+.footer a:hover {
+  color: #d0d0d0;
+}
+
+/* Back to Top & Bottom Buttons */
+.back-to-top,
+.back-to-bottom {
+  position: fixed;
+  right: 24px;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+
+  background: linear-gradient(135deg, #891727, #c62828);
+  backdrop-filter: blur(6px);
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    opacity 0.25s ease;
+
+  z-index: 3000;
 }
 
 .back-to-top {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  background: #891727;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s ease;
-  z-index: 3000;
-}
-
-.back-to-top:hover {
-  background: #d01f1f;
+  bottom: 92px;
 }
 
 .back-to-bottom {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #891727;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s ease;
-  z-index: 3000;
+  bottom: 24px;
 }
 
+/* Hover */
+.back-to-top:hover,
 .back-to-bottom:hover {
-  background: #d01f1f;
+  transform: translateY(-4px) scale(1.08);
+
+  background: linear-gradient(135deg, #d01f1f, #ff5252);
+
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.45),
+    0 0 14px rgba(208, 31, 31, 0.45);
+}
+
+/* Click effect */
+.back-to-top:active,
+.back-to-bottom:active {
+  transform: scale(0.95);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .back-to-top,
+  .back-to-bottom {
+    width: 46px;
+    height: 46px;
+    font-size: 20px;
+    right: 16px;
+  }
+
+  .back-to-top {
+    bottom: 78px;
+  }
+
+  .back-to-bottom {
+    bottom: 18px;
+  }
 }
 </style>

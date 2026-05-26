@@ -68,10 +68,17 @@ async function fetchShikigami() {
   if (error) {
     console.error("Fetch error:", error);
   } else {
-    // append
-    shikigamiList.value.push(...data);
+    // replace first page
+    if (page.value === 0) {
+      shikigamiList.value = data;
+    }
 
-    // stop loading if no more data
+    // append next pages
+    else {
+      shikigamiList.value.push(...data);
+    }
+
+    // stop loading
     if (data.length < limit) {
       hasMore.value = false;
     }
@@ -92,10 +99,6 @@ watch(selectedRarity, async () => {
   page.value = 0;
 
   hasMore.value = true;
-
-  const oldList = [...shikigamiList.value];
-
-  shikigamiList.value = oldList;
 
   await fetchShikigami();
 
@@ -361,7 +364,7 @@ onUnmounted(() => {
         </div>
       </TransitionGroup>
 
-      <div class="loading-dots mt-10" v-if="loading">
+      <div class="loading-dots" v-if="loading">
         <span></span>
         <span></span>
         <span></span>

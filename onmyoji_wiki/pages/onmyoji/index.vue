@@ -24,17 +24,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="main-container">
+  <div class="container">
     <div class="content-section flex flex-col gap-4">
       <div class="header-row">
-        <div class="character-title">Onmyoji</div>
+        <div class="title">Onmyoji</div>
       </div>
 
       <div class="grid grid-cols-3 gap-4 p-3">
         <div
           v-for="onmyoji in onmyojiList"
           :key="onmyoji.id"
-          class="flex flex-col items-center"
+          class="flex flex-col items-center onmyoji-card"
         >
           <a class="cursor-pointer hover:scale-110 transition-transform duration-300" :href="`/onmyoji/${onmyoji.name.en.replace(/\s+/g, '_')}`">
             <img
@@ -44,7 +44,7 @@ onMounted(() => {
             />
           </a>
 
-          <span class="font-bold text-black hover:text-[#a51919] cursor-pointer">
+          <span class="name">
             <a :href="`/onmyoji/${onmyoji.name.en.replace(/\s+/g, '_')}`">{{
               onmyoji.name.en
             }}</a>
@@ -55,28 +55,15 @@ onMounted(() => {
   </div>
 </template>
 
+<style scoped src="@/pages/styles.css"></style>
+
 <style scoped>
-.main-container {
-  max-width: 1200px;
-  min-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-  display: grid;
-  gap: 30px;
+.name {
+  font-family: "Bona Nova SC", serif;
+  font-weight: bold;
 }
 
-.content-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid #3a3a3a4d;
-}
-
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+.onmyoji-card:hover .name {
+  color: var(--text-primary);
 }
 </style>
