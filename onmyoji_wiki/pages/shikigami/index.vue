@@ -254,23 +254,11 @@ onUnmounted(() => {
       <!-- Header -->
       <div class="header-row">
         <div class="title">Shikigami</div>
-
-        <label class="toggle-switch" title="Switch Language">
-          <input type="checkbox" v-model="isEnglish" />
-          <span class="slider"></span>
-          <div class="toggle-labels">
-            <span>EN</span>
-            <span>VN</span>
-          </div>
-        </label>
       </div>
 
       <!-- New Release  -->
-      <h2
-        class="session-title mb-5"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
-      >
-        {{ isEnglish ? "New Releases" : "Mới Ra Mắt" }}
+      <h2 class="session-title top-0">
+        New Releases
       </h2>
 
       <div class="latest-shiki-list">
@@ -312,10 +300,9 @@ onUnmounted(() => {
 
       <!-- Shikigame List -->
       <h2
-        class="session-title mt-5 mb-5"
-        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+        class="session-title"
       >
-        {{ isEnglish ? "Shikigami List" : "Danh sách Thức Thần" }}
+        Shikigami List
       </h2>
       <div class="tabs">
         <button

@@ -1679,7 +1679,7 @@ const addCKeywordListeners = () => {
                 <th>&nbsp;</th>
 
                 <th class="label-cell">
-                  <img src="/assets/stats/ATK.webp" alt="ATK"/>
+                  <img src="/assets/stats/ATK.webp" alt="ATK" />
                   ATK
                 </th>
 
@@ -1906,7 +1906,6 @@ const addCKeywordListeners = () => {
                     <img
                       :src="getSPDImage(shikigami.stats.SPD[1])"
                       :alt="getSPDRank(shikigami.stats.SPD[1])"
-
                     />
                   </div>
                 </td>
@@ -1960,9 +1959,7 @@ const addCKeywordListeners = () => {
                 </td>
 
                 <td>
-                  <div class="value-cell">
-                    {{ shikigami.stats.Crit[0] }}%
-                  </div>
+                  <div class="value-cell">{{ shikigami.stats.Crit[0] }}%</div>
                 </td>
 
                 <td v-if="hasLevel40">
@@ -1977,9 +1974,7 @@ const addCKeywordListeners = () => {
                 <td v-else class="empty-cell"></td>
 
                 <td v-if="hasLevel40">
-                  <div class="value-cell">
-                    {{ shikigami.stats.Crit[1] }}%
-                  </div>
+                  <div class="value-cell">{{ shikigami.stats.Crit[1] }}%</div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
@@ -2150,7 +2145,7 @@ const addCKeywordListeners = () => {
             @click="changeSkill(index)"
             :class="[
               'tab-skill-button px-4 py-2',
-              { active: activeSkillIndex === index }
+              { active: activeSkillIndex === index },
             ]"
           >
             <template v-if="index === 1 && shikigami.skills[3]?.tab === 2">
@@ -2189,20 +2184,14 @@ const addCKeywordListeners = () => {
           <button
             v-if="!['SP', 'UR', 'N'].includes(shikigami.rarity) && shikigami.id !== 193"
             @click="changeSkill(3)"
-            :class="[
-              'tab-skill-button px-4 py-2',
-              { active: activeSkillIndex === 3 }
-            ]"
+            :class="['tab-skill-button px-4 py-2', { active: activeSkillIndex === 3 }]"
           >
             Evolution Effect
           </button>
           <button
             v-if="shikigami.rarity === 'UR'"
             @click="changeSkill(3)"
-            :class="[
-              'tab-skill-button px-4 py-2',
-              { active: activeSkillIndex === 3 }
-            ]"
+            :class="['tab-skill-button px-4 py-2', { active: activeSkillIndex === 3 }]"
           >
             Linked
           </button>
@@ -2279,11 +2268,13 @@ const addCKeywordListeners = () => {
                     <img src="/assets/Onibi.webp" alt="Onibi" />
                   </span>
                 </div>
-                
               </div>
               <hr class="skill-divider" />
 
-              <div class="skill-voice-wrapper" v-if="shikigami.skills[activeSkillIndex].voice">
+              <div
+                class="skill-voice-wrapper"
+                v-if="shikigami.skills[activeSkillIndex].voice"
+              >
                 <p class="skill-voice">
                   "{{ shikigami.skills[activeSkillIndex].voice }}"
                 </p>
@@ -2302,33 +2293,21 @@ const addCKeywordListeners = () => {
               <div v-if="shikigami.id === 107 && activeSkillIndex === 0">
                 <hr class="skill-divider" />
 
-                <b
-                  class="sub-skill-title"
-                  @click="activeSkillIndex = 1"
-                >
+                <b class="sub-skill-title" @click="activeSkillIndex = 1">
                   {{
-                    isEnglish
-                      ? shikigami.skills[1].name.en
-                      : shikigami.skills[1].name.vn
+                    isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn
                   }}
                 </b>
 
                 <div class="sub-skill-grid">
-                  <div
-                    v-for="i in [4, 5, 6, 7]"
-                    :key="i"
-                    class="sub-skill-item"
-                  >
+                  <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
                     <img
                       :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
                         i - 3
                       }.webp`"
                     />
 
-                    <span
-                      class="sub-skill-name"
-                      @click="activeSkillIndex = 1"
-                    >
+                    <span class="sub-skill-name" @click="activeSkillIndex = 1">
                       {{
                         isEnglish
                           ? shikigami.skills[i - 1].name.en.split(" ")[0]
@@ -2345,33 +2324,21 @@ const addCKeywordListeners = () => {
               <div v-if="shikigami.id === 107 && activeSkillIndex === 2">
                 <hr class="skill-divider" />
 
-                <b
-                  class="sub-skill-title"
-                  @click="activeSkillIndex = 1"
-                >
+                <b class="sub-skill-title" @click="activeSkillIndex = 1">
                   {{
-                    isEnglish
-                      ? shikigami.skills[1].name.en
-                      : shikigami.skills[1].name.vn
+                    isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn
                   }}
                 </b>
 
                 <div class="sub-skill-grid">
-                  <div
-                    v-for="i in [4, 5, 6, 7]"
-                    :key="i"
-                    class="sub-skill-item"
-                  >
+                  <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
                     <img
                       :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
                         i + 1
                       }.webp`"
                     />
 
-                    <span
-                      class="sub-skill-name"
-                      @click="activeSkillIndex = 1"
-                    >
+                    <span class="sub-skill-name" @click="activeSkillIndex = 1">
                       {{
                         isEnglish
                           ? shikigami.skills[i - 1].name.en.split(" ")[0]
@@ -2388,33 +2355,21 @@ const addCKeywordListeners = () => {
               <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
                 <hr class="skill-divider" />
 
-                <b
-                  class="sub-skill-title"
-                  @click="activeSkillIndex = 1"
-                >
+                <b class="sub-skill-title" @click="activeSkillIndex = 1">
                   {{
-                    isEnglish
-                      ? shikigami.skills[1].name.en
-                      : shikigami.skills[1].name.vn
+                    isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn
                   }}
                 </b>
 
                 <div class="sub-skill-grid">
-                  <div
-                    v-for="i in [4, 5, 6, 7]"
-                    :key="i"
-                    class="sub-skill-item"
-                  >
+                  <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
                     <img
                       :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
                         i - 3
                       }.webp`"
                     />
 
-                    <span
-                      class="sub-skill-name"
-                      @click="activeSkillIndex = 1"
-                    >
+                    <span class="sub-skill-name" @click="activeSkillIndex = 1">
                       {{
                         isEnglish
                           ? shikigami.skills[i - 1].name.en
@@ -2433,18 +2388,12 @@ const addCKeywordListeners = () => {
                 </b>
 
                 <div class="sub-skill-grid">
-                  <div
-                    v-for="i in [1, 2, 3, 4]"
-                    :key="i"
-                    class="sub-skill-item"
-                  >
+                  <div v-for="i in [1, 2, 3, 4]" :key="i" class="sub-skill-item">
                     <img
                       :src="`/assets/shikigami/skills/${route.params.name}_Knot${i}.webp`"
                     />
 
-                    <span
-                      class="sub-skill-name"
-                    >
+                    <span class="sub-skill-name">
                       {{ isEnglish ? "Type " + i : "Loại " + i }}
                     </span>
                   </div>
@@ -2452,7 +2401,8 @@ const addCKeywordListeners = () => {
               </div>
 
               <hr class="skill-divider" />
-              <table class="skill-level-table"
+              <table
+                class="skill-level-table"
                 v-if="
                   Array.isArray(
                     isEnglish
@@ -2575,11 +2525,7 @@ const addCKeywordListeners = () => {
             <div class="skill-content">
               <div class="skill-header">
                 <div class="skill-badges">
-                  <div
-                    v-for="tagId in skill.tags"
-                    :key="tagId"
-                    class="skill-badge"
-                  >
+                  <div v-for="tagId in skill.tags" :key="tagId" class="skill-badge">
                     <div
                       class="skill-badge-bg tint-base"
                       :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
@@ -2596,21 +2542,18 @@ const addCKeywordListeners = () => {
                     {{ skill.cooldown }}
                   </span>
                   <span>
-                  {{ skill.onibi }}
+                    {{ skill.onibi }}
                     <img src="/assets/Onibi.webp" alt="Onibi" />
                   </span>
-                  
                 </div>
-                
               </div>
               <hr class="skill-divider" />
 
               <div class="skill-voice-wrapper" v-if="skill.voice">
-                <p class="skill-voice">
-                  "{{ skill?.voice }}"
-                </p>
+                <p class="skill-voice">"{{ skill?.voice }}"</p>
               </div>
-              <p class="skill-description"
+              <p
+                class="skill-description"
                 v-html="
                   processTextWithTooltips(
                     isEnglish ? skill.description.en : skill.description.vn
@@ -2618,27 +2561,16 @@ const addCKeywordListeners = () => {
                 "
               ></p>
               <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
-                <hr
-                  style="border: none; border-top: 1px solid #a51919; margin: 8px 0"
-                />
+                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
 
-                <b
-                  class="sub-skill-title"
-                  @click="activeSkillIndex = 1"
-                >
+                <b class="sub-skill-title" @click="activeSkillIndex = 1">
                   {{
-                    isEnglish
-                      ? shikigami.skills[1].name.en
-                      : shikigami.skills[1].name.vn
+                    isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn
                   }}
                 </b>
 
                 <div class="sub-skill-grid">
-                  <div
-                    v-for="i in [4, 5, 6, 7]"
-                    :key="i"
-                    class="sub-skill-item"
-                  >
+                  <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
                     <img
                       :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
                         i + 1
@@ -2692,9 +2624,7 @@ const addCKeywordListeners = () => {
                 <p
                   class="no-level"
                   v-html="
-                    processTextWithTooltips(
-                      isEnglish ? skill.levels.en : skill.levels.vn
-                    )
+                    processTextWithTooltips(isEnglish ? skill.levels.en : skill.levels.vn)
                   "
                 ></p>
               </div>
@@ -2775,9 +2705,7 @@ const addCKeywordListeners = () => {
                       {{ shikigami.skills.find((s) => s.type === "Linked").onibi }}
                       <img src="/assets/Onibi.webp" alt="Onibi" />
                     </span>
-                    
                   </div>
-                  
                 </div>
                 <hr class="skill-divider" />
 
@@ -2786,7 +2714,8 @@ const addCKeywordListeners = () => {
                     "{{ shikigami.skills.find((s) => s.type === "Linked").voice }}"
                   </p>
                 </div>
-                <p class="skill-description"
+                <p
+                  class="skill-description"
                   v-html="
                     processTextWithTooltips(
                       isEnglish
@@ -2860,10 +2789,7 @@ const addCKeywordListeners = () => {
             </div>
           </div>
           <div v-else class="evolution-box">
-            <p
-              class="evolution-text"
-              v-html="renderEvoText(shikigami.evolution)"
-            ></p>
+            <p class="evolution-text" v-html="renderEvoText(shikigami.evolution)"></p>
           </div>
         </div>
 
@@ -2871,10 +2797,7 @@ const addCKeywordListeners = () => {
         <h2 class="session-title" v-if="shikigami.id !== 193">
           {{ isEnglish ? "Biography Unlock" : "Mở khoá Tiểu sử" }}
         </h2>
-        <table
-          class="bio-table"
-          v-if="shikigami.id !== 193"
-        >
+        <table class="bio-table" v-if="shikigami.id !== 193">
           <thead>
             <tr>
               <th class="table-title no-column">No.</th>
@@ -2920,14 +2843,8 @@ const addCKeywordListeners = () => {
 
               <td v-if="shikigami.id === 78" class="table-cell reward-cell">
                 <div class="reward-box">
-                  <img
-                    src="/assets/Gold.webp"
-                    alt="Gold"
-                    class="reward-icon"
-                  />
-                  <span class="reward-amount">
-                    5000</span
-                  >
+                  <img src="/assets/Gold.webp" alt="Gold" class="reward-icon" />
+                  <span class="reward-amount"> 5000</span>
                 </div>
               </td>
 
@@ -2944,16 +2861,13 @@ const addCKeywordListeners = () => {
                     :alt="shikigami.name.jp"
                     class="reward-icon"
                   />
-                  <span
-                    class="reward-amount"
-                    >{{
-                      shikigami.id >= 201 && shikigami.id <= 214
-                        ? 2
-                        : [71, 84, 130, 117, 111].includes(shikigami.id)
-                        ? ""
-                        : 10
-                    }}</span
-                  >
+                  <span class="reward-amount">{{
+                    shikigami.id >= 201 && shikigami.id <= 214
+                      ? 2
+                      : [71, 84, 130, 117, 111].includes(shikigami.id)
+                      ? ""
+                      : 10
+                  }}</span>
                 </div>
               </td>
             </tr>
@@ -2975,10 +2889,7 @@ const addCKeywordListeners = () => {
                     alt="Jade"
                     class="reward-icon"
                   />
-                  <span
-                    class="reward-amount"
-                    >10</span
-                  >
+                  <span class="reward-amount">10</span>
                 </div>
               </td>
             </tr>
@@ -2989,15 +2900,8 @@ const addCKeywordListeners = () => {
           {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
         </h2>
 
-        <div
-          v-if="shikigami.build?.length"
-          class="build-list"
-        >
-          <div
-            v-for="build in shikigami.build"
-            :key="build.no"
-            class="build-card"
-          >
+        <div v-if="shikigami.build?.length" class="build-list">
+          <div v-for="build in shikigami.build" :key="build.no" class="build-card">
             <div class="build-header">
               <h3 class="build-title">Build {{ build.no }}</h3>
 
@@ -3054,10 +2958,7 @@ const addCKeywordListeners = () => {
             </div>
 
             <!-- Substats -->
-            <div
-              v-if="build.substats"
-              class="build-substats"
-            >
+            <div v-if="build.substats" class="build-substats">
               <span class="build-label">Substats:</span>
 
               <template v-for="(item, i) in parseSubstats(build.substats)" :key="i">
@@ -3089,10 +2990,7 @@ const addCKeywordListeners = () => {
             </div>
 
             <!-- Note -->
-            <div
-              v-if="build.note"
-              class="build-note"
-            >
+            <div v-if="build.note" class="build-note">
               <span class="build-note-text">{{ build.note }}</span>
             </div>
           </div>
@@ -3102,20 +3000,17 @@ const addCKeywordListeners = () => {
       <!-- Gallery Tab -->
       <div
         v-show="activeTab === 'Gallery'"
-        :class="[
-          activeTab === 'Gallery' ? 'opacity-100' : 'opacity-0',
-          isEnglish ? 'lang-en' : 'lang-vi',
-        ]"
+        :class="[activeTab === 'Gallery' ? 'opacity-100' : 'opacity-0']"
       >
         <!-- Skins -->
-        <h2 class="session-title">
+        <h2 class="session-title top-0">
           {{ isEnglish ? "Skins" : "Trang phục" }}
         </h2>
-        <div class="flex flex-wrap justify-center gap-2 mt-4">
+        <div class="skin-gallery">
           <div
             v-for="(skin, index) in shikigami.skins"
             :key="index"
-            class="flex flex-col items-center"
+            class="skin-card"
             :title="skin.name.en || skin.name.cn"
             @click="
               openModal(
@@ -3148,11 +3043,17 @@ const addCKeywordListeners = () => {
                     }.webp`
               "
               :alt="skin.name.en || skin.name.cn"
-              class="w-68 h-68 object-contain mt-2 hover:scale-110 transition-transform duration-300 overflow-visible cursor-pointer"
+              class="skin-image"
             />
             <p
-              class="mt-4 text-center font-medium text-black"
-              :class="{ 'lang-zh': isEnglish ? !skin.name.en && skin.name.cn : false }"
+              class="skin-name"
+              :class="
+                isEnglish
+                  ? !skin.name.en && skin.name.cn
+                    ? 'lang-zh'
+                    : 'skin-name-en'
+                  : 'skin-name-vn'
+              "
             >
               {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
             </p>
@@ -3160,33 +3061,28 @@ const addCKeywordListeners = () => {
         </div>
 
         <!-- Modal -->
-        <div
-          v-if="isModalOpen"
-          class="fixed inset-0 z-50 flex items-center justify-center"
-        >
+        <div v-if="isModalOpen" class="image-modal">
           <!-- Overlay -->
-          <div class="absolute inset-0 bg-black/50" @click="closeModal"></div>
+          <div class="image-modal-overlay" @click="closeModal"></div>
 
-          <!-- Modal content -->
-          <div class="relative z-10 bg-white max-w-3xl w-full p-4 rounded-lg shadow-2xl">
-            <button
-              class="absolute top-2 right-3 text-black text-[40px] cursor-pointer"
-              @click="closeModal"
-            >
-              ✕
-            </button>
-            <img :src="selectedImage" alt="Skin Preview" class="w-full h-auto" />
+          <!-- Content -->
+          <div class="image-modal-content">
+            <!-- Close -->
+            <button class="image-modal-close" @click="closeModal">✕</button>
+
+            <!-- Image -->
+            <img :src="selectedImage" alt="Skin Preview" class="image-modal-preview" />
           </div>
         </div>
 
         <!-- Skins Info -->
-        <h2 class="session-title mt-5">
+        <h2 class="session-title">
           {{ isEnglish ? "Skins Info" : "Thông tin trang phục" }}
         </h2>
-        <table class="w-full mt-4" style="border: 1px solid #a51919">
+        <table class="skin-info-table">
           <thead>
             <tr>
-              <th class="table-title">
+              <th class="table-title image-column">
                 {{ isEnglish ? "Image" : "Ảnh" }}
               </th>
               <th class="table-title">
@@ -3195,20 +3091,17 @@ const addCKeywordListeners = () => {
               <th class="table-title">
                 {{ isEnglish ? "Artist" : "Họa sĩ" }}
               </th>
-              <th class="table-title">
+              <th class="table-title obtained-column">
                 {{ isEnglish ? "Obtained" : "Cách nhận" }}
               </th>
             </tr>
           </thead>
           <tbody>
             <template v-for="(skin, index) in shikigami.skins || []" :key="index">
-              <tr v-if="skin && skin.obtained !== 'Cancelled'" class="text-black">
-                <!-- ICON DEFAULT / EVOLUTION -->
-                <td
-                  class="px-2 py-2 text-center table-cell w-[105px]"
-                  v-if="skin.name?.en === 'Default' || skin.name?.en === 'Evolution'"
-                >
-                  <div class="w-24 h-24 overflow-hidden">
+              <tr v-if="skin && skin.obtained !== 'Cancelled'" class="skin-info-row">
+                <!-- ICON -->
+                <td class="table-cell skin-image-cell">
+                  <div class="skin-info-image-wrapper">
                     <img
                       :src="
                         skin.name?.en === 'Default'
@@ -3216,69 +3109,68 @@ const addCKeywordListeners = () => {
                             shikigami.id === 193
                             ? `/assets/shikigami/shards/${route.params.name}_Shard.webp`
                             : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp`
-                          : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`
+                          : skin.name?.en === 'Evolution'
+                          ? `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`
+                          : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo${
+                              shikigami.rarity === 'SP' || shikigami.rarity === 'N'
+                                ? index
+                                  ? index
+                                  : ''
+                                : index - 1
+                            }.webp`
                       "
                       :alt="skin.name?.en || skin.name?.cn"
-                      class="w-full h-full object-contain"
-                      :class="
-                        (index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ||
-                        shikigami.id === 193
-                          ? 'scale-145'
-                          : ''
-                      "
+                      class="skin-info-image"
+                      :class="{
+                        'skin-info-scale':
+                          (index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ||
+                          shikigami.id === 193,
+                      }"
                     />
                   </div>
                 </td>
 
-                <!-- ICON SKIN THƯỜNG -->
-                <td class="px-2 py-2 text-center table-cell w-[105px]" v-else>
-                  <div class="w-24 h-24 overflow-hidden">
-                    <img
-                      :src="`/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo${
-                        shikigami.rarity === 'SP' || shikigami.rarity === 'N'
-                          ? index
-                            ? index
-                            : ''
-                          : index - 1
-                      }.webp`"
-                      :alt="skin.name?.en || skin.name?.cn"
-                      class="w-full h-full object-contain"
-                      :class="
-                        (index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ||
-                        shikigami.id === 193
-                          ? 'scale-145'
-                          : ''
-                      "
-                    />
-                  </div>
-                </td>
+                <!-- NAME -->
+                <td class="table-cell skin-name-cell">
+                  <template
+                    v-if="
+                      skin.name?.en === 'Default' ||
+                      skin.name?.en === 'Evolution'
+                    "
+                  >
+                    <div class="skin-main-name">
+                      {{ isEnglish ? skin.name?.en : skin.name?.vn }}
+                    </div>
+                  </template>
 
-                <!-- NAME DEFAULT / EVOLUTION -->
-                <td
-                  class="px-2 py-1 text-center table-cell w-[300px]"
-                  v-if="skin.name?.en === 'Default' || skin.name?.en === 'Evolution'"
-                >
-                  <div>{{ isEnglish ? skin.name?.en : skin.name?.vn }}</div>
-                </td>
+                  <template v-else>
+                    <div class="skin-main-name">
+                      {{ skin.name?.en }}
+                    </div>
 
-                <!-- NAME SKIN THƯỜNG -->
-                <td class="px-2 py-1 text-center table-cell" v-else>
-                  <div>{{ skin.name?.en }}</div>
-                  <div>
-                    <span class="lang-zh">{{ skin.name?.cn }}</span> -
-                    <span class="lang-vi">{{ skin.name?.vn }}</span>
-                  </div>
+                    <div class="skin-sub-name">
+                      <span class="lang-zh">
+                        {{ skin.name?.cn }}
+                      </span>
+
+                      -
+
+                      <span class="skin-name-vn">
+                        {{ skin.name?.vn }}
+                      </span>
+                    </div>
+                  </template>
                 </td>
 
                 <!-- ARTIST -->
-                <td class="px-2 py-1 text-center table-cell">
-                  <span class="lang-zh">{{ skin.artist }}</span>
+                <td class="table-cell skin-artist-cell">
+                  <span class="lang-zh">
+                    {{ skin.artist }}
+                  </span>
                 </td>
 
                 <!-- OBTAINED -->
-                <td
-                  class="px-2 py-1 text-center table-cell whitespace-pre-line w-[280px]"
-                >
+                <td class="table-cell skin-obtained-cell">
                   {{ skin.obtained }}
                 </td>
               </tr>
@@ -3289,60 +3181,90 @@ const addCKeywordListeners = () => {
         <!-- Biography Accessories -->
         <h2
           v-if="shikigami.accessories && shikigami.accessories.length"
-          class="session-title mt-5"
+          class="session-title"
         >
           {{ isEnglish ? "Biography Accessories" : "Phụ kiện Tiểu sử" }}
         </h2>
-
         <table
           v-if="shikigami.accessories && shikigami.accessories.length"
-          class="w-full mt-4"
-          style="border: 1px solid #a51919"
+          class="bio-accessory-table"
         >
           <thead>
             <tr>
-              <th class="px-2 py-1 table-title">Bio<br />No.</th>
-              <th class="px-2 py-1 table-title">
+              <th class="table-title bio-no-column">
+                Bio<br />
+                No.
+              </th>
+
+              <th class="table-title accessory-image-column">
                 {{ isEnglish ? "Image" : "Ảnh" }}
               </th>
-              <th class="px-2 py-1 table-title">
+
+              <th class="table-title">
                 {{ isEnglish ? "Name" : "Tên" }}
               </th>
-              <th class="px-2 py-1 table-title">
+
+              <th class="table-title accessory-type-column">
                 {{ isEnglish ? "Type" : "Loại" }}
               </th>
-              <th class="px-2 py-1 table-title">
+
+              <th class="table-title">
                 {{ isEnglish ? "Obtained" : "Cách nhận" }}
               </th>
             </tr>
           </thead>
+
           <tbody>
             <tr
-              class="text-black"
               v-for="(bio, index) in shikigami.accessories"
               :key="index"
+              class="bio-accessory-row"
             >
-              <td class="px-2 py-1 text-center table-cell w-[50px]">{{ index + 4 }}</td>
-              <td class="px-2 py-1 text-center table-cell w-[105px]">
-                <img
-                  :src="`/assets/shikigami/bios/${route.params.name}_Bio${
-                    index + 4
-                  }.webp`"
-                  :alt="bio.name.en || bio.name.cn"
-                  class="w-24 h-24 object-contain mx-auto"
-                />
+              <!-- No -->
+              <td class="table-cell bio-no-cell">
+                {{ index + 4 }}
               </td>
-              <td class="px-2 py-1 text-center table-cell">
-                <div>{{ bio.name.en }}</div>
-                <div>
-                  <span class="lang-zh">{{ bio.name.cn }}</span> - {{ bio.name.vn }}
+
+              <!-- Image -->
+              <td class="table-cell accessory-image-cell">
+                <div class="accessory-image-wrapper">
+                  <img
+                    :src="`/assets/shikigami/bios/${route.params.name}_Bio${
+                      index + 4
+                    }.webp`"
+                    :alt="bio.name.en || bio.name.cn"
+                    class="accessory-image"
+                  />
                 </div>
               </td>
-              <td class="px-2 py-1 text-center table-cell">
+
+              <!-- Name -->
+              <td class="table-cell accessory-name-cell">
+                <div class="accessory-main-name">
+                  {{ bio.name.en }}
+                </div>
+
+                <div class="accessory-sub-name">
+                  <span class="lang-zh">
+                    {{ bio.name.cn }}
+                  </span>
+
+                  -
+
+                  <span class="lang-vi">
+                    {{ bio.name.vn }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Type -->
+              <td class="table-cell accessory-type-cell">
                 {{ bio.type }}
               </td>
+
+              <!-- Obtained -->
               <td
-                class="px-2 py-1 text-center table-cell"
+                class="table-cell accessory-obtained-cell"
                 v-html="highlightSkin(bio.obtained)"
               ></td>
             </tr>
@@ -3350,26 +3272,37 @@ const addCKeywordListeners = () => {
         </table>
 
         <!-- Illustrations -->
-        <h2 class="session-title mt-5">
+        <h2 class="session-title">
           {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
         </h2>
-        <div class="grid grid-cols-2 gap-6 mt-4">
+        <div class="illustration-gallery">
           <div
             v-for="(img, index) in illustrations"
             :key="index"
-            class="overflow-hidden shadow-md relative aspect-video"
+            class="illustration-card"
           >
             <img
               :src="getImgUrl(img.name)"
               :alt="img.name"
-              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               :title="img.name"
+              class="illustration-image"
               @click="openModal(getImgUrl(img.name))"
             />
+
             <div
-              class="absolute bottom-3 right-5 bg-gradient-to-b from-white to-gray-200 text-black font-bold text-sm px-4 py-1 border border-gray-400 shadow-md"
+              v-if="!/^No[ _]Name/i.test(img.name)"
+              class="illustration-label"
+              :class="
+                /[\u4E00-\u9FFF]/.test(img.name)
+                  ? 'lang-zh'
+                  : 'skin-name-en'
+              "
             >
-              {{ img.name.replace(/_/g, " ") }}
+              {{
+                img.name
+                  .replace(/[_ ]\d+$/, "")
+                  .replace(/_/g, " ")
+              }}
             </div>
           </div>
         </div>
@@ -3387,7 +3320,6 @@ const addCKeywordListeners = () => {
         boxShadow: '0 0 12px ' + tooltipData.color,
         '--tooltip-color': tooltipData.color,
       }"
-      :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
     >
       <!-- Note chính -->
       <div class="tooltip-title" :style="{ color: tooltipData.color }">
@@ -3641,64 +3573,16 @@ const addCKeywordListeners = () => {
 </template>
 
 <style scoped src="@/pages/styles.css"></style>
+<style scoped src="@/pages/main.css"></style>
+<style scoped src="@/pages/gallery.css"></style>
 
 <style scoped>
-/* Image */
-.character-image-wrapper {
-  width: 66.666667%;
-  margin: 0 auto;
-}
+/* Profile */
+.profile-section {
+  margin-top: 8px;
 
-.character-image-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  position: relative;
-}
-
-/* Glow background */
-.character-image-box::before {
-  content: "";
-
-  position: absolute;
-
-  width: 70%;
-  height: 70%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(165, 25, 25, 0.2) 0%,
-      rgba(165, 25, 25, 0.05) 45%,
-      transparent 75%
-    );
-
-  filter: blur(20px);
-
-  z-index: 0;
-}
-
-.character-image {
-  position: relative;
-  z-index: 1;
-
-  max-width: 100%;
-  max-height: 100%;
-
-  object-fit: contain;
-
-  transition:
-    transform 0.35s ease,
-    filter 0.35s ease;
-}
-
-.character-image:hover {
-  transform: scale(1.08);
-
-  filter:
-    drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25))
-    drop-shadow(0 0 18px rgba(165, 25, 25, 0.25));
+  white-space: pre-line;
+  text-align: justify;
 }
 
 /* Table Name */
@@ -3714,74 +3598,6 @@ const addCKeywordListeners = () => {
 
 .table-cell {
   border: 1px solid #a51919;
-}
-
-/* Profile */
-.profile-section {
-  margin-top: 8px;
-
-  white-space: pre-line;
-  text-align: justify;
-}
-
-/* Tab Menu */
-.tabs {
-  display: flex;
-  gap: 8px;
-  border-bottom: 2px solid #e5e7eb27;
-}
-
-.tab-button, .tab-skill-button {
-  font-family: "Bona Nova SC", serif;
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 10px 18px;
-
-  font-size: 20px;
-  font-weight: 500;
-  color: #a3a3a3;
-
-  background: transparent;
-  border: none;
-  cursor: pointer;
-
-  transition: color 0.25s ease, background 0.25s ease, transform 0.2s ease;
-}
-
-.tab-button:hover, .tab-skill-button:hover {
-  color: #f5f5f5;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.tab-button.active, .tab-skill-button.active {
-  color: #a51919;
-  font-weight: 600;
-}
-
-.tab-button.active::after, .tab-skill-button.active::after {
-  content: "";
-
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-
-  width: 100%;
-  height: 2px;
-
-  background: #a51919;
-  border-radius: 999px;
-}
-
-.tab-button:active, .tab-skill-button:active {
-  transform: scale(0.96);
-}
-
-.top-0 {
-  margin-top: 0;
 }
 
 /* Stats */
@@ -3895,367 +3711,6 @@ const addCKeywordListeners = () => {
   border-right: 1px solid #a51919;
 }
 
-/* Skill */
-.tab-skill-button {
-  font-family: "Fira Sans", sans-serif;
-  font-size: 18px;
-  padding: 6px 12px;
-}
-
-.skill-section {
-  position: relative;
-  padding-left: 40px;
-  margin-bottom: 20px;
-}
-
-.skill-section.extra-skill {
-  margin-top: 50px;
-}
-
-/* =========================
-   Skill Header
-========================= */
-
-.skill-top {
-  position: relative;
-}
-
-.skill-icon-wrapper {
-  position: absolute;
-  top: 0;
-  left: -40px;
-
-  width: 95px;
-  height: 95px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  overflow: hidden;
-  border-radius: 999px;
-
-  background: #fff;
-  border: 1px solid #a51919;
-
-  padding: 5px;
-}
-
-.skill-icon-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.skill-heading {
-  display: table-cell;
-  vertical-align: bottom;
-
-  height: 60px;
-
-  padding:
-    0 5px 5px 65px;
-
-  font-size: 20px;
-  font-weight: 900;
-  color: #a51919;
-}
-
-.skill-title {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.skill-name {
-  font-family: "Bona Nova SC", serif;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.skill-sub-name {
-  font-family: "stkaiti", sans-serif;
-  font-size: 15px;
-  padding-top: 4px;
-}
-
-.skill-edit-btn {
-  font-size: 18px;
-  color: #a51919;
-
-  background: transparent;
-  border: none;
-  cursor: pointer;
-
-  transition:
-    color 0.2s ease,
-}
-
-.skill-edit-btn:hover {
-  color: #696868;
-}
-
-/* =========================
-  Skill Content
-========================= */
-
-.skill-content {
-  border: 1px solid #a51919;
-  padding: 10px 20px;
-
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.skill-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0 5px 20px;
-}
-
-.skill-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.skill-badge {
-  position: relative;
-
-  width: 100px;
-  height: 20px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  overflow: hidden;
-  border-radius: 6px;
-}
-
-.skill-badge-bg {
-  position: absolute;
-  inset: 0;
-}
-
-.skill-badge-text {
-  position: relative;
-  z-index: 10;
-
-  font-size: 12px;
-  color: #fff;
-}
-
-.tint-base {
-  -webkit-mask-image: url("/brush.svg");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: cover;
-  -webkit-mask-position: center;
-  mask-image: url("/brush.svg");
-  mask-repeat: no-repeat;
-  mask-size: cover;
-  mask-position: center;
-  position: absolute;
-  inset: 0;
-}
-
-/* Các màu tint */
-.tint-red {
-  background-color: #a63f37;
-}
-
-.tint-blue {
-  background-color: #4994d4;
-}
-
-.tint-grey {
-  background-color: #959494;
-}
-
-.tint-yellow {
-  background-color: #c07b2a;
-}
-
-.skill-info {
-  display: flex;
-}
-
-.skill-info span {
-  display: flex;
-  align-items: center;
-}
-
-.skill-info b {
-  padding-right: 6px;
-}
-
-.skill-info img {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-.skill-divider {
-  border: none;
-  border-top: 1px solid #a51919;
-  margin: 8px 0;
-}
-
-.skill-voice-wrapper {
-  width: 80%;
-  margin: 0 auto;
-}
-
-.skill-voice {
-  text-align: center;
-  color: #a3a3a3;
-  font-family: "Inconsolata", monospace;
-  letter-spacing: 1px;
-}
-
-.skill-description {
-
-  padding: 10px 2px;
-
-  font-size: 15px;
-  line-height: 1.6;
-  color: #fff;
-
-  white-space: pre-line;
-  text-align: justify;
-}
-
-/* =========================
-   Sub Skills
-========================= */
-
-.sub-skill-title {
-  font-family: "Bona Nova SC", serif;
-  display: block;
-
-  margin-bottom: 12px;
-  padding-left: 10px;
-
-  color: #fff;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition: color 0.2s ease;
-}
-
-.sub-skill-title:hover {
-  color: #a51919;
-}
-
-.sub-skill-grid {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  flex-wrap: wrap;
-}
-
-.sub-skill-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.sub-skill-item img {
-  width: 96px;
-  height: 96px;
-  object-fit: contain;
-
-  margin-bottom: 6px;
-
-  transition: transform 0.25s ease;
-}
-
-.sub-skill-item:hover img {
-  transform: scale(1.05);
-}
-
-.sub-skill-name {
-  font-size: 15px;
-  color: #fff;
-  font-family: "Bona Nova SC", serif;
-
-  cursor: pointer;
-
-  transition: color 0.2s ease;
-}
-
-.sub-skill-item:hover .sub-skill-name {
-  color: #a51919;
-}
-
-/* =========================
-   Skill Level Table
-========================= */
-
-.skill-level-table {
-  width: 100%;
-
-  border-collapse: collapse;
-
-  font-size: 15px;
-}
-
-.skill-level-table th {
-  padding: 6px 10px;
-
-  text-align: left;
-
-  color: #a51919;
-  font-weight: 700;
-}
-
-.skill-level-table td {
-  padding: 6px 10px;
-
-  color: #fff;
-
-  vertical-align: top;
-}
-
-.skill-level-table tr:hover td {
-  background: rgba(165, 25, 25, 0.04);
-}
-
-.level-column {
-  width: 70px;
-}
-
-.level-cell {
-  text-align: center;
-}
-
-.no-level {
-  color: #666;
-}
-
-.evolution-box {
-  padding: 12px 16px;
-
-  border: 1px solid #a51919;
-  border-radius: 10px;
-
-  background: rgba(165, 25, 25, 0.03); 
-}
-
-.evolution-text {
-  margin: 0;
-  padding: 10px 0;
-
-  font-size: 15px;
-  line-height: 1.7;
-  color: #fff;
-
-  white-space: pre-line;
-  text-align: justify;
-}
-
 /* Bio */
 .bio-table {
   width: 100%;
@@ -4350,11 +3805,7 @@ const addCKeywordListeners = () => {
   font-weight: 700;
   color: #fff;
 
-  text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 /* Soul */
@@ -4376,20 +3827,15 @@ const addCKeywordListeners = () => {
   border: 1px solid #a51919;
   border-radius: 16px;
 
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.03),
-      rgba(255, 255, 255, 0.015)
-    );
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.015)
+  );
 
-  box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .build-card:hover {
@@ -4397,9 +3843,7 @@ const addCKeywordListeners = () => {
 
   border-color: #c93030;
 
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.18),
-    0 0 12px rgba(165, 25, 25, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 12px rgba(165, 25, 25, 0.12);
 }
 
 /* =========================
@@ -4439,8 +3883,7 @@ const addCKeywordListeners = () => {
 
   color: #fff;
 
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 /* =========================
@@ -4504,16 +3947,13 @@ const addCKeywordListeners = () => {
 
   border-radius: 999px;
 
-  transition:
-    transform 0.22s ease,
-    filter 0.22s ease;
+  transition: transform 0.22s ease, filter 0.22s ease;
 }
 
 .build-soul-item:hover .build-soul-icon {
   transform: scale(1.1);
 
-  filter:
-    drop-shadow(0 0 8px rgba(165, 25, 25, 0.28));
+  filter: drop-shadow(0 0 8px rgba(165, 25, 25, 0.28));
 }
 
 .build-soul-name {

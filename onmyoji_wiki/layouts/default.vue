@@ -150,15 +150,11 @@
       >
         <!-- Logo -->
         <div class="flex flex-col gap-4">
-          <img
-            src="/images/Logo.webp"
-            alt="Onmyoji Wiki Logo"
-            class="h-16 w-fit"
-          />
+          <img src="/images/Logo.webp" alt="Onmyoji Wiki Logo" class="h-16 w-fit" />
 
           <p class="max-w-[280px] text-sm leading-6 text-gray-300">
-            Explore the world of Onmyoji, Shikigami, Souls, and more in one simple
-            and organized wiki.
+            Explore the world of Onmyoji, Shikigami, Souls, and more in one simple and
+            organized wiki.
           </p>
         </div>
 
@@ -168,46 +164,31 @@
 
           <ul class="space-y-3 text-sm text-gray-300">
             <li>
-              <NuxtLink
-                to="/"
-                class="transition hover:pl-1 hover:text-white"
-              >
+              <NuxtLink to="/" class="transition hover:pl-1 hover:text-white">
                 Home
               </NuxtLink>
             </li>
 
             <li>
-              <NuxtLink
-                to="/onmyoji"
-                class="transition hover:pl-1 hover:text-white"
-              >
+              <NuxtLink to="/onmyoji" class="transition hover:pl-1 hover:text-white">
                 Onmyoji
               </NuxtLink>
             </li>
 
             <li>
-              <NuxtLink
-                to="/shikigami"
-                class="transition hover:pl-1 hover:text-white"
-              >
+              <NuxtLink to="/shikigami" class="transition hover:pl-1 hover:text-white">
                 Shikigami
               </NuxtLink>
             </li>
 
             <li>
-              <NuxtLink
-                to="/souls"
-                class="transition hover:pl-1 hover:text-white"
-              >
+              <NuxtLink to="/souls" class="transition hover:pl-1 hover:text-white">
                 Souls
               </NuxtLink>
             </li>
 
             <li>
-              <NuxtLink
-                to="/pets"
-                class="transition hover:pl-1 hover:text-white"
-              >
+              <NuxtLink to="/pets" class="transition hover:pl-1 hover:text-white">
                 Pets
               </NuxtLink>
             </li>
@@ -219,16 +200,14 @@
           <h3 class="mb-4 text-lg font-semibold">About</h3>
 
           <p class="text-sm leading-6 text-gray-300">
-            Fan-made Onmyoji Wiki built for learning, exploring characters, and
-            finding useful game information quickly.
+            Fan-made Onmyoji Wiki built for learning, exploring characters, and finding
+            useful game information quickly.
           </p>
         </div>
       </div>
 
       <!-- Bottom -->
-      <div
-        class="border-t border-white/10 px-6 py-5 text-center text-sm text-gray-400"
-      >
+      <div class="border-t border-white/10 px-6 py-5 text-center text-sm text-gray-400">
         © 2025 Onmyoji Wiki. All rights reserved.
       </div>
     </footer>
@@ -429,14 +408,9 @@ export default {
   opacity: 0;
   visibility: hidden;
 
-   transform:
-    translateY(6px)
-    scale(0.98);
+  transform: translateY(6px) scale(0.98);
 
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease,
-    visibility 0.2s;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
 
   z-index: 1000;
 }
@@ -457,9 +431,7 @@ export default {
   opacity: 1;
   visibility: visible;
 
-  transform:
-    translateY(0)
-    scale(1);
+  transform: translateY(0) scale(1);
 }
 
 .dropdown-item {
@@ -548,43 +520,86 @@ export default {
   color: #d0d0d0;
 }
 
-/* Back to Top & Bottom Buttons */
+/* ========================================
+   Ancient Scroll Buttons
+======================================== */
+
 .back-to-top,
 .back-to-bottom {
   position: fixed;
+
   right: 24px;
-  width: 52px;
-  height: 52px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
+
+  width: 58px;
+  height: 58px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 22px;
-  font-weight: bold;
-  color: #fff;
+  border: 1px solid rgba(255, 190, 190, 0.28);
 
-  background: linear-gradient(135deg, #891727, #c62828);
-  backdrop-filter: blur(6px);
+  border-radius: 50%;
 
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.35),
-    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
 
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease,
-    opacity 0.25s ease;
+  font-size: 24px;
+  font-weight: 700;
 
-  z-index: 3000;
+  color: #ffe6e6;
+
+  background: radial-gradient(
+    circle at top,
+    rgba(165, 25, 25, 0.96),
+    rgba(92, 12, 18, 0.98)
+  );
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38), 0 0 12px rgba(165, 25, 25, 0.12),
+    inset 0 1px 0 rgba(255, 220, 220, 0.1), inset 0 -2px 6px rgba(0, 0, 0, 0.35);
+
+  backdrop-filter: blur(4px);
+
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease,
+    background 0.28s ease;
+
+  z-index: 999;
 }
 
+/* Ancient inner ring */
+.back-to-top::before,
+.back-to-bottom::before {
+  content: "";
+
+  position: absolute;
+  inset: 5px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(255, 220, 220, 0.08);
+
+  pointer-events: none;
+}
+
+/* Decorative mark */
+.back-to-top::after,
+.back-to-bottom::after {
+  content: "✦";
+
+  position: absolute;
+
+  bottom: 6px;
+  right: 8px;
+
+  font-size: 9px;
+
+  color: rgba(255, 210, 210, 0.5);
+
+  pointer-events: none;
+}
+
+/* Position */
 .back-to-top {
-  bottom: 92px;
+  bottom: 98px;
 }
 
 .back-to-bottom {
@@ -594,37 +609,23 @@ export default {
 /* Hover */
 .back-to-top:hover,
 .back-to-bottom:hover {
-  transform: translateY(-4px) scale(1.08);
+  transform: translateY(-4px) scale(1.05);
 
-  background: linear-gradient(135deg, #d01f1f, #ff5252);
+  border-color: rgba(255, 220, 220, 0.48);
 
-  box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.45),
-    0 0 14px rgba(208, 31, 31, 0.45);
+  background: radial-gradient(
+    circle at top,
+    rgba(195, 35, 45, 0.98),
+    rgba(110, 15, 22, 1)
+  );
+
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.42), 0 0 18px rgba(165, 25, 25, 0.22),
+    inset 0 1px 0 rgba(255, 230, 230, 0.16);
 }
 
-/* Click effect */
+/* Click */
 .back-to-top:active,
 .back-to-bottom:active {
-  transform: scale(0.95);
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .back-to-top,
-  .back-to-bottom {
-    width: 46px;
-    height: 46px;
-    font-size: 20px;
-    right: 16px;
-  }
-
-  .back-to-top {
-    bottom: 78px;
-  }
-
-  .back-to-bottom {
-    bottom: 18px;
-  }
+  transform: scale(0.94);
 }
 </style>
