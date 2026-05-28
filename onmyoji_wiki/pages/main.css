@@ -1,4 +1,6 @@
-/* Image */
+/* ========================= 
+    Character Image 
+========================= */
 .character-image-wrapper {
     width: 66.666667%;
     margin: 0 auto;
@@ -53,7 +55,9 @@
         drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25)) drop-shadow(0 0 18px rgba(165, 25, 25, 0.25));
 }
 
-/* Tab Menu */
+/* ========================= 
+    Tab Menu 
+========================= */
 .tabs {
     display: flex;
     gap: 8px;
@@ -114,7 +118,9 @@
     transform: scale(0.96);
 }
 
-/* Skill */
+/* ========================= 
+    Skill 
+========================= */
 .tab-skill-button {
     font-family: "Fira Sans", sans-serif;
     font-size: 18px;
@@ -131,10 +137,7 @@
     margin-top: 50px;
 }
 
-/* =========================
-   Skill Header
-========================= */
-
+/* Skill Header */
 .skill-top {
     position: relative;
 }
@@ -213,10 +216,7 @@
     color: #696868;
 }
 
-/* =========================
-  Skill Content
-========================= */
-
+/* Skill Content */
 .skill-content {
     border: 1px solid #a51919;
     padding: 10px 20px;
@@ -341,10 +341,7 @@
     text-align: justify;
 }
 
-/* =========================
-   Sub Skills
-========================= */
-
+/* Sub Skills */
 .sub-skill-title {
     font-family: "Bona Nova SC", serif;
     display: block;
@@ -405,14 +402,9 @@
     color: #a51919;
 }
 
-/* =========================
-   Skill Level Table
-========================= */
-
+/* Skill Level */
 .skill-level-table {
     width: 100%;
-
-    border-collapse: collapse;
 
     font-size: 15px;
 }
@@ -432,10 +424,6 @@
     color: #fff;
 
     vertical-align: top;
-}
-
-.skill-level-table tr:hover td {
-    background: rgba(165, 25, 25, 0.04);
 }
 
 .level-column {
@@ -469,4 +457,175 @@
 
     white-space: pre-line;
     text-align: justify;
+}
+
+/* Effects */
+.skill-effect-cards {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.effect-card {
+    position: relative;
+    overflow: hidden;
+
+    padding: 10px 18px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(34, 34, 38, 0.95);
+
+    border: 1px solid rgba(165, 25, 25, 0.25);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+
+}
+
+.effect-card:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(165, 25, 25, 0.4);
+
+    box-shadow:
+        0 10px 26px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(165, 25, 25, 0.12);
+}
+
+/* Ancient corner ornament */
+.effect-card::after {
+    content: "✦";
+
+    position: absolute;
+    top: 10px;
+    right: 14px;
+
+    font-size: 12px;
+
+    color: rgba(255, 180, 180, 0.575);
+
+    text-shadow:
+        0 0 8px rgba(165, 25, 25, 0.4);
+}
+
+.effect-card-title {
+    font-weight: 700;
+}
+
+.title-color-red {
+  color: #a63f37;
+}
+
+.title-color-blue {
+  color: #4994d4;
+}
+
+.effect-card-desc {
+    line-height: 1.5;
+}
+
+.effect-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.effect-card img {
+    width: 42px;
+    height: 42px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.06);
+    
+    margin: 2px 0; 
+}
+
+.effect-tags {
+    margin: 4px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    flex-shrink: 0;
+    min-width: fit-content;
+}
+
+.effect-tag {
+    padding: 4px 10px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+
+    border: 1px solid transparent;
+
+    backdrop-filter: blur(6px);
+}
+
+.tag-buff {
+    color: #7dc8ff;
+
+    background: rgba(73, 148, 212, 0.16);
+
+    border-color: rgba(73, 148, 212, 0.28);
+
+    box-shadow:
+        inset 0 0 12px rgba(73, 148, 212, 0.08);
+}
+
+.tag-debuff {
+    color: #ff8f86;
+
+    background: rgba(166, 63, 55, 0.16);
+
+    border-color: rgba(166, 63, 55, 0.3);
+
+    box-shadow:
+        inset 0 0 12px rgba(166, 63, 55, 0.08);
+}
+
+.tag-mark {
+    color: #f0b14b;
+
+    background: rgba(192, 123, 42, 0.18);
+
+    border-color: rgba(192, 123, 42, 0.28);
+
+    box-shadow:
+        inset 0 0 12px rgba(192, 123, 42, 0.08);
+}
+
+.tag-status {
+    color: #d4d4d4;
+
+    background: rgba(140, 140, 140, 0.14);
+
+    border-color: rgba(140, 140, 140, 0.2);
+}
+
+.tag-general {
+    color: #cfcfcf;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    border-color: rgba(255, 255, 255, 0.08);
 }

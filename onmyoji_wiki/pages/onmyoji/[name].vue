@@ -1848,11 +1848,11 @@ watch(activeMainTab, async (newTab) => {
   border-bottom: none;
 }
 
-.effect-highlight {
+/* .effect-highlight {
   font-weight: 500;
   text-decoration: none !important;
   border-bottom: none;
-}
+} */
 
 .tooltip {
   position: fixed;

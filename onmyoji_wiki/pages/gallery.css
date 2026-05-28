@@ -625,7 +625,6 @@
         border-color 0.28s ease;
 }
 
-
 /* Decorative top line */
 .illustration-label::before {
     content: "";

@@ -76,121 +76,85 @@ function changeSkill(index) {
 /* ---------------------- HELPERS ---------------------- */
 const getImgUrl = (name) => `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
 
-// SS: 171 -> 197, S: 140 -> 166, A: 127 -> 137, B: 114 -> 127, C: 102 -> 112, D: 75 -> 100
-const getATKRank = (atk) => {
-  if (atk >= 171 && atk <= 197) return "SS";
-  else if (atk >= 140 && atk <= 166) return "S";
-  else if (atk >= 127 && atk <= 137) return "A";
-  else if (atk >= 114 && atk <= 127) return "B";
-  else if (atk >= 102 && atk <= 112) return "C";
-  else return "D";
+const STAT_RANKS = {
+  ATK: [
+    ["SS", 171, 197],
+    ["S", 140, 166],
+    ["A", 127, 137],
+    ["B", 114, 127],
+    ["C", 102, 112],
+  ],
+
+  ATK_EVO: [
+    ["SS", 3618, 4154],
+    ["S", 2948, 3605],
+    ["A", 2680, 2921],
+    ["B", 2412, 2626],
+    ["C", 2144, 2385],
+  ],
+
+  HP: [
+    ["S", 1164, 1419],
+    ["A", 1064, 1163],
+    ["B", 960, 1056],
+    ["C", 854, 950],
+  ],
+
+  HP_EVO: [
+    ["SS", 15380, 15540],
+    ["S", 12532, 15152],
+    ["A", 11393, 12418],
+    ["B", 10254, 11279],
+    ["C", 9115, 10140],
+  ],
+
+  DEF: [
+    ["SS", 101, 101],
+    ["S", 83, 94],
+    ["A", 75, 82],
+    ["B", 68, 74],
+    ["C", 60, 67],
+  ],
+
+  DEF_EVO: [
+    ["SS", 550, 595],
+    ["S", 485, 549],
+    ["A", 441, 481],
+    ["B", 397, 437],
+    ["C", 353, 393],
+  ],
+
+  SPD: [
+    ["S", 110, 127],
+    ["A", 105, 109],
+    ["B", 100, 104],
+    ["C", 95, 99],
+  ],
+
+  CRIT: [
+    ["SSS", 50, 50],
+    ["SS", 16, 49],
+    ["S", 10, 15],
+    ["A", 8, 9],
+    ["B", 5, 6],
+    ["C", 3, 3],
+  ],
 };
 
-const getATKImage = (atk) => {
-  const rank = getATKRank(atk);
-  return `/assets/stats/${rank}.webp`;
+const getRank = (type, value) => {
+  const ranges = STAT_RANKS[type];
+
+  if (!ranges) return "D";
+
+  const found = ranges.find(
+    ([, min, max]) => value >= min && value <= max
+  );
+
+  return found?.[0] || "D";
 };
 
-// SS: 3618 -> 4153, S: 2948 -> 3605, A: 2894 -> 2921, B: 2412 -> 2626, C: 2144 -> 2385, D: 1822 -> 1849
-const getATKEvoRank = (atk) => {
-  if (atk >= 3618 && atk <= 4154) return "SS";
-  else if (atk >= 2948 && atk <= 3605) return "S";
-  else if (atk >= 2680 && atk <= 2921) return "A";
-  else if (atk >= 2412 && atk <= 2626) return "B";
-  else if (atk >= 2144 && atk <= 2385) return "C";
-  else return "D";
-};
-
-const getATKEvoImage = (atk) => {
-  const rank = getATKEvoRank(atk);
-  return `/assets/stats/${rank}.webp`;
-};
-
-// S: 1164 -> 1335, A: 1064 -> 1163, B: 960 -> 1056, C: 854 -> 950, D: 843 -> 843
-const getHPRank = (hp) => {
-  if (hp >= 1164 && hp <= 1419) return "S";
-  else if (hp >= 1064 && hp <= 1163) return "A";
-  else if (hp >= 960 && hp <= 1056) return "B";
-  else if (hp >= 854 && hp <= 950) return "C";
-  else return "D";
-};
-
-const getHPImage = (hp) => {
-  const rank = getHPRank(hp);
-  return `/assets/stats/${rank}.webp`;
-};
-
-// SS: 15380 -> 15540, S: 12532 -> 15152, A: 11393 -> 12418, B: 10254 -> 11279, C: 9115 -> 10140, D: 0 -> 0
-const getHPEvoRank = (hp) => {
-  if (hp >= 15380 && hp <= 15540) return "SS";
-  else if (hp >= 12532 && hp <= 15152) return "S";
-  else if (hp >= 11393 && hp <= 12418) return "A";
-  else if (hp >= 10254 && hp <= 11279) return "B";
-  else if (hp >= 9115 && hp <= 10140) return "C";
-  else return "D";
-};
-
-const getHPEvoImage = (hp) => {
-  const rank = getHPEvoRank(hp);
-  return `/assets/stats/${rank}.webp`;
-};
-
-// S: 83 -> 94, A: 75 -> 82, B: 68 -> 74, C: 60 -> 67, D: 54 -> 59
-const getDEFRank = (def) => {
-  if (def >= 101 && def <= 101) return "SS";
-  else if (def >= 83 && def <= 94) return "S";
-  else if (def >= 75 && def <= 82) return "A";
-  else if (def >= 68 && def <= 74) return "B";
-  else if (def >= 60 && def <= 67) return "C";
-  else return "D";
-};
-
-const getDEFImage = (def) => {
-  const rank = getDEFRank(def);
-  return `/assets/stats/${rank}.webp`;
-};
-
-// SS: 595 -> 595, S: 485 -> 490, A: 441 -> 481, B: 397 -> 437, C: 353 -> 392, D: 0 -> 0
-const getDEFEvoRank = (def) => {
-  if (def >= 550 && def <= 595) return "SS";
-  else if (def >= 485 && def <= 549) return "S";
-  else if (def >= 441 && def <= 481) return "A";
-  else if (def >= 397 && def <= 437) return "B";
-  else if (def >= 353 && def <= 393) return "C";
-  else return "D";
-};
-
-const getDEFEvoImage = (def) => {
-  const rank = getDEFEvoRank(def);
-  return `/assets/stats/${rank}.webp`;
-};
-
-const getSPDRank = (spd) => {
-  if (spd >= 110 && spd <= 127) return "S";
-  else if (spd >= 105 && spd <= 109) return "A";
-  else if (spd >= 100 && spd <= 104) return "B";
-  else if (spd >= 95 && spd <= 99) return "C";
-  else return "D";
-};
-
-const getSPDImage = (spd) => {
-  const rank = getSPDRank(spd);
-  return `/assets/stats/${rank}.webp`;
-};
-
-const getCritRank = (crit) => {
-  if (crit === 50) return "SSS";
-  else if (crit >= 16 && crit <= 49) return "SS";
-  else if (crit >= 10 && crit <= 15) return "S";
-  else if (crit >= 8 && crit <= 9) return "A";
-  else if (crit >= 5 && crit <= 6) return "B";
-  else if (crit >= 3 && crit <= 3) return "C";
-  else return "D";
-};
-
-const getCritImage = (crit) => {
-  const rank = getCritRank(crit);
-  return `/assets/stats/${rank}.webp`;
+const getStatImage = (type, value) => {
+  return `/assets/stats/${getRank(type, value)}.webp`;
 };
 
 /* ---------------------- EVOLUTION RENDER ---------------------- */
@@ -320,8 +284,8 @@ const processTextWithTooltips = (text) => {
   const processed = { value: text };
 
   const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
-  const effectMap = new Map(); // name (lowercase) -> effect note
-  const effectKeywordOverrides = new Map(); // effectId -> display keyword (after <n> replace)
+  const effectMap = new Map();
+  const effectKeywordOverrides = new Map();
 
   const colorMap = {
     red: "#a63f37",
@@ -509,19 +473,15 @@ const processTextWithTooltips = (text) => {
 
     // Tooltip only for <b>
     if (type === "b") {
-      return `<span class="effect-tooltip"
-        data-id="${note.id}"
-        data-name="${keywordForTooltip || ""}"
-        data-name-cn="${note.name?.cn || ""}"
-        data-desc="${noteDesc ? noteDesc.replace(/"/g, "&quot;") : ""}"
-        data-img='${JSON.stringify(note.images || [])}'
-        data-color="${color}"
-        style="color:${color}">${keyword}</span>`;
+      return `<span
+        class="font-bold"
+        style="color:${color}"
+      >${keyword}</span>`;
     }
 
     // Highlight or plain spans
     if (type === "i" || type === "l") return `<span>${keyword}</span>`;
-    return `<span class="effect-highlight" style="color:${color}">${keyword}</span>`;
+    return `<span style="color:${color}">${keyword}</span>`;
   };
 
   // =========================================================
@@ -603,6 +563,104 @@ const processTextWithTooltips = (text) => {
   );
 
   return processed.value;
+};
+
+const getAllSkillEffectText = (skill) => {
+  let text = "";
+
+  // description
+  text += isEnglish.value ? skill.description?.en || "" : skill.description?.vn || "";
+
+  // levels
+  const levels = isEnglish.value ? skill.levels?.en : skill.levels?.vn;
+
+  if (Array.isArray(levels)) {
+    text += levels.map((lvl) => lvl.effect || "").join(" ");
+  } else if (typeof levels === "string") {
+    text += " " + levels;
+  }
+
+  return text;
+};
+
+const extractEffectCards = (text, visited = new Set()) => {
+  if (!text || !effects.value?.length) return [];
+
+  const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
+
+  // lấy tất cả id trong <b>
+  const ids = [...text.matchAll(/<b>(\d+)<\/b>/g)].map((m) => m[1]);
+
+  const results = [];
+
+  ids.forEach((id) => {
+    // tránh loop vô hạn
+    if (visited.has(id)) return;
+
+    visited.add(id);
+
+    const effect = effectById.get(id);
+
+    if (!effect) return;
+
+    results.push(effect);
+
+    // recursive từ effect.description
+    const desc = isEnglish.value ? effect.description?.en : effect.description?.vn;
+
+    const nested = extractEffectCards(desc, visited);
+
+    results.push(...nested);
+  });
+
+  // unique
+  return Array.from(new Map(results.map((e) => [e.id, e])).values());
+};
+
+const effectTagType = (tag) => {
+  const value = tag.toLowerCase();
+
+  if (value.includes("buff")) return "buff";
+  if (value.includes("debuff")) return "debuff";
+  if (value.includes("mark")) return "mark";
+  if (value.includes("status")) return "status";
+
+  return "general";
+};
+
+const extractEffectTags = (desc) => {
+  if (!desc)
+    return {
+      tags: [],
+      description: desc,
+    };
+
+  const match = desc.match(/^\[(.*?)\]\s*/);
+
+  if (!match) {
+    return {
+      tags: [],
+      description: desc,
+    };
+  }
+
+  const tags = match[1]
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  const cleanedDescription = desc.replace(/^\[(.*?)\]\s*/, "");
+
+  return {
+    tags,
+    description: cleanedDescription,
+  };
+};
+
+const getParsedEffect = (effect) => {
+  return extractEffectTags(
+    isEnglish.value ? effect.description?.en : effect.description?.vn
+  );
 };
 
 const highlightWord = (text) => {
@@ -792,42 +850,6 @@ const highlightProfileText = (profile) => {
   return result;
 };
 
-/* ---------------------- TOOLTIP EVENTS ---------------------- */
-const handleMouseEnter = (e) => {
-  const target = e.currentTarget;
-  tooltipData.value = {
-    id: Number(target.getAttribute("data-id")),
-    name: target.getAttribute("data-name"),
-    description: target.getAttribute("data-desc"),
-    images: target.getAttribute("data-img")
-      ? JSON.parse(target.getAttribute("data-img"))
-      : [],
-    color: target.getAttribute("data-color"),
-    cn: target.getAttribute("data-name-cn"),
-  };
-  updateTooltipPosition(e);
-  showTooltip.value = true;
-};
-const handleMouseLeave = () => (showTooltip.value = false);
-const handleMouseMove = (e) => showTooltip.value && updateTooltipPosition(e);
-const updateTooltipPosition = (e) =>
-  (tooltipPosition.value = { x: e.clientX, y: e.clientY + 10 });
-
-function addTooltipListeners() {
-  document.querySelectorAll(".effect-tooltip").forEach((span) => {
-    span.addEventListener("mouseenter", handleMouseEnter);
-    span.addEventListener("mouseleave", handleMouseLeave);
-    span.addEventListener("mousemove", handleMouseMove);
-  });
-}
-function removeTooltipListeners() {
-  document.querySelectorAll(".effect-tooltip").forEach((span) => {
-    span.removeEventListener("mouseenter", handleMouseEnter);
-    span.removeEventListener("mouseleave", handleMouseLeave);
-    span.removeEventListener("mousemove", handleMouseMove);
-  });
-}
-
 /* ---------------------- DATA FETCHING ---------------------- */
 async function fetchAllEffects() {
   const { data, error } = await supabase
@@ -1003,7 +1025,6 @@ async function fetchShikigami() {
   shikigami.value = data;
 
   await nextTick();
-  addTooltipListeners();
 
   if (data.rarity !== "SP") {
     fetchEvolution(data.evolution.no);
@@ -1031,7 +1052,6 @@ async function fetchIllustrations(shikiId) {
   } else {
     illustrations.value = data;
     await nextTick();
-    addTooltipListeners();
   }
 }
 
@@ -1289,7 +1309,6 @@ onMounted(async () => {
   ]);
 
   subscribeRealtime();
-  addTooltipListeners();
 });
 
 watch(
@@ -1301,8 +1320,6 @@ watch(
 
 watch(activeSkillIndex, async () => {
   await nextTick();
-  removeTooltipListeners();
-  addTooltipListeners();
 });
 
 watch(isEnglish, (val) => {
@@ -1311,8 +1328,6 @@ watch(isEnglish, (val) => {
 
 watch(isEnglish, async () => {
   await nextTick();
-  removeTooltipListeners();
-  addTooltipListeners();
 });
 
 watch(
@@ -1686,8 +1701,8 @@ const addCKeywordListeners = () => {
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getATKImage(shikigami.stats.ATK[0])"
-                      :alt="getATKRank(shikigami.stats.ATK[0])"
+                      :src="getStatImage('ATK', shikigami.stats.ATK[0])"
+                      :alt="getRank('ATK', shikigami.stats.ATK[0])"
                     />
                   </div>
                 </td>
@@ -1701,8 +1716,8 @@ const addCKeywordListeners = () => {
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getATKEvoImage(shikigami.stats.ATK[1])"
-                      :alt="getATKEvoRank(shikigami.stats.ATK[1])"
+                      :src="getStatImage('ATK_EVO', shikigami.stats.ATK[1])"
+                      :alt="getRank('ATK_EVO', shikigami.stats.ATK[1])"
                     />
                   </div>
                 </td>
@@ -1756,9 +1771,8 @@ const addCKeywordListeners = () => {
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getHPImage(shikigami.stats.HP[0])"
-                      :alt="getHPRank(shikigami.stats.HP[0])"
-                      class="w-6 h-6"
+                      :src="getStatImage('HP', shikigami.stats.HP[0])"
+                      :alt="getRank('HP', shikigami.stats.HP[0])"
                     />
                   </div>
                 </td>
@@ -1772,9 +1786,8 @@ const addCKeywordListeners = () => {
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getHPEvoImage(shikigami.stats.HP[1])"
-                      :alt="getHPEvoRank(shikigami.stats.HP[1])"
-                      class="w-6 h-6"
+                      :src="getStatImage('HP_EVO', shikigami.stats.HP[1])"
+                      :alt="getRank('HP_EVO', shikigami.stats.HP[1])"
                     />
                   </div>
                 </td>
@@ -1825,34 +1838,32 @@ const addCKeywordListeners = () => {
                   DEF
                 </th>
 
-                <td class="centered-number">
+                <td>
                   <div class="rank-cell">
                     <img
-                      :src="getDEFImage(shikigami.stats.DEF[0])"
-                      :alt="getDEFRank(shikigami.stats.DEF[0])"
-                      class="w-6 h-6"
+                      :src="getStatImage('DEF', shikigami.stats.DEF[0])"
+                      :alt="getRank('DEF', shikigami.stats.DEF[0])"
                     />
                   </div>
                 </td>
 
-                <td class="centered-number w-[100px]">
+                <td>
                   <div class="value-cell">
                     {{ shikigami.stats.DEF[0] }}
                   </div>
                 </td>
 
-                <td v-if="hasLevel40" class="centered-number">
+                <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getDEFEvoImage(shikigami.stats.DEF[1])"
-                      :alt="getDEFEvoRank(shikigami.stats.DEF[1])"
-                      class="w-6 h-6"
+                      :src="getStatImage('DEF_EVO', shikigami.stats.DEF[1])"
+                      :alt="getRank('DEF_EVO', shikigami.stats.DEF[1])"
                     />
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40" class="centered-number w-[100px]">
+                <td v-if="hasLevel40">
                   <div class="value-cell">
                     {{ shikigami.stats.DEF[1] }}
                   </div>
@@ -1889,8 +1900,8 @@ const addCKeywordListeners = () => {
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getSPDImage(shikigami.stats.SPD[0])"
-                      :alt="getSPDRank(shikigami.stats.SPD[0])"
+                      :src="getStatImage('SPD', shikigami.stats.SPD[0])"
+                      :alt="getRank('SPD', shikigami.stats.SPD[0])"
                     />
                   </div>
                 </td>
@@ -1904,8 +1915,8 @@ const addCKeywordListeners = () => {
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getSPDImage(shikigami.stats.SPD[1])"
-                      :alt="getSPDRank(shikigami.stats.SPD[1])"
+                      :src="getStatImage('SPD_EVO', shikigami.stats.SPD[1])"
+                      :alt="getRank('SPD_EVO', shikigami.stats.SPD[1])"
                     />
                   </div>
                 </td>
@@ -1951,9 +1962,8 @@ const addCKeywordListeners = () => {
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getCritImage(shikigami.stats.Crit[0])"
-                      :alt="getCritRank(shikigami.stats.Crit[0])"
-                      class="w-6 h-6"
+                      :src="getStatImage('CRIT', shikigami.stats.Crit[0])"
+                      :alt="getRank('CRIT', shikigami.stats.Crit[0])"
                     />
                   </div>
                 </td>
@@ -1965,9 +1975,8 @@ const addCKeywordListeners = () => {
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getCritImage(shikigami.stats.Crit[1])"
-                      :alt="getCritRank(shikigami.stats.Crit[1])"
-                      class="w-6 h-6"
+                      :src="getStatImage('CRIT', shikigami.stats.Crit[1])"
+                      :alt="getRank('CRIT', shikigami.stats.Crit[1])"
                     />
                   </div>
                 </td>
@@ -2290,6 +2299,58 @@ const addCKeywordListeners = () => {
                 "
               ></p>
 
+              <div
+                class="skill-effect-cards"
+                v-if="
+                  extractEffectCards(
+                    getAllSkillEffectText(shikigami.skills[activeSkillIndex])
+                  )
+                "
+              >
+                <div
+                  v-for="effect in extractEffectCards(
+                    getAllSkillEffectText(shikigami.skills[activeSkillIndex])
+                  )"
+                  :key="effect.id"
+                  class="effect-card"
+                >
+                  <div
+                    class="effect-card-title"
+                    :class="'title-color-' + effect.color"
+                  >
+                    {{ isEnglish ? effect.name?.en : effect.name?.vn }}
+
+                    <span class="lang-zh"> ({{ effect.name?.cn }}) </span>
+                  </div>
+
+                  <div v-if="effect.images?.length">
+                    <img
+                      v-for="(img, i) in effect.images"
+                      :key="i"
+                      :src="'/assets/effects/' + img + '.webp'"
+                      :alt="img"
+                      class="tooltip-img rounded rounded-sm"
+                    />
+                  </div>
+
+                  <div class="effect-tags" v-if="getParsedEffect(effect).tags.length">
+                    <span
+                      v-for="tag in getParsedEffect(effect).tags"
+                      :key="tag"
+                      class="effect-tag"
+                      :class="'tag-' + effectTagType(tag)"
+                    >
+                      {{ tag }}
+                    </span>
+                  </div>
+
+                  <div
+                    class="effect-card-desc"
+                    v-html="processTextWithTooltips(getParsedEffect(effect).description)"
+                  ></div>
+                </div>
+              </div>
+
               <div v-if="shikigami.id === 107 && activeSkillIndex === 0">
                 <hr class="skill-divider" />
 
@@ -2454,32 +2515,11 @@ const addCKeywordListeners = () => {
               .map((s, i) => ({ skill: s, i }))
               .filter(({ skill, i }) => i >= 3 && skill?.tab === activeSkillIndex + 1)"
             :key="'extra-' + i"
-            style="
-              position: relative;
-              padding-left: 40px;
-              margin-bottom: 20px;
-              margin-top: 50px;
-            "
+            class="skill-section"
           >
             <!-- Skill icon + title -->
-            <div>
-              <span
-                style="
-                  background-color: #fff;
-                  overflow: hidden;
-                  border-radius: 100%;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  position: absolute;
-                  top: 0;
-                  left: 0;
-                  width: 95px;
-                  height: 95px;
-                  border: 1px solid #a51919;
-                  padding: 5px;
-                "
-              >
+            <div class="skill-top">
+              <span class="skill-icon-wrapper">
                 <img
                   :src="`/assets/shikigami/skills/${route.params.name}_Skill${
                     i + 1
@@ -2488,33 +2528,19 @@ const addCKeywordListeners = () => {
                   :title="skill.name.en"
                 />
               </span>
-              <span
-                style="
-                  display: table-cell;
-                  vertical-align: bottom;
-                  font-size: 20px;
-                  color: #a51919;
-                  height: 65px;
-                  padding-bottom: 5px;
-                  padding-left: 65px;
-                  padding-right: 5px;
-                "
-              >
+              <span class="skill-heading">
                 <div class="skill-title">
                   <span class="skill-name">
                     {{ isEnglish ? skill.name.en : skill.name.vn }}
                   </span>
-                  <span class="skill-sub-name lang-zh">
+                  <span class="skill-sub-name">
                     ({{
                       skill.name.cn === skill.name.jp
                         ? skill.name.cn
                         : skill.name.cn + " / " + skill.name.jp
                     }})
                   </span>
-                  <button
-                    class="ml-2 text-lg text-[#a51919] hover:text-[#891727] cursor-pointer"
-                    @click="editSkill(skill)"
-                  >
+                  <button class="skill-edit-btn" @click="editSkill(skill)">
                     <i class="fas fa-edit"></i>
                   </button>
                 </div>
@@ -2561,7 +2587,7 @@ const addCKeywordListeners = () => {
                 "
               ></p>
               <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
-                <hr style="border: none; border-top: 1px solid #a51919; margin: 8px 0" />
+                <hr class="skill-divider" />
 
                 <b class="sub-skill-title" @click="activeSkillIndex = 1">
                   {{
@@ -2575,13 +2601,9 @@ const addCKeywordListeners = () => {
                       :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
                         i + 1
                       }.webp`"
-                      class="w-24 h-24 object-contain mb-1"
                     />
 
-                    <span
-                      class="text-black text-sm cursor-pointer hover:text-[#a51919]"
-                      @click="activeSkillIndex = 1"
-                    >
+                    <span class="sub-skill-name" @click="activeSkillIndex = 1">
                       {{
                         isEnglish
                           ? shikigami.skills[i - 1].name.en
@@ -2594,27 +2616,25 @@ const addCKeywordListeners = () => {
 
               <hr class="skill-divider" />
               <table
-                style="width: 100%; border-collapse: collapse; font-size: 16px"
+                class="skill-level-table"
                 v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)"
               >
                 <tbody>
-                  <tr style="color: #a51919; font-weight: bold">
-                    <th style="padding: 6px; text-align: left; width: 70px">
+                  <tr>
+                    <th class="level-column">
                       {{ isEnglish ? "Level" : "Cấp" }}
                     </th>
-                    <th style="padding: 6px 10px; text-align: left">
+                    <th>
                       {{ isEnglish ? "Effect" : "Hiệu ứng" }}
                     </th>
                   </tr>
                   <tr
                     v-for="lvl in isEnglish ? skill.levels.en : skill.levels.vn"
                     :key="lvl.level"
-                    style="color: #444"
                   >
-                    <td style="padding: 6px 10px">{{ lvl.level }}</td>
+                    <td class="level-cell">{{ lvl.level }}</td>
                     <td
-                      class="text-justify"
-                      style="padding: 6px 10px"
+                      class="effect-cell"
                       v-html="processTextWithTooltips(lvl.effect)"
                     ></td>
                   </tr>
@@ -2739,7 +2759,7 @@ const addCKeywordListeners = () => {
                 </div>
                 <hr class="skill-divider" />
                 <table
-                  style="width: 100%; border-collapse: collapse; font-size: 16px"
+                  class="skill-level-table"
                   v-if="
                     Array.isArray(
                       isEnglish
@@ -2749,11 +2769,11 @@ const addCKeywordListeners = () => {
                   "
                 >
                   <tbody>
-                    <tr style="color: #a51919; font-weight: bold">
-                      <th style="padding: 6px; text-align: left; width: 70px">
+                    <tr>
+                      <th class="level-column">
                         {{ isEnglish ? "Level" : "Cấp" }}
                       </th>
-                      <th style="padding: 6px 10px; text-align: left">
+                      <th>
                         {{ isEnglish ? "Effect" : "Hiệu ứng" }}
                       </th>
                     </tr>
@@ -2762,12 +2782,10 @@ const addCKeywordListeners = () => {
                         ? shikigami.skills.find((s) => s.type === 'Linked').levels.en
                         : shikigami.skills.find((s) => s.type === 'Linked').levels.vn"
                       :key="lvl.level"
-                      style="color: #444"
                     >
-                      <td style="padding: 6px 10px">{{ lvl.level }}</td>
+                      <td class="level-cell">{{ lvl.level }}</td>
                       <td
-                        class="text-justify"
-                        style="padding: 6px 10px"
+                        class="effect-cell"
                         v-html="processTextWithTooltips(lvl.effect)"
                       ></td>
                     </tr>
@@ -3133,10 +3151,7 @@ const addCKeywordListeners = () => {
                 <!-- NAME -->
                 <td class="table-cell skin-name-cell">
                   <template
-                    v-if="
-                      skin.name?.en === 'Default' ||
-                      skin.name?.en === 'Evolution'
-                    "
+                    v-if="skin.name?.en === 'Default' || skin.name?.en === 'Evolution'"
                   >
                     <div class="skin-main-name">
                       {{ isEnglish ? skin.name?.en : skin.name?.vn }}
@@ -3292,17 +3307,9 @@ const addCKeywordListeners = () => {
             <div
               v-if="!/^No[ _]Name/i.test(img.name)"
               class="illustration-label"
-              :class="
-                /[\u4E00-\u9FFF]/.test(img.name)
-                  ? 'lang-zh'
-                  : 'skin-name-en'
-              "
+              :class="/[\u4E00-\u9FFF]/.test(img.name) ? 'lang-zh' : 'skin-name-en'"
             >
-              {{
-                img.name
-                  .replace(/[_ ]\d+$/, "")
-                  .replace(/_/g, " ")
-              }}
+              {{ img.name.replace(/[_ ]\d+$/, "").replace(/_/g, " ") }}
             </div>
           </div>
         </div>
@@ -3577,7 +3584,9 @@ const addCKeywordListeners = () => {
 <style scoped src="@/pages/gallery.css"></style>
 
 <style scoped>
-/* Profile */
+/* =========================
+  Profile 
+========================= */
 .profile-section {
   margin-top: 8px;
 
@@ -3585,7 +3594,9 @@ const addCKeywordListeners = () => {
   text-align: justify;
 }
 
-/* Table Name */
+/* ========================= 
+  Table Name 
+========================= */
 .table-row a {
   font-family: "Bona Nova SC", serif;
   font-size: 15px;
@@ -3600,7 +3611,9 @@ const addCKeywordListeners = () => {
   border: 1px solid #a51919;
 }
 
-/* Stats */
+/* ========================= 
+  Stats 
+========================= */
 .stats-wrapper {
   display: block;
 }
@@ -3711,7 +3724,9 @@ const addCKeywordListeners = () => {
   border-right: 1px solid #a51919;
 }
 
-/* Bio */
+/* =========================
+  Bio 
+========================= */
 .bio-table {
   width: 100%;
   margin-top: 16px;
@@ -3724,9 +3739,7 @@ const addCKeywordListeners = () => {
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-/* =========================
-   Columns
-========================= */
+/* Columns */
 
 .no-column {
   width: 50px;
@@ -3736,9 +3749,7 @@ const addCKeywordListeners = () => {
   width: 120px;
 }
 
-/* =========================
-   Cells
-========================= */
+/* Cells */
 
 .bio-table .table-title {
   padding: 12px;
@@ -3771,9 +3782,7 @@ const addCKeywordListeners = () => {
   text-align: center;
 }
 
-/* =========================
-   Reward
-========================= */
+/* Reward */
 
 .reward-box {
   position: relative;
@@ -3808,7 +3817,9 @@ const addCKeywordListeners = () => {
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
-/* Soul */
+/* ========================= 
+  Soul 
+========================= */
 .build-list {
   margin-top: 16px;
 
@@ -3817,9 +3828,7 @@ const addCKeywordListeners = () => {
   gap: 24px;
 }
 
-/* =========================
-   Card
-========================= */
+/* Card */
 
 .build-card {
   padding: 20px;
@@ -3846,9 +3855,7 @@ const addCKeywordListeners = () => {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 12px rgba(165, 25, 25, 0.12);
 }
 
-/* =========================
-   Header
-========================= */
+/* Header */
 
 .build-header {
   display: flex;
@@ -3886,9 +3893,7 @@ const addCKeywordListeners = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
-/* =========================
-   Stats
-========================= */
+/* Stats */
 
 .build-main-stats {
   margin-bottom: 18px;
@@ -3918,9 +3923,7 @@ const addCKeywordListeners = () => {
   font-size: 13px;
 }
 
-/* =========================
-   Souls
-========================= */
+/* Souls List */
 
 .build-souls-grid {
   display: grid;
@@ -3963,9 +3966,7 @@ const addCKeywordListeners = () => {
   color: #fff;
 }
 
-/* =========================
-   Substats / Breakpoint
-========================= */
+/* Substats / Breakpoint */
 
 .build-substats,
 .build-breakpoint {
@@ -3997,9 +3998,7 @@ const addCKeywordListeners = () => {
   font-size: 12px;
 }
 
-/* =========================
-   Note
-========================= */
+/* Note */
 
 .build-note {
   padding: 12px 14px;
@@ -4018,111 +4017,5 @@ const addCKeywordListeners = () => {
 
   white-space: pre-line;
   font-style: italic;
-}
-
-/* Tooltip Styles */
-.effect-tooltip {
-  font-weight: bold !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  border-bottom: none;
-}
-
-.effect-highlight {
-  font-weight: 500;
-  text-decoration: none !important;
-  border-bottom: none;
-}
-
-.tooltip {
-  position: fixed;
-  z-index: 9999;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 8px;
-  padding: 12px 16px;
-  max-width: 300px;
-  pointer-events: none;
-  animation: tooltipFadeIn 0.2s ease-out;
-}
-
-.tooltip-title {
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 6px;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 4px;
-}
-
-.tooltip-images {
-  display: flex;
-  gap: 8px; /* khoảng cách giữa ảnh */
-  flex-wrap: wrap; /* nếu nhiều quá thì tự xuống hàng */
-}
-
-.tooltip-img {
-  width: 32px;
-  height: 32px;
-}
-
-.tooltip-description {
-  font-size: 13px;
-  color: #374151;
-  line-height: 1.4;
-}
-
-.tooltip-divider {
-  margin: 10px 0;
-  border: none;
-  border-top: 1px solid #d1d5db;
-}
-
-.subnotes-container {
-  margin-top: 8px;
-}
-
-.subnote-block {
-  margin-bottom: 8px;
-}
-
-.subnote-block:last-child {
-  margin-bottom: 0;
-}
-
-.subnote-title {
-  font-weight: bold;
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-.subnote-description {
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.3;
-}
-
-/* Ensure tooltip appears above other elements */
-.tooltip::before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: 20px;
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 6px solid var(--tooltip-color);
-}
-
-.tooltip::after {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: 21px;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid #ffffff;
 }
 </style>
