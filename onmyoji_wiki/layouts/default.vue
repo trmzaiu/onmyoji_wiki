@@ -258,7 +258,7 @@ export default {
 };
 </script>
 
-<style src="@/pages/styles.css"></style>
+<style src="@/assets/css/styles.css"></style>
 
 <style>
 #app {

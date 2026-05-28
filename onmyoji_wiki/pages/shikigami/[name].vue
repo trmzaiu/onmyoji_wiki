@@ -4,10 +4,7 @@ import { useRoute } from "vue-router";
 import { useSupabase } from "~/composables/useSupabase";
 import { useTags } from "~/composables/useTags";
 
-import {
-  getStatRank,
-  getStatRankImage,
-} from "@/utils/stats";
+import { getStatRank, getStatRankImage } from "@/utils/stats";
 
 /* ---------------------- GLOBAL ---------------------- */
 const supabase = useSupabase();
@@ -78,7 +75,7 @@ function changeSkill(index) {
 }
 
 /* ---------------------- HELPERS ---------------------- */
-const getImgUrl = (name) => `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
+const getImgUrl = (name) => `/assets/images/illustrations/${name.replace(/ /g, "_")}.jpg`;
 
 /* ---------------------- EVOLUTION RENDER ---------------------- */
 const renderEvoText = (evo) => {
@@ -199,20 +196,14 @@ function addIngForm(word) {
 }
 
 const effectByIdMap = computed(() => {
-  return new Map(
-    effects.value.map((e) => [String(e.id), e])
-  );
+  return new Map(effects.value.map((e) => [String(e.id), e]));
 });
 
 const effectKeywordMap = computed(() => {
   const map = new Map();
 
   const addEffectNames = (effect) => {
-    [
-      effect.name?.en,
-      effect.name?.vn,
-      effect.name?.cn,
-    ]
+    [effect.name?.en, effect.name?.vn, effect.name?.cn]
       .filter(Boolean)
       .forEach((name) => {
         const key = name.toLowerCase();
@@ -227,8 +218,7 @@ const effectKeywordMap = computed(() => {
     addEffectNames(effect);
 
     effect.subs?.forEach((subId) => {
-      const sub =
-        effectByIdMap.value.get(String(subId));
+      const sub = effectByIdMap.value.get(String(subId));
 
       if (sub) {
         addEffectNames(sub);
@@ -240,30 +230,16 @@ const effectKeywordMap = computed(() => {
 });
 
 const shikigamiMap = computed(() => {
-  return new Map(
-    shikigamiList.value.map((s) => [
-      String(s.id),
-      s,
-    ])
-  );
+  return new Map(shikigamiList.value.map((s) => [String(s.id), s]));
 });
 
 const onmyojiMap = computed(() => {
-  return new Map(
-    onmyojiList.value.map((o) => [
-      String(o.id),
-      o,
-    ])
-  );
+  return new Map(onmyojiList.value.map((o) => [String(o.id), o]));
 });
 
-const replacePipeline = (
-  text,
-  transformers
-) => {
+const replacePipeline = (text, transformers) => {
   return transformers.reduce(
-    (acc, [regex, replacer]) =>
-      acc.replace(regex, replacer),
+    (acc, [regex, replacer]) => acc.replace(regex, replacer),
     text
   );
 };
@@ -273,15 +249,10 @@ const getLocalizedName = (obj) => {
 
   return isEnglish.value
     ? obj.name?.en || obj.name?.vn || ""
-    : obj.name?.vn ||
-        obj.name?.en ||
-        "";
+    : obj.name?.vn || obj.name?.en || "";
 };
 
-const createEntitySpan = (
-  name,
-  type
-) => {
+const createEntitySpan = (name, type) => {
   return `
     <span class="entity ${type}">
       ${name}
@@ -289,40 +260,24 @@ const createEntitySpan = (
   `;
 };
 
-const getSkillName = (
-  shiki,
-  index
-) => {
-  if (!shiki?.skills?.length)
-    return "";
+const getSkillName = (shiki, index) => {
+  if (!shiki?.skills?.length) return "";
 
-  const skill =
-    shiki.skills[index - 1];
+  const skill = shiki.skills[index - 1];
 
   if (!skill) return "";
 
-  return isEnglish.value
-    ? skill.name?.en
-    : skill.name?.vn ||
-        skill.name?.en;
+  return isEnglish.value ? skill.name?.en : skill.name?.vn || skill.name?.en;
 };
 
-const createSkillSpan = (
-  name,
-  clickable = false,
-  bold = false
-) => {
+const createSkillSpan = (name, clickable = false, bold = false) => {
   return `
     <span
       class="
         skill-keyword
         text-[#c07b2a]
         ${bold ? "font-bold" : ""}
-        ${
-          clickable
-            ? "cursor-pointer"
-            : ""
-        }
+        ${clickable ? "cursor-pointer" : ""}
       "
       data-keyword="${name}"
     >
@@ -337,38 +292,21 @@ const colorMap = {
   yellow: "#c07b2a",
 };
 
-const resolveEffect = (
-  content
-) => {
+const resolveEffect = (content) => {
   if (/^\d+$/.test(content)) {
-    return effectByIdMap.value.get(
-      String(content)
-    );
+    return effectByIdMap.value.get(String(content));
   }
 
-  return effectKeywordMap.value.get(
-    content.toLowerCase()
-  );
+  return effectKeywordMap.value.get(content.toLowerCase());
 };
 
-const createEffectSpan = ({
-  effect,
-  text,
-  plain = false,
-  bold = false,
-}) => {
-  const color =
-    colorMap[effect.color] ||
-    "#a51919";
+const createEffectSpan = ({ effect, text, plain = false, bold = false }) => {
+  const color = colorMap[effect.color] || "#a51919";
 
   return `
     <span
       class="${bold ? "font-bold" : ""}"
-      style="${
-        plain
-          ? ""
-          : `color:${color}`
-      }"
+      style="${plain ? "" : `color:${color}`}"
     >
       ${text}
     </span>
@@ -386,7 +324,7 @@ const processHighlightText = (text) => {
       /<e>(.*?)<\/e>/g,
       (_, keyword) => `
           <img
-            src="/assets/effects/${keyword}.webp"
+            src="/assets/images/effects/${keyword}.webp"
             alt="${keyword}"
             class="inline-block w-6 h-6 align-text-bottom rounded-md"
           />
@@ -1331,7 +1269,7 @@ const addCKeywordListeners = () => {
         <div class="character-image-wrapper">
           <div class="character-image-box">
             <img
-              :src="`/assets/shikigami/images/${route.params.name}.webp`"
+              :src="`/assets/images/shikigami/images/${route.params.name}.webp`"
               :alt="shikigami.name.jp[1]"
               class="character-image"
             />
@@ -1346,7 +1284,7 @@ const addCKeywordListeners = () => {
                 <th class="p-2 relative" colspan="4">
                   <div>{{ shikigami.name.jp[1] }}</div>
                   <img
-                    :src="`/assets/rarity/${shikigami.rarity}.webp`"
+                    :src="`/assets/images/rarity/${shikigami.rarity}.webp`"
                     :alt="shikigami.rarity"
                     class="object-contain absolute top-[-30px] left-[-40px]"
                     :class="{
@@ -1425,7 +1363,7 @@ const addCKeywordListeners = () => {
                 >
                   <div class="w-12 h-12 flex items-center justify-center relative">
                     <img
-                      :src="`/assets/materials/${material.type}.webp`"
+                      :src="`/assets/images/materials/${material.type}.webp`"
                       :alt="material.type"
                       class="max-h-full max-w-full object-contain"
                       :title="material.name"
@@ -1457,13 +1395,14 @@ const addCKeywordListeners = () => {
                     >
                       <a :href="`/shikigami/${ver.replace(/ /g, '_')}`">
                         <img
-                          :src="`/assets/shikigami/shards/${ver.replace(
+                          :src="`/assets/images/shikigami/shards/${ver.replace(
                             / /g,
                             '_'
                           )}_Shard.webp`"
                           class="h-16 w-16 object-contain mb-1"
                           @error="
-                            (event) => (event.target.src = '/assets/Unknown_Shard.webp')
+                            (event) =>
+                              (event.target.src = '/assets/images/Unknown_Shard.webp')
                           "
                         />
                       </a>
@@ -1599,10 +1538,12 @@ const addCKeywordListeners = () => {
                 <th colspan="2" class="icon-cell">
                   <figure class="stats-figure">
                     <img
-                      :src="`/assets/shikigami/icons/${route.params.name}_Icon.webp`"
+                      :src="`/assets/images/shikigami/icons/${route.params.name}_Icon.webp`"
                       :alt="shikigami.name.jp[1]"
                       class="stats-icon"
-                      @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
+                      @error="
+                        (event) => (event.target.src = '/assets/images/Unknown_Icon.webp')
+                      "
                     />
                   </figure>
                 </th>
@@ -1611,7 +1552,7 @@ const addCKeywordListeners = () => {
                 <th colspan="2" v-if="hasLevel40" class="icon-cell">
                   <figure class="stats-figure">
                     <img
-                      :src="`/assets/shikigami/icons/${route.params.name}_Icon${
+                      :src="`/assets/images/shikigami/icons/${route.params.name}_Icon${
                         shikigami.rarity !== 'SP' &&
                         shikigami.rarity !== 'UR' &&
                         shikigami.rarity !== 'N'
@@ -1620,7 +1561,9 @@ const addCKeywordListeners = () => {
                       }.webp`"
                       :alt="shikigami.name.jp[1]"
                       class="stats-icon"
-                      @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
+                      @error="
+                        (event) => (event.target.src = '/assets/images/Unknown_Icon.webp')
+                      "
                     />
                   </figure>
                 </th>
@@ -1646,7 +1589,7 @@ const addCKeywordListeners = () => {
 
                 <!-- 2 -->
                 <td class="label-cell">
-                  <img src="/assets/stats/ATK.webp" alt="ATK" />
+                  <img src="/assets/images/stats/ATK.webp" alt="ATK" />
                   ATK
                 </td>
 
@@ -1721,7 +1664,7 @@ const addCKeywordListeners = () => {
 
                 <!-- 2 -->
                 <td class="label-cell">
-                  <img src="/assets/stats/HP.webp" alt="HP" />
+                  <img src="/assets/images/stats/HP.webp" alt="HP" />
                   HP
                 </td>
 
@@ -1797,7 +1740,7 @@ const addCKeywordListeners = () => {
 
                 <!-- 2 -->
                 <td class="label-cell">
-                  <img src="/assets/stats/DEF.webp" alt="DEF" />
+                  <img src="/assets/images/stats/DEF.webp" alt="DEF" />
                   DEF
                 </td>
 
@@ -1860,7 +1803,7 @@ const addCKeywordListeners = () => {
 
                 <!-- 2 -->
                 <td class="label-cell">
-                  <img src="/assets/stats/SPD.webp" alt="SPD" />
+                  <img src="/assets/images/stats/SPD.webp" alt="SPD" />
                   SPD
                 </td>
 
@@ -1927,7 +1870,7 @@ const addCKeywordListeners = () => {
 
                 <!-- 2 -->
                 <td class="label-cell">
-                  <img src="/assets/stats/CRIT.webp" alt="CRIT" />
+                  <img src="/assets/images/stats/CRIT.webp" alt="CRIT" />
                   Crit
                 </td>
 
@@ -1982,7 +1925,7 @@ const addCKeywordListeners = () => {
 
                 <!-- 2 -->
                 <td class="label-cell">
-                  <img src="/assets/stats/CDMG.webp" alt="CDMG" />
+                  <img src="/assets/images/stats/CDMG.webp" alt="CDMG" />
                   Crit DMG
                 </td>
 
@@ -2024,7 +1967,7 @@ const addCKeywordListeners = () => {
                 <td></td>
 
                 <td class="label-cell">
-                  <img src="/assets/stats/HIT.webp" alt="HIT" />
+                  <img src="/assets/images/stats/HIT.webp" alt="HIT" />
                   Effects HIT
                 </td>
 
@@ -2068,7 +2011,7 @@ const addCKeywordListeners = () => {
                 <td></td>
 
                 <td class="label-cell">
-                  <img src="/assets/stats/RES.webp" alt="RES" />
+                  <img src="/assets/images/stats/RES.webp" alt="RES" />
                   Effects RES
                 </td>
 
@@ -2178,7 +2121,7 @@ const addCKeywordListeners = () => {
             <div class="skill-top">
               <span class="skill-icon-wrapper">
                 <img
-                  :src="`/assets/shikigami/skills/${route.params.name}_Skill${
+                  :src="`/assets/images/shikigami/skills/${route.params.name}_Skill${
                     activeSkillIndex + 1
                   }.webp`"
                   :alt="shikigami.skills[activeSkillIndex].name.en"
@@ -2241,7 +2184,7 @@ const addCKeywordListeners = () => {
                   </span>
                   <span>
                     {{ shikigami.skills[activeSkillIndex].onibi }}
-                    <img src="/assets/Onibi.webp" alt="Onibi" />
+                    <img src="/assets/images/Onibi.webp" alt="Onibi" />
                   </span>
                 </div>
               </div>
@@ -2291,7 +2234,7 @@ const addCKeywordListeners = () => {
                     <img
                       v-for="(img, i) in effect.images"
                       :key="i"
-                      :src="'/assets/effects/' + img + '.webp'"
+                      :src="'/assets/images/effects/' + img + '.webp'"
                       :alt="img"
                       class="tooltip-img rounded rounded-sm"
                     />
@@ -2327,9 +2270,9 @@ const addCKeywordListeners = () => {
                 <div class="sub-skill-grid">
                   <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
                     <img
-                      :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
-                        i - 3
-                      }.webp`"
+                      :src="`/assets/images/shikigami/skills/${
+                        route.params.name
+                      }_SubSkill${i - 3}.webp`"
                     />
 
                     <span class="sub-skill-name" @click="activeSkillIndex = 1">
@@ -2358,9 +2301,9 @@ const addCKeywordListeners = () => {
                 <div class="sub-skill-grid">
                   <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
                     <img
-                      :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
-                        i + 1
-                      }.webp`"
+                      :src="`/assets/images/shikigami/skills/${
+                        route.params.name
+                      }_SubSkill${i + 1}.webp`"
                     />
 
                     <span class="sub-skill-name" @click="activeSkillIndex = 1">
@@ -2389,9 +2332,9 @@ const addCKeywordListeners = () => {
                 <div class="sub-skill-grid">
                   <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
                     <img
-                      :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
-                        i - 3
-                      }.webp`"
+                      :src="`/assets/images/shikigami/skills/${
+                        route.params.name
+                      }_SubSkill${i - 3}.webp`"
                     />
 
                     <span class="sub-skill-name" @click="activeSkillIndex = 1">
@@ -2415,7 +2358,7 @@ const addCKeywordListeners = () => {
                 <div class="sub-skill-grid">
                   <div v-for="i in [1, 2, 3, 4]" :key="i" class="sub-skill-item">
                     <img
-                      :src="`/assets/shikigami/skills/${route.params.name}_Knot${i}.webp`"
+                      :src="`/assets/images/shikigami/skills/${route.params.name}_Knot${i}.webp`"
                     />
 
                     <span class="sub-skill-name">
@@ -2485,7 +2428,7 @@ const addCKeywordListeners = () => {
             <div class="skill-top">
               <span class="skill-icon-wrapper">
                 <img
-                  :src="`/assets/shikigami/skills/${route.params.name}_Skill${
+                  :src="`/assets/images/shikigami/skills/${route.params.name}_Skill${
                     i + 1
                   }.webp`"
                   :alt="skill.name.en"
@@ -2533,7 +2476,7 @@ const addCKeywordListeners = () => {
                   </span>
                   <span>
                     {{ skill.onibi }}
-                    <img src="/assets/Onibi.webp" alt="Onibi" />
+                    <img src="/assets/images/Onibi.webp" alt="Onibi" />
                   </span>
                 </div>
               </div>
@@ -2562,9 +2505,9 @@ const addCKeywordListeners = () => {
                 <div class="sub-skill-grid">
                   <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
                     <img
-                      :src="`/assets/shikigami/skills/${route.params.name}_SubSkill${
-                        i + 1
-                      }.webp`"
+                      :src="`/assets/images/shikigami/skills/${
+                        route.params.name
+                      }_SubSkill${i + 1}.webp`"
                     />
 
                     <span class="sub-skill-name" @click="activeSkillIndex = 1">
@@ -2622,7 +2565,7 @@ const addCKeywordListeners = () => {
               <div class="skill-top">
                 <span class="skill-icon-wrapper">
                   <img
-                    :src="`/assets/shikigami/skills/${route.params.name}_Skill0.webp`"
+                    :src="`/assets/images/shikigami/skills/${route.params.name}_Skill0.webp`"
                     :alt="shikigami.skills.find((s) => s.type === 'Linked').name.en"
                     :title="shikigami.skills.find((s) => s.type === 'Linked').name.en"
                   />
@@ -2687,7 +2630,7 @@ const addCKeywordListeners = () => {
                     </span>
                     <span>
                       {{ shikigami.skills.find((s) => s.type === "Linked").onibi }}
-                      <img src="/assets/Onibi.webp" alt="Onibi" />
+                      <img src="/assets/images/Onibi.webp" alt="Onibi" />
                     </span>
                   </div>
                 </div>
@@ -2804,8 +2747,8 @@ const addCKeywordListeners = () => {
                   <img
                     :src="
                       ![153, 154].includes(shikigami.id)
-                        ? '/assets/Gold.webp'
-                        : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo1.webp`
+                        ? '/assets/images/Gold.webp'
+                        : `/assets/images/shikigami/skinsInfo/${route.params.name}_SkinInfo1.webp`
                     "
                     alt="Gold"
                     class="reward-icon"
@@ -2825,7 +2768,7 @@ const addCKeywordListeners = () => {
 
               <td v-if="shikigami.id === 78" class="table-cell reward-cell">
                 <div class="reward-box">
-                  <img src="/assets/Gold.webp" alt="Gold" class="reward-icon" />
+                  <img src="/assets/images/Gold.webp" alt="Gold" class="reward-icon" />
                   <span class="reward-amount"> 5000</span>
                 </div>
               </td>
@@ -2835,10 +2778,10 @@ const addCKeywordListeners = () => {
                   <img
                     :src="
                       [144, 118, 131, 95].includes(shikigami.id)
-                        ? '/assets/Jade.webp'
+                        ? '/assets/images/Jade.webp'
                         : [71, 84, 130, 117, 111].includes(shikigami.id)
-                        ? '/assets/Black_Daruma.webp'
-                        : `/assets/shikigami/shards/${route.params.name}_Shard.webp`
+                        ? '/assets/images/Black_Daruma.webp'
+                        : `/assets/images/shikigami/shards/${route.params.name}_Shard.webp`
                     "
                     :alt="shikigami.name.jp"
                     class="reward-icon"
@@ -2865,8 +2808,8 @@ const addCKeywordListeners = () => {
                   <img
                     :src="
                       ![144, 118, 131, 111].includes(shikigami.id)
-                        ? '/assets/Jade.webp'
-                        : `/assets/shikigami/shards/${route.params.name}_Shard.webp`
+                        ? '/assets/images/Jade.webp'
+                        : `/assets/images/shikigami/shards/${route.params.name}_Shard.webp`
                     "
                     alt="Jade"
                     class="reward-icon"
@@ -2929,7 +2872,7 @@ const addCKeywordListeners = () => {
                 class="build-soul-item"
               >
                 <img
-                  :src="`/assets/souls/icons/${getSoulSlug(id)}_Icon.webp`"
+                  :src="`/assets/images/souls/icons/${getSoulSlug(id)}_Icon.webp`"
                   class="build-soul-icon"
                 />
 
@@ -2997,10 +2940,10 @@ const addCKeywordListeners = () => {
             @click="
               openModal(
                 skin.name.en === 'Default' || skin.name.en === 'Evolution'
-                  ? `/assets/shikigami/images/${route.params.name}${
+                  ? `/assets/images/shikigami/images/${route.params.name}${
                       skin.name.en === 'Evolution' ? '_Evo' : ''
                     }.webp`
-                  : `/assets/shikigami/skins/${route.params.name}_Skin${
+                  : `/assets/images/shikigami/skins/${route.params.name}_Skin${
                       shikigami.rarity === 'SP' || shikigami.rarity === 'N'
                         ? index
                           ? index
@@ -3013,10 +2956,10 @@ const addCKeywordListeners = () => {
             <img
               :src="
                 skin.name.en === 'Default' || skin.name.en === 'Evolution'
-                  ? `/assets/shikigami/images/${route.params.name}${
+                  ? `/assets/images/shikigami/images/${route.params.name}${
                       skin.name.en === 'Evolution' ? '_Evo' : ''
                     }.webp`
-                  : `/assets/shikigami/skins/${route.params.name}_Skin${
+                  : `/assets/images/shikigami/skins/${route.params.name}_Skin${
                       shikigami.rarity === 'SP' || shikigami.rarity === 'N'
                         ? index
                           ? index
@@ -3089,11 +3032,13 @@ const addCKeywordListeners = () => {
                         skin.name?.en === 'Default'
                           ? (index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ||
                             shikigami.id === 193
-                            ? `/assets/shikigami/shards/${route.params.name}_Shard.webp`
-                            : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp`
+                            ? `/assets/images/shikigami/shards/${route.params.name}_Shard.webp`
+                            : `/assets/images/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp`
                           : skin.name?.en === 'Evolution'
-                          ? `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`
-                          : `/assets/shikigami/skinsInfo/${route.params.name}_SkinInfo${
+                          ? `/assets/images/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`
+                          : `/assets/images/shikigami/skinsInfo/${
+                              route.params.name
+                            }_SkinInfo${
                               shikigami.rarity === 'SP' || shikigami.rarity === 'N'
                                 ? index
                                   ? index
@@ -3208,7 +3153,7 @@ const addCKeywordListeners = () => {
               <td class="table-cell accessory-image-cell">
                 <div class="accessory-image-wrapper">
                   <img
-                    :src="`/assets/shikigami/bios/${route.params.name}_Bio${
+                    :src="`/assets/images/shikigami/bios/${route.params.name}_Bio${
                       index + 4
                     }.webp`"
                     :alt="bio.name.en || bio.name.cn"
@@ -3301,7 +3246,7 @@ const addCKeywordListeners = () => {
         <img
           v-for="(img, i) in imgs"
           :key="i"
-          :src="'/assets/effects/' + img + '.webp'"
+          :src="'/assets/images/effects/' + img + '.webp'"
           :alt="img"
           class="tooltip-img rounded rounded-sm"
         />
@@ -3325,7 +3270,7 @@ const addCKeywordListeners = () => {
               <img
                 v-for="(img, i) in sub.images"
                 :key="i"
-                :src="'/assets/effects/' + img + '.webp'"
+                :src="'/assets/images/effects/' + img + '.webp'"
                 :alt="img"
                 class="w-8 h-8"
               />
@@ -3349,7 +3294,7 @@ const addCKeywordListeners = () => {
                   <img
                     v-for="(img, i) in subsub.images"
                     :key="i"
-                    :src="'/assets/effects/' + img + '.webp'"
+                    :src="'/assets/images/effects/' + img + '.webp'"
                     :alt="img"
                     class="w-8 h-8"
                   />
@@ -3541,9 +3486,9 @@ const addCKeywordListeners = () => {
   </div>
 </template>
 
-<style scoped src="@/pages/styles.css"></style>
-<style scoped src="@/pages/main.css"></style>
-<style scoped src="@/pages/gallery.css"></style>
+<style scoped src="/assets/css/styles.css"></style>
+<style scoped src="/assets/css/main.css"></style>
+<style scoped src="/assets/css/gallery.css"></style>
 
 <style scoped>
 /* =========================

@@ -24,15 +24,15 @@
           <th>
             <div class="grid grid-cols-3 gap-4 p-3">
               <div class="cell">
-                <img src="/assets/stats/Events.webp" alt="Event" class="h-28" />
+                <img src="@/assets/stats/Events.webp" alt="Event" class="h-28" />
                 <span>Events</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Bounty.webp" alt="Wanted Quest" class="h-28" />
+                <img src="@/assets/stats/Bounty.webp" alt="Wanted Quest" class="h-28" />
                 <span>Wanted Quests</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Boss.webp" alt="Demon Encounter" class="h-28" />
+                <img src="@/assets/stats/Boss.webp" alt="Demon Encounter" class="h-28" />
                 <span>Demon Encounter</span>
               </div>
             </div>
@@ -47,19 +47,19 @@
           <td>
             <div class="grid grid-cols-4 gap-4 p-3 items-end">
               <div class="cell">
-                <img src="/assets/stats/Move_Bar.webp" alt="Move Bar" />
+                <img src="@/assets/stats/Move_Bar.webp" alt="Move Bar" />
                 <span>Move Bar</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Formulas.webp" alt="Formulas" />
+                <img src="@/assets/stats/Formulas.webp" alt="Formulas" />
                 <span>Formulas</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Skills.webp" alt="Skills" />
+                <img src="@/assets/stats/Skills.webp" alt="Skills" />
                 <span>Skills</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Damage.webp" alt="Damage" />
+                <img src="@/assets/stats/Damage.webp" alt="Damage" />
                 <span>Damage</span>
               </div>
             </div>
@@ -74,30 +74,30 @@
           <td>
             <div class="grid grid-cols-6 gap-4 p-3 items-end">
               <div class="cell">
-                <img src="/assets/stats/Collection.webp" alt="Collection" />
+                <img src="@/assets/stats/Collection.webp" alt="Collection" />
                 <span>Collection</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Guild.webp" alt="Guild" />
+                <img src="@/assets/stats/Guild.webp" alt="Guild" />
                 <span>Guild</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Mall.webp" alt="Mall" />
+                <img src="@/assets/stats/Mall.webp" alt="Mall" />
                 <span>Mall</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Missions.webp" alt="Missions" />
+                <img src="@/assets/stats/Missions.webp" alt="Missions" />
                 <span>Missions</span>
               </div>
               <div class="cell">
                 <a class="cursor-pointer" href="/onmyoji">
-                  <img src="/assets/stats/Onmyoji.webp" alt="Onmyoji" />
+                  <img src="@/assets/stats/Onmyoji.webp" alt="Onmyoji" />
                 </a>
                 <span><a href="/onmyoji">Onmyoji</a></span>
               </div>
               <div class="cell">
                 <a class="cursor-pointer" href="/shikigami">
-                  <img src="/assets/stats/Shikigami.webp" alt="Shikigami" />
+                  <img src="@/assets/stats/Shikigami.webp" alt="Shikigami" />
                 </a>
                 <span><a href="/shikigami">Shikigami</a></span>
               </div>
@@ -113,30 +113,30 @@
           <td>
             <div class="grid grid-cols-6 gap-4 p-3 items-end">
               <div class="cell">
-                <img src="/assets/stats/Illust.webp" alt="Illustrations" />
+                <img src="@/assets/stats/Illust.webp" alt="Illustrations" />
                 <span>Illustrations</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Frames.webp" alt="Frames" />
+                <img src="@/assets/stats/Frames.webp" alt="Frames" />
                 <span>Frames</span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Items.webp" alt="Items" />
+                <img src="@/assets/stats/Items.webp" alt="Items" />
                 <span>Items</span>
               </div>
               <div class="cell">
                 <a class="cursor-pointer" href="/pets">
-                  <img src="/assets/stats/Pets.webp" alt="Pets" />
+                  <img src="@/assets/stats/Pets.webp" alt="Pets" />
                 </a>
                 <span><a href="/pets">Pets</a></span>
               </div>
               <div class="cell">
-                <img src="/assets/stats/Duel.webp" alt="Duel" />
+                <img src="@/assets/stats/Duel.webp" alt="Duel" />
                 <span>Duel</span>
               </div>
               <div class="cell">
                 <a class="cursor-pointer" href="/souls">
-                  <img src="/assets/stats/Souls.webp" alt="Souls" />
+                  <img src="@/assets/stats/Souls.webp" alt="Souls" />
                 </a>
                 <span><a href="/souls">Souls</a></span>
               </div>
@@ -144,13 +144,11 @@
           </td>
         </tr>
       </table>
-
-      
     </div>
   </div>
 </template>
 
-<style scoped src="@/pages/styles.css"></style>
+<style scoped src="@/assets/css/styles.css"></style>
 
 <style scoped>
 .cell {
@@ -171,6 +169,4 @@
 .cell:hover span {
   color: var(--text-primary);
 }
-
-
 </style>

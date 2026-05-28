@@ -46,23 +46,15 @@ async function fetchShikigami() {
 
   if (selectedRarity.value === "Removed") {
     query = query.eq("id", 229);
-  }
-
-  else if (
-    selectedRarity.value === "Crossover"
-  ) {
+  } else if (selectedRarity.value === "Crossover") {
     query = query.eq("crossover", true);
-  }
-
-  else if (
-    selectedRarity.value !== "All"
-  ) {
+  } else if (selectedRarity.value !== "All") {
     query = query
       .eq("rarity", selectedRarity.value)
       .neq("crossover", true)
       .neq("id", 229);
   }
-  
+
   const { data, error } = await query.range(from, to);
 
   if (error) {
@@ -257,32 +249,30 @@ onUnmounted(() => {
       </div>
 
       <!-- New Release  -->
-      <h2 class="session-title top-0">
-        New Releases
-      </h2>
+      <h2 class="session-title top-0">New Releases</h2>
 
       <div class="latest-shiki-list">
         <div v-for="shiki in latestShikigami" :key="shiki.id" class="latest-shiki-item">
           <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
             <div class="shiki-image-wrapper">
               <img
-                :src="`/assets/shikigami/shards/${shiki.name.jp[1].replace(
+                :src="`@/assets/shikigami/shards/${shiki.name.jp[1].replace(
                   / /g,
                   '_'
                 )}_Shard.webp`"
                 :alt="shiki.name.jp[1]"
                 class="w-24 h-24 object-contain"
-                @error="(event) => (event.target.src = '/assets/Unknown_Shard.webp')"
+                @error="(event) => (event.target.src = '@/assets/Unknown_Shard.webp')"
               />
 
               <img
-                :src="`/assets/rarity/${shiki.rarity}.webp`"
+                :src="`@/assets/rarity/${shiki.rarity}.webp`"
                 :alt="shiki.rarity"
                 class="rarity-badge"
               />
 
               <img
-                :src="`/assets/rarity/${shiki.rarity}.webp`"
+                :src="`@/assets/rarity/${shiki.rarity}.webp`"
                 :alt="shiki.rarity"
                 class="rarity-badge-shadow"
               />
@@ -299,11 +289,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Shikigame List -->
-      <h2
-        class="session-title"
-      >
-        Shikigami List
-      </h2>
+      <h2 class="session-title">Shikigami List</h2>
       <div class="tabs">
         <button
           v-for="rarity in rarities"
@@ -320,23 +306,23 @@ onUnmounted(() => {
           <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
             <div class="shiki-image-wrapper">
               <img
-                :src="`/assets/shikigami/shards/${shiki.name.jp[1].replace(
+                :src="`@/assets/shikigami/shards/${shiki.name.jp[1].replace(
                   / /g,
                   '_'
                 )}_Shard.webp`"
                 :alt="shiki.name.jp[1]"
                 class="w-24 h-24 object-contain"
-                @error="(event) => (event.target.src = '/assets/Unknown_Shard.webp')"
+                @error="(event) => (event.target.src = '@/assets/Unknown_Shard.webp')"
               />
 
               <img
-                :src="`/assets/rarity/${shiki.rarity}.webp`"
+                :src="`@/assets/rarity/${shiki.rarity}.webp`"
                 :alt="shiki.rarity"
                 class="rarity-badge"
               />
 
               <img
-                :src="`/assets/rarity/${shiki.rarity}.webp`"
+                :src="`@/assets/rarity/${shiki.rarity}.webp`"
                 :alt="shiki.rarity"
                 class="rarity-badge-shadow"
               />
@@ -360,7 +346,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped src="@/pages/styles.css"></style>
+<style scoped src="@/assets/css/styles.css"></style>
 
 <style scoped>
 /* Tabs */
