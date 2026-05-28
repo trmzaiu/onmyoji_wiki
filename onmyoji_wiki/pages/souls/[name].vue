@@ -1,7 +1,7 @@
 <script setup>
-import { useSupabase } from "@/utils/useSupabase.ts";
 import { computed, nextTick, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { useSupabase } from "~/composables/useSupabase";
 
 const route = useRoute();
 const supabase = useSupabase();

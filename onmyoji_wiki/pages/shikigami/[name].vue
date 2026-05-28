@@ -1,13 +1,17 @@
 <script setup>
-import { useSupabase } from "@/utils/useSupabase.ts";
-import { useTags } from "@/utils/useTags";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
+import { useSupabase } from "~/composables/useSupabase";
+import { useTags } from "~/composables/useTags";
+
+import {
+  getStatRank,
+  getStatRankImage,
+} from "@/utils/stats";
 
 /* ---------------------- GLOBAL ---------------------- */
 const supabase = useSupabase();
 const route = useRoute();
-const router = useRouter();
 const { tagMap, loadTags } = useTags();
 
 const formattedName = route.params.name.replace(/_/g, " ");
@@ -75,87 +79,6 @@ function changeSkill(index) {
 
 /* ---------------------- HELPERS ---------------------- */
 const getImgUrl = (name) => `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
-
-const STAT_RANKS = {
-  ATK: [
-    ["SS", 171, 197],
-    ["S", 140, 166],
-    ["A", 127, 137],
-    ["B", 114, 127],
-    ["C", 102, 112],
-  ],
-
-  ATK_EVO: [
-    ["SS", 3618, 4154],
-    ["S", 2948, 3605],
-    ["A", 2680, 2921],
-    ["B", 2412, 2626],
-    ["C", 2144, 2385],
-  ],
-
-  HP: [
-    ["S", 1164, 1419],
-    ["A", 1064, 1163],
-    ["B", 960, 1056],
-    ["C", 854, 950],
-  ],
-
-  HP_EVO: [
-    ["SS", 15380, 15540],
-    ["S", 12532, 15152],
-    ["A", 11393, 12418],
-    ["B", 10254, 11279],
-    ["C", 9115, 10140],
-  ],
-
-  DEF: [
-    ["SS", 101, 101],
-    ["S", 83, 94],
-    ["A", 75, 82],
-    ["B", 68, 74],
-    ["C", 60, 67],
-  ],
-
-  DEF_EVO: [
-    ["SS", 550, 595],
-    ["S", 485, 549],
-    ["A", 441, 481],
-    ["B", 397, 437],
-    ["C", 353, 393],
-  ],
-
-  SPD: [
-    ["S", 110, 127],
-    ["A", 105, 109],
-    ["B", 100, 104],
-    ["C", 95, 99],
-  ],
-
-  CRIT: [
-    ["SSS", 50, 50],
-    ["SS", 16, 49],
-    ["S", 10, 15],
-    ["A", 8, 9],
-    ["B", 5, 6],
-    ["C", 3, 3],
-  ],
-};
-
-const getRank = (type, value) => {
-  const ranges = STAT_RANKS[type];
-
-  if (!ranges) return "D";
-
-  const found = ranges.find(
-    ([, min, max]) => value >= min && value <= max
-  );
-
-  return found?.[0] || "D";
-};
-
-const getStatImage = (type, value) => {
-  return `/assets/stats/${getRank(type, value)}.webp`;
-};
 
 /* ---------------------- EVOLUTION RENDER ---------------------- */
 const renderEvoText = (evo) => {
@@ -275,294 +198,290 @@ function addIngForm(word) {
   return word;
 }
 
-const processTextWithTooltips = (text) => {
-  if (!text || !effects.value?.length) return text;
+const effectByIdMap = computed(() => {
+  return new Map(
+    effects.value.map((e) => [String(e.id), e])
+  );
+});
 
-  // =========================================================
-  // 0) Build lookup maps
-  // =========================================================
-  const processed = { value: text };
+const effectKeywordMap = computed(() => {
+  const map = new Map();
 
-  const effectById = new Map(effects.value.map((e) => [String(e.id), e]));
-  const effectMap = new Map();
-  const effectKeywordOverrides = new Map();
+  const addEffectNames = (effect) => {
+    [
+      effect.name?.en,
+      effect.name?.vn,
+      effect.name?.cn,
+    ]
+      .filter(Boolean)
+      .forEach((name) => {
+        const key = name.toLowerCase();
 
-  const colorMap = {
-    red: "#a63f37",
-    blue: "#4994d4",
-    yellow: "#c07b2a",
+        if (!map.has(key)) {
+          map.set(key, effect);
+        }
+      });
   };
 
-  const addEffectNameToMap = (note) => {
-    const names = [];
-    if (note.name?.en) names.push(note.name.en);
-    if (note.name?.vn && note.name.vn !== note.name.en) names.push(note.name.vn);
-    if (note.name?.cn && note.name.cn !== note.name.en && note.name.cn !== note.name.vn) {
-      names.push(note.name.cn);
-    }
+  effects.value.forEach((effect) => {
+    addEffectNames(effect);
 
-    names.forEach((name) => {
-      const key = name?.toLowerCase();
-      if (key && !effectMap.has(key)) effectMap.set(key, note);
-    });
-  };
+    effect.subs?.forEach((subId) => {
+      const sub =
+        effectByIdMap.value.get(String(subId));
 
-  // Build effectMap including subs
-  effects.value.forEach((note) => {
-    addEffectNameToMap(note);
-    note.subs?.forEach((subId) => {
-      const sub = effectById.get(String(subId));
-      if (sub) addEffectNameToMap(sub);
+      if (sub) {
+        addEffectNames(sub);
+      }
     });
   });
 
-  // =========================================================
-  // 1) Helpers: Entities (Shikigami / Onmyoji)
-  // =========================================================
-  const replaceShikigami = (match, id) => {
-    if (!shikigamiList?.value?.length) return match;
-    const shiki = shikigamiList.value.find((s) => String(s.id) === String(id));
-    if (!shiki) return match;
+  return map;
+});
 
-    const name = isEnglish.value
-      ? shiki.name?.en || ""
-      : shiki.name?.vn || shiki.name?.en || "";
-    return `<span class="entity shikigami">${name}</span>`;
-  };
-
-  const replaceOnmyoji = (match, id) => {
-    if (!onmyojiList?.value?.length) return match;
-    const onm = onmyojiList.value.find((o) => String(o.id) === String(id));
-    if (!onm) return match;
-
-    const name = isEnglish.value
-      ? onm.name?.en || ""
-      : onm.name?.vn || onm.name?.en || "";
-    return `<span class="entity onmyoji">${name}</span>`;
-  };
-
-  // =========================================================
-  // 2) Helpers: Skills (current shikigami / referenced shikigami)
-  // =========================================================
-  // Tag: <c|m|o>index</c|m|o>  (skill index of current shikigami)
-  const replaceSkill = (match, content, type) => {
-    const index = parseInt(content, 10);
-    if (isNaN(index) || !shikigami.value?.skills?.length) return match;
-
-    const skill = shikigami.value.skills[index - 1];
-    if (!skill) return match;
-
-    const name = isEnglish.value
-      ? skill.name?.en || ""
-      : skill.name?.vn || skill.name?.en || "";
-    if (type === "c")
-      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
-    if (type === "m") return `<span class="skill-keyword text-[#c07b2a]">${name}</span>`;
-    if (type === "o") return `<span>${name}</span>`;
-    return match;
-  };
-
-  // Tag: <d|p>shikiId-skillIndex</d|p> (skill of another shikigami by id)
-  const replaceSkillRef = (match, content, type) => {
-    const [shikiIdStr, skillIndexStr] = String(content).split("-");
-    const shikiId = parseInt(shikiIdStr, 10);
-    const skillIndex = parseInt(skillIndexStr, 10);
-    if (isNaN(shikiId) || isNaN(skillIndex) || !shikigamiList?.value?.length)
-      return match;
-
-    const shiki = shikigamiList.value.find((s) => String(s.id) === String(shikiId));
-    if (!shiki?.skills?.length) return match;
-
-    const skill = shiki.skills[skillIndex - 1];
-    if (!skill) return match;
-
-    const name = isEnglish.value
-      ? skill.name?.en || ""
-      : skill.name?.vn || skill.name?.en || "";
-
-    if (type === "d")
-      return `<span class="skill-keyword text-[#c07b2a] font-bold cursor-pointer" data-keyword="${name}">${name}</span>`;
-    if (type === "p") return `<span class="skill-keyword text-[#c07b2a]">${name}</span>`;
-    return match;
-  };
-
-  // =========================================================
-  // 3) Helpers: Skins
-  // =========================================================
-  // Tag: <q>index</q>
-  const replaceSkin = (match, content) => {
-    const index = parseInt(content, 10);
-    if (isNaN(index) || !shikigami.value?.skins?.length) return match;
-
-    const skin =
-      shikigami.value.rarity !== "SP"
-        ? shikigami.value.skins[index + 1]
-        : shikigami.value.skins[index];
-
-    if (!skin) return match;
-
-    let name = "";
-    let extraClass = "";
-
-    if (isEnglish.value) {
-      if (skin.name?.en) name = skin.name.en;
-      else if (skin.name?.cn) {
-        name = skin.name.cn;
-        extraClass = "lang-zh";
-      }
-    } else {
-      name = skin.name?.vn || "";
-      if (!name && skin.name?.cn) {
-        name = skin.name.cn;
-        extraClass = "lang-zh";
-      }
-    }
-
-    return `<span class="${extraClass}">${name}</span>`;
-  };
-
-  // =========================================================
-  // 4) Helpers: Effects tooltip/highlight
-  // =========================================================
-  const resolveEffectNote = (content) => {
-    if (/^\d+$/.test(content)) return effectById.get(content);
-    return effectMap.get(content.toLowerCase());
-  };
-
-  const replaceEffect = (match, content, type, hasIng = false) => {
-    const note = resolveEffectNote(content);
-    if (!note) return match;
-
-    const noteDesc = isEnglish.value ? note.description?.en : note.description?.vn;
-    const color = note.color ? colorMap[note.color] || "#a51919" : "#a51919";
-
-    let keywordForDisplay;
-    let keywordForTooltip;
-
-    if (type === "b" || type === "h") {
-      let override;
-      const queue = effectKeywordOverrides.get(String(note.id));
-
-      if (queue && queue.length) {
-        override = queue.shift(); // 👈 lấy đúng thứ tự
-      }
-      keywordForDisplay =
-        override ?? (isEnglish.value ? note.name?.en : note.name?.vn || note.name?.en);
-      keywordForTooltip = isEnglish.value
-        ? note.name?.en
-        : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
-    } else {
-      keywordForDisplay = isEnglish.value
-        ? note.name?.en
-        : note.name?.vn?.replace("{count}", "").trim() || note.name?.en;
-      keywordForTooltip = keywordForDisplay;
-    }
-
-    let keyword = keywordForDisplay || "";
-
-    if (type === "f" || type === "l") {
-      if (keyword.startsWith("HP ")) keyword = "HP " + keyword.slice(3).toLowerCase();
-      else if (keyword.toUpperCase() === "HP") keyword = "HP";
-      else keyword = keyword.toLowerCase();
-    }
-    if (type === "g") {
-      keyword = keyword.toLowerCase();
-      keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
-    }
-    if (hasIng) keyword = addIngForm(keyword);
-
-    // Tooltip only for <b>
-    if (type === "b") {
-      return `<span
-        class="font-bold"
-        style="color:${color}"
-      >${keyword}</span>`;
-    }
-
-    // Highlight or plain spans
-    if (type === "i" || type === "l") return `<span>${keyword}</span>`;
-    return `<span style="color:${color}">${keyword}</span>`;
-  };
-
-  // =========================================================
-  // 5) Step A: Preprocess effect keyword overrides: <b|h>id</b|h><n>count</n>
-  // =========================================================
-  processed.value = processed.value.replace(
-    /<(b|a|h)>(\d+)<\/\1>(?:<n>([\s\S]*?)<\/n>)?/g,
-    (match, tag, id, nValue) => {
-      const note = effectById.get(String(id));
-      if (!note) return match;
-
-      const textEN = note.name?.en || "";
-      const textVN = (note.name?.vn || "").replace(/\{count\}/g, nValue ?? "").trim();
-
-      const value = isEnglish.value ? textEN : textVN;
-
-      if (!effectKeywordOverrides.has(String(id))) {
-        effectKeywordOverrides.set(String(id), []);
-      }
-      effectKeywordOverrides.get(String(id)).push(value);
-
-      return `<${tag}>${id}</${tag}>`;
-    }
+const shikigamiMap = computed(() => {
+  return new Map(
+    shikigamiList.value.map((s) => [
+      String(s.id),
+      s,
+    ])
   );
+});
 
-  // remove leftover <n>
-  processed.value = processed.value.replace(/<n>.*?<\/n>/g, "");
-
-  // =========================================================
-  // 6) Step B: Special tags (icons / entities / skills / skins)
-  // =========================================================
-  // <e>iconKey</e>
-  processed.value = processed.value.replace(
-    /<e>(.*?)<\/e>/g,
-    (_, keyword) =>
-      `<img src="/assets/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
+const onmyojiMap = computed(() => {
+  return new Map(
+    onmyojiList.value.map((o) => [
+      String(o.id),
+      o,
+    ])
   );
+});
 
-  // Entities:
-  // <k>id</k>  => Shikigami
-  // <r>id</r>  => Onmyoji
-  processed.value = processed.value
-    .replace(/<k>(.*?)<\/k>/g, (m, id) => replaceShikigami(m, id))
-    .replace(/<r>(.*?)<\/r>/g, (m, id) => replaceOnmyoji(m, id));
-
-  // Skills:
-  // <d>shikiId-skillIndex</d> clickable
-  // <p>shikiId-skillIndex</p> non-clickable
-  processed.value = processed.value.replace(/<(d|p)>(.*?)<\/\1>/g, (m, type, content) =>
-    replaceSkillRef(m, content, type)
+const replacePipeline = (
+  text,
+  transformers
+) => {
+  return transformers.reduce(
+    (acc, [regex, replacer]) =>
+      acc.replace(regex, replacer),
+    text
   );
+};
 
-  // Current shikigami skills:
-  // <c>1</c> clickable
-  // <m>1</m> normal highlight
-  // <o>1</o> plain
-  processed.value = processed.value.replace(/<(c|m|o)>(.*?)<\/\1>/g, (m, type, content) =>
-    replaceSkill(m, content, type)
+const getLocalizedName = (obj) => {
+  if (!obj) return "";
+
+  return isEnglish.value
+    ? obj.name?.en || obj.name?.vn || ""
+    : obj.name?.vn ||
+        obj.name?.en ||
+        "";
+};
+
+const createEntitySpan = (
+  name,
+  type
+) => {
+  return `
+    <span class="entity ${type}">
+      ${name}
+    </span>
+  `;
+};
+
+const getSkillName = (
+  shiki,
+  index
+) => {
+  if (!shiki?.skills?.length)
+    return "";
+
+  const skill =
+    shiki.skills[index - 1];
+
+  if (!skill) return "";
+
+  return isEnglish.value
+    ? skill.name?.en
+    : skill.name?.vn ||
+        skill.name?.en;
+};
+
+const createSkillSpan = (
+  name,
+  clickable = false,
+  bold = false
+) => {
+  return `
+    <span
+      class="
+        skill-keyword
+        text-[#c07b2a]
+        ${bold ? "font-bold" : ""}
+        ${
+          clickable
+            ? "cursor-pointer"
+            : ""
+        }
+      "
+      data-keyword="${name}"
+    >
+      ${name}
+    </span>
+  `;
+};
+
+const colorMap = {
+  red: "#a63f37",
+  blue: "#4994d4",
+  yellow: "#c07b2a",
+};
+
+const resolveEffect = (
+  content
+) => {
+  if (/^\d+$/.test(content)) {
+    return effectByIdMap.value.get(
+      String(content)
+    );
+  }
+
+  return effectKeywordMap.value.get(
+    content.toLowerCase()
   );
+};
 
-  // Skin:
-  // <q>index</q>
-  processed.value = processed.value.replace(/<q>(.*?)<\/q>/g, (m, content) =>
-    replaceSkin(m, content)
-  );
+const createEffectSpan = ({
+  effect,
+  text,
+  plain = false,
+  bold = false,
+}) => {
+  const color =
+    colorMap[effect.color] ||
+    "#a51919";
 
-  // =========================================================
-  // 7) Step C: Effects tags (tooltip/highlight)
-  // =========================================================
-  // <b>idOrName</b> tooltip
-  // <a|f|g|h|i|l>idOrName</...> highlight / plain
-  processed.value = processed.value.replace(
-    /<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g,
-    (match, type, content, offset, fullString) => {
-      const after = fullString.slice(offset + match.length);
-      const hasIng = after.startsWith("ing");
-      return replaceEffect(match, content, type, hasIng);
-    }
-  );
+  return `
+    <span
+      class="${bold ? "font-bold" : ""}"
+      style="${
+        plain
+          ? ""
+          : `color:${color}`
+      }"
+    >
+      ${text}
+    </span>
+  `;
+};
 
-  return processed.value;
+const processHighlightText = (text) => {
+  if (!text) return "";
+
+  let processed = text;
+
+  processed = replacePipeline(processed, [
+    // ICONS
+    [
+      /<e>(.*?)<\/e>/g,
+      (_, keyword) => `
+          <img
+            src="/assets/effects/${keyword}.webp"
+            alt="${keyword}"
+            class="inline-block w-6 h-6 align-text-bottom rounded-md"
+          />
+        `,
+    ],
+
+    // SHIKIGAMI
+    [
+      /<k>(.*?)<\/k>/g,
+      (_, id) => {
+        const shiki = shikigamiMap.value.get(String(id));
+
+        if (!shiki) return _;
+
+        return createEntitySpan(getLocalizedName(shiki), "shikigami");
+      },
+    ],
+
+    // ONMYOJI
+    [
+      /<r>(.*?)<\/r>/g,
+      (_, id) => {
+        const onmyoji = onmyojiMap.value.get(String(id));
+
+        if (!onmyoji) return _;
+
+        return createEntitySpan(getLocalizedName(onmyoji), "onmyoji");
+      },
+    ],
+
+    // CURRENT SKILL
+    [
+      /<(c|m|o)>(.*?)<\/\1>/g,
+      (_, type, content) => {
+        const index = parseInt(content);
+
+        const name = getSkillName(shikigami.value, index);
+
+        if (!name) return _;
+
+        return createSkillSpan(name, type === "c", type === "c");
+      },
+    ],
+
+    // OTHER SHIKI SKILL
+    [
+      /<(d|p)>(.*?)<\/\1>/g,
+      (_, type, content) => {
+        const [shikiId, skillIndex] = content.split("-");
+
+        const shiki = shikigamiMap.value.get(String(shikiId));
+
+        if (!shiki) return _;
+
+        const name = getSkillName(shiki, parseInt(skillIndex));
+
+        if (!name) return _;
+
+        return createSkillSpan(name, type === "d", type === "d");
+      },
+    ],
+
+    // EFFECTS
+    [
+      /<(f|g|b|a|h|i|l)>(.*?)<\/\1>/g,
+      (_, type, content) => {
+        const effect = resolveEffect(content);
+
+        if (!effect) return _;
+
+        let keyword = isEnglish.value
+          ? effect.name?.en
+          : effect.name?.vn || effect.name?.en;
+
+        if (!keyword) return _;
+
+        if (type === "f" || type === "l") {
+          keyword = keyword.toLowerCase();
+        }
+
+        if (type === "g") {
+          keyword = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+        }
+
+        return createEffectSpan({
+          effect,
+          text: keyword,
+          plain: type === "i" || type === "l",
+          bold: type === "b" || type === "h",
+        });
+      },
+    ],
+  ]);
+
+  return processed;
 };
 
 const getAllSkillEffectText = (skill) => {
@@ -1185,52 +1104,24 @@ function unsubscribeRealtime() {
 
 /* ---------------------- TAB VISIBILITY ---------------------- */
 
-async function handleVisibilityChange() {
-  if (document.visibilityState === "visible") {
-    console.log("Tab active → reconnect realtime");
+let reconnectTimeout = null;
 
-    // refresh data
-    await fetchAllShikigami();
-    await fetchAllEffects();
-    // reconnect realtime
+async function handleVisibilityChange() {
+  if (document.visibilityState !== "visible") {
+    return;
+  }
+
+  console.log("Tab active → reconnect realtime");
+
+  await Promise.all([fetchAllShikigami(), fetchAllEffects()]);
+
+  clearTimeout(reconnectTimeout);
+
+  reconnectTimeout = setTimeout(() => {
     unsubscribeRealtime();
     subscribeRealtime();
-  }
+  }, 300);
 }
-
-/* ---------------------- LIFECYCLE ---------------------- */
-
-onMounted(() => {
-  subscribeRealtime();
-
-  document.addEventListener("visibilitychange", handleVisibilityChange);
-
-  const saved = localStorage.getItem("lang");
-  if (saved) {
-    isEnglish.value = saved === "en";
-  }
-
-  const hash = window.location.hash.replace("#", "");
-  if (hash) activeTab.value = hash;
-
-  if (hash.startsWith("Skill")) {
-    activeTab.value = "Main";
-
-    const num = parseInt(hash.split("Skill")[1]);
-    activeSkillIndex.value = isNaN(num) ? 0 : num - 1;
-  }
-
-  if (hash === "Evo" || hash === "Link") {
-    activeTab.value = "Main";
-    activeSkillIndex.value = 3;
-  }
-});
-
-onUnmounted(() => {
-  unsubscribeRealtime();
-
-  document.removeEventListener("visibilitychange", handleVisibilityChange);
-});
 
 /* ---------------------- EDIT MODAL ---------------------- */
 const editSkill = (skill, index) => {
@@ -1296,7 +1187,32 @@ function updateTags() {
 const hasLevel40 = computed(() => shikigami.value?.id !== 193);
 
 onMounted(async () => {
-  document.title = `${formattedName}`;
+  document.title = formattedName;
+
+  const saved = localStorage.getItem("lang");
+
+  if (saved) {
+    isEnglish.value = saved === "en";
+  }
+
+  const hash = window.location.hash.replace("#", "");
+
+  if (hash) {
+    activeTab.value = hash;
+  }
+
+  if (hash.startsWith("Skill")) {
+    activeTab.value = "Main";
+
+    const num = parseInt(hash.split("Skill")[1]);
+
+    activeSkillIndex.value = isNaN(num) ? 0 : num - 1;
+  }
+
+  if (hash === "Evo" || hash === "Link") {
+    activeTab.value = "Main";
+    activeSkillIndex.value = 3;
+  }
 
   await Promise.all([
     fetchAllEffects(),
@@ -1304,35 +1220,61 @@ onMounted(async () => {
     fetchShikigami(),
     fetchAllOnmyoji(),
     fetchConditions(),
-
     loadTags(),
   ]);
 
   subscribeRealtime();
+
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+});
+
+onUnmounted(() => {
+  unsubscribeRealtime();
+
+  clearTimeout(reconnectTimeout);
+
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
 });
 
 watch(
   () => route.hash,
   (hash) => {
-    activeTab.value = hash.replace("#", "") || "Main";
+    const cleanHash = hash.replace("#", "");
+
+    if (!cleanHash) {
+      activeTab.value = "Main";
+      return;
+    }
+
+    if (cleanHash.startsWith("Skill")) {
+      activeTab.value = "Main";
+
+      const num = parseInt(cleanHash.replace("Skill", ""));
+
+      activeSkillIndex.value = isNaN(num) ? 0 : num - 1;
+
+      return;
+    }
+
+    if (cleanHash === "Evo" || cleanHash === "Link") {
+      activeTab.value = "Main";
+      activeSkillIndex.value = 3;
+      return;
+    }
+
+    activeTab.value = cleanHash;
   }
 );
-
-watch(activeSkillIndex, async () => {
-  await nextTick();
-});
 
 watch(isEnglish, (val) => {
   localStorage.setItem("lang", val ? "en" : "vn");
 });
 
-watch(isEnglish, async () => {
-  await nextTick();
-});
-
 watch(
-  () => [shikigami.value, activeSkillIndex.value, isEnglish.value],
-  () => addCKeywordListeners()
+  () => activeSkillIndex.value,
+  () => {
+    addCKeywordListeners();
+  }
 );
 
 watch(activeTab, async (newTab) => {
@@ -1601,9 +1543,13 @@ const addCKeywordListeners = () => {
             <tbody>
               <!-- HEADER -->
               <tr class="stats-header">
-                <th></th>
+                <!-- 1 -->
+                <th>&nbsp;</th>
+
+                <!-- 2 -->
                 <th></th>
 
+                <!-- 3 + 4 -->
                 <th colspan="2">
                   <div class="stats-title">
                     {{
@@ -1620,6 +1566,7 @@ const addCKeywordListeners = () => {
                   </div>
                 </th>
 
+                <!-- 5 + 6 -->
                 <th colspan="2" v-if="hasLevel40">
                   <div class="stats-title">
                     {{
@@ -1636,27 +1583,31 @@ const addCKeywordListeners = () => {
                   </div>
                 </th>
 
-                <th v-if="hasLevel40"></th>
-                <th></th>
+                <!-- 7 + 8 -->
+                <th colspan="2"></th>
               </tr>
 
               <!-- ICON -->
               <tr class="stats-header">
-                <th></th>
+                <!-- 1 -->
                 <th></th>
 
+                <!-- 2 -->
+                <th></th>
+
+                <!-- 3 + 4 -->
                 <th colspan="2" class="icon-cell">
                   <figure class="stats-figure">
                     <img
                       :src="`/assets/shikigami/icons/${route.params.name}_Icon.webp`"
                       :alt="shikigami.name.jp[1]"
                       class="stats-icon"
-                      width="90"
                       @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
                     />
                   </figure>
                 </th>
 
+                <!-- 5 + 6 -->
                 <th colspan="2" v-if="hasLevel40" class="icon-cell">
                   <figure class="stats-figure">
                     <img
@@ -1669,14 +1620,13 @@ const addCKeywordListeners = () => {
                       }.webp`"
                       :alt="shikigami.name.jp[1]"
                       class="stats-icon"
-                      width="90"
                       @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
                     />
                   </figure>
                 </th>
 
-                <th v-if="hasLevel40"></th>
-                <th></th>
+                <!-- 7 + 8-->
+                <th colspan="2"></th>
               </tr>
 
               <!-- SPACING -->
@@ -1689,44 +1639,47 @@ const addCKeywordListeners = () => {
                 <th colspan="8"></th>
               </tr>
 
-              <!-- ATK -->
+              <!-- === ATK === -->
               <tr class="stats-row">
-                <th>&nbsp;</th>
+                <!-- 1 -->
+                <td></td>
 
-                <th class="label-cell">
+                <!-- 2 -->
+                <td class="label-cell">
                   <img src="/assets/stats/ATK.webp" alt="ATK" />
                   ATK
-                </th>
+                </td>
 
+                <!-- 3 -->
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('ATK', shikigami.stats.ATK[0])"
-                      :alt="getRank('ATK', shikigami.stats.ATK[0])"
+                      :src="getStatRankImage('ATK', shikigami.stats.ATK[0])"
+                      :alt="getStatRank('ATK', shikigami.stats.ATK[0])"
                     />
                   </div>
                 </td>
 
+                <!-- 4 -->
                 <td>
-                  <div class="value-cell">
-                    {{ shikigami.stats.ATK[0] }}
-                  </div>
+                  {{ shikigami.stats.ATK[0] }}
                 </td>
 
+                <!-- 5 -->
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('ATK_EVO', shikigami.stats.ATK[1])"
-                      :alt="getRank('ATK_EVO', shikigami.stats.ATK[1])"
+                      :src="getStatRankImage('ATK_EVO', shikigami.stats.ATK[1])"
+                      :alt="getStatRank('ATK_EVO', shikigami.stats.ATK[1])"
                     />
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 6 -->
                 <td v-if="hasLevel40">
-                  <div class="value-cell">
+                  <div class="flex">
                     {{ shikigami.stats.ATK[1] }}
-
                     <span
                       v-if="shikigami.evolution && shikigami.evolution.no === 1"
                       class="increase-cell"
@@ -1741,6 +1694,7 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 7 -->
                 <td v-if="hasLevel40">
                   <div class="bonus-stat">
                     +{{
@@ -1756,45 +1710,50 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 8 -->
                 <td class="right-border"></td>
               </tr>
 
-              <!-- HP -->
+              <!-- === HP === -->
               <tr class="stats-row">
-                <th></th>
+                <!-- 1 -->
+                <td></td>
 
-                <th class="label-cell">
+                <!-- 2 -->
+                <td class="label-cell">
                   <img src="/assets/stats/HP.webp" alt="HP" />
                   HP
-                </th>
+                </td>
 
+                <!-- 3 -->
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('HP', shikigami.stats.HP[0])"
-                      :alt="getRank('HP', shikigami.stats.HP[0])"
+                      :src="getStatRankImage('HP', shikigami.stats.HP[0])"
+                      :alt="getStatRank('HP', shikigami.stats.HP[0])"
                     />
                   </div>
                 </td>
 
+                <!-- 4 -->
                 <td>
-                  <div class="value-cell">
-                    {{ shikigami.stats.HP[0] }}
-                  </div>
+                  {{ shikigami.stats.HP[0] }}
                 </td>
 
+                <!-- 5 -->
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('HP_EVO', shikigami.stats.HP[1])"
-                      :alt="getRank('HP_EVO', shikigami.stats.HP[1])"
+                      :src="getStatRankImage('HP_EVO', shikigami.stats.HP[1])"
+                      :alt="getStatRank('HP_EVO', shikigami.stats.HP[1])"
                     />
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 6 -->
                 <td v-if="hasLevel40">
-                  <div class="value-cell">
+                  <div class="flex">
                     {{ shikigami.stats.HP[1] }}
 
                     <span
@@ -1809,8 +1768,9 @@ const addCKeywordListeners = () => {
                     </span>
                   </div>
                 </td>
-                <td v-else class="empty-cell"></td>
+                <td v-else></td>
 
+                <!-- 7  -->
                 <td v-if="hasLevel40">
                   <div class="bonus-stat">
                     +{{
@@ -1826,50 +1786,54 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 8 -->
                 <td class="right-border"></td>
               </tr>
 
-              <!-- DEF -->
+              <!-- === DEF === -->
               <tr class="stats-row">
-                <th></th>
+                <!-- 1 -->
+                <td></td>
 
-                <th class="label-cell">
+                <!-- 2 -->
+                <td class="label-cell">
                   <img src="/assets/stats/DEF.webp" alt="DEF" />
                   DEF
-                </th>
+                </td>
 
+                <!-- 3 -->
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('DEF', shikigami.stats.DEF[0])"
-                      :alt="getRank('DEF', shikigami.stats.DEF[0])"
+                      :src="getStatRankImage('DEF', shikigami.stats.DEF[0])"
+                      :alt="getStatRank('DEF', shikigami.stats.DEF[0])"
                     />
                   </div>
                 </td>
 
+                <!-- 4 -->
                 <td>
-                  <div class="value-cell">
-                    {{ shikigami.stats.DEF[0] }}
-                  </div>
+                  {{ shikigami.stats.DEF[0] }}
                 </td>
 
+                <!-- 5 -->
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('DEF_EVO', shikigami.stats.DEF[1])"
-                      :alt="getRank('DEF_EVO', shikigami.stats.DEF[1])"
+                      :src="getStatRankImage('DEF_EVO', shikigami.stats.DEF[1])"
+                      :alt="getStatRank('DEF_EVO', shikigami.stats.DEF[1])"
                     />
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 6 -->
                 <td v-if="hasLevel40">
-                  <div class="value-cell">
-                    {{ shikigami.stats.DEF[1] }}
-                  </div>
+                  {{ shikigami.stats.DEF[1] }}
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 7 -->
                 <td v-if="hasLevel40">
                   <div class="bonus-stat">
                     +{{
@@ -1885,45 +1849,49 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 8 -->
                 <td class="right-border"></td>
               </tr>
 
-              <!-- SPD -->
+              <!-- === SPD === -->
               <tr class="stats-row">
-                <th></th>
+                <!-- 1 -->
+                <td></td>
 
-                <th class="label-cell">
+                <!-- 2 -->
+                <td class="label-cell">
                   <img src="/assets/stats/SPD.webp" alt="SPD" />
                   SPD
-                </th>
+                </td>
 
+                <!-- 3 -->
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('SPD', shikigami.stats.SPD[0])"
-                      :alt="getRank('SPD', shikigami.stats.SPD[0])"
+                      :src="getStatRankImage('SPD', shikigami.stats.SPD[0])"
+                      :alt="getStatRank('SPD', shikigami.stats.SPD[0])"
                     />
                   </div>
                 </td>
 
+                <!-- 4 -->
                 <td>
-                  <div class="value-cell">
-                    {{ shikigami.stats.SPD[0] }}
-                  </div>
+                  {{ shikigami.stats.SPD[0] }}
                 </td>
 
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('SPD_EVO', shikigami.stats.SPD[1])"
-                      :alt="getRank('SPD_EVO', shikigami.stats.SPD[1])"
+                      :src="getStatRankImage('SPD_EVO', shikigami.stats.SPD[1])"
+                      :alt="getStatRank('SPD_EVO', shikigami.stats.SPD[1])"
                     />
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 5 -->
                 <td v-if="hasLevel40">
-                  <div class="value-cell">
+                  <div class="flex">
                     {{ shikigami.stats.SPD[1] }}
 
                     <span
@@ -1936,6 +1904,7 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 6 -->
                 <td v-if="hasLevel40">
                   <div class="bonus-stat">
                     +{{
@@ -1947,46 +1916,50 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 7 -->
                 <td class="right-border"></td>
               </tr>
 
-              <!-- CRIT -->
+              <!-- === CRIT === -->
               <tr class="stats-row">
-                <th></th>
+                <!-- 1 -->
+                <td></td>
 
-                <th class="label-cell">
+                <!-- 2 -->
+                <td class="label-cell">
                   <img src="/assets/stats/CRIT.webp" alt="CRIT" />
                   Crit
-                </th>
+                </td>
 
+                <!-- 3 -->
                 <td>
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('CRIT', shikigami.stats.Crit[0])"
-                      :alt="getRank('CRIT', shikigami.stats.Crit[0])"
+                      :src="getStatRankImage('CRIT', shikigami.stats.Crit[0])"
+                      :alt="getStatRank('CRIT', shikigami.stats.Crit[0])"
                     />
                   </div>
                 </td>
 
-                <td>
-                  <div class="value-cell">{{ shikigami.stats.Crit[0] }}%</div>
-                </td>
+                <!-- 4 -->
+                <td>{{ shikigami.stats.Crit[0] }}%</td>
 
+                <!-- 5 -->
                 <td v-if="hasLevel40">
                   <div class="rank-cell">
                     <img
-                      :src="getStatImage('CRIT', shikigami.stats.Crit[1])"
-                      :alt="getRank('CRIT', shikigami.stats.Crit[1])"
+                      :src="getStatRankImage('CRIT', shikigami.stats.Crit[1])"
+                      :alt="getStatRank('CRIT', shikigami.stats.Crit[1])"
                     />
                   </div>
                 </td>
                 <td v-else class="empty-cell"></td>
 
-                <td v-if="hasLevel40">
-                  <div class="value-cell">{{ shikigami.stats.Crit[1] }}%</div>
-                </td>
+                <!-- 6 -->
+                <td v-if="hasLevel40">{{ shikigami.stats.Crit[1] }}%</td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 7 -->
                 <td v-if="hasLevel40">
                   <div class="bonus-stat">
                     +{{
@@ -1998,36 +1971,39 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 8 -->
                 <td class="right-border"></td>
               </tr>
 
-              <!-- CDMG -->
+              <!-- === CDMG === -->
               <tr class="stats-row">
-                <th></th>
-
-                <th class="label-cell">
-                  <img src="/assets/stats/CDMG.webp" alt="CDMG" />
-                  Crit DMG
-                </th>
-
+                <!-- 1 -->
                 <td></td>
 
+                <!-- 2 -->
+                <td class="label-cell">
+                  <img src="/assets/stats/CDMG.webp" alt="CDMG" />
+                  Crit DMG
+                </td>
+
+                <!-- 3 -->
+                <td></td>
+
+                <!-- 4 -->
                 <td>
-                  <div class="value-cell">
-                    {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[0] : "150" }}%
-                  </div>
+                  {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[0] : "150" }}%
                 </td>
 
-                <td v-if="hasLevel40"></td>
-                <td v-else class="empty-cell"></td>
+                <!-- 5 -->
+                <td></td>
 
+                <!-- 6 -->
                 <td v-if="hasLevel40">
-                  <div class="value-cell">
-                    {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] : "150" }}%
-                  </div>
+                  {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] : "150" }}%
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 7 -->
                 <td v-if="hasLevel40">
                   <div class="bonus-stat">
                     +{{
@@ -2039,38 +2015,34 @@ const addCKeywordListeners = () => {
                 </td>
                 <td v-else class="empty-cell"></td>
 
+                <!-- 8 -->
                 <td class="right-border"></td>
               </tr>
 
-              <!-- HIT -->
+              <!-- === HIT === -->
               <tr class="stats-row">
-                <th></th>
+                <td></td>
 
-                <th class="label-cell">
+                <td class="label-cell">
                   <img src="/assets/stats/HIT.webp" alt="HIT" />
                   Effects HIT
-                </th>
+                </td>
 
                 <td></td>
 
                 <td>
-                  <div class="value-cell">
-                    {{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[0] : "0" }}%
-                  </div>
+                  {{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[0] : "0" }}%
                 </td>
 
-                <td v-if="hasLevel40"></td>
-                <td v-else class="empty-cell"></td>
+                <td></td>
 
                 <td v-if="hasLevel40">
-                  <div class="value-cell">
-                    {{
-                      (shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : 0) +
-                      (shikigami.evolution && shikigami.evolution.no === 9
-                        ? shikigami.evolution.count
-                        : 0)
-                    }}%
-                  </div>
+                  {{
+                    (shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : 0) +
+                    (shikigami.evolution && shikigami.evolution.no === 9
+                      ? shikigami.evolution.count
+                      : 0)
+                  }}%
                 </td>
                 <td v-else class="empty-cell"></td>
 
@@ -2091,35 +2063,30 @@ const addCKeywordListeners = () => {
                 <td class="right-border"></td>
               </tr>
 
-              <!-- RES -->
+              <!-- === RES === -->
               <tr class="stats-row">
-                <th></th>
+                <td></td>
 
-                <th class="label-cell">
+                <td class="label-cell">
                   <img src="/assets/stats/RES.webp" alt="RES" />
                   Effects RES
-                </th>
+                </td>
 
                 <td></td>
 
-                <td class="value-cell">
-                  <div class="flex justify-start">
-                    {{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[0] : "0" }}%
-                  </div>
+                <td>
+                  {{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[0] : "0" }}%
                 </td>
 
-                <td v-if="hasLevel40"></td>
-                <td v-else class="empty-cell"></td>
+                <td></td>
 
                 <td v-if="hasLevel40">
-                  <div class="value-cell">
-                    {{
-                      (shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : 0) +
-                      (shikigami.evolution && shikigami.evolution.no === 10
-                        ? shikigami.evolution.count
-                        : 0)
-                    }}%
-                  </div>
+                  {{
+                    (shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : 0) +
+                    (shikigami.evolution && shikigami.evolution.no === 10
+                      ? shikigami.evolution.count
+                      : 0)
+                  }}%
                 </td>
                 <td v-else class="empty-cell"></td>
 
@@ -2291,7 +2258,7 @@ const addCKeywordListeners = () => {
               <p
                 class="skill-description"
                 v-html="
-                  processTextWithTooltips(
+                  processHighlightText(
                     isEnglish
                       ? shikigami.skills[activeSkillIndex].description.en
                       : shikigami.skills[activeSkillIndex].description.vn
@@ -2314,10 +2281,7 @@ const addCKeywordListeners = () => {
                   :key="effect.id"
                   class="effect-card"
                 >
-                  <div
-                    class="effect-card-title"
-                    :class="'title-color-' + effect.color"
-                  >
+                  <div class="effect-card-title" :class="'title-color-' + effect.color">
                     {{ isEnglish ? effect.name?.en : effect.name?.vn }}
 
                     <span class="lang-zh"> ({{ effect.name?.cn }}) </span>
@@ -2346,7 +2310,7 @@ const addCKeywordListeners = () => {
 
                   <div
                     class="effect-card-desc"
-                    v-html="processTextWithTooltips(getParsedEffect(effect).description)"
+                    v-html="processHighlightText(getParsedEffect(effect).description)"
                   ></div>
                 </div>
               </div>
@@ -2490,7 +2454,7 @@ const addCKeywordListeners = () => {
                     <td class="level-cell">{{ lvl.level }}</td>
                     <td
                       class="effect-cell"
-                      v-html="processTextWithTooltips(lvl.effect)"
+                      v-html="processHighlightText(lvl.effect)"
                     ></td>
                   </tr>
                 </tbody>
@@ -2499,7 +2463,7 @@ const addCKeywordListeners = () => {
                 <p
                   class="no-level"
                   v-html="
-                    processTextWithTooltips(
+                    processHighlightText(
                       isEnglish
                         ? shikigami.skills[activeSkillIndex].levels.en
                         : shikigami.skills[activeSkillIndex].levels.vn
@@ -2581,7 +2545,7 @@ const addCKeywordListeners = () => {
               <p
                 class="skill-description"
                 v-html="
-                  processTextWithTooltips(
+                  processHighlightText(
                     isEnglish ? skill.description.en : skill.description.vn
                   )
                 "
@@ -2635,7 +2599,7 @@ const addCKeywordListeners = () => {
                     <td class="level-cell">{{ lvl.level }}</td>
                     <td
                       class="effect-cell"
-                      v-html="processTextWithTooltips(lvl.effect)"
+                      v-html="processHighlightText(lvl.effect)"
                     ></td>
                   </tr>
                 </tbody>
@@ -2644,7 +2608,7 @@ const addCKeywordListeners = () => {
                 <p
                   class="no-level"
                   v-html="
-                    processTextWithTooltips(isEnglish ? skill.levels.en : skill.levels.vn)
+                    processHighlightText(isEnglish ? skill.levels.en : skill.levels.vn)
                   "
                 ></p>
               </div>
@@ -2737,7 +2701,7 @@ const addCKeywordListeners = () => {
                 <p
                   class="skill-description"
                   v-html="
-                    processTextWithTooltips(
+                    processHighlightText(
                       isEnglish
                         ? shikigami.skills.find((s) => s.type === 'Linked').description.en
                         : shikigami.skills.find((s) => s.type === 'Linked').description.vn
@@ -2749,7 +2713,7 @@ const addCKeywordListeners = () => {
                   <p
                     class="no-level"
                     v-html="
-                      processTextWithTooltips(
+                      processHighlightText(
                         isEnglish
                           ? shikigami.skills.find((s) => s.type === 'Linked').notes.en
                           : shikigami.skills.find((s) => s.type === 'Linked').notes.vn
@@ -2786,7 +2750,7 @@ const addCKeywordListeners = () => {
                       <td class="level-cell">{{ lvl.level }}</td>
                       <td
                         class="effect-cell"
-                        v-html="processTextWithTooltips(lvl.effect)"
+                        v-html="processHighlightText(lvl.effect)"
                       ></td>
                     </tr>
                   </tbody>
@@ -2795,7 +2759,7 @@ const addCKeywordListeners = () => {
                   <p
                     class="no-level"
                     v-html="
-                      processTextWithTooltips(
+                      processHighlightText(
                         isEnglish
                           ? shikigami.skills.find((s) => s.type === 'Linked').levels.en
                           : shikigami.skills.find((s) => s.type === 'Linked').levels.vn
@@ -3345,7 +3309,7 @@ const addCKeywordListeners = () => {
 
       <div
         class="tooltip-description whitespace-pre-line"
-        v-html="processTextWithTooltips(tooltipData.description)"
+        v-html="processHighlightText(tooltipData.description)"
       ></div>
 
       <!-- Nếu có subNotes match -->
@@ -3369,9 +3333,7 @@ const addCKeywordListeners = () => {
             <div
               class="subnote-description"
               v-html="
-                processTextWithTooltips(
-                  isEnglish ? sub.description.en : sub.description.vn
-                )
+                processHighlightText(isEnglish ? sub.description.en : sub.description.vn)
               "
             ></div>
 
@@ -3396,7 +3358,7 @@ const addCKeywordListeners = () => {
                 <div
                   class="subnote-description"
                   v-html="
-                    processTextWithTooltips(
+                    processHighlightText(
                       isEnglish ? subsub.description.en : subsub.description.vn
                     )
                   "
@@ -3621,9 +3583,12 @@ const addCKeywordListeners = () => {
 .stats-table {
   width: 100%;
 
-  padding: 0 20px;
-
   border-bottom: 1px solid #a51919;
+}
+
+.stats-table td:nth-child(4),
+.stats-table td:nth-child(6) {
+  width: 100px;
 }
 
 .stats-header {
@@ -3650,7 +3615,8 @@ const addCKeywordListeners = () => {
 
 .stats-icon {
   object-fit: contain;
-
+  width: 90px;
+  height: 90px;
   border: 1px solid #a51919;
 
   padding: 4px;
@@ -3690,7 +3656,7 @@ const addCKeywordListeners = () => {
 
 .rank-cell {
   display: flex;
-  justify-self: end;
+  justify-content: flex-end;
   padding-right: 10px;
 }
 
@@ -3700,11 +3666,8 @@ const addCKeywordListeners = () => {
   object-fit: contain;
 }
 
-.value-cell {
-  width: 100px;
-}
-
 .increase-cell {
+  padding-left: 2px;
   text-align: left;
   vertical-align: middle;
 

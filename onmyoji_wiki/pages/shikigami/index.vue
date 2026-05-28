@@ -1,6 +1,6 @@
 <script setup>
-import { useSupabase } from "@/utils/useSupabase.ts";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { useSupabase } from "~/composables/useSupabase";
 
 const supabase = useSupabase();
 

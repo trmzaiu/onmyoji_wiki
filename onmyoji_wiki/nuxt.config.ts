@@ -29,8 +29,10 @@ export default defineNuxtConfig({
     },
   },
   css: [
-    '/public/assets/css/fonts.css'
-  ],
+    "@/assets/css/main.css",
+    "@/assets/css/styles.css",
+    "@/assets/css/gallery.css",
+    ],
   nitro: {
     routeRules: {
       '/_nuxt/**': {

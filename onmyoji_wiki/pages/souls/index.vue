@@ -1,6 +1,6 @@
 <script setup>
-import { useSupabase } from "@/utils/useSupabase.ts";
 import { nextTick, onMounted, ref } from "vue";
+import { useSupabase } from "~/composables/useSupabase";
 
 const supabase = useSupabase();
 const soulList = ref([]);

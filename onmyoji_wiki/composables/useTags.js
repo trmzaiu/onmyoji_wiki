@@ -1,6 +1,6 @@
 // utils/useTags.js
 import { ref } from "vue";
-import { useSupabase } from "@/utils/useSupabase.ts";
+import { useSupabase } from "~/composables/useSupabase";
 
 export function useTags() {
     const supabase = useSupabase(); // ✅ gọi trong composable

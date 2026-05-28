@@ -1,4 +1,4 @@
-import { useSupabase } from './useSupabase'
+import { useSupabase } from '../composables/useSupabase'
 
 export async function checkConnection(): Promise<boolean> {
   const supabase = useSupabase()
