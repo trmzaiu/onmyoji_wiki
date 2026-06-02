@@ -1,6 +1,4 @@
-type StatRankRange = [string, number, number];
-
-export const STAT_RANKS: Record<string, StatRankRange[]> = {
+export const STAT_RANKS = {
     ATK: [
         ["SS", 171, 197],
         ["S", 140, 166],

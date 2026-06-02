@@ -1,9 +1,8 @@
-// utils/useTags.js
 import { ref } from "vue";
 import { useSupabase } from "~/composables/useSupabase";
 
 export function useTags() {
-    const supabase = useSupabase(); // ✅ gọi trong composable
+    const supabase = useSupabase();
     const tags = ref([]);
     const tagMap = ref({});
 

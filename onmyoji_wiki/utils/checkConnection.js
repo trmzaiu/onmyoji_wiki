@@ -1,6 +1,6 @@
 import { useSupabase } from '../composables/useSupabase'
 
-export async function checkConnection(): Promise<boolean> {
+export async function checkConnection() {
   const supabase = useSupabase()
 
   const { error } = await supabase.from('heroes').select('id').limit(1)

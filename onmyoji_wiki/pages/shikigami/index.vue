@@ -256,23 +256,25 @@ onUnmounted(() => {
           <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
             <div class="shiki-image-wrapper">
               <img
-                :src="`@/assets/shikigami/shards/${shiki.name.jp[1].replace(
+                :src="`/assets/images/shikigami/shards/${shiki.name.jp[1].replace(
                   / /g,
                   '_'
                 )}_Shard.webp`"
                 :alt="shiki.name.jp[1]"
                 class="w-24 h-24 object-contain"
-                @error="(event) => (event.target.src = '@/assets/Unknown_Shard.webp')"
+                @error="
+                  (event) => (event.target.src = '/assets/images/Unknown_Shard.webp')
+                "
               />
 
               <img
-                :src="`@/assets/rarity/${shiki.rarity}.webp`"
+                :src="`/assets/images/rarity/${shiki.rarity}.webp`"
                 :alt="shiki.rarity"
                 class="rarity-badge"
               />
 
               <img
-                :src="`@/assets/rarity/${shiki.rarity}.webp`"
+                :src="`/assets/images/rarity/${shiki.rarity}.webp`"
                 :alt="shiki.rarity"
                 class="rarity-badge-shadow"
               />
@@ -306,23 +308,25 @@ onUnmounted(() => {
           <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
             <div class="shiki-image-wrapper">
               <img
-                :src="`@/assets/shikigami/shards/${shiki.name.jp[1].replace(
+                :src="`/assets/images/shikigami/shards/${shiki.name.jp[1].replace(
                   / /g,
                   '_'
                 )}_Shard.webp`"
                 :alt="shiki.name.jp[1]"
                 class="w-24 h-24 object-contain"
-                @error="(event) => (event.target.src = '@/assets/Unknown_Shard.webp')"
+                @error="
+                  (event) => (event.target.src = '/assets/images/Unknown_Shard.webp')
+                "
               />
 
               <img
-                :src="`@/assets/rarity/${shiki.rarity}.webp`"
+                :src="`/assets/images/rarity/${shiki.rarity}.webp`"
                 :alt="shiki.rarity"
                 class="rarity-badge"
               />
 
               <img
-                :src="`@/assets/rarity/${shiki.rarity}.webp`"
+                :src="`/assets/images/rarity/${shiki.rarity}.webp`"
                 :alt="shiki.rarity"
                 class="rarity-badge-shadow"
               />

@@ -1,0 +1,20 @@
+<style scoped>
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.cell span {
+  color: var(--text-secondary);
+  font-weight: 800;
+  cursor: pointer;
+  font-family: "Bona Nova SC", serif;
+}
+
+.cell:hover span {
+  color: var(--text-primary);
+}
+</style>

@@ -1,0 +1,193 @@
+/* Name */
+.character-header {
+	display: flex;
+	gap: 24px;
+	align-items: flex-start;
+}
+
+/* Image */
+.character-image-wrapper {
+	width: 66%;
+	margin: 0 auto;
+}
+
+.character-image-box {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	position: relative;
+}
+
+.character-image {
+	position: relative;
+	z-index: 1;
+
+	max-width: 100%;
+	max-height: 100%;
+
+	object-fit: contain;
+
+	transition:
+		transform 0.35s ease,
+		filter 0.35s ease;
+}
+
+.character-image:hover {
+	transform: scale(1.08);
+
+	filter:
+		drop-shadow(0 10px 24px rgba(0, 0, 0, 0.25)) drop-shadow(0 0 18px rgba(165, 25, 25, 0.25));
+}
+
+/* Info Table */
+.character-info {
+	display: flex;
+	width: 34%;
+}
+
+.character-info table {
+	width: 100%;
+
+	background: rgba(255, 255, 255, 0.02);
+
+	border: 1px solid var(--text-primary);
+
+}
+
+.character-info td,
+.character-info th {
+	border-bottom: 1px solid var(--text-primary);
+	padding: 0.5rem 0.6rem;
+	font-size: 15px;
+}
+
+.character-info tr:last-child td {
+	border-bottom: none;
+}
+
+.rarity-icon {
+	object-fit: contain;
+	position: absolute;
+	top: -30px;
+	left: -40px;
+}
+
+.rarity-icon.ur {
+	width: 3.5rem;
+	height: 3.5rem;
+}
+
+.rarity-icon.normal {
+	width: 4rem;
+	height: 4rem;
+}
+
+.character-name-header {
+	position: relative;
+	background-color: var(--text-primary);
+}
+
+.character-name {
+	font-family: "Bona Nova SC", serif;
+	font-size: 20px;
+}
+
+.character-title {
+	font-weight: bold;
+	text-align: center;
+	background-color: var(--text-primary);
+	padding: 0.3rem;
+}
+
+.voice-actor {
+	white-space: pre-line;
+}
+
+.material-cell {
+	border: 1px solid var(--text-primary);
+}
+
+.material-wrapper {
+	width: 3rem;
+	height: 3rem;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	position: relative;
+}
+
+.material-image {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.material-quantity {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+
+	text-shadow:
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
+}
+
+.version-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
+
+	justify-items: center;
+}
+
+.version-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.version-name {
+	font-family: "Bona Nova SC", serif;
+}
+
+.version-item:hover .version-name {
+	color: var(--text-primary);
+}
+
+.version-image {
+	width: 4rem;
+	height: 4rem;
+	object-fit: contain;
+	margin-bottom: 0.25rem;
+}
+
+/* Profile */
+.profile-section {
+	white-space: pre-line;
+	text-align: justify;
+}
+
+.other-shiki {
+	color: var(--color-red);
+}
+
+.other-shiki-highlight {
+	color: var(--color-red);
+	cursor: pointer;
+}
+
+.other-shiki-highlight:hover {
+	color: var(--color-red-dark);
+}
+
+.other-shiki-highlight,
+.other-shiki {
+	position: relative;
+	top: 0.5px;
+}

@@ -116,27 +116,23 @@
       </div>
     </div>
 
-    <div>
-      <!-- Lên đầu -->
-      <button
-        v-show="showBackToTop"
-        @click="scrollToTop"
-        class="back-to-top"
-        title="Back to Top"
-      >
-        ↑
-      </button>
+    <button
+      v-show="showBackToTop"
+      @click="scrollToTop"
+      class="back-to-top"
+      title="Back to Top"
+    >
+      ⮝
+    </button>
 
-      <!-- Xuống cuối -->
-      <button
-        v-show="showBackToTop"
-        @click="scrollToBottom"
-        class="back-to-bottom"
-        title="Scroll to Bottom"
-      >
-        ↓
-      </button>
-    </div>
+    <button
+      v-show="showBackToTop"
+      @click="scrollToBottom"
+      class="back-to-bottom"
+      title="Scroll to Bottom"
+    >
+      ⮟
+    </button>
 
     <main>
       <div class="main-container"><slot /></div>
@@ -258,7 +254,7 @@ export default {
 };
 </script>
 
-<style src="@/assets/css/styles.css"></style>
+<style src="/assets/css/styles.css"></style>
 
 <style>
 #app {

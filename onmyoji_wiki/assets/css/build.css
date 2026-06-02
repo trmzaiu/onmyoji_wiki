@@ -1,0 +1,322 @@
+.build-list {
+  margin-top: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+/* Card */
+
+.build-card {
+  padding: 20px;
+
+  border: 1px solid #a51919;
+  border-radius: 16px;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03),
+    rgba(255, 255, 255, 0.015)
+  );
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.build-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #c93030;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 12px rgba(165, 25, 25, 0.12);
+}
+
+/* Header */
+
+.build-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 14px;
+}
+
+.build-title {
+  font-family: "Bona Nova SC", serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #a51919;
+}
+
+.build-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.build-role-badge {
+  padding: 4px 12px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
+  color: #fff;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Stats */
+
+.build-main-stats {
+  margin-bottom: 18px;
+}
+
+.build-stat-group {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.build-stat {
+  display: inline-block;
+
+  margin-right: 6px;
+  padding: 5px 10px;
+
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.build-divider,
+.build-separator {
+  color: #888;
+  font-size: 13px;
+}
+
+/* Souls List */
+
+.build-souls-grid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+.build-soul-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+
+  text-decoration: none;
+}
+
+.build-soul-icon {
+  width: 56px;
+  height: 56px;
+
+  border-radius: 999px;
+
+  transition: transform 0.22s ease, filter 0.22s ease;
+}
+
+.build-soul-item:hover .build-soul-icon {
+  transform: scale(1.1);
+
+  filter: drop-shadow(0 0 8px rgba(165, 25, 25, 0.28));
+}
+
+.build-soul-name {
+  margin-top: 6px;
+
+  font-size: 12px;
+  color: #fff;
+}
+
+/* Substats / Breakpoint */
+
+.build-substats,
+.build-breakpoint {
+  margin-bottom: 14px;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  font-size: 14px;
+  color: #fff;
+}
+
+.build-label {
+  margin-right: 4px;
+
+  font-weight: 700;
+}
+
+.build-breakpoint-tag {
+  padding: 4px 10px;
+
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  background: rgba(255, 255, 255, 0.04);
+
+  font-size: 12px;
+}
+
+/* Note */
+
+.build-note {
+  padding: 12px 14px;
+
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.build-note-text {
+  font-size: 14px;
+  line-height: 1.6;
+
+  color: #bdbdbd;
+
+  white-space: pre-line;
+  font-style: italic;
+}
+
+.role-dps {
+  background: #c0392b;
+}
+
+.role-weak-dps {
+  background: #d35454;
+}
+
+.role-counter {
+  background: #d68910;
+}
+
+.role-dispel {
+  background: #e1b12c;
+  color: #222;
+}
+
+.role-puller {
+  background: #2980b9;
+}
+
+.role-self-pull {
+  background: #5dade2;
+}
+
+.role-pusher {
+  background: #5b6ee1;
+}
+
+.role-cc {
+  background: #7d3c98;
+}
+
+.role-healer {
+  background: #239b56;
+}
+
+.role-revive {
+  background: #27ae60;
+}
+
+.role-shield {
+  background: #16a085;
+}
+
+.role-res-buffer {
+  background: #7cb342;
+  color: #222;
+}
+
+.role-orbs {
+  background: #d2527f;
+}
+
+.role-support {
+  background: #616a6b;
+}
+
+.role-special-support {
+  background: #2f3640;
+}
+
+.role-utility {
+  background: #546e7a;
+}
+
+.role-hybrid {
+  background: #9b59b6;
+}
+
+.role-unique {
+  background: #d4a017;
+  color: #222;
+}
+
+.role-meme {
+  background: #111;
+  color: #fff;
+}
+
+.stat-atk {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.stat-spd {
+  border-color: #2980b9;
+  color: #2980b9;
+}
+
+.stat-crit {
+  border-color: #d4ac0d;
+  color: #d4ac0d;
+}
+
+.stat-cdmg {
+  border-color: #8e44ad;
+  color: #8e44ad;
+}
+
+.stat-hp {
+  border-color: #27ae60;
+  color: #27ae60;
+}
+
+.stat-hit {
+  border-color: #16a085;
+  color: #16a085;
+}
+
+.stat-res {
+  border-color: #d68910;
+  color: #d68910;
+}
+
+.stat-def {
+  border-color: #af7a00;
+  color: #af7a00;
+}
+
+.stat-default {
+  border-color: #7f8c8d;
+  color: #7f8c8d;
+}

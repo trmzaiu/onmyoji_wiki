@@ -35,9 +35,15 @@ onMounted(() => {
           :key="onmyoji.id"
           class="flex flex-col items-center onmyoji-card"
         >
-          <a class="cursor-pointer hover:scale-110 transition-transform duration-300" :href="`/onmyoji/${onmyoji.name.en.replace(/\s+/g, '_')}`">
+          <a
+            class="cursor-pointer hover:scale-110 transition-transform duration-300"
+            :href="`/onmyoji/${onmyoji.name.en.replace(/\s+/g, '_')}`"
+          >
             <img
-              :src="`/assets/onmyoji/images/${onmyoji.name.en.replace(/\s+/g, '_')}.webp`"
+              :src="`@/assets/onmyoji/images/${onmyoji.name.en.replace(
+                /\s+/g,
+                '_'
+              )}.webp`"
               :alt="onmyoji.name.en"
               class="mb-3"
             />
@@ -54,7 +60,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped src="@/pages/styles.css"></style>
+<style scoped src="@/assets/css/styles.css"></style>
 
 <style scoped>
 .name {

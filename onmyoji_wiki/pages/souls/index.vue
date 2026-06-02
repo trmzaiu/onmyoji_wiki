@@ -127,7 +127,10 @@ onMounted(async () => {
         >.
       </p>
 
-      <table style="border: 1px solid #a51919; width: 85%; margin: 0 auto" :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }">
+      <table
+        style="border: 1px solid #a51919; width: 85%; margin: 0 auto"
+        :class="{ 'lang-en': isEnglish, 'lang-vi': !isEnglish }"
+      >
         <tbody>
           <tr style="background-color: #a51919; font-weight: bold">
             <td class="px-2 py-1 text-center" colspan="4">
@@ -238,7 +241,14 @@ onMounted(async () => {
         </thead>
         <tbody>
           <tr>
-            <th class="px-2 py-1 text-center" style="border: 1px solid #a51919; border-bottom: 1px solid #f5f5f5; background-color: #a51919;">
+            <th
+              class="px-2 py-1 text-center"
+              style="
+                border: 1px solid #a51919;
+                border-bottom: 1px solid #f5f5f5;
+                background-color: #a51919;
+              "
+            >
               {{ isEnglish ? "Slot 1" : "Ô 1" }}
             </th>
             <td class="px-2 py-1 text-start text-black" style="border: 1px solid #a51919">
@@ -246,7 +256,14 @@ onMounted(async () => {
             </td>
           </tr>
           <tr>
-            <th class="px-2 py-1 text-center" style="border: 1px solid #a51919; border-bottom: 1px solid #f5f5f5; background-color: #a51919;">
+            <th
+              class="px-2 py-1 text-center"
+              style="
+                border: 1px solid #a51919;
+                border-bottom: 1px solid #f5f5f5;
+                background-color: #a51919;
+              "
+            >
               {{ isEnglish ? "Slot 2" : "Ô 2" }}
             </th>
             <td class="px-2 py-1 text-start text-black" style="border: 1px solid #a51919">
@@ -258,7 +275,14 @@ onMounted(async () => {
             </td>
           </tr>
           <tr>
-            <th class="px-2 py-1 text-center" style="border: 1px solid #a51919; border-bottom: 1px solid #f5f5f5; background-color: #a51919;">
+            <th
+              class="px-2 py-1 text-center"
+              style="
+                border: 1px solid #a51919;
+                border-bottom: 1px solid #f5f5f5;
+                background-color: #a51919;
+              "
+            >
               {{ isEnglish ? "Slot 3" : "Ô 3" }}
             </th>
             <td class="px-2 py-1 text-start text-black" style="border: 1px solid #a51919">
@@ -266,7 +290,14 @@ onMounted(async () => {
             </td>
           </tr>
           <tr>
-            <th class="px-2 py-1 text-center" style="border: 1px solid #a51919; border-bottom: 1px solid #f5f5f5; background-color: #a51919;">
+            <th
+              class="px-2 py-1 text-center"
+              style="
+                border: 1px solid #a51919;
+                border-bottom: 1px solid #f5f5f5;
+                background-color: #a51919;
+              "
+            >
               {{ isEnglish ? "Slot 4" : "Ô 4" }}
             </th>
             <td class="px-2 py-1 text-start text-black" style="border: 1px solid #a51919">
@@ -278,7 +309,14 @@ onMounted(async () => {
             </td>
           </tr>
           <tr>
-            <th class="px-2 py-1 text-center" style="border: 1px solid #a51919; border-bottom: 1px solid #f5f5f5; background-color: #a51919;">
+            <th
+              class="px-2 py-1 text-center"
+              style="
+                border: 1px solid #a51919;
+                border-bottom: 1px solid #f5f5f5;
+                background-color: #a51919;
+              "
+            >
               {{ isEnglish ? "Slot 5" : "Ô 5" }}
             </th>
             <td class="px-2 py-1 text-start text-black" style="border: 1px solid #a51919">
@@ -286,11 +324,22 @@ onMounted(async () => {
             </td>
           </tr>
           <tr>
-            <th class="px-2 py-1 text-center" style="border: 1px solid #a51919; border-bottom: 1px solid #f5f5f5; background-color: #a51919;">
+            <th
+              class="px-2 py-1 text-center"
+              style="
+                border: 1px solid #a51919;
+                border-bottom: 1px solid #f5f5f5;
+                background-color: #a51919;
+              "
+            >
               {{ isEnglish ? "Slot 6" : "Ô 6" }}
             </th>
             <td class="px-2 py-1 text-start text-black" style="border: 1px solid #a51919">
-              {{ isEnglish ? "Crit, Crit DMG, ATK Bonus, DEF Bonus, HP Bonus" : "Bạo kích, Sát thương Bạo kích, Công(%), Thủ(%), Máu(%)" }}
+              {{
+                isEnglish
+                  ? "Crit, Crit DMG, ATK Bonus, DEF Bonus, HP Bonus"
+                  : "Bạo kích, Sát thương Bạo kích, Công(%), Thủ(%), Máu(%)"
+              }}
             </td>
           </tr>
         </tbody>
@@ -329,7 +378,10 @@ onMounted(async () => {
               <td class="px-2 py-1 text-center" style="border-left: 1px solid #e0e0e0">
                 <a :href="`/souls/${soul.name.en.replace(/ /g, '_')}`"
                   ><img
-                    :src="`/assets/souls/icons/${soul.name.en.replace(/ /g, '_')}_Icon.webp`"
+                    :src="`/assets/souls/icons/${soul.name.en.replace(
+                      / /g,
+                      '_'
+                    )}_Icon.webp`"
                     :alt="soul.name.en"
                     class="w-16 h-16 object-contain mx-auto"
                 /></a>
@@ -364,143 +416,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.lang-zh {
-  font-family: "stkaiti", sans-serif;
-}
-.lang-en {
-  font-family: "Rubik", sans-serif;
-}
-.lang-vi {
-  font-family: "Nunito", serif;
-}
-
-.content-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid #3a3a3a4d;
-}
-
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.character-title {
-  font-family: "Rubik", sans-serif;
-  font-size: 42px;
-  font-weight: medium;
-  color: #3a3a3a;
-  margin-bottom: 10px;
-}
-
-.toggle-switch {
-  position: relative;
-  width: 44px;
-  height: 22px;
-  flex-shrink: 0;
-}
-
-.toggle-switch input[type="checkbox"] {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  background-color: #ccc;
-  border-radius: 22px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.4s;
-}
-
-.slider::before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.3s;
-}
-
-.toggle-switch input:checked + .slider {
-  background-color: #a51919;
-}
-.toggle-switch input:checked + .slider::before {
-  transform: translateX(22px);
-}
-
-.toggle-labels {
-  position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 0;
-  display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-  font-size: 10px;
-  font-weight: bold;
-  color: white;
-  padding: 0 5px;
-  pointer-events: none;
-  user-select: none;
-}
-
-.border-red {
-  border: 1px solid #a51919;
-}
-
-.text-red {
-  color: #a51919;
-}
-
-.session-title {
-  color: #3a3a3a;
-  font-size: 24px;
-  font-weight: 500;
-  overflow: auto;
-  padding: 6px 0;
-  border-bottom: 0.5px solid #9c9c9c;
-}
-
-.session-subtitle {
-  color: #000;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.lang-en .session-title,
-.lang-en .session-subtitle {
-  font-family: "Rubik", sans-serif;
-}
-.lang-vi .session-title,
-.lang-vi .session-subtitle {
-  font-family: "Nunito", sans-serif;
-}
-
-.soul-row {
-  border-bottom: 1px solid #eee;
-}
-
-.soul-row:last-child {
-  border-bottom: none;
-}
-
-.soul-row:hover {
-  background-color: #f8f8f8;
-}
-</style>

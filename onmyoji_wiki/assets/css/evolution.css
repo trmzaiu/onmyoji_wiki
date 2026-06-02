@@ -1,0 +1,19 @@
+.evolution-box {
+    padding: 12px 16px;
+
+    border: 1px solid #a51919;
+    border-radius: 10px;
+
+    background: rgba(165, 25, 25, 0.03);
+}
+
+.evolution-text {
+    margin: 0;
+    padding: 10px 0;
+
+    font-size: 15px;
+    line-height: 1.7;
+    color: #fff;
+
+    text-align: justify;
+}

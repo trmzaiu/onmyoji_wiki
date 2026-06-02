@@ -40,7 +40,7 @@ const closeModal = () => {
 
 const { tagMap, loadTags } = useTags();
 
-const getImgUrl = (name) => `/assets/illustrations/${name.replace(/ /g, "_")}.jpg`;
+const getImgUrl = (name) => `/assets/images/illustrations/${name.replace(/ /g, "_")}.jpg`;
 
 const processTextWithTooltips = (text) => {
   if (!text || !effects.value?.length) return text;
@@ -290,7 +290,7 @@ const processTextWithTooltips = (text) => {
   processed.value = processed.value.replace(
     /<e>(.*?)<\/e>/g,
     (_, keyword) =>
-      `<img src="/assets/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
+      `<img src="/assets/images/effects/${keyword}.webp" alt="${keyword}" class="inline-block w-6 h-6 align-text-bottom rounded rounded-md" />`
   );
 
   // Entities:
@@ -347,7 +347,6 @@ function changeMainTab(tab) {
 const imgs = computed(() => tooltipData.value?.images || []);
 
 function addIngForm(word) {
-
   if (word.endsWith("e")) {
     return word.slice(0, -1);
   }
@@ -413,7 +412,7 @@ const handleMouseEnter = (e) => {
       ? JSON.parse(target.getAttribute("data-img"))
       : [],
     color: target.getAttribute("data-color"),
-    cn: target.getAttribute("data-name-cn"), 
+    cn: target.getAttribute("data-name-cn"),
   };
   updateTooltipPosition(e);
   showTooltip.value = true;
@@ -522,11 +521,9 @@ async function handleVisibilityChange() {
 }
 
 setInterval(async () => {
-
   if (document.visibilityState === "visible") {
     await fetchOnmyoji();
   }
-
 }, 5000);
 
 watch(tooltipData, (val) => {
@@ -581,7 +578,7 @@ watch(activeMainTab, async (newTab) => {
           <!-- Images -->
           <div class="flex justify-center items-center">
             <img
-              :src="`/assets/onmyoji/images/${route.params.name}.webp`"
+              :src="`/assets/images/onmyoji/images/${route.params.name}.webp`"
               :alt="onmyoji.name.en"
               class="max-h-full max-w-full object-contain transition-opacity hover:scale-115 transition-transform duration-300"
             />
@@ -736,7 +733,7 @@ watch(activeMainTab, async (newTab) => {
                     "
                   >
                     <img
-                      :src="`/assets/onmyoji/icons/${route.params.name}_Icon.webp`"
+                      :src="`/assets/images/onmyoji/icons/${route.params.name}_Icon.webp`"
                       :alt="onmyoji.name.jp[1]"
                       style="
                         object-fit: contain;
@@ -746,7 +743,9 @@ watch(activeMainTab, async (newTab) => {
                         max-width: none;
                       "
                       width="90"
-                      @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
+                      @error="
+                        (event) => (event.target.src = '/assets/images/Unknown_Icon.webp')
+                      "
                     />
                   </figure>
                 </th>
@@ -762,7 +761,7 @@ watch(activeMainTab, async (newTab) => {
                     "
                   >
                     <img
-                      :src="`/assets/onmyoji/icons/${route.params.name}_Icon2.webp`"
+                      :src="`/assets/images/onmyoji/icons/${route.params.name}_Icon2.webp`"
                       :alt="onmyoji.name.jp[1]"
                       style="
                         object-fit: contain;
@@ -772,7 +771,9 @@ watch(activeMainTab, async (newTab) => {
                         max-width: none;
                       "
                       width="90"
-                      @error="(event) => (event.target.src = '/assets/Unknown_Icon.webp')"
+                      @error="
+                        (event) => (event.target.src = '/assets/images/Unknown_Icon.webp')
+                      "
                     />
                   </figure>
                 </th>
@@ -800,7 +801,7 @@ watch(activeMainTab, async (newTab) => {
               <tr style="color: #a51919; border-left: 1px solid #a51919">
                 <th></th>
                 <th class="label-cell p-2">
-                  <img src="/assets/stats/ATK.webp" alt="ATK" />
+                  <img src="/assets/images/stats/ATK.webp" alt="ATK" />
                   ATK
                 </th>
 
@@ -830,7 +831,7 @@ watch(activeMainTab, async (newTab) => {
               <tr style="color: #a51919; border-left: 1px solid #a51919">
                 <th></th>
                 <th class="label-cell">
-                  <img src="/assets/stats/HP.webp" alt="HP" />
+                  <img src="/assets/images/stats/HP.webp" alt="HP" />
                   HP
                 </th>
 
@@ -860,7 +861,7 @@ watch(activeMainTab, async (newTab) => {
               <tr style="color: #a51919; border-left: 1px solid #a51919">
                 <th></th>
                 <th class="label-cell">
-                  <img src="/assets/stats/DEF.webp" alt="DEF" />
+                  <img src="/assets/images/stats/DEF.webp" alt="DEF" />
                   DEF
                 </th>
 
@@ -890,7 +891,7 @@ watch(activeMainTab, async (newTab) => {
               <tr style="color: #a51919; border-left: 1px solid #a51919">
                 <th></th>
                 <th class="label-cell">
-                  <img src="/assets/stats/SPD.webp" alt="SPD" />
+                  <img src="/assets/images/stats/SPD.webp" alt="SPD" />
                   SPD
                 </th>
 
@@ -920,7 +921,7 @@ watch(activeMainTab, async (newTab) => {
               <tr style="color: #a51919; border-left: 1px solid #a51919">
                 <th></th>
                 <th class="label-cell">
-                  <img src="/assets/stats/CRIT.webp" alt="CRIT" />
+                  <img src="/assets/images/stats/CRIT.webp" alt="CRIT" />
                   Crit
                 </th>
 
@@ -946,7 +947,7 @@ watch(activeMainTab, async (newTab) => {
               <tr style="color: #a51919; border-left: 1px solid #a51919">
                 <th></th>
                 <th class="label-cell">
-                  <img src="/assets/stats/CDMG.webp" alt="CDMG" />
+                  <img src="/assets/images/stats/CDMG.webp" alt="CDMG" />
                   Crit DMG
                 </th>
 
@@ -970,7 +971,7 @@ watch(activeMainTab, async (newTab) => {
               <tr style="color: #a51919; border-left: 1px solid #a51919">
                 <th></th>
                 <th class="label-cell">
-                  <img src="/assets/stats/HIT.webp" alt="HIT" />
+                  <img src="/assets/images/stats/HIT.webp" alt="HIT" />
                   Effects HIT
                 </th>
 
@@ -994,7 +995,7 @@ watch(activeMainTab, async (newTab) => {
               <tr style="color: #a51919; border-left: 1px solid #a51919">
                 <th></th>
                 <th class="label-cell" style="border-bottom: none">
-                  <img src="/assets/stats/RES.webp" alt="RES" />
+                  <img src="/assets/images/stats/RES.webp" alt="RES" />
                   Effects RES
                 </th>
 
@@ -1055,7 +1056,7 @@ watch(activeMainTab, async (newTab) => {
               class="skill-icon"
             >
               <img
-                :src="`/assets/onmyoji/skills/${route.params.name}_Skill${
+                :src="`/assets/images/onmyoji/skills/${route.params.name}_Skill${
                   index + 1
                 }.webp`"
                 :alt="skill.name.en"
@@ -1094,7 +1095,7 @@ watch(activeMainTab, async (newTab) => {
                 </span>
                 <span class="flex" style="margin-left: 40px">
                   <b>{{ isEnglish ? "Onibi" : "Quỷ hoả" }}:</b>
-                  <img src="/assets/Onibi.webp" alt="Onibi" />
+                  <img src="/assets/images/Onibi.webp" alt="Onibi" />
                   0
                 </span>
                 <span style="margin-left: 25px">
@@ -1239,15 +1240,15 @@ watch(activeMainTab, async (newTab) => {
             <img
               :src="
                 index === 0
-                  ? `/assets/onmyoji/images/${route.params.name}.webp`
-                  : `/assets/onmyoji/skins/${route.params.name}_Skin${index}.webp`
+                  ? `/assets/images/onmyoji/images/${route.params.name}.webp`
+                  : `/assets/images/onmyoji/skins/${route.params.name}_Skin${index}.webp`
               "
               :alt="skin.name.en || skin.name.cn"
               @click="
                 openModal(
                   index === 0
-                    ? `/assets/onmyoji/images/${route.params.name}.webp`
-                    : `/assets/onmyoji/skins/${route.params.name}_Skin${index}.webp`
+                    ? `/assets/images/onmyoji/images/${route.params.name}.webp`
+                    : `/assets/images/onmyoji/skins/${route.params.name}_Skin${index}.webp`
                 )
               "
               class="w-full h-80 object-contain hover:scale-110 transition-transform duration-300 overflow-visible"
@@ -1275,13 +1276,13 @@ watch(activeMainTab, async (newTab) => {
             :title="skin.name.en || skin.name.cn"
           >
             <img
-              :src="`/assets/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${
+              :src="`/assets/images/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${
                 index + 1
               }.webp`"
               :alt="skin.name.en || skin.name.cn"
               @click="
                 openModal(
-                  `/assets/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${
+                  `/assets/images/onmyoji/totems/${onmyoji.totem[0].name.en}_Skin${
                     index + 1
                   }.webp`
                 )
@@ -1383,7 +1384,7 @@ watch(activeMainTab, async (newTab) => {
                 style="border: 1px solid #a51919"
               >
                 <img
-                  :src="`/assets/onmyoji/skinsInfo/${route.params.name}_SkinInfo${index}.webp`"
+                  :src="`/assets/images/onmyoji/skinsInfo/${route.params.name}_SkinInfo${index}.webp`"
                   :alt="skin.name.en || skin.name.cn"
                   class="w-24 h-24 object-contain mx-auto"
                 />
@@ -1439,9 +1440,9 @@ watch(activeMainTab, async (newTab) => {
                 style="border: 1px solid #a51919"
               >
                 <img
-                  :src="`/assets/onmyoji/totemsInfo/${onmyoji.totem[0].name.en}_SkinInfo${
-                    index + 1
-                  }.webp`"
+                  :src="`/assets/images/onmyoji/totemsInfo/${
+                    onmyoji.totem[0].name.en
+                  }_SkinInfo${index + 1}.webp`"
                   :alt="skin.name.en || skin.name.cn"
                   class="w-24 h-24 object-contain mx-auto"
                 />
@@ -1511,7 +1512,7 @@ watch(activeMainTab, async (newTab) => {
         <img
           v-for="(img, i) in imgs"
           :key="i"
-          :src="'/assets/effects/' + img + '.webp'"
+          :src="'/assets/images/effects/' + img + '.webp'"
           :alt="img"
           class="tooltip-img rounded rounded-sm"
         />
@@ -1535,7 +1536,7 @@ watch(activeMainTab, async (newTab) => {
               v-if="sub.images"
               v-for="(img, i) in sub.images"
               :key="i"
-              :src="'/assets/effects/' + img + '.webp'"
+              :src="'/assets/images/effects/' + img + '.webp'"
               :alt="img"
               style="width: 32px; height: 32px; margin-bottom: 8px"
             />
@@ -1560,7 +1561,7 @@ watch(activeMainTab, async (newTab) => {
                   v-if="subsub.images"
                   v-for="(img, k) in subsub.images"
                   :key="k"
-                  :src="'/assets/effects/' + img + '.webp'"
+                  :src="'/assets/images/effects/' + img + '.webp'"
                   :alt="img"
                   class="rounded rounded-sm"
                   style="width: 32px; height: 32px; margin-bottom: 8px"
@@ -1582,378 +1583,3 @@ watch(activeMainTab, async (newTab) => {
     </div>
   </div>
 </template>
-
-<style>
-.lang-zh {
-  font-family: "stkaiti", sans-serif;
-}
-.lang-en {
-  font-family: "Rubik", sans-serif;
-}
-.lang-vi {
-  font-family: "Nunito", serif;
-}
-
-.content-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 30px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid #3a3a3a4d;
-}
-
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.character-title {
-  font-family: "Rubik", sans-serif;
-  font-size: 42px;
-  font-weight: medium;
-  color: #3a3a3a;
-  margin-bottom: 10px;
-}
-
-.toggle-switch {
-  position: relative;
-  width: 44px;
-  height: 22px;
-  flex-shrink: 0;
-}
-
-.toggle-switch input[type="checkbox"] {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  background-color: #ccc;
-  border-radius: 22px;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: 0.4s;
-}
-
-.slider::before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: 0.3s;
-}
-
-.toggle-switch input:checked + .slider {
-  background-color: #a51919;
-}
-.toggle-switch input:checked + .slider::before {
-  transform: translateX(22px);
-}
-
-.toggle-labels {
-  position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 0;
-  display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
-  font-size: 10px;
-  font-weight: bold;
-  color: white;
-  padding: 0 5px;
-  pointer-events: none;
-  user-select: none;
-}
-
-.table-title {
-  font-weight: bold;
-  color: #f4f1e8;
-  text-align: center;
-  padding: 8px;
-  background-color: #a51919;
-  border: 1px solid #a51919;
-}
-
-.table-title-row {
-  font-weight: bold;
-  font-size: 16px;
-  color: #f4f1e8;
-  text-align: center;
-  padding: 8px;
-  background-color: #a51919;
-  border: 1px solid #a51919;
-}
-
-.table-row {
-  border: 1px solid #a51919;
-  color: #333;
-}
-
-.table-row-limit {
-  max-height: 60px;
-  min-height: 40px;
-}
-
-.table-row-limit-long {
-  max-height: 80px;
-  min-height: 60px;
-}
-
-.session-title {
-  color: #3a3a3a;
-  font-size: 24px;
-  font-weight: 500;
-  overflow: auto;
-  padding: 6px 0;
-  border-bottom: 0.5px solid #9c9c9c;
-}
-
-.image-icon {
-  position: relative;
-  top: -40px;
-}
-
-.icon-img {
-  z-index: 10;
-  border: 1px solid #a51919;
-  padding: 5px;
-  background: #fff;
-}
-
-.stats {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: center;
-  overflow: visible;
-}
-
-.stats tbody th.label-cell {
-  font-weight: bold;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #333;
-}
-
-.stats tbody td.centered-number {
-  text-align: center;
-  color: #444;
-}
-
-.stats th,
-.stats td {
-  padding: 6px 10px;
-}
-
-.stats th {
-  font-weight: normal;
-}
-
-.stats .image-icon {
-  text-align: center;
-  vertical-align: middle;
-}
-
-.stats .image-icon figure {
-  display: inline-block;
-  margin: 5px 0 0;
-}
-
-.stats tr:nth-child(1) th {
-  font-size: 16px;
-}
-
-.stats tr:nth-child(n + 2) td:nth-last-child(1) {
-  color: #a51919;
-}
-
-.stats img {
-  vertical-align: middle;
-}
-
-.stats th[colspan="2"] {
-  border: none;
-}
-
-.stats td {
-  border: none;
-}
-
-.skill-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 25px;
-}
-
-.skill-info span {
-  margin-left: 45px;
-  font-size: smaller;
-}
-
-.skill-badges {
-  display: flex;
-  gap: 8px;
-}
-
-.tint-base {
-  -webkit-mask-image: url("/brush.svg");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: cover;
-  -webkit-mask-position: center;
-  mask-image: url("/brush.svg");
-  mask-repeat: no-repeat;
-  mask-size: cover;
-  mask-position: center;
-}
-
-/* Các màu tint */
-.tint-red {
-  background-color: #a63f37;
-}
-
-.tint-blue {
-  background-color: #4994d4;
-}
-
-.tint-grey {
-  background-color: #959494;
-}
-
-.tint-yellow {
-  background-color: #c07b2a;
-}
-
-/* Tooltip Styles */
-.effect-tooltip {
-  font-weight: bold;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  border-bottom: none;
-}
-
-/* .effect-highlight {
-  font-weight: 500;
-  text-decoration: none !important;
-  border-bottom: none;
-} */
-
-.tooltip {
-  position: fixed;
-  z-index: 9999;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 8px;
-  padding: 12px 16px;
-  max-width: 300px;
-  pointer-events: none;
-  animation: tooltipFadeIn 0.2s ease-out;
-}
-
-.tooltip-title {
-  font-weight: bold;
-  font-size: 14px;
-  margin-bottom: 6px;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 4px;
-}
-
-.tooltip-images {
-  display: flex;
-  gap: 8px; /* khoảng cách giữa ảnh */
-  flex-wrap: wrap; /* nếu nhiều quá thì tự xuống hàng */
-}
-
-.tooltip-img {
-  width: 32px;
-  height: 32px;
-}
-
-.tooltip-description {
-  font-size: 13px;
-  color: #374151;
-  line-height: 1.4;
-}
-
-.tooltip-divider {
-  margin: 10px 0;
-  border: none;
-  border-top: 1px solid #d1d5db;
-}
-
-.subnotes-container {
-  margin-top: 8px;
-}
-
-.subnote-block {
-  margin-bottom: 8px;
-}
-
-.subnote-block:last-child {
-  margin-bottom: 0;
-}
-
-.subnote-title {
-  font-weight: bold;
-  font-size: 13px;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-.subnote-description {
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.3;
-}
-
-@keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Ensure tooltip appears above other elements */
-.tooltip::before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: 20px;
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 6px solid var(--tooltip-color);
-}
-
-.tooltip::after {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: 21px;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid #ffffff;
-}
-</style>

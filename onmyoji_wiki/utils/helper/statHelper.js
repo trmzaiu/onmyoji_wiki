@@ -1,6 +1,6 @@
 import { STAT_RANKS } from "~/constants/statRanks";
 
-export function getStatRank(type: string, value: number) {
+export function getStatRank(type, value) {
     const ranges = STAT_RANKS[type];
 
     if (!ranges) {
@@ -14,6 +14,6 @@ export function getStatRank(type: string, value: number) {
     return matchedRank?.[0] || "D";
 }
 
-export function getStatRankImage(type: string, value: number) {
-    return `/assets/stats/${getStatRank(type, value)}.webp`;
+export function getStatRankImage(type, value) {
+    return `/assets/images/stats/${getStatRank(type, value)}.webp`;
 }
