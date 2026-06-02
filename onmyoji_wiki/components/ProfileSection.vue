@@ -1,6 +1,3 @@
-defineProps({ profile: Object, shikigami: Object, listShikigami: Array, listOnmyoji:
-Array, isEnglish: Boolean, });
-
 <script setup>
 import { renderProfileText } from "~/utils/parser/renderProfileText";
 

@@ -12,7 +12,6 @@ import {
   parseEffectDescription,
   parseEffectTags,
 } from "~/utils/parser/effectParser";
-import { renderBiographyText } from "~/utils/parser/renderBiographyText";
 import { renderEvolutionText } from "~/utils/parser/renderEvolutionText";
 import { parseSkillDescription } from "~/utils/parser/skillParser";
 
@@ -30,14 +29,22 @@ import {
   getAllSkillEffectText,
   markFirstAppearances,
 } from "~/utils/effectCollecter";
-import { getStatRank, getStatRankImage } from "~/utils/helper/statHelper";
 
 import ProfileSection from "~/components/ProfileSection.vue";
+import CharacterSection from "~/components/CharacterSection.vue";
+import TabSection from "~/components/TabSection.vue";
+import StatSection from "~/components/StatSection.vue";
+import BiographySection from "~/components/BiographySection.vue";
+import SoulChoicesSection from "~/components/SoulChoicesSection.vue";
 /* ---------------------- GLOBAL ---------------------- */
 const route = useRoute();
 
 const formattedName = computed(() => {
   return route.params.name.replace(/_/g, " ");
+});
+
+const routeName = computed(() => {
+  return route.params.name;
 });
 
 /* ---------------------- STATE ---------------------- */
@@ -126,22 +133,8 @@ const evolutionText = computed(() =>
   })
 );
 
-const conditionMap = computed(() => {
-  return new Map((conditions.value || []).map((c) => [c.id, c]));
-});
-
 const bioShikigamiMap = ref(new Map());
 const bioOnmyojiMap = ref(new Map());
-
-const biographyText = (bio) =>
-  renderBiographyText({
-    biography: bio,
-    conditionMap: conditionMap.value,
-    shikigami: shikigami.value,
-    shikigamiMap: bioShikigamiMap.value,
-    onmyojiMap: bioOnmyojiMap.value,
-    isEnglish: isEnglish.value,
-  });
 
 const skillShikigamiMap = computed(() => {
   return new Map((listShikigami.value || []).map((s) => [String(s.id), s]));
@@ -242,7 +235,6 @@ const highlightSkin = (content) => {
 };
 
 /* ---------------------- LIFECYCLE ---------------------- */
-const hasLevel40 = computed(() => shikigami.value?.id !== 193);
 
 onMounted(async () => {
   document.title = formattedName;
@@ -377,158 +369,11 @@ const addCKeywordListeners = () => {
         </label>
       </div>
 
-      <div class="character-header">
-        <div class="character-image-wrapper">
-          <div class="character-image-box">
-            <img
-              :src="`/assets/images/shikigami/images/${route.params.name}.webp`"
-              :alt="shikigami.name.jp[1]"
-              class="character-image"
-            />
-          </div>
-        </div>
-
-        <!-- Name -->
-        <div class="character-info">
-          <table>
-            <thead>
-              <tr>
-                <th class="character-name-header" colspan="4">
-                  <div class="character-name">{{ shikigami.name.jp[1] }}</div>
-                  <img
-                    :src="`/assets/images/rarity/${shikigami.rarity}.webp`"
-                    :alt="shikigami.rarity"
-                    :class="['rarity-icon', shikigami.rarity === 'UR' ? 'ur' : 'normal']"
-                  />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <strong>CN</strong>
-                </td>
-                <td colspan="3">
-                  <div class="lang-zh">{{ shikigami.name?.cn[0] }}</div>
-                  <div>{{ shikigami.name.cn[1] }}</div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>JP</strong>
-                </td>
-                <td colspan="3">
-                  <div class="lang-zh">{{ shikigami.name.jp[0] }}</div>
-                  <div>{{ shikigami.name.jp[1] }}</div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>GL</strong>
-                </td>
-                <td colspan="3">
-                  <div>{{ shikigami.name.en }}</div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>VN</strong>
-                </td>
-                <td colspan="3">
-                  <div>{{ shikigami.name.vn }}</div>
-                </td>
-              </tr>
-              <tr>
-                <td class="character-title" colspan="4">Voice Actor</td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>{{
-                    shikigami.id === 257 || shikigami.id === 256 ? "CN" : "JP"
-                  }}</strong>
-                </td>
-                <td colspan="3">
-                  <div
-                    class="voice-actor"
-                    :class="shikigami.id === 257 || shikigami.id === 256 ? 'lang-zh' : ''"
-                  >
-                    {{ shikigami.name.va }}
-                  </div>
-                </td>
-              </tr>
-              <tr
-                v-if="
-                  !['SP', 'UR', 'N'].includes(shikigami.rarity) && shikigami.id !== 193
-                "
-              >
-                <td class="character-title" colspan="4">Evo Materials</td>
-              </tr>
-              <tr v-if="shikigami.materials && shikigami.materials.length">
-                <td
-                  class="material-cell"
-                  v-for="material in shikigami.materials"
-                  :key="material.type"
-                >
-                  <div class="material-wrapper">
-                    <img
-                      :src="`/assets/images/materials/${material.type}.webp`"
-                      :alt="material.type"
-                      class="material-image"
-                      :title="material.name"
-                    />
-                    <span class="material-quantity">{{ material.quantity }}</span>
-                  </div>
-                </td>
-              </tr>
-              <tr v-if="shikigami.version !== null">
-                <td class="character-title" colspan="4">Other Version</td>
-              </tr>
-              <tr v-if="shikigami.version !== null">
-                <td colspan="4" class="p-1">
-                  <div :class="shikigami.version.length > 1 ? 'version-grid' : ''">
-                    <div v-for="ver in shikigami.version" :key="ver" class="version-item">
-                      <a :href="`/shikigami/${ver.replace(/ /g, '_')}`">
-                        <img
-                          :src="`/assets/images/shikigami/shards/${ver.replace(
-                            / /g,
-                            '_'
-                          )}_Shard.webp`"
-                          class="version-image"
-                          @error="
-                            (event) =>
-                              (event.target.src = '/assets/images/Unknown_Shard.webp')
-                          "
-                        />
-                      </a>
-                      <a
-                        class="version-name"
-                        :href="`/shikigami/${ver.replace(/ /g, '_')}`"
-                      >
-                        {{ ver }}
-                      </a>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="character-title" colspan="4">Release Date</td>
-              </tr>
-              <tr>
-                <td>
-                  <p>CN</p>
-                  <p v-if="shikigami.date.en">GL</p>
-                </td>
-                <td colspan="3">
-                  <div>{{ shikigami.date.cn }}</div>
-                  <div v-if="shikigami.date.en">
-                    {{ shikigami.date.en }}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <!-- Character -->
+      <CharacterSection 
+        :route-name="routeName" 
+        :shikigami="shikigami"
+      />
 
       <!-- Profile -->
       <ProfileSection
@@ -540,31 +385,11 @@ const addCKeywordListeners = () => {
       />
 
       <!-- Content -->
-      <div class="tabs">
-        <button
-          class="tab tab-button"
-          :class="{ active: activeTab === 'Main' }"
-          @click="changeTab('Main')"
-        >
-          {{ isEnglish ? "Main" : "Chính Điện" }}
-        </button>
-
-        <button
-          class="tab tab-button"
-          :class="{ active: activeTab === 'Gallery' }"
-          @click="changeTab('Gallery')"
-        >
-          {{ isEnglish ? "Gallery" : "Hoạ Phòng" }}
-        </button>
-
-        <button
-          class="tab tab-button"
-          :class="{ active: activeTab === 'Dialogue' }"
-          @click="changeTab('Dialogue')"
-        >
-          {{ isEnglish ? "Dialogue" : "Lời Thoại" }}
-        </button>
-      </div>
+      <TabSection
+        :active-tab="activeTab"
+        :is-english="isEnglish"
+        @change="changeTab"
+      />
 
       <!-- Main Tab -->
       <div
@@ -576,581 +401,12 @@ const addCKeywordListeners = () => {
         <h2 class="session-title top-0">
           {{ isEnglish ? "Stats" : "Chỉ số" }}
         </h2>
-        <div class="stats-wrapper">
-          <table class="stats-table">
-            <tbody>
-              <!-- HEADER -->
-              <tr class="stats-header">
-                <!-- 1 -->
-                <th>&nbsp;</th>
 
-                <!-- 2 -->
-                <th></th>
-
-                <!-- 3 + 4 -->
-                <th colspan="2">
-                  <div class="stats-title">
-                    {{
-                      shikigami.rarity !== "SP" &&
-                      shikigami.rarity !== "UR" &&
-                      shikigami.rarity !== "N"
-                        ? isEnglish
-                          ? "Unevolved"
-                          : "Cơ bản"
-                        : ""
-                    }}
-                    <br />
-                    {{ isEnglish ? "Level 1" : "Cấp 1" }}
-                  </div>
-                </th>
-
-                <!-- 5 + 6 -->
-                <th colspan="2" v-if="hasLevel40">
-                  <div class="stats-title">
-                    {{
-                      shikigami.rarity !== "SP" &&
-                      shikigami.rarity !== "UR" &&
-                      shikigami.rarity !== "N"
-                        ? isEnglish
-                          ? "Evolved"
-                          : "Thức tỉnh"
-                        : ""
-                    }}
-                    <br />
-                    {{ isEnglish ? "Level 40" : "Cấp 40" }}
-                  </div>
-                </th>
-
-                <!-- 7 + 8 -->
-                <th colspan="2"></th>
-              </tr>
-
-              <!-- ICON -->
-              <tr class="stats-header">
-                <!-- 1 -->
-                <th></th>
-
-                <!-- 2 -->
-                <th></th>
-
-                <!-- 3 + 4 -->
-                <th colspan="2" class="icon-cell">
-                  <figure class="stats-figure">
-                    <img
-                      :src="`/assets/images/shikigami/icons/${route.params.name}_Icon.webp`"
-                      :alt="shikigami.name.jp[1]"
-                      class="stats-icon"
-                      @error="
-                        (event) => (event.target.src = '/assets/images/Unknown_Icon.webp')
-                      "
-                    />
-                  </figure>
-                </th>
-
-                <!-- 5 + 6 -->
-                <th colspan="2" v-if="hasLevel40" class="icon-cell">
-                  <figure class="stats-figure">
-                    <img
-                      :src="`/assets/images/shikigami/icons/${route.params.name}_Icon${
-                        shikigami.rarity !== 'SP' &&
-                        shikigami.rarity !== 'UR' &&
-                        shikigami.rarity !== 'N'
-                          ? '_Evo'
-                          : ''
-                      }.webp`"
-                      :alt="shikigami.name.jp[1]"
-                      class="stats-icon"
-                      @error="
-                        (event) => (event.target.src = '/assets/images/Unknown_Icon.webp')
-                      "
-                    />
-                  </figure>
-                </th>
-
-                <!-- 7 + 8-->
-                <th colspan="2"></th>
-              </tr>
-
-              <!-- SPACING -->
-              <tr>
-                <th colspan="8" class="spacing-row"></th>
-              </tr>
-
-              <!-- BORDER -->
-              <tr class="top-border-row spacing-row">
-                <th colspan="8"></th>
-              </tr>
-
-              <!-- === ATK === -->
-              <tr class="stats-row">
-                <!-- 1 -->
-                <td></td>
-
-                <!-- 2 -->
-                <td class="label-cell">
-                  <img src="/assets/images/stats/ATK.webp" alt="ATK" />
-                  ATK
-                </td>
-
-                <!-- 3 -->
-                <td>
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('ATK', shikigami.stats.ATK[0])"
-                      :alt="getStatRank('ATK', shikigami.stats.ATK[0])"
-                    />
-                  </div>
-                </td>
-
-                <!-- 4 -->
-                <td>
-                  {{ shikigami.stats.ATK[0] }}
-                </td>
-
-                <!-- 5 -->
-                <td v-if="hasLevel40">
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('ATK_EVO', shikigami.stats.ATK[1])"
-                      :alt="getStatRank('ATK_EVO', shikigami.stats.ATK[1])"
-                    />
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 6 -->
-                <td v-if="hasLevel40">
-                  <div class="flex">
-                    {{ shikigami.stats.ATK[1] }}
-                    <span
-                      v-if="shikigami.evolution && shikigami.evolution.no === 1"
-                      class="increase-cell"
-                    >
-                      +{{
-                        Math.round(
-                          (shikigami.stats.ATK[1] * shikigami.evolution.count) / 100
-                        )
-                      }}
-                    </span>
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 7 -->
-                <td v-if="hasLevel40">
-                  <div class="bonus-stat">
-                    +{{
-                      Math.round(
-                        shikigami.stats.ATK[1] *
-                          (1 +
-                            (shikigami.evolution && shikigami.evolution.no === 1
-                              ? shikigami.evolution.count / 100
-                              : 0))
-                      ) - shikigami.stats.ATK[0]
-                    }}
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 8 -->
-                <td class="right-border"></td>
-              </tr>
-
-              <!-- === HP === -->
-              <tr class="stats-row">
-                <!-- 1 -->
-                <td></td>
-
-                <!-- 2 -->
-                <td class="label-cell">
-                  <img src="/assets/images/stats/HP.webp" alt="HP" />
-                  HP
-                </td>
-
-                <!-- 3 -->
-                <td>
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('HP', shikigami.stats.HP[0])"
-                      :alt="getStatRank('HP', shikigami.stats.HP[0])"
-                    />
-                  </div>
-                </td>
-
-                <!-- 4 -->
-                <td>
-                  {{ shikigami.stats.HP[0] }}
-                </td>
-
-                <!-- 5 -->
-                <td v-if="hasLevel40">
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('HP_EVO', shikigami.stats.HP[1])"
-                      :alt="getStatRank('HP_EVO', shikigami.stats.HP[1])"
-                    />
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 6 -->
-                <td v-if="hasLevel40">
-                  <div class="flex">
-                    {{ shikigami.stats.HP[1] }}
-
-                    <span
-                      v-if="shikigami.evolution && shikigami.evolution.no === 4"
-                      class="increase-cell"
-                    >
-                      +{{
-                        Math.round(
-                          (shikigami.stats.HP[1] * shikigami.evolution.count) / 100
-                        )
-                      }}
-                    </span>
-                  </div>
-                </td>
-                <td v-else></td>
-
-                <!-- 7  -->
-                <td v-if="hasLevel40">
-                  <div class="bonus-stat">
-                    +{{
-                      Math.round(
-                        shikigami.stats.HP[1] *
-                          (1 +
-                            (shikigami.evolution && shikigami.evolution.no === 4
-                              ? shikigami.evolution.count / 100
-                              : 0))
-                      ) - shikigami.stats.HP[0]
-                    }}
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 8 -->
-                <td class="right-border"></td>
-              </tr>
-
-              <!-- === DEF === -->
-              <tr class="stats-row">
-                <!-- 1 -->
-                <td></td>
-
-                <!-- 2 -->
-                <td class="label-cell">
-                  <img src="/assets/images/stats/DEF.webp" alt="DEF" />
-                  DEF
-                </td>
-
-                <!-- 3 -->
-                <td>
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('DEF', shikigami.stats.DEF[0])"
-                      :alt="getStatRank('DEF', shikigami.stats.DEF[0])"
-                    />
-                  </div>
-                </td>
-
-                <!-- 4 -->
-                <td>
-                  {{ shikigami.stats.DEF[0] }}
-                </td>
-
-                <!-- 5 -->
-                <td v-if="hasLevel40">
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('DEF_EVO', shikigami.stats.DEF[1])"
-                      :alt="getStatRank('DEF_EVO', shikigami.stats.DEF[1])"
-                    />
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 6 -->
-                <td v-if="hasLevel40">
-                  {{ shikigami.stats.DEF[1] }}
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 7 -->
-                <td v-if="hasLevel40">
-                  <div class="bonus-stat">
-                    +{{
-                      Math.round(
-                        shikigami.stats.DEF[1] *
-                          (1 +
-                            (shikigami.evolution && shikigami.evolution.no === 12
-                              ? shikigami.evolution.count / 100
-                              : 0))
-                      ) - shikigami.stats.DEF[0]
-                    }}
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 8 -->
-                <td class="right-border"></td>
-              </tr>
-
-              <!-- === SPD === -->
-              <tr class="stats-row">
-                <!-- 1 -->
-                <td></td>
-
-                <!-- 2 -->
-                <td class="label-cell">
-                  <img src="/assets/images/stats/SPD.webp" alt="SPD" />
-                  SPD
-                </td>
-
-                <!-- 3 -->
-                <td>
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('SPD', shikigami.stats.SPD[0])"
-                      :alt="getStatRank('SPD', shikigami.stats.SPD[0])"
-                    />
-                  </div>
-                </td>
-
-                <!-- 4 -->
-                <td>
-                  {{ shikigami.stats.SPD[0] }}
-                </td>
-
-                <td v-if="hasLevel40">
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('SPD_EVO', shikigami.stats.SPD[1])"
-                      :alt="getStatRank('SPD_EVO', shikigami.stats.SPD[1])"
-                    />
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 5 -->
-                <td v-if="hasLevel40">
-                  <div class="flex">
-                    {{ shikigami.stats.SPD[1] }}
-
-                    <span
-                      v-if="shikigami.evolution && shikigami.evolution.no === 7"
-                      class="increase-cell"
-                    >
-                      +{{ shikigami.evolution.count }}
-                    </span>
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 6 -->
-                <td v-if="hasLevel40">
-                  <div class="bonus-stat">
-                    +{{
-                      (shikigami.evolution && shikigami.evolution.no === 7
-                        ? shikigami.stats.SPD[1] + shikigami.evolution.count
-                        : shikigami.stats.SPD[1]) - shikigami.stats.SPD[0]
-                    }}
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 7 -->
-                <td class="right-border"></td>
-              </tr>
-
-              <!-- === CRIT === -->
-              <tr class="stats-row">
-                <!-- 1 -->
-                <td></td>
-
-                <!-- 2 -->
-                <td class="label-cell">
-                  <img src="/assets/images/stats/CRIT.webp" alt="CRIT" />
-                  Crit
-                </td>
-
-                <!-- 3 -->
-                <td>
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('CRIT', shikigami.stats.Crit[0])"
-                      :alt="getStatRank('CRIT', shikigami.stats.Crit[0])"
-                    />
-                  </div>
-                </td>
-
-                <!-- 4 -->
-                <td>{{ shikigami.stats.Crit[0] }}%</td>
-
-                <!-- 5 -->
-                <td v-if="hasLevel40">
-                  <div class="rank-cell">
-                    <img
-                      :src="getStatRankImage('CRIT', shikigami.stats.Crit[1])"
-                      :alt="getStatRank('CRIT', shikigami.stats.Crit[1])"
-                    />
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 6 -->
-                <td v-if="hasLevel40">{{ shikigami.stats.Crit[1] }}%</td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 7 -->
-                <td v-if="hasLevel40">
-                  <div class="bonus-stat">
-                    +{{
-                      (shikigami.evolution && shikigami.evolution.no === 6
-                        ? shikigami.stats.Crit[1] + shikigami.evolution.count
-                        : shikigami.stats.Crit[1]) - shikigami.stats.Crit[0]
-                    }}%
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 8 -->
-                <td class="right-border"></td>
-              </tr>
-
-              <!-- === CDMG === -->
-              <tr class="stats-row">
-                <!-- 1 -->
-                <td></td>
-
-                <!-- 2 -->
-                <td class="label-cell">
-                  <img src="/assets/images/stats/CDMG.webp" alt="CDMG" />
-                  Crit DMG
-                </td>
-
-                <!-- 3 -->
-                <td></td>
-
-                <!-- 4 -->
-                <td>
-                  {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[0] : "150" }}%
-                </td>
-
-                <!-- 5 -->
-                <td></td>
-
-                <!-- 6 -->
-                <td v-if="hasLevel40">
-                  {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] : "150" }}%
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 7 -->
-                <td v-if="hasLevel40">
-                  <div class="bonus-stat">
-                    +{{
-                      shikigami.stats.CritDMG
-                        ? shikigami.stats.CritDMG[1] - shikigami.stats.CritDMG[0]
-                        : "0"
-                    }}%
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <!-- 8 -->
-                <td class="right-border"></td>
-              </tr>
-
-              <!-- === HIT === -->
-              <tr class="stats-row">
-                <td></td>
-
-                <td class="label-cell">
-                  <img src="/assets/images/stats/HIT.webp" alt="HIT" />
-                  Effects HIT
-                </td>
-
-                <td></td>
-
-                <td>
-                  {{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[0] : "0" }}%
-                </td>
-
-                <td></td>
-
-                <td v-if="hasLevel40">
-                  {{
-                    (shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : 0) +
-                    (shikigami.evolution && shikigami.evolution.no === 9
-                      ? shikigami.evolution.count
-                      : 0)
-                  }}%
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <td v-if="hasLevel40">
-                  <div class="bonus-stat">
-                    +{{
-                      (shikigami.stats.EffectHIT
-                        ? shikigami.stats.EffectHIT[1] - shikigami.stats.EffectHIT[0]
-                        : 0) +
-                      (shikigami.evolution && shikigami.evolution.no === 9
-                        ? shikigami.evolution.count
-                        : 0)
-                    }}%
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <td class="right-border"></td>
-              </tr>
-
-              <!-- === RES === -->
-              <tr class="stats-row">
-                <td></td>
-
-                <td class="label-cell">
-                  <img src="/assets/images/stats/RES.webp" alt="RES" />
-                  Effects RES
-                </td>
-
-                <td></td>
-
-                <td>
-                  {{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[0] : "0" }}%
-                </td>
-
-                <td></td>
-
-                <td v-if="hasLevel40">
-                  {{
-                    (shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : 0) +
-                    (shikigami.evolution && shikigami.evolution.no === 10
-                      ? shikigami.evolution.count
-                      : 0)
-                  }}%
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <td v-if="hasLevel40">
-                  <div class="bonus-stat">
-                    +{{
-                      (shikigami.stats.EffectRES
-                        ? shikigami.stats.EffectRES[1] - shikigami.stats.EffectRES[0]
-                        : 0) +
-                      (shikigami.evolution && shikigami.evolution.no === 10
-                        ? shikigami.evolution.count
-                        : 0)
-                    }}%
-                  </div>
-                </td>
-                <td v-else class="empty-cell"></td>
-
-                <td class="right-border"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <StatSection 
+          :route-name="routeName" 
+          :shikigami="shikigami"
+          :is-english="isEnglish"
+        />
 
         <!-- Skills -->
         <h2 class="session-title">
@@ -1798,204 +1054,25 @@ const addCKeywordListeners = () => {
         <h2 class="session-title" v-if="shikigami.id !== 193">
           {{ isEnglish ? "Biography Unlock" : "Mở khoá Tiểu sử" }}
         </h2>
-        <table class="bio-table" v-if="shikigami.id !== 193">
-          <thead>
-            <tr>
-              <th class="table-title no-column">No.</th>
-              <th class="table-title">
-                {{ isEnglish ? "Unlock Conditions" : "Điều kiện mở khóa" }}
-              </th>
-              <th class="table-title reward-column">
-                {{ isEnglish ? "Rewards" : "Phần thưởng" }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="table-cell bio-number">1</td>
 
-              <td class="table-cell bio-text">
-                <span v-html="biographyText(shikigami.biography[0])"></span>
-              </td>
-
-              <td class="table-cell reward-cell">
-                <div class="reward-box">
-                  <img
-                    :src="
-                      ![153, 154].includes(shikigami.id)
-                        ? '/assets/images/Gold.webp'
-                        : `/assets/images/shikigami/skinsInfo/${route.params.name}_SkinInfo1.webp`
-                    "
-                    alt="Gold"
-                    class="reward-icon"
-                  />
-                  <span class="reward-amount">
-                    {{ ![153, 154].includes(shikigami.id) ? 5000 : "" }}</span
-                  >
-                </div>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="table-cell bio-number">2</td>
-              <td class="table-cell bio-text">
-                <span v-html="biographyText(shikigami.biography[1])"></span>
-              </td>
-
-              <td v-if="shikigami.id === 78" class="table-cell reward-cell">
-                <div class="reward-box">
-                  <img src="/assets/images/Gold.webp" alt="Gold" class="reward-icon" />
-                  <span class="reward-amount"> 5000</span>
-                </div>
-              </td>
-
-              <td v-else class="table-cell reward-cell">
-                <div class="reward-box">
-                  <img
-                    :src="
-                      [144, 118, 131, 95].includes(shikigami.id)
-                        ? '/assets/images/Jade.webp'
-                        : [71, 84, 130, 117, 111].includes(shikigami.id)
-                        ? '/assets/images/Black_Daruma.webp'
-                        : `/assets/images/shikigami/shards/${route.params.name}_Shard.webp`
-                    "
-                    :alt="shikigami.name.jp"
-                    class="reward-icon"
-                  />
-                  <span class="reward-amount">{{
-                    shikigami.id >= 201 && shikigami.id <= 214
-                      ? 2
-                      : [71, 84, 130, 117, 111].includes(shikigami.id)
-                      ? ""
-                      : 10
-                  }}</span>
-                </div>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="table-cell bio-number">3</td>
-              <td class="table-cell bio-text">
-                <span v-html="biographyText(shikigami.biography[2])"></span>
-              </td>
-
-              <td class="table-cell reward-cell">
-                <div class="reward-box">
-                  <img
-                    :src="
-                      ![144, 118, 131, 111].includes(shikigami.id)
-                        ? '/assets/images/Jade.webp'
-                        : `/assets/images/shikigami/shards/${route.params.name}_Shard.webp`
-                    "
-                    alt="Jade"
-                    class="reward-icon"
-                  />
-                  <span class="reward-amount">10</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <BiographySection 
+          :route-name="routeName"
+          :shikigami="shikigami"
+          :conditions="conditions"
+          :bio="shikigami.biography"
+          :bio-shikigami-map="bioShikigamiMap"
+          :bio-onmyoji-map="bioOnmyojiMap"
+          :is-english="isEnglish"
+        />
 
         <h2 class="session-title" v-if="shikigami.id !== 193">
           {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
         </h2>
 
-        <div v-if="shikigami.build?.length" class="build-list">
-          <div v-for="build in shikigami.build" :key="build.no" class="build-card">
-            <div class="build-header">
-              <h3 class="build-title">Build {{ build.no }}</h3>
-
-              <!-- ROLE BADGES -->
-              <div class="build-roles">
-                <span
-                  v-for="role in parseRoles(build.role)"
-                  :key="role"
-                  class="build-role-badge"
-                  :class="getRoleClass(role)"
-                >
-                  {{ role }}
-                </span>
-              </div>
-            </div>
-
-            <!-- 2 / 4 / 6 stats -->
-            <div class="build-main-stats">
-              <span
-                v-for="(stat, index) in parseStats(build.indicate)"
-                :key="index"
-                class="build-stat-group"
-              >
-                <span
-                  v-for="s in stat"
-                  :key="s"
-                  class="build-stat"
-                  :class="getStatClass(s)"
-                >
-                  {{ s }}
-                </span>
-
-                <span v-if="index < 2" class="build-divider">/</span>
-              </span>
-            </div>
-
-            <!-- Souls -->
-            <div class="build-souls-grid">
-              <router-link
-                v-for="id in build.souls"
-                :key="id"
-                :to="`/souls/${soulSlug(souls, id)}`"
-                class="build-soul-item"
-              >
-                <img
-                  :src="`/assets/images/souls/icons/${soulSlug(souls, id)}_Icon.webp`"
-                  class="build-soul-icon"
-                />
-
-                <span class="build-soul-name">
-                  {{ soulName(souls, id) }}
-                </span>
-              </router-link>
-            </div>
-
-            <!-- Substats -->
-            <div v-if="build.substats" class="build-substats">
-              <span class="build-label">Substats:</span>
-
-              <template v-for="(item, i) in parseSubstats(build.substats)" :key="i">
-                <span
-                  v-if="item.type === 'stat'"
-                  class="build-stat"
-                  :class="getStatClass(item.value)"
-                >
-                  {{ item.value }}
-                </span>
-
-                <span v-else class="build-separator">
-                  {{ item.value }}
-                </span>
-              </template>
-            </div>
-
-            <!-- Breakpoint -->
-            <div v-if="build.breakpoint" class="build-breakpoint">
-              <span class="build-label">Breakpoint:</span>
-
-              <span
-                v-for="tag in build.breakpoint.split('|').map((t) => t.trim())"
-                :key="tag"
-                class="build-breakpoint-tag"
-              >
-                {{ tag }}
-              </span>
-            </div>
-
-            <!-- Note -->
-            <div v-if="build.note" class="build-note">
-              <span class="build-note-text">{{ build.note }}</span>
-            </div>
-          </div>
-        </div>
+        <SoulChoicesSection 
+          :souls="souls"
+          :shikigami="shikigami"
+          />
       </div>
 
       <!-- Gallery Tab -->
