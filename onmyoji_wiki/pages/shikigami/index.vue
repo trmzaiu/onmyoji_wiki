@@ -361,6 +361,7 @@ onUnmounted(() => {
   align-items: center;
 
   padding-bottom: 30px;
+  border-bottom: none;
 }
 
 .tabs button {

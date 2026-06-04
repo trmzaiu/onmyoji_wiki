@@ -1,11 +1,5 @@
 import { createSkillSpan } from "./createSpan";
 
-const highlightSkill = (text) => {
-  if (!text) return "";
-
-  return `<span class="skill-keyword">${text}</span>`;
-};
-
 export function renderEvolutionText({
   evolutionData,
   evolutionTemplate,

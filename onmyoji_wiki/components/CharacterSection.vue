@@ -1,9 +1,10 @@
 <script setup>
-
 const props = defineProps({
   routeName: String,
-  shikigami: Object,
+  entity: Object,
+  isShikigami: Boolean,
 });
+
 </script>
 
 <template>
@@ -11,8 +12,10 @@ const props = defineProps({
     <div class="character-image-wrapper">
       <div class="character-image-box">
         <img
-          :src="`/assets/images/shikigami/images/${routeName}.webp`"
-          :alt="shikigami.name.jp[1]"
+          :src="`/assets/images/${
+            isShikigami ? 'shikigami' : 'onmyoji'
+          }/images/${routeName}.webp`"
+          :alt="entity.name.jp[1]"
           class="character-image"
         />
       </div>
@@ -24,11 +27,11 @@ const props = defineProps({
         <thead>
           <tr>
             <th class="character-name-header" colspan="4">
-              <div class="character-name">{{ shikigami.name.jp[1] }}</div>
-              <img
-                :src="`/assets/images/rarity/${shikigami.rarity}.webp`"
-                :alt="shikigami.rarity"
-                :class="['rarity-icon', shikigami.rarity === 'UR' ? 'ur' : 'normal']"
+              <div class="character-name">{{ entity.name.jp[1] }}</div>
+              <img v-if="isShikigami"
+                :src="`/assets/images/rarity/${entity.rarity}.webp`"
+                :alt="entity.rarity"
+                :class="['rarity-icon', entity.rarity === 'UR' ? 'ur' : 'normal']"
               />
             </th>
           </tr>
@@ -39,8 +42,8 @@ const props = defineProps({
               <strong>CN</strong>
             </td>
             <td colspan="3">
-              <div class="lang-zh">{{ shikigami.name?.cn[0] }}</div>
-              <div>{{ shikigami.name.cn[1] }}</div>
+              <div class="lang-zh">{{ entity.name?.cn[0] }}</div>
+              <div>{{ entity.name.cn[1] }}</div>
             </td>
           </tr>
           <tr>
@@ -48,8 +51,8 @@ const props = defineProps({
               <strong>JP</strong>
             </td>
             <td colspan="3">
-              <div class="lang-zh">{{ shikigami.name.jp[0] }}</div>
-              <div>{{ shikigami.name.jp[1] }}</div>
+              <div class="lang-zh">{{ entity.name.jp[0] }}</div>
+              <div>{{ entity.name.jp[1] }}</div>
             </td>
           </tr>
           <tr>
@@ -57,7 +60,7 @@ const props = defineProps({
               <strong>GL</strong>
             </td>
             <td colspan="3">
-              <div>{{ shikigami.name.en }}</div>
+              <div>{{ entity.name.en }}</div>
             </td>
           </tr>
           <tr>
@@ -65,7 +68,7 @@ const props = defineProps({
               <strong>VN</strong>
             </td>
             <td colspan="3">
-              <div>{{ shikigami.name.vn }}</div>
+              <div>{{ entity.name.vn }}</div>
             </td>
           </tr>
           <tr>
@@ -74,27 +77,27 @@ const props = defineProps({
           <tr>
             <td>
               <strong>{{
-                shikigami.id === 257 || shikigami.id === 256 ? "CN" : "JP"
+                entity.id === 257 || entity.id === 256 ? "CN" : "JP"
               }}</strong>
             </td>
             <td colspan="3">
               <div
                 class="voice-actor"
-                :class="shikigami.id === 257 || shikigami.id === 256 ? 'lang-zh' : ''"
+                :class="entity.id === 257 || entity.id === 256 ? 'lang-zh' : ''"
               >
-                {{ shikigami.name.va }}
+                {{ entity.name.va }}
               </div>
             </td>
           </tr>
           <tr
-            v-if="!['SP', 'UR', 'N'].includes(shikigami.rarity) && shikigami.id !== 193"
+            v-if="!['SP', 'UR', 'N'].includes(entity.rarity) && entity.id !== 193" && isShikigami
           >
             <td class="character-title" colspan="4">Evo Materials</td>
           </tr>
-          <tr v-if="shikigami.materials && shikigami.materials.length">
+          <tr v-if="entity.materials && entity.materials.length && isShikigami">
             <td
               class="material-cell"
-              v-for="material in shikigami.materials"
+              v-for="material in entity.materials"
               :key="material.type"
             >
               <div class="material-wrapper">
@@ -108,13 +111,13 @@ const props = defineProps({
               </div>
             </td>
           </tr>
-          <tr v-if="shikigami.version !== null">
+          <tr v-if="entity.version !== null && isShikigami">
             <td class="character-title" colspan="4">Other Version</td>
           </tr>
-          <tr v-if="shikigami.version !== null">
+          <tr v-if="entity.version !== null & isShikigami">
             <td colspan="4" class="p-1">
-              <div :class="shikigami.version.length > 1 ? 'version-grid' : ''">
-                <div v-for="ver in shikigami.version" :key="ver" class="version-item">
+              <div :class="entity.version.length > 1 ? 'version-grid' : ''">
+                <div v-for="ver in entity.version" :key="ver" class="version-item">
                   <a :href="`/shikigami/${ver.replace(/ /g, '_')}`">
                     <img
                       :src="`/assets/images/shikigami/shards/${ver.replace(
@@ -135,18 +138,18 @@ const props = defineProps({
               </div>
             </td>
           </tr>
-          <tr>
+          <tr v-if="isShikigami">
             <td class="character-title" colspan="4">Release Date</td>
           </tr>
-          <tr>
+          <tr v-if="isShikigami">
             <td>
               <p>CN</p>
-              <p v-if="shikigami.date.en">GL</p>
+              <p v-if="entity.date.en">GL</p>
             </td>
             <td colspan="3">
-              <div>{{ shikigami.date.cn }}</div>
-              <div v-if="shikigami.date.en">
-                {{ shikigami.date.en }}
+              <div>{{ entity.date.cn }}</div>
+              <div v-if="entity.date.en">
+                {{ entity.date.en }}
               </div>
             </td>
           </tr>
@@ -155,4 +158,3 @@ const props = defineProps({
     </div>
   </div>
 </template>
-

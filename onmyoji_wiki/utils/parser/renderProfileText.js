@@ -1,43 +1,3 @@
-const resolveEntity = ({
-  content,
-  listShikigami,
-  listOnmyoji,
-}) => {
-  let targetType = null;
-  let targetData = null;
-
-  const onmyojiMatch = content.match(/^o-(\d+)$/i);
-
-  if (onmyojiMatch) {
-    const id = parseInt(onmyojiMatch[1], 10);
-
-    targetData = listOnmyoji?.find(
-      (o) => o.id === id
-    );
-
-    if (targetData) {
-      targetType = "onmyoji";
-    }
-  } else {
-    const shikiId = parseInt(content, 10);
-
-    if (!isNaN(shikiId)) {
-      targetData = listShikigami?.find(
-        (s) => s.id === shikiId
-      );
-
-      if (targetData) {
-        targetType = "shikigami";
-      }
-    }
-  }
-
-  return {
-    targetType,
-    targetData,
-  };
-};
-
 const getDisplayName = ({
   targetData,
   isEnglish,
@@ -65,27 +25,20 @@ const getEntityLinkData = ({
 
   const name = targetData.name;
 
-  let keyword = "";
+  const keyword = isEnglish
+    ? name?.en || name?.vn
+    : name?.vn || name?.en;
+
   let finalName = "";
 
   if (targetType === "shikigami") {
-    keyword = isEnglish
-      ? name?.en || name?.vn
-      : name?.vn || name?.en;
-
     finalName =
       (Array.isArray(name?.jp)
         ? name.jp[1] || name.jp[0]
         : name?.jp) ||
       name?.en ||
       name?.vn;
-  }
-
-  if (targetType === "onmyoji") {
-    keyword = isEnglish
-      ? name?.en || name?.vn
-      : name?.vn || name?.en;
-
+  } else {
     finalName =
       name?.en ||
       name?.vn ||
@@ -98,8 +51,40 @@ const getEntityLinkData = ({
   };
 };
 
+const renderEntity = ({
+  targetType,
+  targetData,
+  isEnglish,
+  displayedEntities,
+}) => {
+  const keyword = getDisplayName({
+    targetData,
+    isEnglish,
+  });
+
+  const { finalName } = getEntityLinkData({
+    targetType,
+    targetData,
+    isEnglish,
+  });
+
+  const entityKey = `${targetType}-${targetData.id}`;
+
+  // First appearance
+  if (!displayedEntities.has(entityKey)) {
+    displayedEntities.add(entityKey);
+
+    return `<span class="other-shiki font-bold">${keyword}</span>`;
+  }
+
+  // Later appearances
+  return `<a href="/${targetType}/${encodeURIComponent(
+    finalName
+  )}"><span class="other-shiki">${keyword}</span></a>`;
+};
+
 export const renderProfileText = ({
-  name,
+  shikigami,
   profile,
   isEnglish,
   listShikigami,
@@ -108,89 +93,65 @@ export const renderProfileText = ({
   if (!profile) return "";
 
   const text = isEnglish
-    ? profile?.en
-    : profile?.vn;
+    ? profile.en
+    : profile.vn;
 
   if (!text) return "";
 
+  const displayedEntities = new Set();
+
   let result = text;
 
-  /**
-   * <n>1</n>
-   * self shikigami
-   */
-  result = result.replace(
-    /<n>(.*?)<\/n>/g,
-    isEnglish
-      ? name.en
-      : name.vn
-  );
-
-  /*
-   * <s>1</s>
-   * other shikigami
-   */
+  // Shikigami
   result = result.replace(
     /<s>(.*?)<\/s>/g,
     (match, inner) => {
-      const content = inner.trim();
+      const id = Number(inner.trim());
 
-      const {
-        targetType,
-        targetData,
-      } = resolveEntity({
-        content,
-        listShikigami,
-        listOnmyoji,
-      });
+      // Current shikigami => normal text
+      if (id === shikigami.id) {
+        return isEnglish
+          ? shikigami.name.en
+          : shikigami.name.vn;
+      }
 
-      if (!targetType || !targetData) {
+      const targetData = listShikigami?.find(
+        (s) => s.id === id
+      );
+
+      if (!targetData) {
         return match;
       }
 
-      const keyword = getDisplayName({
+      return renderEntity({
+        targetType: "shikigami",
         targetData,
         isEnglish,
+        displayedEntities,
       });
-
-      return `<span class="other-shiki">${keyword}</span>`;
     }
   );
 
-  /*
-   * <h>1</h>
-   * highlight other shikigami
-   */
+  // Onmyoji
   result = result.replace(
-    /<h>(.*?)<\/h>/g,
+    /<o>(.*?)<\/o>/g,
     (match, inner) => {
-      const content = inner.trim();
+      const id = Number(inner.trim());
 
-      const {
-        targetType,
-        targetData,
-      } = resolveEntity({
-        content,
-        listShikigami,
-        listOnmyoji,
-      });
+      const targetData = listOnmyoji?.find(
+        (o) => o.id === id
+      );
 
-      if (!targetType || !targetData) {
+      if (!targetData) {
         return match;
       }
 
-      const {
-        keyword,
-        finalName,
-      } = getEntityLinkData({
-        targetType,
+      return renderEntity({
+        targetType: "onmyoji",
         targetData,
         isEnglish,
+        displayedEntities,
       });
-
-      return `<a href="/${targetType}/${encodeURIComponent(
-        finalName
-      )}"><span class="other-shiki-highlight font-bold">${keyword}</span></a>`;
     }
   );
 

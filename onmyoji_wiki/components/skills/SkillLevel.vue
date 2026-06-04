@@ -1,35 +1,54 @@
 <script setup>
-defineProps({
-  levels: [Array, String],
+
+const props = defineProps({
+  skill: Object,
   isEnglish: Boolean,
-  parseSkillDescription: Function,
+  skillDescriptionText: Function
 });
+
 </script>
 
 <template>
-  <table class="skill-level-table" v-if="Array.isArray(levels)">
+  <table
+    class="skill-level-table"
+    v-if="
+      Array.isArray(
+        isEnglish
+          ? skill.levels.en
+          : skill.levels.vn
+      )
+    "
+  >
     <tbody>
       <tr>
         <th class="level-column">
           {{ isEnglish ? "Level" : "Cấp" }}
         </th>
-
         <th>
           {{ isEnglish ? "Effect" : "Hiệu ứng" }}
         </th>
       </tr>
-
-      <tr v-for="lvl in levels" :key="lvl.level">
-        <td class="level-cell">
-          {{ lvl.level }}
-        </td>
-
-        <td class="effect-cell" v-html="parseSkillDescription(lvl.effect)" />
+      <tr
+        v-for="lvl in isEnglish
+          ? skill.levels.en
+          : skill.levels.vn"
+        :key="lvl.level"
+      >
+        <td class="level-cell">{{ lvl.level }}</td>
+        <td
+          class="effect-cell"
+          v-html="skillDescriptionText(lvl.effect)"
+        ></td>
       </tr>
     </tbody>
   </table>
-
   <div v-else>
-    <p class="no-level" v-html="parseSkillDescription(levels)" />
+    <p class="no-level">
+      {{
+        isEnglish
+          ? skill.levels.en
+          : skill.levels.vn
+      }}
+    </p>
   </div>
 </template>

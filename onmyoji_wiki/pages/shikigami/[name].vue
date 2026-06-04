@@ -7,35 +7,26 @@ import { useShikigami } from "~/composables/useShikigami";
 import { getOnmyojiByIds } from "~/services/onmyoji.service";
 import { getShikigamiByIds } from "~/services/shikigami.service";
 
-import {
-  effectTagType,
-  parseEffectDescription,
-  parseEffectTags,
-} from "~/utils/parser/effectParser";
 import { renderEvolutionText } from "~/utils/parser/renderEvolutionText";
 import { parseSkillDescription } from "~/utils/parser/skillParser";
 
 import {
-  findSoulByIdName,
-  findSoulByIdSlug,
-  getRoleClass,
-  getStatClass,
-  parseRoles,
-  parseStats,
-  parseSubstats,
-} from "~/utils/helper/buildHelper";
-import {
-  collectNestedEffects,
-  getAllSkillEffectText,
   markFirstAppearances,
 } from "~/utils/effectCollecter";
 
-import ProfileSection from "~/components/ProfileSection.vue";
-import CharacterSection from "~/components/CharacterSection.vue";
-import TabSection from "~/components/TabSection.vue";
-import StatSection from "~/components/StatSection.vue";
 import BiographySection from "~/components/BiographySection.vue";
+import CharacterSection from "~/components/CharacterSection.vue";
+import AccessorySection from "~/components/gallery/AccessorySection.vue";
+import IllustrationSection from "~/components/gallery/IllustrationSection.vue";
+import SkinInfoSection from "~/components/gallery/SkinInfoSection.vue";
+import SkinSection from "~/components/gallery/SkinSection.vue";
+import ModalSection from "~/components/ModalSection.vue";
+import ProfileSection from "~/components/ProfileSection.vue";
+import SkillSection from "~/components/skills/SkillSection.vue";
 import SoulChoicesSection from "~/components/SoulChoicesSection.vue";
+import StatSection from "~/components/StatSection.vue";
+import TabSection from "~/components/TabSection.vue";
+
 /* ---------------------- GLOBAL ---------------------- */
 const route = useRoute();
 
@@ -66,8 +57,6 @@ const isEnglish = ref(true);
 const activeTab = ref(route.hash.replace("#", "") || "Main");
 
 // UI
-const tooltipData = ref(null);
-
 const activeSkillIndex = ref(0);
 
 const selectedImage = ref(null);
@@ -104,24 +93,6 @@ function changeSkill(index) {
 
   history.replaceState(null, "", `${window.location.pathname}#${hash}`);
 }
-
-const collapsedEffects = ref(new Set());
-
-const toggleEffectCard = (effectId) => {
-  if (collapsedEffects.value.has(effectId)) {
-    collapsedEffects.value.delete(effectId);
-  } else {
-    collapsedEffects.value.add(effectId);
-  }
-
-  collapsedEffects.value = new Set(collapsedEffects.value);
-};
-
-const isEffectCollapsed = (effectId) => collapsedEffects.value.has(effectId);
-
-/* ---------------------- HELPERS ---------------------- */
-const getIllustrationUrl = (name) =>
-  `/assets/images/illustrations/${name.replace(/ /g, "_")}.jpg`;
 
 /* ---------------------- RENDER ---------------------- */
 const evolutionText = computed(() =>
@@ -161,7 +132,7 @@ const processedSkills = computed(() => {
   );
 });
 
-const skillDescriptionText = (text, skillIndex) => {
+const skillDescriptionText = (text) => {
   return parseSkillDescription({
     text,
     shikigami: shikigami.value,
@@ -169,68 +140,7 @@ const skillDescriptionText = (text, skillIndex) => {
     onmyojiMap: skillOnmyojiMap.value,
     effectMap: effectMap.value,
     isEnglish: isEnglish.value,
-    currentSkillIndex: skillIndex,
-  });
-};
-
-const currentSkillEffects = computed(() => {
-  const skill = processedSkills.value?.[activeSkillIndex.value];
-
-  if (!skill) {
-    return [];
-  }
-
-  return collectNestedEffects({
-    text: getAllSkillEffectText({
-      skill,
-      isEnglish: isEnglish.value,
-    }),
-    effects: effects.value,
-    isEnglish: isEnglish.value,
-  });
-});
-
-const effectDescriptionText = (effect) =>
-  parseEffectDescription({
-    text: parseEffectTags(effect, isEnglish.value).description,
-    shikigami: shikigami.value,
-    shikigamiMap: skillShikigamiMap.value,
-    onmyojiMap: skillOnmyojiMap.value,
-    effectMap: effectMap.value,
-    isEnglish: isEnglish.value,
-    currentEffectId: effect.id,
-  });
-
-const soulName = (souls, id) => findSoulByIdName(souls, id);
-
-const soulSlug = (souls, id) => findSoulByIdSlug(souls, id);
-
-/* ---------------------- TOOLTIP ---------------------- */
-const imgs = computed(() => tooltipData.value?.images || []);
-
-function removeTrailingE(word) {
-  if (word.endsWith("e")) {
-    return word.slice(0, -1);
-  }
-
-  return word;
-}
-
-const highlightSkin = (content) => {
-  if (!content || !shikigami?.value?.skins?.length) return content;
-
-  return content.replace(/<b>(\d+)<\/b>/g, (_, num) => {
-    const index = parseInt(num, 10);
-    const skinItem =
-      shikigami.value.rarity !== "SP"
-        ? shikigami.value.skins[index + 1]
-        : shikigami.value.skins[index];
-
-    if (!skinItem) return _;
-
-    const keyword = skinItem.name?.en || skinItem.name?.cn || "";
-
-    return `<span class="text-[#c07b2a]">${keyword}</span>`;
+    currentSkillIndex: activeSkillIndex.value,
   });
 };
 
@@ -370,9 +280,10 @@ const addCKeywordListeners = () => {
       </div>
 
       <!-- Character -->
-      <CharacterSection 
-        :route-name="routeName" 
-        :shikigami="shikigami"
+      <CharacterSection
+        :route-name="routeName"
+        :entity="shikigami"
+        :is-shikigami="true"
       />
 
       <!-- Profile -->
@@ -385,11 +296,7 @@ const addCKeywordListeners = () => {
       />
 
       <!-- Content -->
-      <TabSection
-        :active-tab="activeTab"
-        :is-english="isEnglish"
-        @change="changeTab"
-      />
+      <TabSection :active-tab="activeTab" :is-english="isEnglish" @change="changeTab" />
 
       <!-- Main Tab -->
       <div
@@ -402,8 +309,8 @@ const addCKeywordListeners = () => {
           {{ isEnglish ? "Stats" : "Chỉ số" }}
         </h2>
 
-        <StatSection 
-          :route-name="routeName" 
+        <StatSection
+          :route-name="routeName"
           :shikigami="shikigami"
           :is-english="isEnglish"
         />
@@ -468,301 +375,18 @@ const addCKeywordListeners = () => {
           </button>
         </div>
         <div v-if="activeSkillIndex < 3">
-          <div class="skill-section">
-            <!-- Skill icon + title -->
-            <div class="skill-top">
-              <span class="skill-icon-wrapper">
-                <img
-                  :src="`/assets/images/shikigami/skills/${route.params.name}_Skill${
-                    activeSkillIndex + 1
-                  }.webp`"
-                  :alt="processedSkills[activeSkillIndex].name.en"
-                  :title="processedSkills[activeSkillIndex].name.en"
-                />
-              </span>
-              <span class="skill-heading">
-                <div class="skill-title">
-                  <span class="skill-name">
-                    {{
-                      isEnglish
-                        ? processedSkills[activeSkillIndex].name.en
-                        : processedSkills[activeSkillIndex].name.vn
-                    }}
-                  </span>
-                  <span class="skill-sub-name">
-                    ({{
-                      processedSkills[activeSkillIndex].name.cn ===
-                      processedSkills[activeSkillIndex].name.jp
-                        ? processedSkills[activeSkillIndex].name.cn
-                        : processedSkills[activeSkillIndex].name.cn +
-                          " / " +
-                          processedSkills[activeSkillIndex].name.jp
-                    }})
-                  </span>
-                  <button
-                    class="skill-edit-btn"
-                    @click="editSkill(processedSkills[activeSkillIndex])"
-                  >
-                    <i class="fas fa-edit"></i>
-                    <!-- dùng font-awesome -->
-                  </button>
-                </div>
-              </span>
-            </div>
-
-            <!-- Skill description -->
-            <div class="skill-content">
-              <div class="skill-header">
-                <div class="skill-badges">
-                  <div
-                    v-for="tagId in processedSkills[activeSkillIndex].tags"
-                    :key="tagId"
-                    class="skill-badge"
-                  >
-                    <div
-                      class="skill-badge-bg tint-base"
-                      :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
-                    ></div>
-
-                    <span class="skill-badge-text">
-                      {{ tagMap?.[tagId]?.name }}
-                    </span>
-                  </div>
-                </div>
-                <div class="skill-info">
-                  <span v-if="processedSkills[activeSkillIndex].cooldown !== 0">
-                    <b>CD:</b>
-                    {{ processedSkills[activeSkillIndex].cooldown }}
-                  </span>
-                  <span>
-                    {{ processedSkills[activeSkillIndex].onibi }}
-                    <img src="/assets/images/Onibi.webp" alt="Onibi" />
-                  </span>
-                </div>
-              </div>
-              <hr class="skill-divider" />
-
-              <div
-                class="skill-voice-wrapper"
-                v-if="processedSkills[activeSkillIndex].voice"
-              >
-                <p class="skill-voice">"{{ processedSkills[activeSkillIndex].voice }}"</p>
-              </div>
-              <p
-                class="skill-description"
-                v-html="
-                  skillDescriptionText(
-                    isEnglish
-                      ? processedSkills[activeSkillIndex].description.en
-                      : processedSkills[activeSkillIndex].description.vn,
-                    activeSkillIndex
-                  )
-                "
-              ></p>
-
-              <div class="skill-effect-cards" v-if="currentSkillEffects.length">
-                <div
-                  v-for="effect in currentSkillEffects"
-                  :key="effect.id"
-                  class="effect-card"
-                  :class="{ collapsed: isEffectCollapsed(effect.id) }"
-                >
-                  <div
-                    class="effect-card-title"
-                    :class="'title-color-' + effect.color"
-                    @click="toggleEffectCard(effect.id)"
-                  >
-                    {{ isEnglish ? effect.name?.en : effect.name?.vn }}
-
-                    <span class="lang-zh"> ({{ effect.name?.cn }}) </span>
-                  </div>
-
-                  <Transition name="effect-collapse">
-                    <div v-if="isEffectCollapsed(effect.id)">
-                      <div v-if="effect.images?.length">
-                        <img
-                          v-for="(img, i) in effect.images"
-                          :key="i"
-                          :src="'/assets/images/effects/' + img + '.webp'"
-                          :alt="img"
-                        />
-                      </div>
-
-                      <div
-                        class="effect-tags"
-                        v-if="parseEffectTags(effect, isEnglish.value).tags.length"
-                      >
-                        <span
-                          v-for="tag in parseEffectTags(effect, isEnglish.value).tags"
-                          :key="tag"
-                          class="effect-tag"
-                          :class="'tag-' + effectTagType(tag)"
-                        >
-                          {{ tag }}
-                        </span>
-                      </div>
-
-                      <div
-                        class="effect-card-desc"
-                        v-html="effectDescriptionText(effect)"
-                      ></div>
-                    </div>
-                  </Transition>
-                </div>
-              </div>
-
-              <div v-if="shikigami.id === 107 && activeSkillIndex === 0">
-                <hr class="skill-divider" />
-
-                <b class="sub-skill-title" @click="activeSkillIndex = 1">
-                  {{
-                    isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn
-                  }}
-                </b>
-
-                <div class="sub-skill-grid">
-                  <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
-                    <img
-                      :src="`/assets/images/shikigami/skills/${
-                        route.params.name
-                      }_SubSkill${i - 3}.webp`"
-                    />
-
-                    <span class="sub-skill-name" @click="activeSkillIndex = 1">
-                      {{
-                        isEnglish
-                          ? shikigami.skills[i - 1].name.en.split(" ")[0]
-                          : shikigami.skills[i - 1].name.vn
-                              .split(" ")
-                              .slice(0, 2)
-                              .join(" ")
-                      }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="shikigami.id === 107 && activeSkillIndex === 2">
-                <hr class="skill-divider" />
-
-                <b class="sub-skill-title" @click="activeSkillIndex = 1">
-                  {{
-                    isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn
-                  }}
-                </b>
-
-                <div class="sub-skill-grid">
-                  <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
-                    <img
-                      :src="`/assets/images/shikigami/skills/${
-                        route.params.name
-                      }_SubSkill${i + 1}.webp`"
-                    />
-
-                    <span class="sub-skill-name" @click="activeSkillIndex = 1">
-                      {{
-                        isEnglish
-                          ? shikigami.skills[i - 1].name.en.split(" ")[0]
-                          : shikigami.skills[i - 1].name.vn
-                              .split(" ")
-                              .slice(0, 2)
-                              .join(" ")
-                      }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
-                <hr class="skill-divider" />
-
-                <b class="sub-skill-title" @click="activeSkillIndex = 1">
-                  {{
-                    isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn
-                  }}
-                </b>
-
-                <div class="sub-skill-grid">
-                  <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
-                    <img
-                      :src="`/assets/images/shikigami/skills/${
-                        route.params.name
-                      }_SubSkill${i - 3}.webp`"
-                    />
-
-                    <span class="sub-skill-name" @click="activeSkillIndex = 1">
-                      {{
-                        isEnglish
-                          ? shikigami.skills[i - 1].name.en
-                          : shikigami.skills[i - 1].name.vn
-                      }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="shikigami.id === 141 && activeSkillIndex === 1">
-                <hr class="skill-divider" />
-
-                <b class="text-black mb-3 block cursor-pointer hover:text-[#a51919]">
-                  {{ isEnglish ? "Knots" : "Duyên Kết" }}
-                </b>
-
-                <div class="sub-skill-grid">
-                  <div v-for="i in [1, 2, 3, 4]" :key="i" class="sub-skill-item">
-                    <img
-                      :src="`/assets/images/shikigami/skills/${route.params.name}_Knot${i}.webp`"
-                    />
-
-                    <span class="sub-skill-name">
-                      {{ isEnglish ? "Type " + i : "Loại " + i }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <hr class="skill-divider" />
-              <table
-                class="skill-level-table"
-                v-if="
-                  Array.isArray(
-                    isEnglish
-                      ? shikigami.skills[activeSkillIndex].levels.en
-                      : shikigami.skills[activeSkillIndex].levels.vn
-                  )
-                "
-              >
-                <tbody>
-                  <tr>
-                    <th class="level-column">
-                      {{ isEnglish ? "Level" : "Cấp" }}
-                    </th>
-                    <th>
-                      {{ isEnglish ? "Effect" : "Hiệu ứng" }}
-                    </th>
-                  </tr>
-                  <tr
-                    v-for="lvl in isEnglish
-                      ? processedSkills[activeSkillIndex].levels.en
-                      : processedSkills[activeSkillIndex].levels.vn"
-                    :key="lvl.level"
-                  >
-                    <td class="level-cell">{{ lvl.level }}</td>
-                    <td
-                      class="effect-cell"
-                      v-html="skillDescriptionText(lvl.effect, activeSkillIndex)"
-                    ></td>
-                  </tr>
-                </tbody>
-              </table>
-              <div v-else>
-                <p class="no-level">
-                  { isEnglish ? processedSkills[activeSkillIndex].levels.en :
-                  processedSkills[activeSkillIndex].levels.vn }
-                </p>
-              </div>
-            </div>
-          </div>
+          <SkillSection
+            :route-name="routeName"
+            :entity="shikigami"
+            :skill="processedSkills[activeSkillIndex]"
+            :tag-map="tagMap"
+            :effects="effects"
+            :list-shikigami="listShikigami"
+            :list-onmyoji="listOnmyoji"
+            :is-english="isEnglish"
+            :active-skill-index="activeSkillIndex"
+            :is-shikigami="true"
+          />
 
           <div
             v-for="({ skill, i }, index) in processedSkills
@@ -1055,7 +679,7 @@ const addCKeywordListeners = () => {
           {{ isEnglish ? "Biography Unlock" : "Mở khoá Tiểu sử" }}
         </h2>
 
-        <BiographySection 
+        <BiographySection
           :route-name="routeName"
           :shikigami="shikigami"
           :conditions="conditions"
@@ -1069,10 +693,7 @@ const addCKeywordListeners = () => {
           {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
         </h2>
 
-        <SoulChoicesSection 
-          :souls="souls"
-          :shikigami="shikigami"
-          />
+        <SoulChoicesSection :souls="souls" :shikigami="shikigami" />
       </div>
 
       <!-- Gallery Tab -->
@@ -1084,176 +705,26 @@ const addCKeywordListeners = () => {
         <h2 class="session-title top-0">
           {{ isEnglish ? "Skins" : "Trang phục" }}
         </h2>
-        <div class="skin-gallery">
-          <div
-            v-for="(skin, index) in shikigami.skins"
-            :key="index"
-            class="skin-card"
-            :title="skin.name.en || skin.name.cn"
-            @click="
-              openModal(
-                skin.name.en === 'Default' || skin.name.en === 'Evolution'
-                  ? `/assets/images/shikigami/images/${route.params.name}${
-                      skin.name.en === 'Evolution' ? '_Evo' : ''
-                    }.webp`
-                  : `/assets/images/shikigami/skins/${route.params.name}_Skin${
-                      shikigami.rarity === 'SP' || shikigami.rarity === 'N'
-                        ? index
-                          ? index
-                          : ''
-                        : index - 1
-                    }.webp`
-              )
-            "
-          >
-            <img
-              :src="
-                skin.name.en === 'Default' || skin.name.en === 'Evolution'
-                  ? `/assets/images/shikigami/images/${route.params.name}${
-                      skin.name.en === 'Evolution' ? '_Evo' : ''
-                    }.webp`
-                  : `/assets/images/shikigami/skins/${route.params.name}_Skin${
-                      shikigami.rarity === 'SP' || shikigami.rarity === 'N'
-                        ? index
-                          ? index
-                          : ''
-                        : index - 1
-                    }.webp`
-              "
-              :alt="skin.name.en || skin.name.cn"
-              class="skin-image"
-            />
-            <p
-              class="skin-name"
-              :class="
-                isEnglish
-                  ? !skin.name.en && skin.name.cn
-                    ? 'lang-zh'
-                    : 'skin-name-en'
-                  : 'skin-name-vn'
-              "
-            >
-              {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
-            </p>
-          </div>
-        </div>
 
-        <!-- Modal -->
-        <div v-if="isModalOpen" class="image-modal">
-          <!-- Overlay -->
-          <div class="image-modal-overlay" @click="closeModal"></div>
-
-          <!-- Content -->
-          <div class="image-modal-content">
-            <!-- Close -->
-            <button class="image-modal-close" @click="closeModal">✕</button>
-
-            <!-- Image -->
-            <img :src="selectedImage" alt="Skin Preview" class="image-modal-preview" />
-          </div>
-        </div>
+        <SkinSection
+          :route-name="routeName"
+          :entity="shikigami"
+          :is-shikigami="true"
+          :is-english="isEnglish"
+          @open-image="openModal"
+        />
 
         <!-- Skins Info -->
         <h2 class="session-title">
           {{ isEnglish ? "Skins Info" : "Thông tin trang phục" }}
         </h2>
-        <table class="skin-info-table">
-          <thead>
-            <tr>
-              <th class="table-title image-column">
-                {{ isEnglish ? "Image" : "Ảnh" }}
-              </th>
-              <th class="table-title">
-                {{ isEnglish ? "Name" : "Tên" }}
-              </th>
-              <th class="table-title">
-                {{ isEnglish ? "Artist" : "Họa sĩ" }}
-              </th>
-              <th class="table-title obtained-column">
-                {{ isEnglish ? "Obtained" : "Cách nhận" }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-for="(skin, index) in shikigami.skins || []" :key="index">
-              <tr v-if="skin && skin.obtained !== 'Cancelled'" class="skin-info-row">
-                <!-- ICON -->
-                <td class="table-cell skin-image-cell">
-                  <div class="skin-info-image-wrapper">
-                    <img
-                      :src="
-                        skin.name?.en === 'Default'
-                          ? (index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ||
-                            shikigami.id === 193
-                            ? `/assets/images/shikigami/shards/${route.params.name}_Shard.webp`
-                            : `/assets/images/shikigami/skinsInfo/${route.params.name}_SkinInfo0.webp`
-                          : skin.name?.en === 'Evolution'
-                          ? `/assets/images/shikigami/skinsInfo/${route.params.name}_SkinInfo00.webp`
-                          : `/assets/images/shikigami/skinsInfo/${
-                              route.params.name
-                            }_SkinInfo${
-                              shikigami.rarity === 'SP' || shikigami.rarity === 'N'
-                                ? index
-                                  ? index
-                                  : ''
-                                : index - 1
-                            }.webp`
-                      "
-                      :alt="skin.name?.en || skin.name?.cn"
-                      class="skin-info-image"
-                      :class="{
-                        'skin-info-scale':
-                          (index === 0 && shikigami.id >= 201 && shikigami.id <= 217) ||
-                          shikigami.id === 193,
-                      }"
-                    />
-                  </div>
-                </td>
 
-                <!-- NAME -->
-                <td class="table-cell skin-name-cell">
-                  <template
-                    v-if="skin.name?.en === 'Default' || skin.name?.en === 'Evolution'"
-                  >
-                    <div class="skin-main-name">
-                      {{ isEnglish ? skin.name?.en : skin.name?.vn }}
-                    </div>
-                  </template>
-
-                  <template v-else>
-                    <div class="skin-main-name">
-                      {{ skin.name?.en }}
-                    </div>
-
-                    <div class="skin-sub-name">
-                      <span class="lang-zh">
-                        {{ skin.name?.cn }}
-                      </span>
-
-                      -
-
-                      <span class="skin-name-vn">
-                        {{ skin.name?.vn }}
-                      </span>
-                    </div>
-                  </template>
-                </td>
-
-                <!-- ARTIST -->
-                <td class="table-cell skin-artist-cell">
-                  <span class="lang-zh">
-                    {{ skin.artist }}
-                  </span>
-                </td>
-
-                <!-- OBTAINED -->
-                <td class="table-cell skin-obtained-cell">
-                  {{ skin.obtained }}
-                </td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
+        <SkinInfoSection
+          :route-name="routeName"
+          :entity="shikigami"
+          :is-shikigami="true"
+          :is-english="isEnglish"
+        />
 
         <!-- Biography Accessories -->
         <h2
@@ -1262,122 +733,23 @@ const addCKeywordListeners = () => {
         >
           {{ isEnglish ? "Biography Accessories" : "Phụ kiện Tiểu sử" }}
         </h2>
-        <table
-          v-if="shikigami.accessories && shikigami.accessories.length"
-          class="bio-accessory-table"
-        >
-          <thead>
-            <tr>
-              <th class="table-title bio-no-column">
-                Bio<br />
-                No.
-              </th>
-
-              <th class="table-title accessory-image-column">
-                {{ isEnglish ? "Image" : "Ảnh" }}
-              </th>
-
-              <th class="table-title">
-                {{ isEnglish ? "Name" : "Tên" }}
-              </th>
-
-              <th class="table-title accessory-type-column">
-                {{ isEnglish ? "Type" : "Loại" }}
-              </th>
-
-              <th class="table-title">
-                {{ isEnglish ? "Obtained" : "Cách nhận" }}
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr
-              v-for="(bio, index) in shikigami.accessories"
-              :key="index"
-              class="bio-accessory-row"
-            >
-              <!-- No -->
-              <td class="table-cell bio-no-cell">
-                {{ index + 4 }}
-              </td>
-
-              <!-- Image -->
-              <td class="table-cell accessory-image-cell">
-                <div class="accessory-image-wrapper">
-                  <img
-                    :src="`/assets/images/shikigami/bios/${route.params.name}_Bio${
-                      index + 4
-                    }.webp`"
-                    :alt="bio.name.en || bio.name.cn"
-                    class="accessory-image"
-                  />
-                </div>
-              </td>
-
-              <!-- Name -->
-              <td class="table-cell accessory-name-cell">
-                <div class="accessory-main-name">
-                  {{ bio.name.en }}
-                </div>
-
-                <div class="accessory-sub-name">
-                  <span class="lang-zh">
-                    {{ bio.name.cn }}
-                  </span>
-
-                  -
-
-                  <span class="lang-vi">
-                    {{ bio.name.vn }}
-                  </span>
-                </div>
-              </td>
-
-              <!-- Type -->
-              <td class="table-cell accessory-type-cell">
-                {{ bio.type }}
-              </td>
-
-              <!-- Obtained -->
-              <td
-                class="table-cell accessory-obtained-cell"
-                v-html="highlightSkin(bio.obtained)"
-              ></td>
-            </tr>
-          </tbody>
-        </table>
+        <AccessorySection
+          :route-name="routeName"
+          :entity="shikigami"
+          :is-english="isEnglish"
+        />
 
         <!-- Illustrations -->
         <h2 class="session-title">
           {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
         </h2>
-        <div class="illustration-gallery">
-          <div
-            v-for="(img, index) in illustrations"
-            :key="index"
-            class="illustration-card"
-          >
-            <img
-              :src="getIllustrationUrl(img.name)"
-              :alt="img.name"
-              :title="img.name"
-              class="illustration-image"
-              @click="openModal(getIllustrationUrl(img.name))"
-            />
 
-            <div
-              v-if="!/^No[ _]Name/i.test(img.name)"
-              class="illustration-label"
-              :class="/[\u4E00-\u9FFF]/.test(img.name) ? 'lang-zh' : 'skin-name-en'"
-            >
-              {{ img.name.replace(/[_ ]\d+$/, "").replace(/_/g, " ") }}
-            </div>
-          </div>
-        </div>
+        <IllustrationSection :illustrations="illustrations" @open-image="openModal" />
       </div>
     </div>
   </div>
+
+  <ModalSection :is-open="isModalOpen" :image="selectedImage" @close="closeModal" />
 </template>
 
 <style src="@/assets/css/profile.css"></style>

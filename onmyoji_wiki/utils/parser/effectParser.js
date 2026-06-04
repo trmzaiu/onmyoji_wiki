@@ -1,4 +1,4 @@
-import { getSkillName } from "../helper/helper";
+import { getLocalizedName, getSkillName } from "../helper/helper";
 import { createEffectSpan, createSkillSpan } from "./createSpan";
 import { parseBaseDescription } from "./skillParser";
 
@@ -44,8 +44,6 @@ export const parseEffectTags = (effect, isEnglish) => {
 		description: description.replace(/^\[(.*?)\]\s*/, ""),
 	};
 };
-
-
 
 export const parseEffectDescription = ({
 	text,

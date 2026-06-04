@@ -11,7 +11,7 @@ const props = defineProps({
 
 const profileText = (profile) =>
   renderProfileText({
-    name: props.shikigami.name,
+    shikigami: props.shikigami,
     profile,
     listShikigami: props.listShikigami,
     listOnmyoji: props.listOnmyoji,
