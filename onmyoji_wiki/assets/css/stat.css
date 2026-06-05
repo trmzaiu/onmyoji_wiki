@@ -24,6 +24,10 @@
   padding-bottom: 8px;
 }
 
+.stats-title-left {
+  transform: translateX(5%);
+}
+
 .icon-cell {
   position: relative;
 }
@@ -33,6 +37,10 @@
   top: -5px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.stats-figure-left {
+  transform: translateX(-40%);
 }
 
 .stats-icon {

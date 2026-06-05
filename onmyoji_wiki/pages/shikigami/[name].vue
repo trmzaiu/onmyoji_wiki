@@ -28,15 +28,14 @@ import StatSection from "~/components/StatSection.vue";
 import TabSection from "~/components/TabSection.vue";
 
 /* ---------------------- GLOBAL ---------------------- */
+
 const route = useRoute();
 
-const formattedName = computed(() => {
-  return route.params.name.replace(/_/g, " ");
-});
+const routeName = computed(() => route.params.name);
 
-const routeName = computed(() => {
-  return route.params.name;
-});
+const formattedName = computed(() =>
+  route.params.name.replace(/_/g, " ")
+);
 
 /* ---------------------- STATE ---------------------- */
 const {
@@ -49,8 +48,12 @@ const {
   souls,
   illustrations,
   evolution,
+  fetchIllustrations,
+  illustrationHasMore,
   loadShikigami,
 } = useShikigami();
+
+const showEvolution = ref(true);
 
 const isEnglish = ref(true);
 
@@ -72,10 +75,14 @@ const closeModal = () => {
   selectedImage.value = null;
 };
 
-function changeTab(tab) {
+async function changeTab(tab) {
   activeTab.value = tab;
 
   history.replaceState(null, "", `${window.location.pathname}#${tab}`);
+
+  if (tab === "Gallery" && illustrations.value.length === 0) {
+    await fetchIllustrations(shikigami.value.id);
+  }
 }
 
 function changeSkill(index) {
@@ -92,6 +99,29 @@ function changeSkill(index) {
   }
 
   history.replaceState(null, "", `${window.location.pathname}#${hash}`);
+}
+
+const loadMoreRef = ref(null);
+
+let observer;
+
+function initIllustrationObserver() {
+  observer?.disconnect();
+
+  observer = new IntersectionObserver(
+    async ([entry]) => {
+      if (entry.isIntersecting && activeTab.value === "Gallery") {
+        await fetchIllustrations(shikigami.value.id);
+      }
+    },
+    {
+      rootMargin: "500px",
+    }
+  );
+
+  if (loadMoreRef.value) {
+    observer.observe(loadMoreRef.value);
+  }
 }
 
 /* ---------------------- RENDER ---------------------- */
@@ -128,6 +158,7 @@ const processedSkills = computed(() => {
     markFirstAppearances({
       skill,
       isEnglish: isEnglish.value,
+      showEvolution: showEvolution.value
     })
   );
 });
@@ -147,7 +178,7 @@ const skillDescriptionText = (text) => {
 /* ---------------------- LIFECYCLE ---------------------- */
 
 onMounted(async () => {
-  document.title = formattedName;
+  document.title = `${formattedName}`;
 
   const saved = localStorage.getItem("lang");
 
@@ -175,6 +206,10 @@ onMounted(async () => {
   }
 
   await loadShikigami(formattedName.value);
+
+  nextTick(() => {
+    initIllustrationObserver();
+  });
 
   const shikiIds = [
     ...new Set(shikigami.value?.biography?.map((b) => b.shiki)?.filter(Boolean)),
@@ -265,7 +300,7 @@ const addCKeywordListeners = () => {
 
 <template>
   <div class="container" v-if="shikigami">
-    <div class="content-section flex flex-col gap-4">
+    <div class="content-section">
       <!-- Name -->
       <div class="header-row">
         <div class="title">{{ shikigami.name.jp[1] }}</div>
@@ -283,7 +318,7 @@ const addCKeywordListeners = () => {
       <CharacterSection
         :route-name="routeName"
         :entity="shikigami"
-        :is-shikigami="true"
+        :type="'shikigami'"
       />
 
       <!-- Profile -->
@@ -311,8 +346,9 @@ const addCKeywordListeners = () => {
 
         <StatSection
           :route-name="routeName"
-          :shikigami="shikigami"
+          :entity="shikigami"
           :is-english="isEnglish"
+          :is-shikigami="true"
         />
 
         <!-- Skills -->
@@ -386,6 +422,8 @@ const addCKeywordListeners = () => {
             :is-english="isEnglish"
             :active-skill-index="activeSkillIndex"
             :is-shikigami="true"
+            :show-evolution="showEvolution"
+            v-model:showEvolution="showEvolution"
           />
 
           <div
@@ -689,7 +727,7 @@ const addCKeywordListeners = () => {
           :is-english="isEnglish"
         />
 
-        <h2 class="session-title" v-if="shikigami.id !== 193">
+        <h2 class="session-title" v-if="souls.length" >
           {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
         </h2>
 
@@ -709,7 +747,7 @@ const addCKeywordListeners = () => {
         <SkinSection
           :route-name="routeName"
           :entity="shikigami"
-          :is-shikigami="true"
+          :type="'shikigami'"
           :is-english="isEnglish"
           @open-image="openModal"
         />
@@ -722,7 +760,7 @@ const addCKeywordListeners = () => {
         <SkinInfoSection
           :route-name="routeName"
           :entity="shikigami"
-          :is-shikigami="true"
+          :type="'shikigami'"
           :is-english="isEnglish"
         />
 
@@ -733,6 +771,7 @@ const addCKeywordListeners = () => {
         >
           {{ isEnglish ? "Biography Accessories" : "Phụ kiện Tiểu sử" }}
         </h2>
+
         <AccessorySection
           :route-name="routeName"
           :entity="shikigami"
@@ -745,6 +784,7 @@ const addCKeywordListeners = () => {
         </h2>
 
         <IllustrationSection :illustrations="illustrations" @open-image="openModal" />
+        <div ref="loadMoreRef" v-if="illustrationHasMore" class="loading-trigger"></div>
       </div>
     </div>
   </div>
@@ -752,11 +792,14 @@ const addCKeywordListeners = () => {
   <ModalSection :is-open="isModalOpen" :image="selectedImage" @close="closeModal" />
 </template>
 
+<style src="@/assets/css/styles.css"></style>
+
 <style src="@/assets/css/profile.css"></style>
 <style src="@/assets/css/stat.css"></style>
 <style src="@/assets/css/skill.css"></style>
 <style src="@/assets/css/evolution.css"></style>
 <style src="@/assets/css/biography.css"></style>
 <style src="@/assets/css/build.css"></style>
+
 <style src="@/assets/css/skin.css"></style>
 <style src="@/assets/css/illustration.css"></style>

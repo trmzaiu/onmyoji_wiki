@@ -198,8 +198,17 @@
 
 .skill-divider {
   border: none;
-  border-top: 1px solid #a51919;
+  height: 2px;
   margin: 8px 0;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    #a51919,
+    #d14a4a,
+    #a51919,
+    transparent
+  );
 }
 
 .skill-voice-wrapper {
@@ -533,7 +542,6 @@
 
 .effect-keyword {
   position: relative;
-  top: 0.5px;
 }
 
 .effect-keyword-red {
@@ -546,4 +554,19 @@
 
 .effect-keyword-normal {
   color: inherit;
+}
+
+.evolution-badge {
+  display: flex;
+  justify-self: end;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(165, 25, 25, 0.15);
+  border: 1px solid #a51919;
+  color: #d46a6a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
 }

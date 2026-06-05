@@ -3,8 +3,23 @@ const props = defineProps({
   skill: Object,
   tagMap: Array,
   skillDescriptionText: Function,
-  isEnglish: Boolean
+  isEnglish: Boolean,
+  showEvolution: Boolean
 });
+
+const currentDescription = computed(() => {
+  const lang = props.isEnglish ? "en" : "vn";
+
+  if (!props.skill.base) {
+    return props.skill.description?.[lang] || "";
+  }
+
+  return props.showEvolution
+    ? props.skill.description?.[lang] || ""
+    : props.skill.base?.[lang] || "";
+});
+
+const emit = defineEmits(["update:showEvolution"]);
 </script>
 
 <template>
@@ -38,11 +53,17 @@ const props = defineProps({
   <div class="skill-voice-wrapper" v-if="skill.voice">
     <p class="skill-voice">"{{ skill.voice }}"</p>
   </div>
+
+  <div
+    v-if="skill.base"
+    class="evolution-badge"
+    @click="emit('update:showEvolution', !showEvolution)"
+  >
+    {{ showEvolution ? "Evo" : "Base" }}
+  </div>
+
   <p
     class="skill-description"
-    v-html="
-      skillDescriptionText(
-        isEnglish ? skill.description.en : skill.description.vn      )
-    "
+    v-html="skillDescriptionText(currentDescription)"
   ></p>
 </template>

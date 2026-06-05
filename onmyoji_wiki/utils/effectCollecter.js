@@ -3,21 +3,24 @@
 export const getAllSkillEffectText = ({
 	skill,
 	isEnglish,
+	showEvolution,
 }) => {
 	let text = "";
 
-	text += isEnglish
-		? skill.description?.en || ""
-		: skill.description?.vn || "";
+	const lang = isEnglish ? "en" : "vn";
 
-	const levels = isEnglish
-		? skill.levels?.en
-		: skill.levels?.vn;
+	if (skill.base) {
+		text += showEvolution
+			? skill.description?.[lang] || ""
+			: skill.base?.[lang] || "";
+	} else {
+		text += skill.description?.[lang] || "";
+	}
+
+	const levels = skill.levels?.[lang];
 
 	if (Array.isArray(levels)) {
-		text += levels
-			.map((lvl) => lvl.effect || "")
-			.join(" ");
+		text += levels.map((lvl) => lvl.effect || "").join(" ");
 	} else if (typeof levels === "string") {
 		text += ` ${levels}`;
 	}
@@ -78,6 +81,7 @@ export const collectNestedEffects = ({
 export const markFirstAppearances = ({
 	skill,
 	isEnglish,
+	showEvolution
 }) => {
 	const seenEffects = new Set();
 	const seenSkills = new Set();
@@ -116,18 +120,20 @@ export const markFirstAppearances = ({
 
 	const clone = JSON.parse(JSON.stringify(skill));
 
-	if (isEnglish) {
-		clone.description.en =
-			processText(clone.description.en);
+	const lang = isEnglish ? "en" : "vn";
 
-		clone.levels.en.forEach((level) => {
-			level.effect = processText(level.effect);
-		});
+	if (skill.base) {
+		if (showEvolution) {
+			clone.description[lang] = processText(clone.description[lang]);
+		} else {
+			clone.base[lang] = processText(clone.base[lang]);
+		}
 	} else {
-		clone.description.vn =
-			processText(clone.description.vn);
+		clone.description[lang] = processText(clone.description[lang]);
+	}
 
-		clone.levels.vn.forEach((level) => {
+	if (Array.isArray(clone.levels?.[lang])) {
+		clone.levels[lang].forEach((level) => {
 			level.effect = processText(level.effect);
 		});
 	}

@@ -1,9 +1,7 @@
 import { useSupabase } from "~/composables/useSupabase";
 
 export async function getAllOnmyoji() {
-
 	const supabase = useSupabase();
-
 	const { data, error } = await supabase
 		.from("Onmyoji")
 		.select("id, name")
@@ -20,6 +18,19 @@ export async function getOnmyojiByIds(ids) {
 		.from("Onmyoji")
 		.select("id, name")
 		.in("id", ids);
+
+	if (error) throw error;
+
+	return data;
+}
+
+export async function getOnmyojiByName(name) {
+	const supabase = useSupabase();
+	const { data, error } = await supabase
+		.from("Onmyoji")
+		.select("*")
+		.eq("name->>en", name)
+		.single();
 
 	if (error) throw error;
 

@@ -4,7 +4,7 @@ export function renderSkinText({
   isEnglish,
 }) {
   return text.replace(
-    /<b>(\d+)<\/b>/g,
+    /<n>(\d+)<\/n>/g,
     (_, id) => {
       const index = parseInt(id, 10);
 

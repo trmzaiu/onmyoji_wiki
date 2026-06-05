@@ -53,7 +53,7 @@ export const parseBaseDescription = ({
 
 export const parseSkillDescription = ({
   text,
-  shikigami,
+  entity,
   shikigamiMap,
   onmyojiMap,
   effectMap,
@@ -62,18 +62,24 @@ export const parseSkillDescription = ({
 }) => {
   return parseBaseDescription({
     text,
-    shikigami,
+    entity,
     shikigamiMap,
     onmyojiMap,
     isEnglish,
     skillReplacer: (_, type, id) => {
       const index = parseInt(id, 10);
 
-      const name = getSkillName(shikigami, index, isEnglish);
+      const name = getSkillName(entity, index, isEnglish);
 
       if (!name) return _;
 
+      if (index === currentSkillIndex + 1) {
+        return name;
+      }
+
       let variant = "normal";
+
+      console.log("Id:", index);
 
       if (index !== currentSkillIndex + 1) {
         if (type === "kb") {

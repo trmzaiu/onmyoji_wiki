@@ -2,14 +2,13 @@
 import { getStatRank, getStatRankImage } from "~/utils/helper/statHelper";
 
 const props = defineProps({
-	routeName: String,
-  shikigami: Object,
+  routeName: String,
+  entity: Object,
   isEnglish: Boolean,
+  isShikigami: Boolean,
 });
 
-
-const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
-
+const hasLevel40 = computed(() => props.entity.id !== 193);
 </script>
 
 <template>
@@ -25,12 +24,10 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <th></th>
 
           <!-- 3 + 4 -->
-          <th colspan="2">
+          <th colspan="2" v-if="isShikigami">
             <div class="stats-title">
               {{
-                shikigami.rarity !== "SP" &&
-                shikigami.rarity !== "UR" &&
-                shikigami.rarity !== "N"
+                entity.rarity !== "SP" && entity.rarity !== "UR" && entity.rarity !== "N"
                   ? isEnglish
                     ? "Unevolved"
                     : "Cơ bản"
@@ -40,14 +37,18 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
               {{ isEnglish ? "Level 1" : "Cấp 1" }}
             </div>
           </th>
+          <th colspan="2" v-else>
+            <div class="stats-title" :class="!isShikigami ? 'stats-title-left' : ''">
+              <br />
+              {{ isEnglish ? "Level 60" : "Cấp 60" }}
+            </div>
+          </th>
 
           <!-- 5 + 6 -->
-          <th colspan="2" v-if="hasLevel40">
+          <th colspan="2" v-if="hasLevel40 && isShikigami">
             <div class="stats-title">
               {{
-                shikigami.rarity !== "SP" &&
-                shikigami.rarity !== "UR" &&
-                shikigami.rarity !== "N"
+                entity.rarity !== "SP" && entity.rarity !== "UR" && entity.rarity !== "N"
                   ? isEnglish
                     ? "Evolved"
                     : "Thức tỉnh"
@@ -55,6 +56,13 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
               }}
               <br />
               {{ isEnglish ? "Level 40" : "Cấp 40" }}
+            </div>
+          </th>
+          <th colspan="2" v-if="!isShikigami">
+            <div class="stats-title" :class="!isShikigami ? 'stats-title-left' : ''">
+              {{ isEnglish ? "With Level" : "Cấp 40" }}
+              <br />
+              {{ isEnglish ? "40 Totem" : "Ngự Linh" }}
             </div>
           </th>
 
@@ -72,10 +80,12 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
 
           <!-- 3 + 4 -->
           <th colspan="2" class="icon-cell">
-            <figure class="stats-figure">
+            <figure class="stats-figure" :class="!isShikigami ? 'stats-figure-left' : ''">
               <img
-                :src="`/assets/images/shikigami/icons/${routeName}_Icon.webp`"
-                :alt="shikigami.name.jp[1]"
+                :src="`/assets/images/${
+                  isShikigami ? 'shikigami' : 'onmyoji'
+                }/icons/${routeName}_Icon.webp`"
+                :alt="entity.name.jp[1]"
                 class="stats-icon"
                 @error="
                   (event) => (event.target.src = '/assets/images/Unknown_Icon.webp')
@@ -86,16 +96,20 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
 
           <!-- 5 + 6 -->
           <th colspan="2" v-if="hasLevel40" class="icon-cell">
-            <figure class="stats-figure">
+            <figure class="stats-figure" :class="!isShikigami ? 'stats-figure-left' : ''">
               <img
-                :src="`/assets/images/shikigami/icons/${routeName}_Icon${
-                  shikigami.rarity !== 'SP' &&
-                  shikigami.rarity !== 'UR' &&
-                  shikigami.rarity !== 'N'
+                :src="`/assets/images/${
+                  isShikigami ? 'shikigami' : 'onmyoji'
+                }/icons/${routeName}_Icon${
+                  !isShikigami
+                    ? '2'
+                    : entity.rarity !== 'SP' &&
+                      entity.rarity !== 'UR' &&
+                      entity.rarity !== 'N'
                     ? '_Evo'
                     : ''
                 }.webp`"
-                :alt="shikigami.name.jp[1]"
+                :alt="entity.name.jp[1]"
                 class="stats-icon"
                 @error="
                   (event) => (event.target.src = '/assets/images/Unknown_Icon.webp')
@@ -130,26 +144,26 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           </td>
 
           <!-- 3 -->
-          <td>
+          <td >
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('ATK', shikigami.stats.ATK[0])"
-                :alt="getStatRank('ATK', shikigami.stats.ATK[0])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('ATK', entity.stats.ATK[0])"
+                :alt="getStatRank('ATK', entity.stats.ATK[0])"
               />
             </div>
           </td>
 
           <!-- 4 -->
-          <td>
-            {{ shikigami.stats.ATK[0] }}
+          <td >
+            {{ entity.stats.ATK[0] }}
           </td>
 
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('ATK_EVO', shikigami.stats.ATK[1])"
-                :alt="getStatRank('ATK_EVO', shikigami.stats.ATK[1])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('ATK_EVO', entity.stats.ATK[1])"
+                :alt="getStatRank('ATK_EVO', entity.stats.ATK[1])"
               />
             </div>
           </td>
@@ -158,14 +172,12 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <!-- 6 -->
           <td v-if="hasLevel40">
             <div class="flex">
-              {{ shikigami.stats.ATK[1] }}
+              {{ entity.stats.ATK[1] }}
               <span
-                v-if="shikigami.evolution && shikigami.evolution.no === 1"
+                v-if="entity.evolution && entity.evolution.no === 1"
                 class="increase-cell"
               >
-                +{{
-                  Math.round((shikigami.stats.ATK[1] * shikigami.evolution.count) / 100)
-                }}
+                +{{ Math.round((entity.stats.ATK[1] * entity.evolution.count) / 100) }}
               </span>
             </div>
           </td>
@@ -176,12 +188,12 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
             <div class="bonus-stat">
               +{{
                 Math.round(
-                  shikigami.stats.ATK[1] *
+                  entity.stats.ATK[1] *
                     (1 +
-                      (shikigami.evolution && shikigami.evolution.no === 1
-                        ? shikigami.evolution.count / 100
+                      (entity.evolution && entity.evolution.no === 1
+                        ? entity.evolution.count / 100
                         : 0))
-                ) - shikigami.stats.ATK[0]
+                ) - entity.stats.ATK[0]
               }}
             </div>
           </td>
@@ -205,24 +217,24 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <!-- 3 -->
           <td>
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('HP', shikigami.stats.HP[0])"
-                :alt="getStatRank('HP', shikigami.stats.HP[0])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('HP', entity.stats.HP[0])"
+                :alt="getStatRank('HP', entity.stats.HP[0])"
               />
             </div>
           </td>
 
           <!-- 4 -->
           <td>
-            {{ shikigami.stats.HP[0] }}
+            {{ entity.stats.HP[0] }}
           </td>
 
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('HP_EVO', shikigami.stats.HP[1])"
-                :alt="getStatRank('HP_EVO', shikigami.stats.HP[1])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('HP_EVO', entity.stats.HP[1])"
+                :alt="getStatRank('HP_EVO', entity.stats.HP[1])"
               />
             </div>
           </td>
@@ -231,15 +243,13 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <!-- 6 -->
           <td v-if="hasLevel40">
             <div class="flex">
-              {{ shikigami.stats.HP[1] }}
+              {{ entity.stats.HP[1] }}
 
               <span
-                v-if="shikigami.evolution && shikigami.evolution.no === 4"
+                v-if="entity.evolution && entity.evolution.no === 4"
                 class="increase-cell"
               >
-                +{{
-                  Math.round((shikigami.stats.HP[1] * shikigami.evolution.count) / 100)
-                }}
+                +{{ Math.round((entity.stats.HP[1] * entity.evolution.count) / 100) }}
               </span>
             </div>
           </td>
@@ -250,12 +260,12 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
             <div class="bonus-stat">
               +{{
                 Math.round(
-                  shikigami.stats.HP[1] *
+                  entity.stats.HP[1] *
                     (1 +
-                      (shikigami.evolution && shikigami.evolution.no === 4
-                        ? shikigami.evolution.count / 100
+                      (entity.evolution && entity.evolution.no === 4
+                        ? entity.evolution.count / 100
                         : 0))
-                ) - shikigami.stats.HP[0]
+                ) - entity.stats.HP[0]
               }}
             </div>
           </td>
@@ -279,24 +289,24 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <!-- 3 -->
           <td>
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('DEF', shikigami.stats.DEF[0])"
-                :alt="getStatRank('DEF', shikigami.stats.DEF[0])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('DEF', entity.stats.DEF[0])"
+                :alt="getStatRank('DEF', entity.stats.DEF[0])"
               />
             </div>
           </td>
 
           <!-- 4 -->
           <td>
-            {{ shikigami.stats.DEF[0] }}
+            {{ entity.stats.DEF[0] }}
           </td>
 
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('DEF_EVO', shikigami.stats.DEF[1])"
-                :alt="getStatRank('DEF_EVO', shikigami.stats.DEF[1])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('DEF_EVO', entity.stats.DEF[1])"
+                :alt="getStatRank('DEF_EVO', entity.stats.DEF[1])"
               />
             </div>
           </td>
@@ -304,7 +314,7 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
 
           <!-- 6 -->
           <td v-if="hasLevel40">
-            {{ shikigami.stats.DEF[1] }}
+            {{ entity.stats.DEF[1] }}
           </td>
           <td v-else class="empty-cell"></td>
 
@@ -313,12 +323,12 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
             <div class="bonus-stat">
               +{{
                 Math.round(
-                  shikigami.stats.DEF[1] *
+                  entity.stats.DEF[1] *
                     (1 +
-                      (shikigami.evolution && shikigami.evolution.no === 12
-                        ? shikigami.evolution.count / 100
+                      (entity.evolution && entity.evolution.no === 12
+                        ? entity.evolution.count / 100
                         : 0))
-                ) - shikigami.stats.DEF[0]
+                ) - entity.stats.DEF[0]
               }}
             </div>
           </td>
@@ -342,23 +352,23 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <!-- 3 -->
           <td>
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('SPD', shikigami.stats.SPD[0])"
-                :alt="getStatRank('SPD', shikigami.stats.SPD[0])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('SPD', entity.stats.SPD[0])"
+                :alt="getStatRank('SPD', entity.stats.SPD[0])"
               />
             </div>
           </td>
 
           <!-- 4 -->
           <td>
-            {{ shikigami.stats.SPD[0] }}
+            {{ entity.stats.SPD[0] }}
           </td>
 
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('SPD_EVO', shikigami.stats.SPD[1])"
-                :alt="getStatRank('SPD_EVO', shikigami.stats.SPD[1])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('SPD', entity.stats.SPD[1])"
+                :alt="getStatRank('SPD', entity.stats.SPD[1])"
               />
             </div>
           </td>
@@ -367,13 +377,13 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="flex">
-              {{ shikigami.stats.SPD[1] }}
+              {{ entity.stats.SPD[1] }}
 
               <span
-                v-if="shikigami.evolution && shikigami.evolution.no === 7"
+                v-if="entity.evolution && entity.evolution.no === 7"
                 class="increase-cell"
               >
-                +{{ shikigami.evolution.count }}
+                +{{ entity.evolution.count }}
               </span>
             </div>
           </td>
@@ -383,9 +393,9 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <td v-if="hasLevel40">
             <div class="bonus-stat">
               +{{
-                (shikigami.evolution && shikigami.evolution.no === 7
-                  ? shikigami.stats.SPD[1] + shikigami.evolution.count
-                  : shikigami.stats.SPD[1]) - shikigami.stats.SPD[0]
+                (entity.evolution && entity.evolution.no === 7
+                  ? entity.stats.SPD[1] + entity.evolution.count
+                  : entity.stats.SPD[1]) - entity.stats.SPD[0]
               }}
             </div>
           </td>
@@ -409,38 +419,38 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <!-- 3 -->
           <td>
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('CRIT', shikigami.stats.Crit[0])"
-                :alt="getStatRank('CRIT', shikigami.stats.Crit[0])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('CRIT', entity.stats.Crit[0])"
+                :alt="getStatRank('CRIT', entity.stats.Crit[0])"
               />
             </div>
           </td>
 
           <!-- 4 -->
-          <td>{{ shikigami.stats.Crit[0] }}%</td>
+          <td>{{ entity.stats.Crit[0] }}%</td>
 
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img
-                :src="getStatRankImage('CRIT', shikigami.stats.Crit[1])"
-                :alt="getStatRank('CRIT', shikigami.stats.Crit[1])"
+              <img :class="!isShikigami ? 'opacity-0' : ''"
+                :src="getStatRankImage('CRIT', entity.stats.Crit[1])"
+                :alt="getStatRank('CRIT', entity.stats.Crit[1])"
               />
             </div>
           </td>
           <td v-else class="empty-cell"></td>
 
           <!-- 6 -->
-          <td v-if="hasLevel40">{{ shikigami.stats.Crit[1] }}%</td>
+          <td v-if="hasLevel40">{{ entity.stats.Crit[1] }}%</td>
           <td v-else class="empty-cell"></td>
 
           <!-- 7 -->
           <td v-if="hasLevel40">
             <div class="bonus-stat">
               +{{
-                (shikigami.evolution && shikigami.evolution.no === 6
-                  ? shikigami.stats.Crit[1] + shikigami.evolution.count
-                  : shikigami.stats.Crit[1]) - shikigami.stats.Crit[0]
+                (entity.evolution && entity.evolution.no === 6
+                  ? entity.stats.Crit[1] + entity.evolution.count
+                  : entity.stats.Crit[1]) - entity.stats.Crit[0]
               }}%
             </div>
           </td>
@@ -465,14 +475,14 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <td></td>
 
           <!-- 4 -->
-          <td>{{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[0] : "150" }}%</td>
+          <td>{{ entity.stats.CritDMG ? entity.stats.CritDMG[0] : "150" }}%</td>
 
           <!-- 5 -->
           <td></td>
 
           <!-- 6 -->
           <td v-if="hasLevel40">
-            {{ shikigami.stats.CritDMG ? shikigami.stats.CritDMG[1] : "150" }}%
+            {{ entity.stats.CritDMG ? entity.stats.CritDMG[1] : "150" }}%
           </td>
           <td v-else class="empty-cell"></td>
 
@@ -480,8 +490,8 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <td v-if="hasLevel40">
             <div class="bonus-stat">
               +{{
-                shikigami.stats.CritDMG
-                  ? shikigami.stats.CritDMG[1] - shikigami.stats.CritDMG[0]
+                entity.stats.CritDMG
+                  ? entity.stats.CritDMG[1] - entity.stats.CritDMG[0]
                   : "0"
               }}%
             </div>
@@ -503,15 +513,15 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
 
           <td></td>
 
-          <td>{{ shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[0] : "0" }}%</td>
+          <td>{{ entity.stats.EffectHIT ? entity.stats.EffectHIT[0] : "0" }}%</td>
 
           <td></td>
 
           <td v-if="hasLevel40">
             {{
-              (shikigami.stats.EffectHIT ? shikigami.stats.EffectHIT[1] : 0) +
-              (shikigami.evolution && shikigami.evolution.no === 9
-                ? shikigami.evolution.count
+              (entity.stats.EffectHIT ? entity.stats.EffectHIT[1] : 0) +
+              (entity.evolution && entity.evolution.no === 9
+                ? entity.evolution.count
                 : 0)
             }}%
           </td>
@@ -520,11 +530,11 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <td v-if="hasLevel40">
             <div class="bonus-stat">
               +{{
-                (shikigami.stats.EffectHIT
-                  ? shikigami.stats.EffectHIT[1] - shikigami.stats.EffectHIT[0]
+                (entity.stats.EffectHIT
+                  ? entity.stats.EffectHIT[1] - entity.stats.EffectHIT[0]
                   : 0) +
-                (shikigami.evolution && shikigami.evolution.no === 9
-                  ? shikigami.evolution.count
+                (entity.evolution && entity.evolution.no === 9
+                  ? entity.evolution.count
                   : 0)
               }}%
             </div>
@@ -545,15 +555,15 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
 
           <td></td>
 
-          <td>{{ shikigami.stats.EffectRES ? shikigami.stats.EffectRES[0] : "0" }}%</td>
+          <td>{{ entity.stats.EffectRES ? entity.stats.EffectRES[0] : "0" }}%</td>
 
           <td></td>
 
           <td v-if="hasLevel40">
             {{
-              (shikigami.stats.EffectRES ? shikigami.stats.EffectRES[1] : 0) +
-              (shikigami.evolution && shikigami.evolution.no === 10
-                ? shikigami.evolution.count
+              (entity.stats.EffectRES ? entity.stats.EffectRES[1] : 0) +
+              (entity.evolution && entity.evolution.no === 10
+                ? entity.evolution.count
                 : 0)
             }}%
           </td>
@@ -562,11 +572,11 @@ const hasLevel40 = computed(() => props.shikigami.value?.id !== 193);
           <td v-if="hasLevel40">
             <div class="bonus-stat">
               +{{
-                (shikigami.stats.EffectRES
-                  ? shikigami.stats.EffectRES[1] - shikigami.stats.EffectRES[0]
+                (entity.stats.EffectRES
+                  ? entity.stats.EffectRES[1] - entity.stats.EffectRES[0]
                   : 0) +
-                (shikigami.evolution && shikigami.evolution.no === 10
-                  ? shikigami.evolution.count
+                (entity.evolution && entity.evolution.no === 10
+                  ? entity.evolution.count
                   : 0)
               }}%
             </div>

@@ -22,8 +22,14 @@ export function useShikigami() {
   const souls = ref([]);
   const illustrations = ref([]);
 
-  async function loadShikigami(formattedName) {
-    const data = await getShikigamiByName(formattedName);
+  const illustrationPage = ref(0);
+  const illustrationLimit = 10;
+
+  const illustrationLoading = ref(false);
+  const illustrationHasMore = ref(true);
+
+  async function loadShikigami(name) {
+    const data = await getShikigamiByName(name);
 
     if (!data) return;
 
@@ -69,9 +75,10 @@ export function useShikigami() {
       tagsData,
       conditionsData,
       soulsData,
-      illustrationsData,
     ] = await Promise.all([
-      data.rarity !== "SP" ? getEvolution(data.evolution.no) : Promise.resolve(null),
+      data.evolution
+        ? getEvolution(data.evolution.no)
+        : Promise.resolve(null),
 
       getShikigamiByIds(shikigamiIds),
 
@@ -83,7 +90,6 @@ export function useShikigami() {
 
       getSoulsByIds(soulIds),
 
-      getIllustrations(data.id),
     ]);
 
     listShikigami.value = listShikigamiData;
@@ -102,7 +108,44 @@ export function useShikigami() {
 
     souls.value = soulsData;
 
-    illustrations.value = illustrationsData;
+  }
+
+  async function fetchIllustrations(id) {
+    if (
+      illustrationLoading.value ||
+      !illustrationHasMore.value
+    ) {
+      return;
+    }
+
+    illustrationLoading.value = true;
+
+    const from = illustrationPage.value * illustrationLimit;
+    const to = from + illustrationLimit - 1;
+
+
+    const supabase = useSupabase();
+
+    const { data, error } = await supabase
+      .from("Illustration")
+      .select("*")
+      .contains("shiki", [id])
+      .order("id")
+      .range(from, to);
+
+    if (error) {
+      console.error(error);
+    } else {
+      illustrations.value.push(...data);
+
+      if (data.length < illustrationLimit) {
+        illustrationHasMore.value = false;
+      }
+
+      illustrationPage.value++;
+    }
+
+    illustrationLoading.value = false;
   }
 
   return {
@@ -115,6 +158,9 @@ export function useShikigami() {
     conditions,
     souls,
     illustrations,
+    fetchIllustrations,
+    illustrationLoading,
+    illustrationHasMore,
     evolution,
     loadShikigami,
   };

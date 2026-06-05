@@ -2,9 +2,10 @@
 const props = defineProps({
   routeName: String,
   entity: Object,
-  isShikigami: Boolean,
+  type: String,
 });
 
+const isShikigami = computed(() => props.type !== 'onmyoji');
 </script>
 
 <template>
@@ -12,9 +13,7 @@ const props = defineProps({
     <div class="character-image-wrapper">
       <div class="character-image-box">
         <img
-          :src="`/assets/images/${
-            isShikigami ? 'shikigami' : 'onmyoji'
-          }/images/${routeName}.webp`"
+          :src="`/assets/images/${type}/images/${routeName}.webp`"
           :alt="entity.name.jp[1]"
           class="character-image"
         />
@@ -28,7 +27,8 @@ const props = defineProps({
           <tr>
             <th class="character-name-header" colspan="4">
               <div class="character-name">{{ entity.name.jp[1] }}</div>
-              <img v-if="isShikigami"
+              <img
+                v-if="type === 'shikigami'"
                 :src="`/assets/images/rarity/${entity.rarity}.webp`"
                 :alt="entity.rarity"
                 :class="['rarity-icon', entity.rarity === 'UR' ? 'ur' : 'normal']"
@@ -76,9 +76,7 @@ const props = defineProps({
           </tr>
           <tr>
             <td>
-              <strong>{{
-                entity.id === 257 || entity.id === 256 ? "CN" : "JP"
-              }}</strong>
+              <strong>{{ entity.id === 257 || entity.id === 256 ? "CN" : "JP" }}</strong>
             </td>
             <td colspan="3">
               <div
@@ -90,7 +88,11 @@ const props = defineProps({
             </td>
           </tr>
           <tr
-            v-if="!['SP', 'UR', 'N'].includes(entity.rarity) && entity.id !== 193" && isShikigami
+            v-if="
+              !['SP', 'UR', 'N'].includes(entity.rarity) &&
+              entity.id !== 193 &&
+              isShikigami
+            "
           >
             <td class="character-title" colspan="4">Evo Materials</td>
           </tr>
@@ -114,7 +116,7 @@ const props = defineProps({
           <tr v-if="entity.version !== null && isShikigami">
             <td class="character-title" colspan="4">Other Version</td>
           </tr>
-          <tr v-if="entity.version !== null & isShikigami">
+          <tr v-if="entity.version !== null && isShikigami">
             <td colspan="4" class="p-1">
               <div :class="entity.version.length > 1 ? 'version-grid' : ''">
                 <div v-for="ver in entity.version" :key="ver" class="version-item">

@@ -6,10 +6,7 @@ import SkillTitle from "./SkillTitle.vue";
 import SubSkill from "./SubSkill.vue";
 import { parseSkillDescription } from "~/utils/parser/skillParser.js";
 import { parseEffectDescription, parseEffectTags } from "~/utils/parser/effectParser.js";
-import {
-  collectNestedEffects,
-  getAllSkillEffectText,
-} from "~/utils/effectCollecter";
+import { collectNestedEffects, getAllSkillEffectText } from "~/utils/effectCollecter";
 
 const props = defineProps({
   routeName: String,
@@ -22,6 +19,7 @@ const props = defineProps({
   isEnglish: Boolean,
   isShikigami: Boolean,
   activeSkillIndex: Number,
+  showEvolution: Boolean,
 });
 
 const skillShikigamiMap = computed(() => {
@@ -39,7 +37,7 @@ const effectMap = computed(
 const skillDescriptionText = (text) => {
   return parseSkillDescription({
     text,
-    shikigami: props.entity,
+    entity: props.entity,
     shikigamiMap: skillShikigamiMap.value,
     onmyojiMap: skillOnmyojiMap.value,
     effectMap: effectMap.value,
@@ -73,16 +71,17 @@ const currentSkillEffects = computed(() => {
     text: getAllSkillEffectText({
       skill,
       isEnglish: props.isEnglish,
+      showEvolution: props.showEvolution
     }),
     effects: props.effects,
-    isEnglish: props.isEnglish,
+    isEnglish: props.isEnglish
   });
 });
 
 const effectDescriptionText = (effect) =>
   parseEffectDescription({
     text: parseEffectTags(effect, props.isEnglish).description,
-    shikigami: props.entity,
+    entity: props.entity,
     shikigamiMap: skillShikigamiMap.value,
     onmyojiMap: skillOnmyojiMap.value,
     effectMap: effectMap.value,
@@ -96,6 +95,8 @@ watch(
     collapsedEffects.value = new Set();
   }
 );
+
+const emit = defineEmits(["update:showEvolution"]);
 </script>
 
 <template>
@@ -116,6 +117,8 @@ watch(
         :tag-map="tagMap"
         :skill-description-text="skillDescriptionText"
         :is-english="isEnglish"
+        :show-evolution="showEvolution"
+        @update:showEvolution="emit('update:showEvolution', $event)"
       />
 
       <SkillEffect

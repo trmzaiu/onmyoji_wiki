@@ -8,9 +8,9 @@ const props = defineProps({
 
 const subSkillConfig = computed(() => {
   const id = props.shikigami.id;
-  const skill = props.activeSkillIndex;
+  const activeSkillIndex = props.activeSkillIndex;
 
-  if (id === 107 && skill === 0) {
+  if (id === 107 && activeSkillIndex === 0) {
     return {
       titleSkill: 1,
       imagePrefix: "SubSkill",
@@ -20,7 +20,7 @@ const subSkillConfig = computed(() => {
     };
   }
 
-  if (id === 107 && skill === 2) {
+  if (id === 107 && activeSkillIndex === 2) {
     return {
       titleSkill: 1,
       imagePrefix: "SubSkill",
@@ -30,7 +30,7 @@ const subSkillConfig = computed(() => {
     };
   }
 
-  if (id === 132 && skill === 2) {
+  if (id === 132 && activeSkillIndex === 2) {
     return {
       titleSkill: 1,
       imagePrefix: "SubSkill",
@@ -40,7 +40,7 @@ const subSkillConfig = computed(() => {
     };
   }
 
-  if (id === 141 && skill === 1) {
+  if (id === 141 && activeSkillIndex === 1) {
     return {
       knot: true,
       indexes: [1, 2, 3, 4],

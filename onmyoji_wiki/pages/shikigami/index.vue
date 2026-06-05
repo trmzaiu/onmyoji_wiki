@@ -12,8 +12,6 @@ const shikigamiList = ref([]);
 const latestShikigami = ref([]);
 const tabLoading = ref(false);
 
-const isEnglish = ref(true);
-
 const rarities = ["All", "UR", "SP", "SSR", "SR", "R", "N", "Crossover", "Removed"];
 
 const selectedRarity = ref("All");
@@ -106,7 +104,6 @@ function handleScroll() {
 
   const pageHeight = document.documentElement.offsetHeight;
 
-  // preload before reaching bottom
   if (scrollBottom >= pageHeight - 300) {
     fetchShikigami();
   }
@@ -171,57 +168,6 @@ const filteredShikigami = computed(() => {
 });
 
 // ======================================================
-// REALTIME
-// ======================================================
-
-function setupRealtime() {
-  const channel = supabase
-    .channel("shikigami-changes")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "Shikigami",
-      },
-      (payload) => {
-        console.log("Realtime change:", payload);
-
-        // INSERT
-        if (payload.eventType === "INSERT") {
-          // avoid duplicates
-          const exists = shikigamiList.value.some((s) => s.id === payload.new.id);
-
-          if (!exists) {
-            shikigamiList.value.unshift(payload.new);
-          }
-        }
-
-        // UPDATE
-        if (payload.eventType === "UPDATE") {
-          const index = shikigamiList.value.findIndex((s) => s.id === payload.new.id);
-
-          if (index !== -1) {
-            shikigamiList.value[index] = payload.new;
-          }
-        }
-
-        // DELETE
-        if (payload.eventType === "DELETE") {
-          shikigamiList.value = shikigamiList.value.filter(
-            (s) => s.id !== payload.old.id
-          );
-        }
-      }
-    )
-    .subscribe();
-
-  onUnmounted(() => {
-    supabase.removeChannel(channel);
-  });
-}
-
-// ======================================================
 // LIFECYCLE
 // ======================================================
 
@@ -232,7 +178,6 @@ onMounted(async () => {
 
   setupInfiniteScroll();
 
-  setupRealtime();
 });
 
 onUnmounted(() => {
@@ -249,7 +194,7 @@ onUnmounted(() => {
       </div>
 
       <!-- New Release  -->
-      <h2 class="session-title top-0">New Releases</h2>
+      <h2 class="session-title top-0" v-if="latestShikigami">New Releases</h2>
 
       <div class="latest-shiki-list">
         <div v-for="shiki in latestShikigami" :key="shiki.id" class="latest-shiki-item">
@@ -291,8 +236,8 @@ onUnmounted(() => {
       </div>
 
       <!-- Shikigame List -->
-      <h2 class="session-title">Shikigami List</h2>
-      <div class="tabs">
+      <h2 class="session-title" :class="!latestShikigami ? 'top-0': ''">Shikigami List</h2>
+      <div class="tabs-rarity">
         <button
           v-for="rarity in rarities"
           :key="rarity"
@@ -353,18 +298,17 @@ onUnmounted(() => {
 <style scoped src="@/assets/css/styles.css"></style>
 
 <style scoped>
-/* Tabs */
-.tabs {
+/* tabs-rarity */
+.tabs-rarity {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
 
   padding-bottom: 30px;
-  border-bottom: none;
 }
 
-.tabs button {
+.tabs-rarity button {
   position: relative;
 
   min-width: 60px;
@@ -390,7 +334,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.tabs button::before {
+.tabs-rarity button::before {
   content: "";
 
   position: absolute;
@@ -407,11 +351,11 @@ onUnmounted(() => {
   transition: transform 0.4s;
 }
 
-.tabs button:hover::before {
+.tabs-rarity button:hover::before {
   transform: translateX(100%);
 }
 
-.tabs button:hover:not(.active) {
+.tabs-rarity button:hover:not(.active) {
   border-color: var(--text-primary);
 
   background: linear-gradient(
@@ -427,7 +371,7 @@ onUnmounted(() => {
   box-shadow: 0 0 10px rgba(165, 25, 25, 0.25), inset 0 0 12px rgba(165, 25, 25, 0.08);
 }
 
-.tabs .active {
+.tabs-rarity .active {
   background: linear-gradient(to right, rgba(165, 25, 25, 0.35), rgba(165, 25, 25, 0.12));
 
   border-color: var(--text-primary);
@@ -439,7 +383,7 @@ onUnmounted(() => {
   cursor: default;
 }
 
-.tabs button:last-child {
+.tabs-rarity button:last-child {
   width: auto;
   padding-inline: 18px;
 }

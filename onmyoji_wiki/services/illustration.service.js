@@ -1,13 +1,13 @@
 import { useSupabase } from "~/composables/useSupabase";
 
-export async function getIllustrations(shikiId) {
+export async function getIllustrations(id, type) {
 
   const supabase = useSupabase();
 
   const { data, error } = await supabase
     .from("Illustration")
     .select("*")
-    .contains("shiki", [shikiId])
+    .contains(type, [id])
     .order("id", { ascending: true });
 
   if (error) throw error;

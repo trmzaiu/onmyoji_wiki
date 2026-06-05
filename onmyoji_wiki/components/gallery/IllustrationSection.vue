@@ -1,5 +1,4 @@
 <script setup>
-
 const props = defineProps({
   illustrations: Object,
 });
@@ -18,6 +17,7 @@ const emit = defineEmits(["open-image"]);
         :alt="img.name"
         :title="img.name"
         class="illustration-image"
+        loading="lazy"
         @click="emit('open-image', getIllustrationUrl(img.name))"
       />
 

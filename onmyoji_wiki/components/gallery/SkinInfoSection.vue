@@ -2,8 +2,46 @@
 const props = defineProps({
   routeName: String,
   entity: Object,
-  isShikigami: Boolean,
+  type: String,
   isEnglish: Boolean,
+});
+
+const getSkinInfoImage = (skin, index) => {
+  // Onmyoji
+  if (props.type === "onmyoji") {
+
+    return `/assets/images/onmyoji/skinsInfo/${props.routeName}_SkinInfo${index}.webp`;
+  }
+
+  // Totem
+  if (props.type === "totem") {
+
+    return `/assets/images/onmyoji/totemsInfo/${props.entity.totem[0].name.en}_SkinInfo${index+1}.webp`;
+  }
+
+  // Shikigami
+  if (skin.name?.en === "Default") {
+    return (index === 0 && props.entity.id >= 201 && props.entity.id <= 217) ||
+      props.entity.id === 193
+      ? `/assets/images/shikigami/shards/${props.routeName}_Shard.webp`
+      : `/assets/images/shikigami/skinsInfo/${props.routeName}_SkinInfo0.webp`;
+  }
+
+  if (skin.name?.en === "Evolution") {
+    return `/assets/images/shikigami/skinsInfo/${props.routeName}_SkinInfo00.webp`;
+  }
+
+  return `/assets/images/shikigami/skinsInfo/${props.routeName}_SkinInfo${
+    props.entity.rarity === "SP" || props.entity.rarity === "N" ? index || "" : index - 1
+  }.webp`;
+};
+
+const skins = computed(() => {
+  if (props.type === "totem") {
+    return props.entity.totem || [];
+  }
+
+  return props.entity.skins || [];
 });
 </script>
 
@@ -26,42 +64,20 @@ const props = defineProps({
       </tr>
     </thead>
     <tbody>
-      <template v-for="(skin, index) in entity.skins || []" :key="index">
+      <template v-for="(skin, index) in skins || []" :key="index">
         <tr v-if="skin && skin.obtained !== 'Cancelled'" class="skin-info-row">
           <!-- ICON -->
           <td class="table-cell skin-image-cell">
             <div class="skin-info-image-wrapper">
               <img
-                :src="
-                  skin.name?.en === 'Default'
-                    ? (index === 0 && entity.id >= 201 && entity.id <= 217) ||
-                      entity.id === 193
-                      ? `/assets/images/${isShikigami ? 'shikigami' : 'onmyoji'}/shards/${
-                          routeName
-                        }_Shard.webp`
-                      : `/assets/images/${
-                          isShikigami ? 'shikigami' : 'onmyoji'
-                        }/skinsInfo/${routeName}_SkinInfo0.webp`
-                    : skin.name?.en === 'Evolution'
-                    ? `/assets/images/${
-                        isShikigami ? 'shikigami' : 'onmyoji'
-                      }/skinsInfo/${routeName}_SkinInfo00.webp`
-                    : `/assets/images/${
-                        isShikigami ? 'shikigami' : 'onmyoji'
-                      }/skinsInfo/${routeName}_SkinInfo${
-                        entity.rarity === 'SP' || entity.rarity === 'N'
-                          ? index
-                            ? index
-                            : ''
-                          : index - 1
-                      }.webp`
-                "
+                :src="getSkinInfoImage(skin, index)"
                 :alt="skin.name?.en || skin.name?.cn"
                 class="skin-info-image"
                 :class="{
                   'skin-info-scale':
-                    (index === 0 && entity.id >= 201 && entity.id <= 217) ||
-                    entity.id === 193,
+                    type !== 'totem' &&
+                    ((index === 0 && entity.id >= 201 && entity.id <= 217) ||
+                      entity.id === 193),
                 }"
               />
             </div>
