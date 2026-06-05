@@ -42,7 +42,7 @@ export async function getShikigamiByIds(ids) {
 	const supabase = useSupabase();
 	const { data, error } = await supabase
 		.from("Shikigami")
-		.select("id, name")
+		.select("id, name, skills")
 		.in("id", ids);
 
 	if (error) throw error;

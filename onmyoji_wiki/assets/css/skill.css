@@ -204,9 +204,9 @@
   background: linear-gradient(
     to right,
     transparent,
+    #a51919c0,
     #a51919,
-    #d14a4a,
-    #a51919,
+    #a51919c0,
     transparent
   );
 }
@@ -514,12 +514,18 @@
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-.effect-image {
-  display: inline-block;
-  width: 1.5rem;
-  height: 1.5rem;
-  vertical-align: center;
-  border-radius: 0.375rem;
+.effect-images {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.effect-images img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .skill-keyword-normal {

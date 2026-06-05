@@ -32,7 +32,7 @@ const props = defineProps({
 
       <Transition name="effect-collapse">
         <div v-if="isEffectCollapsed(effect.id)">
-          <div v-if="effect.images?.length">
+          <div v-if="effect.images?.length" class="effect-images">
             <img
               v-for="(img, i) in effect.images"
               :key="i"

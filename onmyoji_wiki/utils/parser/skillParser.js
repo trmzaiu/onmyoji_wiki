@@ -79,8 +79,6 @@ export const parseSkillDescription = ({
 
       let variant = "normal";
 
-      console.log("Id:", index);
-
       if (index !== currentSkillIndex + 1) {
         if (type === "kb") {
           variant = "bold";

@@ -3,7 +3,6 @@ import { ref } from "vue";
 import { getConditionsByIds } from "~/services/condition.service";
 import { getEffectsByIds } from "~/services/effect.service";
 import { getEvolution } from "~/services/evolution.service";
-import { getIllustrations } from "~/services/illustration.service";
 import { getOnmyojiByIds } from "~/services/onmyoji.service";
 import { getShikigamiByIds, getShikigamiByName } from "~/services/shikigami.service";
 import { getSoulsByIds } from "~/services/soul.service";
@@ -35,25 +34,57 @@ export function useShikigami() {
 
     shikigami.value = data;
 
-    const effectIds = extractEntityIds({
+    let effectIds = extractEntityIds({
       skills: shikigami.value.skills,
       tag: "e",
     });
 
-    const effectData = await getEffectsByIds(effectIds);
+    const loadedIds = new Set();
+    const allEffects = [];
 
-    effects.value = effectData;
+    while (effectIds.length) {
+      const idsToFetch = effectIds.filter(
+        (id) => !loadedIds.has(id)
+      );
+
+      if (!idsToFetch.length) {
+        break;
+      }
+
+      const effects = await getEffectsByIds(idsToFetch);
+
+      effects.forEach((effect) => {
+        loadedIds.add(effect.id);
+        allEffects.push(effect);
+      });
+
+      effectIds = extractEntityIds({
+        effects,
+        tag: "e",
+      });
+    }
+
+    effects.value = allEffects;
 
     const tagIds = [
       ...new Set(shikigami.value.skills.flatMap((skill) => skill.tags || [])),
     ];
 
-    const shikigamiIds = extractEntityIds({
-      skills: shikigami.value.skills,
-      effects: effects.value,
-      profile: shikigami.value.profile,
-      tag: "s",
-    });
+    const shikigamiIds = [
+      ...new Set([
+        ...extractEntityIds({
+          skills: shikigami.value.skills,
+          effects: effects.value,
+          profile: shikigami.value.profile,
+          tag: "s",
+        }),
+
+        ...extractEntityIds({
+          effects: effects.value,
+          tag: "k",
+        }),
+      ]),
+    ];
 
     const onmyojiIds = extractEntityIds({
       skills: shikigami.value.skills,
@@ -99,8 +130,6 @@ export function useShikigami() {
     tags.value = tagsData;
 
     tagMap.value = Object.fromEntries(tagsData.map((tag) => [tag.id, tag]));
-
-    effects.value = effectData;
 
     evolution.value = evolutionData;
 

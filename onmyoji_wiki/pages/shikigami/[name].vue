@@ -207,6 +207,8 @@ onMounted(async () => {
 
   await loadShikigami(formattedName.value);
 
+  console.log("Effets:", effects);
+
   nextTick(() => {
     initIllustrationObserver();
   });

@@ -1,49 +1,51 @@
 export function extractEntityIds({
-    skills = [],
-    effects = [],
-    profile = [],
-    tag = "s",
+  skills = [],
+  effects = [],
+  profile = [],
+  tag = "s",
 }) {
-    const ids = new Set();
+  const ids = new Set();
 
-    const regex = new RegExp(
-        `<${tag}>(\\d+)<\\/${tag}>`,
-        "g"
-    );
+  const regex =
+    tag === "k"
+      ? /<k>([\d-]+)<\/k>/g
+      : new RegExp(`<${tag}>(\\d+)<\\/${tag}>`, "g");
 
-    const extractFromText = (text = "") => {
-        const matches = [...text.matchAll(regex)];
+  const extractFromText = (text = "", fromEffect = false) => {
+    const matches = [...text.matchAll(regex)];
 
-        matches.forEach((m) => {
-            ids.add(Number(m[1]));
-        });
-    };
+    matches.forEach((m) => {
+      let value = m[1];
 
-    // ---------------- SKILLS ----------------
-    skills.forEach((skill) => {
-        extractFromText(skill.description?.en);
-        extractFromText(skill.description?.vn);
+      if (fromEffect && tag === "k") {
+        value = value.split("-")[0];
+      }
 
-        ["en", "vn"].forEach((lang) => {
-            const levels = skill.levels?.[lang];
-
-            if (Array.isArray(levels)) {
-                levels.forEach((lvl) => {
-                    extractFromText(lvl.effect);
-                });
-            }
-        });
+      ids.add(Number(value));
     });
+  };
 
-    // ---------------- EFFECTS ----------------
-    effects.forEach((effect) => {
-        extractFromText(effect.description?.en);
-        extractFromText(effect.description?.vn);
+  // SKILLS
+  skills.forEach((skill) => {
+    extractFromText(skill.description?.en);
+    extractFromText(skill.description?.vn);
+
+    ["en", "vn"].forEach((lang) => {
+      skill.levels?.[lang]?.forEach?.((lvl) => {
+        extractFromText(lvl.effect);
+      });
     });
+  });
 
-    // ---------------- PROFILE ----------------
-    extractFromText(profile?.en);
-    extractFromText(profile?.vn);
+  // EFFECTS
+  effects.forEach((effect) => {
+    extractFromText(effect.description?.en, true);
+    extractFromText(effect.description?.vn, true);
+  });
 
-    return [...ids];
+  // PROFILE
+  extractFromText(profile?.en);
+  extractFromText(profile?.vn);
+
+  return [...ids];
 }

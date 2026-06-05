@@ -66,11 +66,11 @@ export const parseEffectDescription = ({
 		skillReplacer: (_, type, id) => {
 			const [shikiId, skillIndex] = id.split("-");
 
-			const shiki = shikigamiMap.value.get(String(shikiId));
+			const shiki = shikigamiMap?.get(String(shikiId));
 
 			if (!shiki) return _;
 
-			const name = getSkillName(shiki, parseInt(skillIndex));
+			const name = getSkillName(shiki, skillIndex, isEnglish);
 
 			if (!name) return _;
 
