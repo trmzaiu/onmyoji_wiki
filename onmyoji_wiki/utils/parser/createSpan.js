@@ -28,12 +28,12 @@ export const createEntitySpan = (keyword) => {
   return `<span>${keyword}</span>`;
 };
 
-export const createSkillSpan = (name, variant) => {
-  return `<span class="skill-keyword skill-keyword-${variant}"
+export const createSkillSpan = (name, variant, skillIndex) => {
+  return `<span class="skill-keyword skill-keyword-${variant}" data-skill-index="${skillIndex}"
     >${name}</span>`;
 };
 
 export const createEffectSpan = (name, bold, color) => {
   return `<span class="effect-keyword effect-keyword-${color} ${bold ? "font-bold" : ""}"
-    >${name}</span>`;
+>${name}</span>`;
 };

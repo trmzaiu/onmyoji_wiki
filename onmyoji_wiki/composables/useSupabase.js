@@ -1,8 +1,8 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 
-let client: SupabaseClient | null = null
+let client = null
 
-export function useSupabase(): SupabaseClient {
+export function useSupabase() {
   const config = useRuntimeConfig()
 
   if (!client) {

@@ -86,7 +86,7 @@ export const parseSkillDescription = ({
           variant = "highlight";
         }
 
-        return createSkillSpan(name, variant);
+        return createSkillSpan(name, variant, index-1);
       }
     },
     effectReplacer: (_, type, id) => {

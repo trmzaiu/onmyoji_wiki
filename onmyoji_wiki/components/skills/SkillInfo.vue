@@ -19,7 +19,7 @@ const currentDescription = computed(() => {
     : props.skill.base?.[lang] || "";
 });
 
-const emit = defineEmits(["update:showEvolution"]);
+const emit = defineEmits(["update:showEvolution", "change-skill",]);
 </script>
 
 <template>
@@ -65,5 +65,6 @@ const emit = defineEmits(["update:showEvolution"]);
   <p
     class="skill-description"
     v-html="skillDescriptionText(currentDescription)"
+    @click="emit('change-skill', $event)"
   ></p>
 </template>

@@ -6,6 +6,8 @@ const props = defineProps({
   skillDescriptionText: Function
 });
 
+const emit = defineEmits(["change-skill",]);
+
 </script>
 
 <template>
@@ -38,6 +40,7 @@ const props = defineProps({
         <td
           class="effect-cell"
           v-html="skillDescriptionText(lvl.effect)"
+          @click="emit('change-skill', $event)"
         ></td>
       </tr>
     </tbody>

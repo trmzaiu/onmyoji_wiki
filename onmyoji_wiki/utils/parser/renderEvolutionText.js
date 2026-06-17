@@ -25,7 +25,7 @@ export function renderEvolutionText({
       ? shikigami.skills?.[evolutionData.skill - 1]?.name?.en
       : shikigami.skills?.[evolutionData.skill - 1]?.name?.vn;
 
-    replacements.skill = createSkillSpan(skillName, "bold");
+    replacements.skill = createSkillSpan(skillName, "bold", evolutionData.skill - 1);
   }
 
   if (evolutionData.count) {

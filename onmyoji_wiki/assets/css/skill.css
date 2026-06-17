@@ -220,18 +220,16 @@
   text-align: center;
   color: #a3a3a3;
   font-family: "Inconsolata", monospace;
-  letter-spacing: 1px;
 }
 
 .skill-description {
   padding: 10px 2px;
-
   font-size: 15px;
   line-height: 1.6;
   color: #fff;
-
   white-space: pre-line;
   text-align: justify;
+  vertical-align: middle;
 }
 
 /* Sub Skills */
@@ -575,4 +573,11 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
+}
+
+.effect-image {
+  display: inline-block;
+  vertical-align: middle;
+  height: 24px;
+  width: 24px;
 }

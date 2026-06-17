@@ -4,9 +4,15 @@ import SkillInfo from "./SkillInfo.vue";
 import SkillLevel from "./SkillLevel.vue";
 import SkillTitle from "./SkillTitle.vue";
 import SubSkill from "./SubSkill.vue";
+
 import { parseSkillDescription } from "~/utils/parser/skillParser.js";
 import { parseEffectDescription, parseEffectTags } from "~/utils/parser/effectParser.js";
+
 import { collectNestedEffects, getAllSkillEffectText } from "~/utils/effectCollecter";
+
+// =====================================================
+// Props
+// =====================================================
 
 const props = defineProps({
   routeName: String,
@@ -22,20 +28,34 @@ const props = defineProps({
   showEvolution: Boolean,
 });
 
-const skillShikigamiMap = computed(() => {
-  return new Map((props.listShikigami || []).map((s) => [String(s.id), s]));
-});
+// =====================================================
+// Computed Maps
+// =====================================================
 
-const skillOnmyojiMap = computed(() => {
-  return new Map((props.listOnmyoji || []).map((o) => [String(o.id), o]));
-});
+const skillShikigamiMap = computed(
+  () => new Map((props.listShikigami || []).map((s) => [String(s.id), s]))
+);
+
+const skillOnmyojiMap = computed(
+  () => new Map((props.listOnmyoji || []).map((o) => [String(o.id), o]))
+);
 
 const effectMap = computed(
   () => new Map((props.effects || []).map((e) => [String(e.id), e]))
 );
 
-const skillDescriptionText = (text) => {
-  return parseSkillDescription({
+// =====================================================
+// State
+// =====================================================
+
+const collapsedEffects = ref(new Set());
+
+// =====================================================
+// Skill Helpers
+// =====================================================
+
+const skillDescriptionText = (text) =>
+  parseSkillDescription({
     text,
     entity: props.entity,
     shikigamiMap: skillShikigamiMap.value,
@@ -44,39 +64,41 @@ const skillDescriptionText = (text) => {
     isEnglish: props.isEnglish,
     currentSkillIndex: props.activeSkillIndex,
   });
-};
-
-const collapsedEffects = ref(new Set());
-
-const toggleEffectCard = (effectId) => {
-  if (collapsedEffects.value.has(effectId)) {
-    collapsedEffects.value.delete(effectId);
-  } else {
-    collapsedEffects.value.add(effectId);
-  }
-
-  collapsedEffects.value = new Set(collapsedEffects.value);
-};
-
-const isEffectCollapsed = (effectId) => collapsedEffects.value.has(effectId);
 
 const currentSkillEffects = computed(() => {
-  const skill = props.skill;
-
-  if (!skill) {
+  if (!props.skill) {
     return [];
   }
 
   return collectNestedEffects({
     text: getAllSkillEffectText({
-      skill,
+      skill: props.skill,
       isEnglish: props.isEnglish,
-      showEvolution: props.showEvolution
+      showEvolution: props.showEvolution,
     }),
     effects: props.effects,
-    isEnglish: props.isEnglish
+    isEnglish: props.isEnglish,
   });
 });
+
+// =====================================================
+// Effect Helpers
+// =====================================================
+
+const toggleEffectCard = (effectId) => {
+  const collapsed = collapsedEffects.value;
+
+  if (collapsed.has(effectId)) {
+    collapsed.delete(effectId);
+  } else {
+    collapsed.add(effectId);
+  }
+
+  collapsedEffects.value = new Set(collapsed);
+};
+
+const isEffectCollapsed = (effectId) =>
+  collapsedEffects.value.has(effectId);
 
 const effectDescriptionText = (effect) =>
   parseEffectDescription({
@@ -89,6 +111,10 @@ const effectDescriptionText = (effect) =>
     currentEffectId: effect.id,
   });
 
+// =====================================================
+// Watchers
+// =====================================================
+
 watch(
   () => props.activeSkillIndex,
   () => {
@@ -96,7 +122,12 @@ watch(
   }
 );
 
-const emit = defineEmits(["update:showEvolution"]);
+// =====================================================
+// Emits
+// =====================================================
+
+const emit = defineEmits(["update:showEvolution", "change-skill",]);
+
 </script>
 
 <template>
@@ -119,6 +150,7 @@ const emit = defineEmits(["update:showEvolution"]);
         :is-english="isEnglish"
         :show-evolution="showEvolution"
         @update:showEvolution="emit('update:showEvolution', $event)"
+        @change-skill="emit('change-skill', $event)"
       />
 
       <SkillEffect
@@ -144,6 +176,7 @@ const emit = defineEmits(["update:showEvolution"]);
         :skill="skill"
         :is-english="isEnglish"
         :skill-description-text="skillDescriptionText"
+        @change-skill="emit('change-skill', $event)"
       />
     </div>
   </div>

@@ -101,6 +101,15 @@ function changeSkill(index) {
   history.replaceState(null, "", `${window.location.pathname}#${hash}`);
 }
 
+const handleSkillClick = (e) => {
+
+  const skillIndex = e.target.dataset.skillIndex;
+
+  if (skillIndex != null) {
+    changeSkill(+skillIndex);
+  }
+};
+
 const loadMoreRef = ref(null);
 
 let observer;
@@ -206,8 +215,6 @@ onMounted(async () => {
   }
 
   await loadShikigami(formattedName.value);
-
-  console.log("Effets:", effects);
 
   nextTick(() => {
     initIllustrationObserver();
@@ -426,6 +433,7 @@ const addCKeywordListeners = () => {
             :is-shikigami="true"
             :show-evolution="showEvolution"
             v-model:showEvolution="showEvolution"
+            @change-skill="handleSkillClick"
           />
 
           <div
@@ -596,13 +604,6 @@ const addCKeywordListeners = () => {
                             processedSkills.find((s) => s.type === "Linked").name.jp
                       }})
                     </span>
-                    <button
-                      class="skill-edit-btn"
-                      @click="editSkill(processedSkills.find((s) => s.type === 'Linked'))"
-                    >
-                      <i class="fas fa-edit"></i>
-                      <!-- dùng font-awesome -->
-                    </button>
                   </div>
                 </span>
               </div>
@@ -710,7 +711,7 @@ const addCKeywordListeners = () => {
             </div>
           </div>
           <div v-else class="evolution-box">
-            <p class="evolution-text" v-html="evolutionText"></p>
+            <p class="evolution-text" v-html="evolutionText" @click="handleSkillClick"></p>
           </div>
         </div>
 
