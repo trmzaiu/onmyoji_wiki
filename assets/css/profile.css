@@ -169,12 +169,19 @@
 
 /* Profile */
 .profile-section {
+	line-height: 1.5;
 	white-space: pre-line;
 	text-align: justify;
 	margin-top: 30px;
 }
 
+.profile-section span {
+    vertical-align: baseline;
+    line-height: inherit;
+}
+
 .other-shiki {
+	display: inline;
 	color: var(--color-red);
 }
 
