@@ -4,7 +4,12 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 
 ## Setup
 
-Make sure to install dependencies:
+* Shikigami
+* Onmyoji
+* Skills
+* Souls
+
+## Run locally
 
 ```bash
 # npm
