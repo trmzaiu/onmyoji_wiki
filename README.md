@@ -5,10 +5,9 @@ Personal fan-made wiki for Onmyoji.
 Built to organize information about:
 
 * Shikigami
+* Onmyoji
 * Skills
 * Souls
-* Evolution materials
-* Audio and voice lines
 
 ## Run locally
 
