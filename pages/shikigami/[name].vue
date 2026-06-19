@@ -26,7 +26,6 @@ import SkillSection from "~/components/skills/SkillSection.vue";
 import SoulChoicesSection from "~/components/SoulChoicesSection.vue";
 import StatSection from "~/components/StatSection.vue";
 import TabSection from "~/components/TabSection.vue";
-import SkillChangeSection from "~/components/skills/SkillChangeSection.vue";
 
 /* ---------------------- GLOBAL ---------------------- */
 
