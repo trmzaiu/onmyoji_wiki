@@ -61,7 +61,7 @@ const skinText = (text) =>
         <td class="table-cell accessory-image-cell">
           <div class="accessory-image-wrapper">
             <img
-              :src="`/assets/images/shikigami/bios/${route.params.name}_Bio${
+              :src="`/assets/images/shikigami/bios/${routeName}_Bio${
                 index + 4
               }.webp`"
               :alt="bio.name.en || bio.name.cn"

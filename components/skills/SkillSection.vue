@@ -18,13 +18,13 @@ const props = defineProps({
   routeName: String,
   entity: Object,
   skill: Object,
+  skillIndex: Number,
   effects: Object,
   tagMap: Array,
   listShikigami: Array,
   listOnmyoji: Array,
   isEnglish: Boolean,
   isShikigami: Boolean,
-  activeSkillIndex: Number,
   showEvolution: Boolean,
 });
 
@@ -62,7 +62,7 @@ const skillDescriptionText = (text) =>
     onmyojiMap: skillOnmyojiMap.value,
     effectMap: effectMap.value,
     isEnglish: props.isEnglish,
-    currentSkillIndex: props.activeSkillIndex,
+    currentSkillIndex: props.skillIndex,
   });
 
 const currentSkillEffects = computed(() => {
@@ -116,7 +116,7 @@ const effectDescriptionText = (effect) =>
 // =====================================================
 
 watch(
-  () => props.activeSkillIndex,
+  () => props.skillIndex,
   () => {
     collapsedEffects.value = new Set();
   }
@@ -136,9 +136,9 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
     <SkillTitle
       :route-name="routeName"
       :skill="skill"
+      :skill-index="skillIndex"
       :is-shikigami="isShikigami"
       :is-english="isEnglish"
-      :active-skill-index="activeSkillIndex"
     />
 
     <!-- Skill description -->
@@ -167,7 +167,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
         :shikigami="entity"
         :route-name="routeName"
         :is-english="isEnglish"
-        :active-skill-index="activeSkillIndex"
+        :skill-index="skillIndex"
       />
 
       <hr class="skill-divider" />

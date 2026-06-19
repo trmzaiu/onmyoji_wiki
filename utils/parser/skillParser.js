@@ -45,7 +45,7 @@ export const parseBaseDescription = ({
     [/<(k|kb)>(.*?)<\/\1>/g, skillReplacer],
 
     // EFFECTS
-    [/<(e|eb)>(.*?)<\/\1>/g, effectReplacer],
+    [/<(e|eb)>(.*?)<\/\1>(\d+%)?/g, effectReplacer],
   ]);
 
   return processed;
@@ -86,24 +86,28 @@ export const parseSkillDescription = ({
           variant = "highlight";
         }
 
-        return createSkillSpan(name, variant, index-1);
+        return createSkillSpan(name, variant, index - 1);
       }
     },
-    effectReplacer: (_, type, id) => {
+    effectReplacer: (_, type, id, value) => {
       const effect = effectMap?.get(String(id));
 
       if (!effect) return _;
 
-      const effectName = getLocalizedName(
-        effect,
-        isEnglish
-      );
+      let effectName = getLocalizedName(effect, isEnglish);
+
+      if (id === "17" && value) {
+        effectName = effectName.replace(
+          /^(\S+)\s+(.*)$/,
+          `$1 ${value} $2`
+        );
+      }
 
       return createEffectSpan(
         effectName,
         type === "eb",
         effect.color
       );
-    },
+    }
   });
 };

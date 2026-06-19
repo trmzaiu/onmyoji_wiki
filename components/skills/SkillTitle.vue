@@ -3,9 +3,9 @@
 const props = defineProps({
   routeName: String,
   skill: Object,
+  skillIndex: Number,
   isShikigami: Boolean,
   isEnglish: Boolean,
-  activeSkillIndex: Number,
 });
 </script>
 
@@ -15,7 +15,7 @@ const props = defineProps({
       <img
         :src="`/assets/images/${
           isShikigami ? 'shikigami' : 'onmyoji'
-        }/skills/${routeName}_Skill${activeSkillIndex + 1}.webp`"
+        }/skills/${routeName}_Skill${skillIndex + 1}.webp`"
         :alt="skill.name.en"
         :title="skill.name.en"
       />

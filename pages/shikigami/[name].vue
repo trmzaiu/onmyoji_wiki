@@ -26,6 +26,7 @@ import SkillSection from "~/components/skills/SkillSection.vue";
 import SoulChoicesSection from "~/components/SoulChoicesSection.vue";
 import StatSection from "~/components/StatSection.vue";
 import TabSection from "~/components/TabSection.vue";
+import SkillChangeSection from "~/components/skills/SkillChangeSection.vue";
 
 /* ---------------------- GLOBAL ---------------------- */
 
@@ -102,12 +103,21 @@ function changeSkill(index) {
 }
 
 const handleSkillClick = (e) => {
+  const skillIndex = Number(e.target.dataset.skillIndex);
 
-  const skillIndex = e.target.dataset.skillIndex;
+  if (Number.isNaN(skillIndex)) return;
 
-  if (skillIndex != null) {
-    changeSkill(+skillIndex);
+  if (skillIndex > 2) {
+    const skill = processedSkills.value[skillIndex];
+    console.log(processedSkills.value[3]);
+
+    if (skill?.tab != null) {
+      changeSkill(skill.tab - 1);
+      return;
+    }
   }
+
+  changeSkill(skillIndex);
 };
 
 const loadMoreRef = ref(null);
@@ -171,6 +181,16 @@ const processedSkills = computed(() => {
     })
   );
 });
+
+const extraSkills = computed(() =>
+  processedSkills.value
+    .map((skill, i) => ({ skill, i }))
+    .filter(
+      ({ skill, i }) =>
+        i >= 3 &&
+        skill?.tab === activeSkillIndex.value + 1
+    )
+);
 
 const skillDescriptionText = (text) => {
   return parseSkillDescription({
@@ -424,155 +444,37 @@ const addCKeywordListeners = () => {
             :route-name="routeName"
             :entity="shikigami"
             :skill="processedSkills[activeSkillIndex]"
+            :skill-index="activeSkillIndex"
             :tag-map="tagMap"
             :effects="effects"
             :list-shikigami="listShikigami"
             :list-onmyoji="listOnmyoji"
             :is-english="isEnglish"
-            :active-skill-index="activeSkillIndex"
             :is-shikigami="true"
             :show-evolution="showEvolution"
             v-model:showEvolution="showEvolution"
             @change-skill="handleSkillClick"
           />
 
-          <div
-            v-for="({ skill, i }, index) in processedSkills
-              .map((s, i) => ({ skill: s, i }))
-              .filter(({ skill, i }) => i >= 3 && skill?.tab === activeSkillIndex + 1)"
+          <SkillSection
+            v-for="({ skill, i }) in extraSkills"
             :key="'extra-' + i"
-            class="skill-section"
-          >
-            <!-- Skill icon + title -->
-            <div class="skill-top">
-              <span class="skill-icon-wrapper">
-                <img
-                  :src="`/assets/images/shikigami/skills/${route.params.name}_Skill${
-                    i + 1
-                  }.webp`"
-                  :alt="skill.name.en"
-                  :title="skill.name.en"
-                />
-              </span>
-              <span class="skill-heading">
-                <div class="skill-title">
-                  <span class="skill-name">
-                    {{ isEnglish ? skill.name.en : skill.name.vn }}
-                  </span>
-                  <span class="skill-sub-name">
-                    ({{
-                      skill.name.cn === skill.name.jp
-                        ? skill.name.cn
-                        : skill.name.cn + " / " + skill.name.jp
-                    }})
-                  </span>
-                  <button class="skill-edit-btn" @click="editSkill(skill)">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                </div>
-              </span>
-            </div>
-
-            <!-- Skill description -->
-            <div class="skill-content">
-              <div class="skill-header">
-                <div class="skill-badges">
-                  <div v-for="tagId in skill.tags" :key="tagId" class="skill-badge">
-                    <div
-                      class="skill-badge-bg tint-base"
-                      :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
-                    ></div>
-
-                    <span class="skill-badge-text">
-                      {{ tagMap?.[tagId]?.name }}
-                    </span>
-                  </div>
-                </div>
-                <div class="skill-info">
-                  <span v-if="processedSkills[activeSkillIndex].cooldown !== 0">
-                    <b>CD:</b>
-                    {{ skill.cooldown }}
-                  </span>
-                  <span>
-                    {{ skill.onibi }}
-                    <img src="/assets/images/Onibi.webp" alt="Onibi" />
-                  </span>
-                </div>
-              </div>
-              <hr class="skill-divider" />
-
-              <div class="skill-voice-wrapper" v-if="skill.voice">
-                <p class="skill-voice">"{{ skill?.voice }}"</p>
-              </div>
-              <p
-                class="skill-description"
-                v-html="
-                  skillDescriptionText(
-                    isEnglish ? skill.description.en : skill.description.vn,
-                    activeSkillIndex
-                  )
-                "
-              ></p>
-              <div v-if="shikigami.id === 132 && activeSkillIndex === 2">
-                <hr class="skill-divider" />
-
-                <b class="sub-skill-title" @click="activeSkillIndex = 1">
-                  {{
-                    isEnglish ? shikigami.skills[1].name.en : shikigami.skills[1].name.vn
-                  }}
-                </b>
-
-                <div class="sub-skill-grid">
-                  <div v-for="i in [4, 5, 6, 7]" :key="i" class="sub-skill-item">
-                    <img
-                      :src="`/assets/images/shikigami/skills/${
-                        route.params.name
-                      }_SubSkill${i + 1}.webp`"
-                    />
-
-                    <span class="sub-skill-name" @click="activeSkillIndex = 1">
-                      {{
-                        isEnglish
-                          ? shikigami.skills[i - 1].name.en
-                          : shikigami.skills[i - 1].name.vn
-                      }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <hr class="skill-divider" />
-              <table
-                class="skill-level-table"
-                v-if="Array.isArray(isEnglish ? skill.levels.en : skill.levels.vn)"
-              >
-                <tbody>
-                  <tr>
-                    <th class="level-column">
-                      {{ isEnglish ? "Level" : "Cấp" }}
-                    </th>
-                    <th>
-                      {{ isEnglish ? "Effect" : "Hiệu ứng" }}
-                    </th>
-                  </tr>
-                  <tr
-                    v-for="lvl in isEnglish ? skill.levels.en : skill.levels.vn"
-                    :key="lvl.level"
-                  >
-                    <td class="level-cell">{{ lvl.level }}</td>
-                    <td
-                      class="effect-cell"
-                      v-html="skillDescriptionText(lvl.effect, activeSkillIndex)"
-                    ></td>
-                  </tr>
-                </tbody>
-              </table>
-              <div v-else>
-                <p class="no-level">{ isEnglish ? skill.levels.en : skill.levels.vn }</p>
-              </div>
-            </div>
-          </div>
+            :route-name="routeName"
+            :entity="shikigami"
+            :skill="skill"
+            :skill-index="i"
+            :tag-map="tagMap"
+            :effects="effects"
+            :list-shikigami="listShikigami"
+            :list-onmyoji="listOnmyoji"
+            :is-english="isEnglish"
+            :is-shikigami="true"
+            :show-evolution="showEvolution"
+            v-model:showEvolution="showEvolution"
+            @change-skill="handleSkillClick"
+          />
         </div>
+        
         <div v-else>
           <div v-if="shikigami.rarity === 'UR'">
             <div class="skill-section">
