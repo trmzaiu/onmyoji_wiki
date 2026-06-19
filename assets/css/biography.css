@@ -58,6 +58,7 @@
 .bio-number {
   text-align: center;
   font-weight: 700;
+  width: 60px;
 }
 
 .bio-text {

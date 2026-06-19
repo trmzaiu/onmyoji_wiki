@@ -1,19 +1,18 @@
 <script setup>
-import { renderSkinText } from '~/utils/parser/renderSkinText';
-
+import { renderSkinText } from "~/utils/parser/renderSkinText";
 
 const props = defineProps({
-	routeName: String,
+  routeName: String,
   entity: Object,
   isEnglish: Boolean,
 });
 
-const skinText = (text) => 
-	renderSkinText({
-	text,
-	shikigami: props.entity.value,
-	isEnglish: props.isEnglish
-})
+const skinText = (text) =>
+  renderSkinText({
+    text,
+    shikigami: props.entity.value,
+    isEnglish: props.isEnglish,
+  });
 </script>
 
 <template>
@@ -23,10 +22,7 @@ const skinText = (text) =>
   >
     <thead>
       <tr>
-        <th class="table-title bio-no-column">
-          Bio<br />
-          No.
-        </th>
+        <th class="table-title bio-no-column">No.</th>
 
         <th class="table-title accessory-image-column">
           {{ isEnglish ? "Image" : "Ảnh" }}
@@ -53,7 +49,7 @@ const skinText = (text) =>
         class="bio-accessory-row"
       >
         <!-- No -->
-        <td class="table-cell bio-no-cell">
+        <td class="table-cell bio-number">
           {{ index + 4 }}
         </td>
 
@@ -61,9 +57,7 @@ const skinText = (text) =>
         <td class="table-cell accessory-image-cell">
           <div class="accessory-image-wrapper">
             <img
-              :src="`/assets/images/shikigami/bios/${routeName}_Bio${
-                index + 4
-              }.webp`"
+              :src="`/assets/images/shikigami/bios/${routeName}_Bio${index + 4}.webp`"
               :alt="bio.name.en || bio.name.cn"
               class="accessory-image"
             />
@@ -83,7 +77,7 @@ const skinText = (text) =>
 
             -
 
-            <span class="lang-vi">
+            <span class="skin-name-vn">
               {{ bio.name.vn }}
             </span>
           </div>

@@ -10,9 +10,7 @@ import { getShikigamiByIds } from "~/services/shikigami.service";
 import { renderEvolutionText } from "~/utils/parser/renderEvolutionText";
 import { parseSkillDescription } from "~/utils/parser/skillParser";
 
-import {
-  markFirstAppearances,
-} from "~/utils/effectCollecter";
+import { markFirstAppearances } from "~/utils/effectCollecter";
 
 import BiographySection from "~/components/BiographySection.vue";
 import CharacterSection from "~/components/CharacterSection.vue";
@@ -33,9 +31,7 @@ const route = useRoute();
 
 const routeName = computed(() => route.params.name);
 
-const formattedName = computed(() =>
-  route.params.name.replace(/_/g, " ")
-);
+const formattedName = computed(() => route.params.name.replace(/_/g, " "));
 
 /* ---------------------- STATE ---------------------- */
 const {
@@ -176,7 +172,7 @@ const processedSkills = computed(() => {
     markFirstAppearances({
       skill,
       isEnglish: isEnglish.value,
-      showEvolution: showEvolution.value
+      showEvolution: showEvolution.value,
     })
   );
 });
@@ -184,11 +180,7 @@ const processedSkills = computed(() => {
 const extraSkills = computed(() =>
   processedSkills.value
     .map((skill, i) => ({ skill, i }))
-    .filter(
-      ({ skill, i }) =>
-        i >= 3 &&
-        skill?.tab === activeSkillIndex.value + 1
-    )
+    .filter(({ skill, i }) => i >= 3 && skill?.tab === activeSkillIndex.value + 1)
 );
 
 const skillDescriptionText = (text) => {
@@ -343,11 +335,7 @@ const addCKeywordListeners = () => {
       </div>
 
       <!-- Character -->
-      <CharacterSection
-        :route-name="routeName"
-        :entity="shikigami"
-        :type="'shikigami'"
-      />
+      <CharacterSection :route-name="routeName" :entity="shikigami" :type="'shikigami'" />
 
       <!-- Profile -->
       <ProfileSection
@@ -456,7 +444,7 @@ const addCKeywordListeners = () => {
           />
 
           <SkillSection
-            v-for="({ skill, i }) in extraSkills"
+            v-for="{ skill, i } in extraSkills"
             :key="'extra-' + i"
             :route-name="routeName"
             :entity="shikigami"
@@ -473,7 +461,7 @@ const addCKeywordListeners = () => {
             @change-skill="handleSkillClick"
           />
         </div>
-        
+
         <div v-else>
           <div v-if="shikigami.rarity === 'UR'">
             <div class="skill-section">
@@ -612,13 +600,17 @@ const addCKeywordListeners = () => {
             </div>
           </div>
           <div v-else class="evolution-box">
-            <p class="evolution-text" v-html="evolutionText" @click="handleSkillClick"></p>
+            <p
+              class="evolution-text"
+              v-html="evolutionText"
+              @click="handleSkillClick"
+            ></p>
           </div>
         </div>
 
         <!-- Biography Unlock -->
         <h2 class="session-title" v-if="shikigami.id !== 193">
-          {{ isEnglish ? "Biography Unlock" : "Mở khoá Tiểu sử" }}
+          {{ isEnglish ? "Biography Unlock" : "Mở khóa Tiểu sử" }}
         </h2>
 
         <BiographySection
@@ -631,7 +623,7 @@ const addCKeywordListeners = () => {
           :is-english="isEnglish"
         />
 
-        <h2 class="session-title" v-if="souls.length" >
+        <h2 class="session-title" v-if="souls.length">
           {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
         </h2>
 
