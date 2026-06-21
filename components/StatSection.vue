@@ -253,7 +253,7 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
               </span>
             </div>
           </td>
-          <td v-else></td>
+          <td v-else class="empty-cell"></td>
 
           <!-- 7  -->
           <td v-if="hasLevel40">
@@ -441,7 +441,18 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <td v-else class="empty-cell"></td>
 
           <!-- 6 -->
-          <td v-if="hasLevel40">{{ entity.stats.Crit[1] }}%</td>
+          <td v-if="hasLevel40">
+            <div class="flex">
+              {{ entity.stats.Crit[1] }}%
+
+              <span
+                v-if="entity.evolution && entity.evolution.no === 6"
+                class="increase-cell"
+              >
+                +{{ entity.evolution.count }}%
+              </span>
+            </div>
+          </td>
           <td v-else class="empty-cell"></td>
 
           <!-- 7 -->
