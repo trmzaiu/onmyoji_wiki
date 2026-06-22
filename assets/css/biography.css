@@ -1,0 +1,114 @@
+.bio-table {
+  width: 100%;
+  margin-top: 16px;
+  border: 2px solid #a51919;
+  background: rgba(165, 25, 25, 0.08);
+}
+
+.bio-table td {
+  border-right: 1px solid rgba(255, 255, 255, 0.62);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.bio-table tr:last-child td {
+  border-bottom: none;
+}
+
+.bio-table td:last-child {
+  border-right: none;
+}
+
+/* Columns */
+
+.no-column {
+  width: 50px;
+}
+
+.reward-column {
+  width: 120px;
+}
+
+/* Cells */
+.table-cell {
+  border: 1px solid var(--color-primary);
+}
+
+.table-title {
+  padding: 12px;
+
+  background: var(--color-primary);
+
+  border: 1px solid var(--color-primary);
+
+  color: rgba(255, 255, 255, 0.90);
+  font-weight: 700;
+  text-align: center;
+}
+
+.table-cell {
+  padding: 6px 12px;
+  vertical-align: middle;
+}
+
+.bio-table .table-cell {
+  font-family: "Noto Sans", sans-serif;
+  font-size: 15px;
+}
+
+.bio-number {
+  text-align: center;
+  font-weight: 700;
+  width: 60px;
+}
+
+.bio-text {
+  line-height: 1.6;
+}
+
+.reward-cell {
+  text-align: center;
+}
+
+/* Reward */
+
+.reward-box {
+  position: relative;
+
+  width: 50px;
+  height: 50px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reward-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+
+  transition: transform 0.25s ease;
+}
+
+.reward-amount {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+
+.bio-name-keyword {
+  color: var(--color-red);
+}
+
+.bio-name-keyword:hover {
+  color: var(--color-red-dark);
+}
