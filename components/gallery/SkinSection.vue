@@ -3,7 +3,7 @@ const props = defineProps({
   routeName: String,
   entity: Object,
   type: String,
-  isEnglish: Boolean,
+  language: String,
 });
 
 const emit = defineEmits(["open-image"]);
@@ -66,15 +66,9 @@ const openImage = (skin, index) => {
       />
       <p
         class="skin-name"
-        :class="
-          isEnglish
-            ? !skin.name.en && skin.name.cn
-              ? 'lang-zh'
-              : 'skin-name-en'
-            : 'skin-name-vn'
-        "
+        :class="`skin-${language}`"
       >
-        {{ isEnglish ? skin.name.en || skin.name.cn : skin.name.vn }}
+        {{ skin.name?.[language] || skin.name?.cn }}
       </p>
     </div>
   </div>

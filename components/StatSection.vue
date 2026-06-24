@@ -1,20 +1,23 @@
 <script setup>
+import { getUIText } from "~/utils/helper/helper";
 import { getStatRank, getStatRankImage } from "~/utils/helper/statHelper";
 
 const props = defineProps({
   routeName: String,
   entity: Object,
-  isEnglish: Boolean,
+  language: Boolean,
   isShikigami: Boolean,
 });
 
 const hasLevel40 = computed(() => props.entity.id !== 193);
+
+const text = (key) => getUIText(key, props.language);
 </script>
 
 <template>
   <div class="stats-wrapper">
     <table class="stats-table">
-      <tbody>
+      <thead>
         <!-- HEADER -->
         <tr class="stats-header">
           <!-- 1 -->
@@ -28,19 +31,17 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
             <div class="stats-title">
               {{
                 entity.rarity !== "SP" && entity.rarity !== "UR" && entity.rarity !== "N"
-                  ? isEnglish
-                    ? "Unevolved"
-                    : "Cơ bản"
+                  ? text("unevolved")
                   : ""
               }}
               <br />
-              {{ isEnglish ? "Level 1" : "Cấp 1" }}
+              {{ text("level") }}1
             </div>
           </th>
           <th colspan="2" v-else>
             <div class="stats-title" :class="!isShikigami ? 'stats-title-left' : ''">
               <br />
-              {{ isEnglish ? "Level 60" : "Cấp 60" }}
+              {{ text("level") }}60
             </div>
           </th>
 
@@ -49,20 +50,18 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
             <div class="stats-title">
               {{
                 entity.rarity !== "SP" && entity.rarity !== "UR" && entity.rarity !== "N"
-                  ? isEnglish
-                    ? "Evolved"
-                    : "Thức tỉnh"
+                  ? text("evolved")
                   : ""
               }}
               <br />
-              {{ isEnglish ? "Level 40" : "Cấp 40" }}
+              {{ text("level") }}40
             </div>
           </th>
           <th colspan="2" v-if="!isShikigami">
             <div class="stats-title" :class="!isShikigami ? 'stats-title-left' : ''">
-              {{ isEnglish ? "With Level" : "Cấp 40" }}
+              {{ text("withlevel") }}
               <br />
-              {{ isEnglish ? "40 Totem" : "Ngự Linh" }}
+              {{ text("totem") }}
             </div>
           </th>
 
@@ -126,12 +125,8 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
         <tr>
           <th colspan="8" class="spacing-row"></th>
         </tr>
-
-        <!-- BORDER -->
-        <tr class="top-border-row spacing-row">
-          <th colspan="8"></th>
-        </tr>
-
+      </thead>
+      <tbody>
         <!-- === ATK === -->
         <tr class="stats-row">
           <!-- 1 -->
@@ -140,13 +135,14 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 2 -->
           <td class="label-cell">
             <img src="/assets/images/stats/ATK.webp" alt="ATK" />
-            ATK
+            {{ language === "cn" ? "攻击" : "ATK" }}
           </td>
 
           <!-- 3 -->
-          <td >
+          <td>
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('ATK', entity.stats.ATK[0])"
                 :alt="getStatRank('ATK', entity.stats.ATK[0])"
               />
@@ -154,14 +150,15 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           </td>
 
           <!-- 4 -->
-          <td >
+          <td>
             {{ entity.stats.ATK[0] }}
           </td>
 
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('ATK_EVO', entity.stats.ATK[1])"
                 :alt="getStatRank('ATK_EVO', entity.stats.ATK[1])"
               />
@@ -211,13 +208,14 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 2 -->
           <td class="label-cell">
             <img src="/assets/images/stats/HP.webp" alt="HP" />
-            HP
+            {{ language === "cn" ? "生命" : "HP" }}
           </td>
 
           <!-- 3 -->
           <td>
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('HP', entity.stats.HP[0])"
                 :alt="getStatRank('HP', entity.stats.HP[0])"
               />
@@ -232,7 +230,8 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('HP_EVO', entity.stats.HP[1])"
                 :alt="getStatRank('HP_EVO', entity.stats.HP[1])"
               />
@@ -283,13 +282,14 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 2 -->
           <td class="label-cell">
             <img src="/assets/images/stats/DEF.webp" alt="DEF" />
-            DEF
+            {{ language === "cn" ? "防御" : "DEF" }}
           </td>
 
           <!-- 3 -->
           <td>
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('DEF', entity.stats.DEF[0])"
                 :alt="getStatRank('DEF', entity.stats.DEF[0])"
               />
@@ -304,7 +304,8 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('DEF_EVO', entity.stats.DEF[1])"
                 :alt="getStatRank('DEF_EVO', entity.stats.DEF[1])"
               />
@@ -346,13 +347,14 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 2 -->
           <td class="label-cell">
             <img src="/assets/images/stats/SPD.webp" alt="SPD" />
-            SPD
+            {{ language === "cn" ? "速度" : "SPD" }}
           </td>
 
           <!-- 3 -->
           <td>
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('SPD', entity.stats.SPD[0])"
                 :alt="getStatRank('SPD', entity.stats.SPD[0])"
               />
@@ -366,7 +368,8 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
 
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('SPD', entity.stats.SPD[1])"
                 :alt="getStatRank('SPD', entity.stats.SPD[1])"
               />
@@ -413,13 +416,14 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 2 -->
           <td class="label-cell">
             <img src="/assets/images/stats/CRIT.webp" alt="CRIT" />
-            Crit
+            {{ language === "cn" ? "暴击" : "Crit" }}
           </td>
 
           <!-- 3 -->
           <td>
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('CRIT', entity.stats.Crit[0])"
                 :alt="getStatRank('CRIT', entity.stats.Crit[0])"
               />
@@ -432,7 +436,8 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 5 -->
           <td v-if="hasLevel40">
             <div class="rank-cell">
-              <img :class="!isShikigami ? 'opacity-0' : ''"
+              <img
+                :class="!isShikigami ? 'opacity-0' : ''"
                 :src="getStatRankImage('CRIT', entity.stats.Crit[1])"
                 :alt="getStatRank('CRIT', entity.stats.Crit[1])"
               />
@@ -479,7 +484,7 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
           <!-- 2 -->
           <td class="label-cell">
             <img src="/assets/images/stats/CDMG.webp" alt="CDMG" />
-            Crit DMG
+            {{ language === "cn" ? "暴击伤害" : "Crit DMG" }}
           </td>
 
           <!-- 3 -->
@@ -519,7 +524,7 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
 
           <td class="label-cell">
             <img src="/assets/images/stats/HIT.webp" alt="HIT" />
-            Effects HIT
+            {{ language === "cn" ? "效果命中" : "Effects HIT" }}
           </td>
 
           <td></td>
@@ -561,7 +566,7 @@ const hasLevel40 = computed(() => props.entity.id !== 193);
 
           <td class="label-cell">
             <img src="/assets/images/stats/RES.webp" alt="RES" />
-            Effects RES
+            {{ language === "cn" ? "效果抵抗" : "Effects RES" }}
           </td>
 
           <td></td>

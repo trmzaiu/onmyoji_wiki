@@ -1,32 +1,57 @@
 <script setup>
 const props = defineProps({
-  illustrations: Object,
+  illustrations: {
+    type: Array,
+    default: () => [],
+  },
+  language: {
+    type: String,
+    default: "en",
+  },
 });
 
-const getIllustrationUrl = (name) =>
-  `/assets/images/illustrations/${name.replace(/ /g, "_")}.jpg`;
-
 const emit = defineEmits(["open-image"]);
+
+const getIllustrationUrl = (nameEn) =>
+  `/assets/images/illustrations/${nameEn}.jpg`;
+
+const getIllustrationName = (img) => {
+  if (props.language === "en") {
+    return img.name_en || "";
+  }
+
+  return img.name?.[props.language] || img.name?.cn || img.name_en || "";
+};
+
+const formatIllustrationName = (name) => {
+  return name
+    .replace(/[_ ]\d+$/, "")
+    .replace(/_/g, " ");
+};
 </script>
 
 <template>
   <div class="illustration-gallery">
-    <div v-for="(img, index) in illustrations" :key="index" class="illustration-card">
+    <div
+      v-for="(img, index) in illustrations"
+      :key="img.id || index"
+      class="illustration-card"
+    >
       <img
-        :src="getIllustrationUrl(img.name)"
-        :alt="img.name"
-        :title="img.name"
+        :src="getIllustrationUrl(img.name_en)"
+        :alt="getIllustrationName(img)"
+        :title="getIllustrationName(img)"
         class="illustration-image"
         loading="lazy"
-        @click="emit('open-image', getIllustrationUrl(img.name))"
+        @click="emit('open-image', getIllustrationUrl(img.name_en))"
       />
 
       <div
-        v-if="!/^No[ _]Name/i.test(img.name)"
+        v-if="!/^No[ _]Name/i.test(img.name_en)"
         class="illustration-label"
-        :class="/[\u4E00-\u9FFF]/.test(img.name) ? 'lang-zh' : 'skin-name-en'"
+        :class="`skin-${language}`"
       >
-        {{ img.name.replace(/[_ ]\d+$/, "").replace(/_/g, " ") }}
+        {{ formatIllustrationName(getIllustrationName(img)) }}
       </div>
     </div>
   </div>

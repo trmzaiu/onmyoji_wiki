@@ -2,21 +2,34 @@ import { getLocalizedName, getSkillName } from "../helper/helper";
 import { createEffectSpan, createSkillSpan } from "./createSpan";
 import { parseBaseDescription } from "./skillParser";
 
-export const effectTagType = (tag) => {
-	const value = tag.toLowerCase();
+export const effectTagType = (tag = "") => {
+  const value = tag.toLowerCase();
 
-	if (value.includes("buff")) return "buff";
-	if (value.includes("debuff")) return "debuff";
-	if (value.includes("mark")) return "mark";
-	if (value.includes("status")) return "status";
+  if (value.includes("buff") || value.includes("增益")) {
+    return "buff";
+  }
 
-	return "general";
+  if (value.includes("debuff") || value.includes("减益")) {
+    return "debuff";
+  }
+
+  if (value.includes("mark") || value.includes("印记")) {
+    return "mark";
+  }
+
+  if (value.includes("status") || value.includes("状态")) {
+    return "status";
+  }
+
+  if (value.includes("general") || value.includes("通用")) {
+    return "general";
+  }
+
+  return "general";
 };
 
-export const parseEffectTags = (effect, isEnglish) => {
-	const description = isEnglish
-		? effect?.description?.en
-		: effect?.description?.vn;
+export const parseEffectTags = (effect, language) => {
+	const description = effect?.description?.[language];
 
 	if (!description) {
 		return {
@@ -51,7 +64,7 @@ export const parseEffectDescription = ({
 	shikigamiMap,
 	onmyojiMap,
 	effectMap,
-	isEnglish,
+	language,
 	currentEffectId,
 }) => {
 	const renderedEffects = new Set();
@@ -62,7 +75,7 @@ export const parseEffectDescription = ({
 		shikigamiMap,
 		onmyojiMap,
 		effectMap,
-		isEnglish,
+		language,
 		skillReplacer: (_, type, id) => {
 			const [shikiId, skillIndex] = id.split("-");
 
@@ -70,7 +83,7 @@ export const parseEffectDescription = ({
 
 			if (!shiki) return _;
 
-			const name = getSkillName(shiki, skillIndex, isEnglish);
+			const name = getSkillName(shiki, skillIndex, language);
 
 			if (!name) return _;
 
@@ -83,7 +96,7 @@ export const parseEffectDescription = ({
 
 			const effectName = getLocalizedName(
 				effect,
-				isEnglish
+				language
 			);
 
 			if (String(id) === String(currentEffectId)) {

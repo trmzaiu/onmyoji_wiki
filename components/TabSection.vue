@@ -1,7 +1,9 @@
 <script setup>
-defineProps({
+import { getUIText } from "~/utils/helper/helper";
+
+const props = defineProps({
   activeTab: String,
-  isEnglish: Boolean,
+  language: String,
 });
 
 const emit = defineEmits(["change"]);
@@ -9,32 +11,26 @@ const emit = defineEmits(["change"]);
 const changeTab = (tab) => {
   emit("change", tab);
 };
+
+const text = (key) => getUIText(key, props.language);
 </script>
 
 <template>
   <div class="tabs">
     <button
       class="tab tab-button"
-      :class="{ active: activeTab === 'Main' }"
+      :class="[{ active: activeTab === 'Main' }, `title-${language}`]"
       @click="changeTab('Main')"
     >
-      {{ isEnglish ? "Main" : "Chính Điện" }}
+      {{ text("main") }}
     </button>
 
     <button
       class="tab tab-button"
-      :class="{ active: activeTab === 'Gallery' }"
+      :class="[{ active: activeTab === 'Gallery' }, `title-${language}`]"
       @click="changeTab('Gallery')"
     >
-      {{ isEnglish ? "Gallery" : "Hoạ Phòng" }}
-    </button>
-
-    <button
-      class="tab tab-button"
-      :class="{ active: activeTab === 'Dialogue' }" 
-      @click="changeTab('Dialogue')"
-    >
-      {{ isEnglish ? "Dialogue" : "Lời Thoại" }}
+      {{ text("gallery") }}
     </button>
   </div>
 </template>

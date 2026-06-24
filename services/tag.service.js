@@ -11,3 +11,15 @@ export async function getTagsByIds(ids) {
 
     return data;
 }
+
+export async function getRolesByIds(ids) {
+    const supabase = useSupabase();
+    const { data, error } = await supabase
+        .from("Role")
+        .select("*")
+        .in("id", ids);
+
+    if (error) throw error;
+
+    return data;
+}

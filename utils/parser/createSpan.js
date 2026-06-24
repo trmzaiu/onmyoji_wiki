@@ -1,11 +1,11 @@
+import { getLocalizedName } from "../helper/helper";
+
 export const createEntityLink = ({
   entity,
   type,
-  isEnglish,
+  language,
 }) => {
-  const keyword = isEnglish
-    ? entity.name.en
-    : entity.name.vn;
+  const keyword = getLocalizedName(entity, language);
 
   const slug =
     type === "shikigami"

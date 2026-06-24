@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" oncontextmenu="return false;">
     <header class="header">
       <div class="nav-container">
         <div class="nav-content">

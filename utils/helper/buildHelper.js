@@ -15,10 +15,12 @@ export function findSoulById(souls, id) {
   return souls.find((s) => s.id === id);
 }
 
-export function findSoulByIdName(souls, id) {
+export function findSoulByIdName(souls, id, language) {
   const soul = findSoulById(souls, id);
 
-  return soul ? soul.name.en : "";
+  if (!soul) return "";
+
+  return language === 'cn' ? soul.name.cn[0] : soul.name.en;
 }
 
 export function findSoulByIdSlug(souls, id) {

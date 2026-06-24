@@ -5,7 +5,7 @@ export const parseBaseDescription = ({
   text,
   shikigamiMap,
   onmyojiMap,
-  isEnglish,
+  language,
   skillReplacer,
   effectReplacer,
 }) => {
@@ -25,7 +25,7 @@ export const parseBaseDescription = ({
 
         if (!shiki) return _;
 
-        return getLocalizedName(shiki, isEnglish);
+        return getLocalizedName(shiki, language);
       },
     ],
 
@@ -37,7 +37,7 @@ export const parseBaseDescription = ({
 
         if (!onmyoji) return _;
 
-        return getLocalizedName(onmyoji, isEnglish);
+        return getLocalizedName(onmyoji, language);
       },
     ],
 
@@ -57,7 +57,7 @@ export const parseSkillDescription = ({
   shikigamiMap,
   onmyojiMap,
   effectMap,
-  isEnglish,
+  language,
   currentSkillIndex,
 }) => {
   return parseBaseDescription({
@@ -65,11 +65,11 @@ export const parseSkillDescription = ({
     entity,
     shikigamiMap,
     onmyojiMap,
-    isEnglish,
+    language,
     skillReplacer: (_, type, id) => {
       const index = parseInt(id, 10);
 
-      const name = getSkillName(entity, index, isEnglish);
+      const name = getSkillName(entity, index, language);
 
       if (!name) return _;
 
@@ -94,7 +94,7 @@ export const parseSkillDescription = ({
 
       if (!effect) return _;
 
-      let effectName = getLocalizedName(effect, isEnglish);
+      let effectName = getLocalizedName(effect, language);
 
       if (id === "17" && value) {
         effectName = effectName.replace(

@@ -4,7 +4,7 @@ import { effectTagType } from '~/utils/parser/effectParser';
 
 const props = defineProps({
   effects: Array,
-  isEnglish: Boolean,
+  language: String,
   isEffectCollapsed: Function,
   toggleEffectCard: Function,
   parseEffectTags: Function,
@@ -25,9 +25,9 @@ const props = defineProps({
         :class="'title-color-' + effect.color"
         @click="toggleEffectCard(effect.id)"
       >
-        {{ isEnglish ? effect.name?.en : effect.name?.vn }}
+        {{ effect.name?.[language] }}
 
-        <span class="lang-zh"> ({{ effect.name?.cn }}) </span>
+        <span v-if="language !== 'cn'" class="lang-cn"> ({{ effect.name.cn }}) </span>
       </div>
 
       <Transition name="effect-collapse">
@@ -41,9 +41,9 @@ const props = defineProps({
             />
           </div>
 
-          <div class="effect-tags" v-if="parseEffectTags(effect, isEnglish).tags.length">
+          <div class="effect-tags" v-if="parseEffectTags(effect, language).tags.length">
             <span
-              v-for="tag in parseEffectTags(effect, isEnglish).tags"
+              v-for="tag in parseEffectTags(effect, language).tags"
               :key="tag"
               class="effect-tag"
               :class="'tag-' + effectTagType(tag)"

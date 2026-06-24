@@ -1,8 +1,10 @@
 <script setup>
+import { getUIText } from "~/utils/helper/helper";
+
 const props = defineProps({
   routeName: String,
   shikigami: Object,
-  isEnglish: Boolean,
+  language: String,
   skillIndex: Number,
 });
 
@@ -49,6 +51,8 @@ const subSkillConfig = computed(() => {
 
   return null;
 });
+
+const text = (key) => getUIText(key, props.language);
 </script>
 
 <template>
@@ -57,11 +61,7 @@ const subSkillConfig = computed(() => {
 
     <template v-if="!subSkillConfig.knot">
       <b class="sub-skill-title">
-        {{
-          isEnglish
-            ? shikigami.skills[subSkillConfig.titleSkill].name.en
-            : shikigami.skills[subSkillConfig.titleSkill].name.vn
-        }}
+        {{ shikigami.skills[subSkillConfig.titleSkill].name?.[language] }}
       </b>
 
       <div class="sub-skill-grid">
@@ -75,12 +75,13 @@ const subSkillConfig = computed(() => {
           <span class="sub-skill-name">
             {{
               subSkillConfig.shortName
-                ? isEnglish
-                  ? shikigami.skills[i - 1].name.en.split(" ")[0]
-                  : shikigami.skills[i - 1].name.vn.split(" ").slice(0, 2).join(" ")
-                : isEnglish
-                ? shikigami.skills[i - 1].name.en
-                : shikigami.skills[i - 1].name.vn
+                ? language === "en"
+                  ? shikigami.skills[i - 1].name?.en?.split(" ")[0]
+                  : language === "vn"
+                  ? shikigami.skills[i - 1].name?.vn?.split(" ").slice(0, 2).join(" ")
+                  : shikigami.skills[i - 1].name?.cn?.split(" ").slice(0, 2).join(" ")
+                : shikigami.skills[i - 1].name?.[language] ||
+                  shikigami.skills[i - 1].name?.en
             }}
           </span>
         </div>
@@ -89,7 +90,7 @@ const subSkillConfig = computed(() => {
 
     <template v-else>
       <b class="sub-skill-title">
-        {{ isEnglish ? "Knots" : "Duyên Kết" }}
+        {{ text("knots") }}
       </b>
 
       <div class="sub-skill-grid">
@@ -97,7 +98,7 @@ const subSkillConfig = computed(() => {
           <img :src="`/assets/images/shikigami/skills/${routeName}_Knot${i}.webp`" />
 
           <span class="sub-skill-name">
-            {{ isEnglish ? `Type ${i}` : `Loại ${i}` }}
+            {{ `${text("knots")} ${i}` }}
           </span>
         </div>
       </div>

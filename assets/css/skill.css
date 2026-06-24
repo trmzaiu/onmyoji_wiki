@@ -38,6 +38,7 @@
   border: 1px solid #a51919;
 
   padding: 5px;
+  z-index: 2;
 }
 
 .skill-icon-wrapper img {
@@ -67,7 +68,6 @@
 }
 
 .skill-name {
-  font-family: "Bona Nova SC", serif;
   font-size: 20px;
   font-weight: 700;
 }
@@ -95,10 +95,35 @@
 
 /* Skill Content */
 .skill-content {
-  border: 1px solid #a51919;
-  padding: 10px 20px;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
 
-  background: rgba(255, 255, 255, 0.02);
+  background: linear-gradient(180deg,
+      rgba(92, 18, 18, 0.38),
+      rgba(35, 8, 8, 0.12));
+
+  border: 1px solid var(--text-primary);
+  padding: 10px 20px;
+}
+
+.skill-content::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  content: "";
+  pointer-events: none;
+
+  background-image: url("/images/style3.png");
+
+  background-size: 100% auto;
+
+  background-repeat: repeat-y;
+
+  background-position: center top;
+
+  opacity: 0.05;
 }
 
 .skill-header {
@@ -201,14 +226,12 @@
   height: 2px;
   margin: 8px 0;
 
-  background: linear-gradient(
-    to right,
-    transparent,
-    #a51919c0,
-    #a51919,
-    #a51919c0,
-    transparent
-  );
+  background: linear-gradient(to right,
+      transparent,
+      #a51919c0,
+      #a51919,
+      #a51919c0,
+      transparent);
 }
 
 .skill-voice-wrapper {
@@ -219,7 +242,6 @@
 .skill-voice {
   text-align: center;
   color: #a3a3a3;
-  font-family: "Inconsolata", monospace;
 }
 
 .skill-description {

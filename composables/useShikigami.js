@@ -6,11 +6,12 @@ import { getEvolution } from "~/services/evolution.service";
 import { getOnmyojiByIds } from "~/services/onmyoji.service";
 import { getShikigamiByIds, getShikigamiByName } from "~/services/shikigami.service";
 import { getSoulsByIds } from "~/services/soul.service";
-import { getTagsByIds } from "~/services/tag.service";
+import { getRolesByIds, getTagsByIds } from "~/services/tag.service";
 import { extractEntityIds } from "~/utils/parser/extractEntityIds";
 
 export function useShikigami() {
   const shikigami = ref(null);
+  const roles = ref([]);
   const listShikigami = ref([]);
   const listOnmyoji = ref([]);
   const tags = ref([]);
@@ -33,6 +34,10 @@ export function useShikigami() {
     if (!data) return;
 
     shikigami.value = data;
+
+    const roleIds = Array.isArray(shikigami.value.role)
+      ? shikigami.value.role
+      : [];
 
     let effectIds = extractEntityIds({
       skills: shikigami.value.skills,
@@ -93,7 +98,7 @@ export function useShikigami() {
       tag: "o",
     });
 
-    const conditionIds = shikigami.value.biography.map((b) => b.no) || [];
+    const conditionIds = shikigami.value.biography?.map((b) => b.no) || [];
 
     const soulIds = data.build?.length
       ? [...new Set(data.build.flatMap((build) => build.souls || []))]
@@ -106,6 +111,7 @@ export function useShikigami() {
       tagsData,
       conditionsData,
       soulsData,
+      rolesData,
     ] = await Promise.all([
       data.evolution
         ? getEvolution(data.evolution.no)
@@ -120,6 +126,10 @@ export function useShikigami() {
       getConditionsByIds(conditionIds),
 
       getSoulsByIds(soulIds),
+
+      roleIds.length
+        ? getRolesByIds(roleIds)
+        : Promise.resolve([]),
 
     ]);
 
@@ -137,48 +147,56 @@ export function useShikigami() {
 
     souls.value = soulsData;
 
+    roles.value = rolesData;
+
   }
 
   async function fetchIllustrations(id) {
-    if (
-      illustrationLoading.value ||
-      !illustrationHasMore.value
-    ) {
+    if (illustrationLoading.value || !illustrationHasMore.value) return;
+
+    const shikiId = Number(id);
+
+    if (!Number.isInteger(shikiId)) {
+      console.error("Invalid shikigami id:", id);
       return;
     }
 
     illustrationLoading.value = true;
 
-    const from = illustrationPage.value * illustrationLimit;
-    const to = from + illustrationLimit - 1;
+    try {
+      const from = illustrationPage.value * illustrationLimit;
+      const to = from + illustrationLimit - 1;
 
+      const supabase = useSupabase();
 
-    const supabase = useSupabase();
+      const { data, error } = await supabase
+        .from("Illustration")
+        .select("*")
+        .contains("shiki", JSON.stringify([Number(id)]))
+        .order("id")
+        .range(from, to);
 
-    const { data, error } = await supabase
-      .from("Illustration")
-      .select("*")
-      .contains("shiki", [id])
-      .order("id")
-      .range(from, to);
+      if (error) throw error;
 
-    if (error) {
-      console.error(error);
-    } else {
       illustrations.value.push(...data);
 
       if (data.length < illustrationLimit) {
         illustrationHasMore.value = false;
       }
 
-      illustrationPage.value++;
-    }
+      console.log("I:", illustrations);
 
-    illustrationLoading.value = false;
+      illustrationPage.value++;
+    } catch (error) {
+      console.error("Fetch illustrations error:", error);
+    } finally {
+      illustrationLoading.value = false;
+    }
   }
 
   return {
     shikigami,
+    roles,
     listShikigami,
     listOnmyoji,
     tags,

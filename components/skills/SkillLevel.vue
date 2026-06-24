@@ -1,13 +1,16 @@
 <script setup>
+import { getUIText } from "~/utils/helper/helper";
+
 
 const props = defineProps({
   skill: Object,
-  isEnglish: Boolean,
+  language: String,
   skillDescriptionText: Function
 });
 
 const emit = defineEmits(["change-skill",]);
 
+const text = (key) => getUIText(key, props.language);
 </script>
 
 <template>
@@ -15,25 +18,21 @@ const emit = defineEmits(["change-skill",]);
     class="skill-level-table"
     v-if="
       Array.isArray(
-        isEnglish
-          ? skill.levels.en
-          : skill.levels.vn
+       skill.levels?.[language]
       )
     "
   >
     <tbody>
       <tr>
         <th class="level-column">
-          {{ isEnglish ? "Level" : "Cấp" }}
+          {{ text("level") }}
         </th>
         <th>
-          {{ isEnglish ? "Effect" : "Hiệu ứng" }}
+          {{ text("effect") }}
         </th>
       </tr>
       <tr
-        v-for="lvl in isEnglish
-          ? skill.levels.en
-          : skill.levels.vn"
+        v-for="lvl in skill.levels?.[language]"
         :key="lvl.level"
       >
         <td class="level-cell">{{ lvl.level }}</td>
@@ -48,9 +47,7 @@ const emit = defineEmits(["change-skill",]);
   <div v-else>
     <p class="no-level">
       {{
-        isEnglish
-          ? skill.levels.en
-          : skill.levels.vn
+        skill.levels?.[language]
       }}
     </p>
   </div>

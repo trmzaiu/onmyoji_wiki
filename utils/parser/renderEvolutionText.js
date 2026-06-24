@@ -4,38 +4,46 @@ export function renderEvolutionText({
   evolutionData,
   evolutionTemplate,
   shikigami,
-  isEnglish,
+  language = "en",
 }) {
-  if (!evolutionTemplate) return "";
+  if (!evolutionTemplate || !evolutionData || !shikigami) return "";
 
-  const localizedText = isEnglish
-    ? evolutionTemplate.text?.en
-    : evolutionTemplate.text?.vn;
+  const localizedText =
+    evolutionTemplate.text?.[language] ??
+    evolutionTemplate.text?.en ??
+    "";
 
   if (!localizedText) return "";
 
   const replacements = {
-    name: isEnglish
-      ? shikigami.name?.en
-      : shikigami.name?.vn,
+    name:
+      shikigami.name?.[language] ??
+      shikigami.name?.en ??
+      "",
   };
 
   if (evolutionData.skill) {
-    const skillName = isEnglish
-      ? shikigami.skills?.[evolutionData.skill - 1]?.name?.en
-      : shikigami.skills?.[evolutionData.skill - 1]?.name?.vn;
+    const skillIndex = evolutionData.skill - 1;
 
-    replacements.skill = createSkillSpan(skillName, "bold", evolutionData.skill - 1);
+    const skillName =
+      shikigami.skills?.[skillIndex]?.name?.[language] ??
+      shikigami.skills?.[skillIndex]?.name?.en ??
+      "";
+
+    replacements.skill = createSkillSpan(
+      skillName,
+      "bold",
+      skillIndex
+    );
   }
 
-  if (evolutionData.count) {
+  if (evolutionData.count !== undefined && evolutionData.count !== null) {
     replacements.count = evolutionData.count;
   }
 
   return localizedText.replace(
     /\{(\w+)\}/g,
-    (_, key) =>
-      replacements[key] ?? ""
+    (_, key) => replacements[key] ?? ""
   );
 }
 

@@ -5,8 +5,10 @@ const props = defineProps({
   skill: Object,
   skillIndex: Number,
   isShikigami: Boolean,
-  isEnglish: Boolean,
+  language: String,
 });
+
+
 </script>
 
 <template>
@@ -22,14 +24,12 @@ const props = defineProps({
     </span>
     <span class="skill-heading">
       <div class="skill-title">
-        <span class="skill-name">
+        <span class="skill-name" :class="`title-${language}`">
           {{
-            isEnglish
-              ? skill.name.en
-              : skill.name.vn
+            skill.name?.[language]
           }}
         </span>
-        <span class="skill-sub-name">
+        <span v-if="language !== 'cn'" class="skill-sub-name">
           ({{
             skill.name.cn ===
             skill.name.jp

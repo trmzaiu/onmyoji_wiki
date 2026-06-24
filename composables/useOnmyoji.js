@@ -95,7 +95,7 @@ export function useOnmyoji() {
     const { data, error } = await supabase
       .from("Illustration")
       .select("*")
-      .contains("onmyoji", [id])
+      .contains("onmyoji", JSON.stringify([Number(id)]))
       .order("id")
       .range(from, to);
 

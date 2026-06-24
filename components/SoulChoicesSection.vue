@@ -12,9 +12,10 @@ import {
 const props = defineProps({
   souls: Object,
   shikigami: Object,
+  language: String
 });
 
-const soulName = (souls, id) => findSoulByIdName(souls, id);
+const soulName = (souls, id) => findSoulByIdName(souls, id, props.language);
 
 const soulSlug = (souls, id) => findSoulByIdSlug(souls, id);
 </script>
@@ -23,7 +24,7 @@ const soulSlug = (souls, id) => findSoulByIdSlug(souls, id);
   <div v-if="shikigami.build?.length" class="build-list">
     <div v-for="build in shikigami.build" :key="build.no" class="build-card">
       <div class="build-header">
-        <h3 class="build-title">Build {{ build.no }}</h3>
+        <h3 class="build-title" :class="`title-${language}`">{{ language === 'cn' ? '御魂搭配' : 'Build ' }} {{ build.no }}</h3>
 
         <!-- ROLE BADGES -->
         <div class="build-roles">
@@ -74,7 +75,7 @@ const soulSlug = (souls, id) => findSoulByIdSlug(souls, id);
 
       <!-- Substats -->
       <div v-if="build.substats" class="build-substats">
-        <span class="build-label">Substats:</span>
+        <span class="build-label">{{ language === "cn" ? "副属性" : "Substats" }}:</span>
 
         <template v-for="(item, i) in parseSubstats(build.substats)" :key="i">
           <span
@@ -93,7 +94,7 @@ const soulSlug = (souls, id) => findSoulByIdSlug(souls, id);
 
       <!-- Breakpoint -->
       <div v-if="build.breakpoint" class="build-breakpoint">
-        <span class="build-label">Breakpoint:</span>
+        <span class="build-label">{{ language === "cn" ? "副属性" : "Breakpoint" }}:</span>
 
         <span
           v-for="tag in build.breakpoint.split('|').map((t) => t.trim())"

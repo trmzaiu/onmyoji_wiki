@@ -1,20 +1,24 @@
 const getDisplayName = ({
   targetData,
-  isEnglish,
+  language = "en",
 }) => {
   if (!targetData) return "";
 
   const name = targetData.name;
 
-  return isEnglish
-    ? name?.en || name?.vn || ""
-    : name?.vn || name?.en || "";
+  return (
+    name?.[language] ??
+    name?.en ??
+    name?.vn ??
+    name?.cn ??
+    ""
+  );
 };
 
 const getEntityLinkData = ({
   targetType,
   targetData,
-  isEnglish,
+  language = "en",
 }) => {
   if (!targetData) {
     return {
@@ -25,23 +29,24 @@ const getEntityLinkData = ({
 
   const name = targetData.name;
 
-  const keyword = isEnglish
-    ? name?.en || name?.vn
-    : name?.vn || name?.en;
+  const keyword =
+    name?.[language] ??
+    name?.en;
 
   let finalName = "";
 
   if (targetType === "shikigami") {
     finalName =
       (Array.isArray(name?.jp)
-        ? name.jp[1] || name.jp[0]
-        : name?.jp) ||
-      name?.en ||
-      name?.vn;
+        ? name.jp[1] ?? name.jp[0]
+        : name?.jp) ??
+      name?.en 
+      "";
   } else {
     finalName =
-      name?.en ||
-      name?.vn ||
+      name?.en ??
+      name?.vn ??
+      name?.cn ??
       "";
   }
 
@@ -54,47 +59,45 @@ const getEntityLinkData = ({
 const renderEntity = ({
   targetType,
   targetData,
-  isEnglish,
+  language,
   displayedEntities,
 }) => {
   const keyword = getDisplayName({
     targetData,
-    isEnglish,
+    language,
   });
 
   const { finalName } = getEntityLinkData({
     targetType,
     targetData,
-    isEnglish,
+    language,
   });
 
   const entityKey = `${targetType}-${targetData.id}`;
 
-  // First appearance
   if (!displayedEntities.has(entityKey)) {
     displayedEntities.add(entityKey);
 
-    return `<span class="other-shiki font-bold">${keyword}</span>`;
+    return `<a class="other-shiki font-bold" href="/${targetType}/${
+      encodeURIComponent(finalName)}">${keyword}</a>`;
   }
 
-  // Later appearances
-  return `<a href="/${targetType}/${encodeURIComponent(
-    finalName
-  )}"><span class="other-shiki">${keyword}</span></a>`;
+  return `<span class="other-shiki">${keyword}</span>`;
 };
 
 export const renderProfileText = ({
   shikigami,
   profile,
-  isEnglish,
+  language,
   listShikigami,
   listOnmyoji,
 }) => {
   if (!profile) return "";
 
-  const text = isEnglish
-    ? profile.en
-    : profile.vn;
+  const text =
+    profile?.[language] ??
+    profile?.en 
+    "";
 
   if (!text) return "";
 
@@ -110,9 +113,7 @@ export const renderProfileText = ({
 
       // Current shikigami => normal text
       if (id === shikigami.id) {
-        return isEnglish
-          ? shikigami.name.en
-          : shikigami.name.vn;
+        return shikigami.name?.[language];
       }
 
       const targetData = listShikigami?.find(
@@ -126,7 +127,7 @@ export const renderProfileText = ({
       return renderEntity({
         targetType: "shikigami",
         targetData,
-        isEnglish,
+        language,
         displayedEntities,
       });
     }
@@ -149,7 +150,7 @@ export const renderProfileText = ({
       return renderEntity({
         targetType: "onmyoji",
         targetData,
-        isEnglish,
+        language,
         displayedEntities,
       });
     }

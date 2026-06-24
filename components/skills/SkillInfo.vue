@@ -3,23 +3,21 @@ const props = defineProps({
   skill: Object,
   tagMap: Array,
   skillDescriptionText: Function,
-  isEnglish: Boolean,
-  showEvolution: Boolean
+  language: String,
+  showEvolution: Boolean,
 });
 
 const currentDescription = computed(() => {
-  const lang = props.isEnglish ? "en" : "vn";
-
   if (!props.skill.base) {
-    return props.skill.description?.[lang] || "";
+    return props.skill.description?.[props.language] || "";
   }
 
   return props.showEvolution
-    ? props.skill.description?.[lang] || ""
-    : props.skill.base?.[lang] || "";
+    ? props.skill.description?.[props.language] || ""
+    : props.skill.base?.[props.language] || "";
 });
 
-const emit = defineEmits(["update:showEvolution", "change-skill",]);
+const emit = defineEmits(["update:showEvolution", "change-skill"]);
 </script>
 
 <template>
@@ -32,7 +30,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
         ></div>
 
         <span class="skill-badge-text">
-          {{ tagMap?.[tagId]?.name }}
+          {{ tagMap?.[tagId]?.name?.[language] }}
         </span>
       </div>
     </div>
@@ -51,7 +49,9 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
   <hr class="skill-divider" />
 
   <div class="skill-voice-wrapper" v-if="skill.voice">
-    <p class="skill-voice">"{{ skill.voice }}"</p>
+    <p class="skill-voice" :class="`voice-${language}`">
+      "{{ skill.voice?.[language] }}"
+    </p>
   </div>
 
   <div
@@ -59,7 +59,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
     class="evolution-badge"
     @click="emit('update:showEvolution', !showEvolution)"
   >
-    {{ showEvolution ? "Evo" : "Base" }}
+    {{ showEvolution ? (language === 'cn' ? '觉醒后' : 'Evo') : (language === 'cn' ? '觉醒前' : 'Base') }}
   </div>
 
   <p

@@ -1,4 +1,6 @@
 <script setup>
+import { getUIText } from "~/utils/helper/helper";
+
 import { renderBiographyText } from "~/utils/parser/renderBiographyText";
 
 const props = defineProps({
@@ -8,7 +10,7 @@ const props = defineProps({
 	conditions: Array,
 	bioShikigamiMap: Array,
 	bioOnmyojiMap: Array,
-  isEnglish: Boolean,
+  language: String,
 });
 
 const conditionMap = computed(() => {
@@ -22,9 +24,10 @@ const biographyText = (bio) =>
     shikigami: props.shikigami,
     shikigamiMap: props.bioShikigamiMap,
     onmyojiMap: props.bioOnmyojiMap,
-    isEnglish: props.isEnglish,
+    language: props.language,
   });
 
+const text = (key) => getUIText(key, props.language);
 </script>
 
 <template>
@@ -33,10 +36,10 @@ const biographyText = (bio) =>
       <tr>
         <th class="table-title no-column">No.</th>
         <th class="table-title">
-          {{ isEnglish ? "Unlock Conditions" : "Điều kiện mở khóa" }}
+          {{ text("unlockConditions") }}
         </th>
         <th class="table-title reward-column">
-          {{ isEnglish ? "Rewards" : "Phần thưởng" }}
+          {{ text("reward") }}
         </th>
       </tr>
     </thead>

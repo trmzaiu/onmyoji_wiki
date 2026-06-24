@@ -23,7 +23,7 @@ const props = defineProps({
   tagMap: Array,
   listShikigami: Array,
   listOnmyoji: Array,
-  isEnglish: Boolean,
+  language: String,
   isShikigami: Boolean,
   showEvolution: Boolean,
 });
@@ -61,7 +61,7 @@ const skillDescriptionText = (text) =>
     shikigamiMap: skillShikigamiMap.value,
     onmyojiMap: skillOnmyojiMap.value,
     effectMap: effectMap.value,
-    isEnglish: props.isEnglish,
+    language: props.language,
     currentSkillIndex: props.skillIndex,
   });
 
@@ -73,11 +73,11 @@ const currentSkillEffects = computed(() => {
   return collectNestedEffects({
     text: getAllSkillEffectText({
       skill: props.skill,
-      isEnglish: props.isEnglish,
+      language: props.language,
       showEvolution: props.showEvolution,
     }),
     effects: props.effects,
-    isEnglish: props.isEnglish,
+    language: props.language,
   });
 });
 
@@ -102,12 +102,12 @@ const isEffectCollapsed = (effectId) =>
 
 const effectDescriptionText = (effect) =>
   parseEffectDescription({
-    text: parseEffectTags(effect, props.isEnglish).description,
+    text: parseEffectTags(effect, props.language).description,
     entity: props.entity,
     shikigamiMap: skillShikigamiMap.value,
     onmyojiMap: skillOnmyojiMap.value,
     effectMap: effectMap.value,
-    isEnglish: props.isEnglish,
+    language: props.language,
     currentEffectId: effect.id,
   });
 
@@ -127,7 +127,6 @@ watch(
 // =====================================================
 
 const emit = defineEmits(["update:showEvolution", "change-skill",]);
-
 </script>
 
 <template>
@@ -138,7 +137,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
       :skill="skill"
       :skill-index="skillIndex"
       :is-shikigami="isShikigami"
-      :is-english="isEnglish"
+      :language="language"
     />
 
     <!-- Skill description -->
@@ -147,7 +146,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
         :skill="skill"
         :tag-map="tagMap"
         :skill-description-text="skillDescriptionText"
-        :is-english="isEnglish"
+        :language="language"
         :show-evolution="showEvolution"
         @update:showEvolution="emit('update:showEvolution', $event)"
         @change-skill="emit('change-skill', $event)"
@@ -155,7 +154,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
 
       <SkillEffect
         :effects="currentSkillEffects"
-        :is-english="isEnglish"
+        :language="language"
         :is-effect-collapsed="isEffectCollapsed"
         :toggle-effect-card="toggleEffectCard"
         :parse-effect-tags="parseEffectTags"
@@ -166,7 +165,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
         v-if="isShikigami"
         :shikigami="entity"
         :route-name="routeName"
-        :is-english="isEnglish"
+        :language="language"
         :skill-index="skillIndex"
       />
 
@@ -174,7 +173,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
 
       <SkillLevel
         :skill="skill"
-        :is-english="isEnglish"
+        :language="language"
         :skill-description-text="skillDescriptionText"
         @change-skill="emit('change-skill', $event)"
       />

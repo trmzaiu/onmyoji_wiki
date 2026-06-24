@@ -3,6 +3,7 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { useShikigami } from "~/composables/useShikigami";
+import { useLanguage } from "~/composables/useLanguage";
 
 import { getOnmyojiByIds } from "~/services/onmyoji.service";
 import { getShikigamiByIds } from "~/services/shikigami.service";
@@ -25,6 +26,8 @@ import SoulChoicesSection from "~/components/SoulChoicesSection.vue";
 import StatSection from "~/components/StatSection.vue";
 import TabSection from "~/components/TabSection.vue";
 
+import { getUIText } from "~/utils/helper/helper";
+
 /* ---------------------- GLOBAL ---------------------- */
 
 const route = useRoute();
@@ -36,6 +39,7 @@ const formattedName = computed(() => route.params.name.replace(/_/g, " "));
 /* ---------------------- STATE ---------------------- */
 const {
   shikigami,
+  roles,
   listShikigami,
   listOnmyoji,
   tagMap,
@@ -49,9 +53,11 @@ const {
   loadShikigami,
 } = useShikigami();
 
-const showEvolution = ref(true);
+const { language, languages, getLocaleText } = useLanguage();
 
-const isEnglish = ref(true);
+const text = (key) => getUIText(key, language.value);
+
+const showEvolution = ref(true);
 
 const activeTab = ref(route.hash.replace("#", "") || "Main");
 
@@ -70,6 +76,16 @@ const closeModal = () => {
   isModalOpen.value = false;
   selectedImage.value = null;
 };
+
+const displayTitle = computed(() => {
+  if (language.value === "cn") {
+    return shikigami.value?.name?.cn?.[0] ?? "";
+  }
+
+  return shikigami.value?.name?.jp?.[1] ??
+    shikigami.value?.name?.jp?.[0] ??
+    "";
+});
 
 async function changeTab(tab) {
   activeTab.value = tab;
@@ -96,6 +112,74 @@ function changeSkill(index) {
 
   history.replaceState(null, "", `${window.location.pathname}#${hash}`);
 }
+
+const getSkillTypeText = (type) => {
+  const typeMap = {
+    Normal: text("normal"),
+    Special: text("special"),
+  };
+
+  return typeMap[type] || type;
+};
+
+const getSkillTabName = (skill, index) => {
+  const skills = shikigami.value.skills;
+
+  const skill1 = skills[1];
+  const skill2 = skills[2];
+  const skill3 = skills[3];
+
+  // Dùng type gốc để so sánh logic
+  const type1 = skill1?.type;
+  const type2 = skill2?.type;
+  const type3 = skill3?.type;
+
+  const hasExtraSkillOnTab2 = skill3?.tab === 2;
+
+  const special1 = `${text("special")} 1`;
+  const special2 = `${text("special")} 2`;
+
+  // Skill thứ 2
+  if (index === 1 && hasExtraSkillOnTab2) {
+    if (type1 !== type3) {
+      const firstName =
+        type1 === type2 ? special1 : getSkillTypeText(type1);
+
+      const secondName =
+        type3 === type2 ? special1 : getSkillTypeText(type3);
+
+      return `${firstName} / ${secondName}`;
+    }
+
+    return type1 === type2
+      ? special1
+      : getSkillTypeText(type1);
+  }
+
+  // Skill thứ 3
+  if (index === 2 && hasExtraSkillOnTab2) {
+    if (type1 !== type3) {
+      return special2;
+    }
+
+    return type2 === type1
+      ? special2
+      : getSkillTypeText(type2);
+  }
+
+  // Hai skill có cùng type
+  if (type1 === type2) {
+    if (index === 1) {
+      return `${getSkillTypeText(skill.type)} 1`;
+    }
+
+    if (index === 2) {
+      return `${getSkillTypeText(skill.type)} 2`;
+    }
+  }
+
+  return getSkillTypeText(skill.type);
+};
 
 const handleSkillClick = (e) => {
   const skillIndex = Number(e.target.dataset.skillIndex);
@@ -144,7 +228,7 @@ const evolutionText = computed(() =>
     evolutionData: shikigami.value?.evolution,
     evolutionTemplate: evolution.value,
     shikigami: shikigami.value,
-    isEnglish: isEnglish.value,
+    language: language.value,
   })
 );
 
@@ -171,7 +255,7 @@ const processedSkills = computed(() => {
   return shikigami.value.skills.map((skill) =>
     markFirstAppearances({
       skill,
-      isEnglish: isEnglish.value,
+      language: language.value,
       showEvolution: showEvolution.value,
     })
   );
@@ -183,6 +267,10 @@ const extraSkills = computed(() =>
     .filter(({ skill, i }) => i >= 3 && skill?.tab === activeSkillIndex.value + 1)
 );
 
+const linkedSkill = computed(() =>
+  processedSkills.value.find((skill) => skill.type === "Linked")
+);
+
 const skillDescriptionText = (text) => {
   return parseSkillDescription({
     text,
@@ -190,7 +278,7 @@ const skillDescriptionText = (text) => {
     shikigamiMap: skillShikigamiMap.value,
     onmyojiMap: skillOnmyojiMap.value,
     effectMap: effectMap.value,
-    isEnglish: isEnglish.value,
+    language: language.value,
     currentSkillIndex: activeSkillIndex.value,
   });
 };
@@ -203,7 +291,7 @@ onMounted(async () => {
   const saved = localStorage.getItem("lang");
 
   if (saved) {
-    isEnglish.value = saved === "en";
+    language.value = saved;
   }
 
   const hash = window.location.hash.replace("#", "");
@@ -279,10 +367,6 @@ watch(
   }
 );
 
-watch(isEnglish, (val) => {
-  localStorage.setItem("lang", val ? "en" : "vn");
-});
-
 watch(
   () => activeSkillIndex.value,
   () => {
@@ -316,7 +400,6 @@ const addCKeywordListeners = () => {
     });
   });
 };
-
 </script>
 
 <template>
@@ -324,19 +407,26 @@ const addCKeywordListeners = () => {
     <div class="content-section">
       <!-- Name -->
       <div class="header-row">
-        <div class="title">{{ shikigami.name.jp[1] }}</div>
-        <label class="toggle-switch" title="Switch Language">
-          <input type="checkbox" v-model="isEnglish" />
-          <span class="slider"></span>
-          <div class="toggle-labels">
-            <span>EN</span>
-            <span>VN</span>
-          </div>
+        <div class="title" :class="`title-${language}`">{{ displayTitle }}</div>
+        <label class="language-select" title="Switch Language">
+          <span class="language-icon">🌐</span>
+
+          <select v-model="language">
+            <option v-for="item in languages" :key="item.code" :value="item.code">
+              {{ item.label }}
+            </option>
+          </select>
         </label>
       </div>
 
       <!-- Character -->
-      <CharacterSection :route-name="routeName" :entity="shikigami" :type="'shikigami'" />
+      <CharacterSection 
+        :route-name="routeName" 
+        :entity="shikigami" 
+        :roles="roles"
+        :type="'shikigami'"
+        :language="language" 
+        />
 
       <!-- Profile -->
       <ProfileSection
@@ -344,11 +434,11 @@ const addCKeywordListeners = () => {
         :shikigami="shikigami"
         :list-shikigami="listShikigami"
         :list-onmyoji="listOnmyoji"
-        :is-english="isEnglish"
+        :language="language"
       />
 
       <!-- Content -->
-      <TabSection :active-tab="activeTab" :is-english="isEnglish" @change="changeTab" />
+      <TabSection :active-tab="activeTab" :language="language" @change="changeTab"/>
 
       <!-- Main Tab -->
       <div
@@ -357,20 +447,20 @@ const addCKeywordListeners = () => {
         :class="activeTab === 'Main' ? 'opacity-100' : 'opacity-0'"
       >
         <!-- Stats -->
-        <h2 class="session-title top-0">
-          {{ isEnglish ? "Stats" : "Chỉ số" }}
+        <h2 class="session-title top-0" :class="`title-${language}`">
+          {{ text("stats") }}
         </h2>
 
         <StatSection
           :route-name="routeName"
           :entity="shikigami"
-          :is-english="isEnglish"
+          :language="language"
           :is-shikigami="true"
         />
 
         <!-- Skills -->
-        <h2 class="session-title">
-          {{ isEnglish ? "Skills" : "Kĩ năng" }}
+        <h2 class="session-title" :class="`title-${language}`">
+          {{ text("skills") }}
         </h2>
         <div class="tabs mb-5">
           <button
@@ -379,52 +469,23 @@ const addCKeywordListeners = () => {
             @click="changeSkill(index)"
             :class="['tab tab-skill-button', { active: activeSkillIndex === index }]"
           >
-            <template v-if="index === 1 && shikigami.skills[3]?.tab === 2">
-              {{
-                shikigami.skills[1].type !== shikigami.skills[3].type
-                  ? `${
-                      shikigami.skills[1].type === shikigami.skills[2].type
-                        ? "Special 1"
-                        : shikigami.skills[1].type
-                    } / ${
-                      shikigami.skills[3].type === shikigami.skills[2].type
-                        ? "Special 1"
-                        : shikigami.skills[3].type
-                    }`
-                  : shikigami.skills[1].type === shikigami.skills[2].type
-                  ? "Special 1"
-                  : shikigami.skills[1].type
-              }}
-            </template>
-            <template v-else-if="index === 2 && shikigami.skills[3]?.tab === 2">
-              {{
-                shikigami.skills[1].type !== shikigami.skills[3].type
-                  ? "Special 2"
-                  : shikigami.skills[2].type === shikigami.skills[1].type
-                  ? "Special 2"
-                  : shikigami.skills[2].type
-              }}
-            </template>
-            <template v-else-if="shikigami.skills[1]?.type === shikigami.skills[2]?.type">
-              {{ skill.type + (index === 1 ? " 1" : index === 2 ? " 2" : "") }}
-            </template>
-            <template v-else>
-              {{ skill.type }}
-            </template>
+            {{ getSkillTabName(skill, index) }}
           </button>
+
           <button
             v-if="!['SP', 'UR', 'N'].includes(shikigami.rarity) && shikigami.id !== 193"
             @click="changeSkill(3)"
             :class="['tab tab-skill-button', { active: activeSkillIndex === 3 }]"
           >
-            Evolution Effect
+            {{ text("evolutionEffect") }}
           </button>
+
           <button
             v-if="shikigami.rarity === 'UR'"
             @click="changeSkill(3)"
             :class="['tab tab-skill-button', { active: activeSkillIndex === 3 }]"
           >
-            Linked
+            {{ text("linked") }}
           </button>
         </div>
         <div v-if="activeSkillIndex < 3">
@@ -437,7 +498,7 @@ const addCKeywordListeners = () => {
             :effects="effects"
             :list-shikigami="listShikigami"
             :list-onmyoji="listOnmyoji"
-            :is-english="isEnglish"
+            :language="language"
             :is-shikigami="true"
             :show-evolution="showEvolution"
             v-model:showEvolution="showEvolution"
@@ -455,7 +516,7 @@ const addCKeywordListeners = () => {
             :effects="effects"
             :list-shikigami="listShikigami"
             :list-onmyoji="listOnmyoji"
-            :is-english="isEnglish"
+            :language="language"
             :is-shikigami="true"
             :show-evolution="showEvolution"
             v-model:showEvolution="showEvolution"
@@ -471,27 +532,22 @@ const addCKeywordListeners = () => {
                 <span class="skill-icon-wrapper">
                   <img
                     :src="`/assets/images/shikigami/skills/${route.params.name}_Skill0.webp`"
-                    :alt="processedSkills.find((s) => s.type === 'Linked').name.en"
-                    :title="processedSkills.find((s) => s.type === 'Linked').name.en"
+                    :alt="linkedSkill.name.en"
+                    :title="linkedSkill.name.en"
                   />
                 </span>
                 <span class="skill-heading">
                   <div class="skill-title">
                     <span class="skill-name">
-                      {{
-                        isEnglish
-                          ? processedSkills.find((s) => s.type === "Linked").name.en
-                          : processedSkills.find((s) => s.type === "Linked").name.vn
-                      }}
+                      {{ linkedSkill?.name?.[language] ?? linkedSkill?.name?.en ?? "" }}
                     </span>
                     <span class="skill-sub-name">
                       ({{
-                        processedSkills.find((s) => s.type === "Linked").name.cn ===
-                        processedSkills.find((s) => s.type === "Linked").name.jp
-                          ? processedSkills.find((s) => s.type === "Linked").name.cn
-                          : processedSkills.find((s) => s.type === "Linked").name.cn +
-                            " / " +
-                            processedSkills.find((s) => s.type === "Linked").name.jp
+                        linkedSkill?.name?.cn === linkedSkill?.name?.jp
+                          ? linkedSkill?.name?.cn
+                          : [linkedSkill?.name?.cn, linkedSkill?.name?.jp]
+                              .filter(Boolean)
+                              .join(" / ")
                       }})
                     </span>
                   </div>
@@ -503,8 +559,7 @@ const addCKeywordListeners = () => {
                 <div class="skill-header">
                   <div class="skill-badges flex flex-wrap gap-2">
                     <div
-                      v-for="tagId in processedSkills.find((s) => s.type === 'Linked')
-                        .tags"
+                      v-for="tagId in linkedSkill.tags"
                       :key="tagId"
                       class="skill-badge"
                     >
@@ -520,12 +575,12 @@ const addCKeywordListeners = () => {
                     </div>
                   </div>
                   <div class="skill-info">
-                    <span v-if="processedSkills[activeSkillIndex].cooldown !== 0">
+                    <span v-if="linkedSkill.cooldown !== 0">
                       <b>CD:</b>
-                      {{ processedSkills.find((s) => s.type === "Linked").cooldown }}
+                      {{ linkedSkill.cooldown }}
                     </span>
                     <span>
-                      {{ processedSkills.find((s) => s.type === "Linked").onibi }}
+                      {{ linkedSkill.onibi }}
                       <img src="/assets/images/Onibi.webp" alt="Onibi" />
                     </span>
                   </div>
@@ -533,17 +588,13 @@ const addCKeywordListeners = () => {
                 <hr class="skill-divider" />
 
                 <div class="skill-voice-wrapper">
-                  <p class="skill-voice">
-                    "{{ processedSkills.find((s) => s.type === "Linked").voice }}"
-                  </p>
+                  <p class="skill-voice">"{{ linkedSkill.voice }}"</p>
                 </div>
                 <p
                   class="skill-description"
                   v-html="
                     skillDescriptionText(
-                      isEnglish
-                        ? processedSkills.find((s) => s.type === 'Linked').description.en
-                        : processedSkills.find((s) => s.type === 'Linked').description.vn,
+                      linkedSkill?.description?.[language],
                       activeSkillIndex
                     )
                   "
@@ -551,35 +602,25 @@ const addCKeywordListeners = () => {
                 <hr class="skill-divider" />
                 <div>
                   <p class="no-level">
-                    { isEnglish ? processedSkills.find((s) => s.type ===
-                    'Linked').notes.en : processedSkills.find((s) => s.type ===
-                    'Linked').notes.vn }
+                    {{ linkedSkill.notes?.[language] }}
                   </p>
                 </div>
                 <hr class="skill-divider" />
                 <table
                   class="skill-level-table"
-                  v-if="
-                    Array.isArray(
-                      isEnglish
-                        ? processedSkills.find((s) => s.type === 'Linked').levels.en
-                        : processedSkills.find((s) => s.type === 'Linked').levels.vn
-                    )
-                  "
+                  v-if="Array.isArray(linkedSkill.levels?.[language])"
                 >
                   <tbody>
                     <tr>
                       <th class="level-column">
-                        {{ isEnglish ? "Level" : "Cấp" }}
+                        {{ text("level") }}
                       </th>
                       <th>
-                        {{ isEnglish ? "Effect" : "Hiệu ứng" }}
+                        {{ text("effect") }}
                       </th>
                     </tr>
                     <tr
-                      v-for="lvl in isEnglish
-                        ? shikigami.skills.find((s) => s.type === 'Linked').levels.en
-                        : shikigami.skills.find((s) => s.type === 'Linked').levels.vn"
+                      v-for="lvl in linkedSkill.levels?.[language]"
                       :key="lvl.level"
                     >
                       <td class="level-cell">{{ lvl.level }}</td>
@@ -592,9 +633,7 @@ const addCKeywordListeners = () => {
                 </table>
                 <div v-else>
                   <p class="no-level">
-                    { isEnglish ? processedSkills.find((s) => s.type ===
-                    'Linked').levels.en : processedSkills.find((s) => s.type ===
-                    'Linked').levels.vn }
+                    { linkedSkill.levels?.[language] }
                   </p>
                 </div>
               </div>
@@ -610,8 +649,8 @@ const addCKeywordListeners = () => {
         </div>
 
         <!-- Biography Unlock -->
-        <h2 class="session-title" v-if="shikigami.id !== 193">
-          {{ isEnglish ? "Biography Unlock" : "Mở khóa Tiểu sử" }}
+        <h2 class="session-title" v-if="shikigami.id !== 193" :class="`title-${language}`">
+          {{ text("biography") }}
         </h2>
 
         <BiographySection
@@ -621,14 +660,14 @@ const addCKeywordListeners = () => {
           :bio="shikigami.biography"
           :bio-shikigami-map="bioShikigamiMap"
           :bio-onmyoji-map="bioOnmyojiMap"
-          :is-english="isEnglish"
+          :language="language"
         />
 
-        <h2 class="session-title" v-if="souls.length">
-          {{ isEnglish ? "Soul Choices" : "Ngự Hồn Đề Cử" }}
+        <h2 class="session-title" v-if="souls.length" :class="`title-${language}`">
+          {{ text("soulChoices") }}
         </h2>
 
-        <SoulChoicesSection :souls="souls" :shikigami="shikigami" />
+        <SoulChoicesSection :souls="souls" :shikigami="shikigami" :language="language"/>
       </div>
 
       <!-- Gallery Tab -->
@@ -637,50 +676,51 @@ const addCKeywordListeners = () => {
         :class="[activeTab === 'Gallery' ? 'opacity-100' : 'opacity-0']"
       >
         <!-- Skins -->
-        <h2 class="session-title top-0">
-          {{ isEnglish ? "Skins" : "Trang phục" }}
+        <h2 class="session-title top-0" :class="`title-${language}`">
+          {{ text("skins") }}
         </h2>
 
         <SkinSection
           :route-name="routeName"
           :entity="shikigami"
           :type="'shikigami'"
-          :is-english="isEnglish"
+          :language="language"
           @open-image="openModal"
         />
 
         <!-- Skins Info -->
-        <h2 class="session-title">
-          {{ isEnglish ? "Skins Info" : "Thông tin trang phục" }}
+        <h2 class="session-title" :class="`title-${language}`">
+          {{ text("skinsInfo") }}
         </h2>
 
         <SkinInfoSection
           :route-name="routeName"
           :entity="shikigami"
           :type="'shikigami'"
-          :is-english="isEnglish"
+          :language="language"
         />
 
         <!-- Biography Accessories -->
         <h2
           v-if="shikigami.accessories && shikigami.accessories.length"
           class="session-title"
+          :class="`title-${language}`"
         >
-          {{ isEnglish ? "Biography Accessories" : "Phụ kiện Tiểu sử" }}
+          {{ text("biographyAccessories") }}
         </h2>
 
         <AccessorySection
           :route-name="routeName"
           :entity="shikigami"
-          :is-english="isEnglish"
+          :language="isEnglish"
         />
 
         <!-- Illustrations -->
-        <h2 class="session-title">
-          {{ isEnglish ? "Illustrations" : "Hoạ Ảnh" }}
+        <h2 class="session-title" :class="`title-${language}`">
+          {{ text("illustration") }}
         </h2>
 
-        <IllustrationSection :illustrations="illustrations" @open-image="openModal" />
+        <IllustrationSection :illustrations="illustrations" :language="language" @open-image="openModal" />
         <div ref="loadMoreRef" v-if="illustrationHasMore" class="loading-trigger"></div>
       </div>
     </div>

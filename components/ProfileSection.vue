@@ -6,7 +6,7 @@ const props = defineProps({
   shikigami: Object,
   listShikigami: Array,
   listOnmyoji: Array,
-  isEnglish: Boolean,
+  language: String,
 });
 
 const profileText = (profile) =>
@@ -15,7 +15,7 @@ const profileText = (profile) =>
     profile,
     listShikigami: props.listShikigami,
     listOnmyoji: props.listOnmyoji,
-    isEnglish: props.isEnglish,
+    language: props.language,
   });
 </script>
 

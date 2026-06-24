@@ -1,3 +1,4 @@
+import { getLocalizedName } from "../helper/helper";
 import { createEntityLink } from "./createSpan";
 
 export const renderBiographyText = ({
@@ -6,23 +7,19 @@ export const renderBiographyText = ({
   shikigami,
   shikigamiMap,
   onmyojiMap,
-  isEnglish,
+  language,
 }) => {
   const bioTemplate = conditionMap.get(biography.no);
 
   if (!bioTemplate) return "";
 
-  let text = isEnglish
-    ? bioTemplate.text?.en
-    : bioTemplate.text?.vn;
+  let text = bioTemplate.text?.[language];
 
   if (!text) return "";
 
-  const name = isEnglish
-    ? shikigami?.name?.en
-    : shikigami?.name?.vn;
-
-  const replacements = { name };
+  const replacements = {
+    name: getLocalizedName(shikigami, language),
+  };
 
   if (biography.count) {
     replacements.count = biography.count;
@@ -32,9 +29,7 @@ export const renderBiographyText = ({
     const skill =
       shikigami?.skills?.[biography.skill - 1];
 
-    replacements.skill = isEnglish
-      ? skill?.name?.en
-      : skill?.name?.vn;
+    replacements.skill = skill?.name?.[language];
   }
 
   if (biography.shiki) {
@@ -44,7 +39,7 @@ export const renderBiographyText = ({
       ? createEntityLink({
         entity: targetShiki,
         type: "shikigami",
-        isEnglish,
+        language,
       })
       : "";
   }
@@ -56,7 +51,7 @@ export const renderBiographyText = ({
       ? createEntityLink({
         entity: targetOnmyoji,
         type: "onmyoji",
-        isEnglish,
+        language,
       })
       : "";
   }

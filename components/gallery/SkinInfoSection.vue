@@ -1,9 +1,11 @@
 <script setup>
+import { getUIText } from "~/utils/helper/helper";
+
 const props = defineProps({
   routeName: String,
   entity: Object,
   type: String,
-  isEnglish: Boolean,
+  language: String,
 });
 
 const getSkinInfoImage = (skin, index) => {
@@ -43,6 +45,8 @@ const skins = computed(() => {
 
   return props.entity.skins || [];
 });
+
+const text = (key) => getUIText(key, props.language);
 </script>
 
 <template>
@@ -50,16 +54,16 @@ const skins = computed(() => {
     <thead>
       <tr>
         <th class="table-title image-column">
-          {{ isEnglish ? "Image" : "Ảnh" }}
+          {{ text("image") }}
         </th>
         <th class="table-title">
-          {{ isEnglish ? "Name" : "Tên" }}
+          {{ text("name") }}
         </th>
         <th class="table-title">
-          {{ isEnglish ? "Artist" : "Họa sĩ" }}
+          {{ text("artist") }}
         </th>
         <th class="table-title obtained-column">
-          {{ isEnglish ? "Obtained" : "Cách nhận" }}
+          {{ text("obtained") }}
         </th>
       </tr>
     </thead>
@@ -85,9 +89,9 @@ const skins = computed(() => {
 
           <!-- NAME -->
           <td class="table-cell skin-name-cell">
-            <template v-if="skin.name?.en === 'Default' || skin.name?.en === 'Evolution'">
-              <div class="skin-main-name">
-                {{ isEnglish ? skin.name?.en : skin.name?.vn }}
+            <template v-if="skin.name.en === 'Default' || skin.name.en === 'Evolution'">
+              <div class="skin-main-name" :class="`skin-${language}`">
+                {{ skin.name?.[language] }}
               </div>
             </template>
 
@@ -97,13 +101,13 @@ const skins = computed(() => {
               </div>
 
               <div class="skin-sub-name">
-                <span class="lang-zh">
+                <span class="skin-cn">
                   {{ skin.name?.cn }}
                 </span>
 
                 -
 
-                <span class="skin-name-vn">
+                <span class="skin-vn">
                   {{ skin.name?.vn }}
                 </span>
               </div>
@@ -112,14 +116,14 @@ const skins = computed(() => {
 
           <!-- ARTIST -->
           <td class="table-cell skin-artist-cell">
-            <span class="lang-zh">
+            <span class="lang-cn">
               {{ skin.artist }}
             </span>
           </td>
 
           <!-- OBTAINED -->
           <td class="table-cell skin-obtained-cell">
-            {{ skin.obtained }}
+            {{ language === 'cn' ? skin.obtained.cn : skin.obtained.en }}
           </td>
         </tr>
       </template>
