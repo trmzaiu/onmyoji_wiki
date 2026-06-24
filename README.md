@@ -1,80 +1,36 @@
-# Nuxt Minimal Starter
+# Onmyoji Wiki
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Personal fan-made wiki for Onmyoji.
 
-## Setup
+## Features
 
-* Shikigami
-* Onmyoji
-* Skills
+* Shikigami information
+* Skills and upgrades
 * Souls
+* Evolution materials
+* Audio and voice lines
 
-## Run locally
+## Live Demo
+
+Visit the website here:
+
+https://onmyoji-wiki.vercel.app/
+
+## Run Locally
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
+## Build
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+## Disclaimer
 
-```bash
-# npm
-npm run preview
+This project is a personal fan-made project and is not affiliated with NetEase Games.
 
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+All game assets, names, and related content belong to their respective owners.
