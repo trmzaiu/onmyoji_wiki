@@ -53,7 +53,7 @@ const {
   loadShikigami,
 } = useShikigami();
 
-const { language, languages, getLocaleText } = useLanguage();
+const { language, languages } = useLanguage();
 
 const text = (key) => getUIText(key, language.value);
 
@@ -473,7 +473,7 @@ const addCKeywordListeners = () => {
           </button>
 
           <button
-            v-if="!['SP', 'UR', 'N'].includes(shikigami.rarity) && shikigami.id !== 193"
+            v-if="!['SP', 'UR', 'N'].includes(shikigami.rarity) && shikigami.id !== 402"
             @click="changeSkill(3)"
             :class="['tab tab-skill-button', { active: activeSkillIndex === 3 }]"
           >
@@ -649,7 +649,7 @@ const addCKeywordListeners = () => {
         </div>
 
         <!-- Biography Unlock -->
-        <h2 class="session-title" v-if="shikigami.id !== 193" :class="`title-${language}`">
+        <h2 class="session-title" v-if="shikigami.id !== 402" :class="`title-${language}`">
           {{ text("biography") }}
         </h2>
 

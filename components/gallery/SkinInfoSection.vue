@@ -11,20 +11,20 @@ const props = defineProps({
 const getSkinInfoImage = (skin, index) => {
   // Onmyoji
   if (props.type === "onmyoji") {
-
     return `/assets/images/onmyoji/skinsInfo/${props.routeName}_SkinInfo${index}.webp`;
   }
 
   // Totem
   if (props.type === "totem") {
-
-    return `/assets/images/onmyoji/totemsInfo/${props.entity.totem[0].name.en}_SkinInfo${index+1}.webp`;
+    return `/assets/images/onmyoji/totemsInfo/${props.entity.totem[0].name.en}_SkinInfo${
+      index + 1
+    }.webp`;
   }
 
   // Shikigami
   if (skin.name?.en === "Default") {
-    return (index === 0 && props.entity.id >= 201 && props.entity.id <= 217) ||
-      props.entity.id === 193
+    return (index === 0 && props.entity.id >= 414 && props.entity.id <= 430) ||
+      props.entity.id === 402
       ? `/assets/images/shikigami/shards/${props.routeName}_Shard.webp`
       : `/assets/images/shikigami/skinsInfo/${props.routeName}_SkinInfo0.webp`;
   }
@@ -80,8 +80,8 @@ const text = (key) => getUIText(key, props.language);
                 :class="{
                   'skin-info-scale':
                     type !== 'totem' &&
-                    ((index === 0 && entity.id >= 201 && entity.id <= 217) ||
-                      entity.id === 193),
+                    ((index === 0 && entity.id >= 414 && entity.id <= 430) ||
+                      entity.id === 402),
                 }"
               />
             </div>
@@ -123,7 +123,7 @@ const text = (key) => getUIText(key, props.language);
 
           <!-- OBTAINED -->
           <td class="table-cell skin-obtained-cell">
-            {{ language === 'cn' ? skin.obtained.cn : skin.obtained.en }}
+            {{ language === "cn" ? skin.obtained.cn : skin.obtained.en }}
           </td>
         </tr>
       </template>

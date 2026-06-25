@@ -16,6 +16,8 @@ const rarities = ["All", "UR", "SP", "SSR", "SR", "R", "N", "Crossover", "Remove
 
 const selectedRarity = ref("All");
 
+const { language } = useLanguage();
+
 // ======================================================
 // LAZY LOAD
 // ======================================================
@@ -43,14 +45,14 @@ async function fetchShikigami() {
   let query = supabase.from("Shikigami").select("*").order("id", { ascending: true });
 
   if (selectedRarity.value === "Removed") {
-    query = query.eq("id", 229);
+    query = query.eq("id", 560);
   } else if (selectedRarity.value === "Crossover") {
     query = query.eq("crossover", true);
   } else if (selectedRarity.value !== "All") {
     query = query
       .eq("rarity", selectedRarity.value)
       .neq("crossover", true)
-      .neq("id", 229);
+      .neq("id", 560);
   }
 
   const { data, error } = await query.range(from, to);
@@ -177,7 +179,6 @@ onMounted(async () => {
   await Promise.all([fetchLatestShikigami(), fetchShikigami()]);
 
   setupInfiniteScroll();
-
 });
 
 onUnmounted(() => {
@@ -194,7 +195,9 @@ onUnmounted(() => {
       </div>
 
       <!-- New Release  -->
-      <h2 class="session-title top-0" v-if="latestShikigami">New Releases</h2>
+      <h2 class="session-title top-0" :class="`title-${language}`" v-if="latestShikigami">
+        New Releases
+      </h2>
 
       <div class="latest-shiki-list">
         <div v-for="shiki in latestShikigami" :key="shiki.id" class="latest-shiki-item">
@@ -236,7 +239,12 @@ onUnmounted(() => {
       </div>
 
       <!-- Shikigame List -->
-      <h2 class="session-title" :class="!latestShikigami ? 'top-0': ''">Shikigami List</h2>
+      <h2
+        class="session-title"
+        :class="[!latestShikigami ? 'top-0' : '', `title-${language}`]"
+      >
+        Shikigami List
+      </h2>
       <div class="tabs-rarity">
         <button
           v-for="rarity in rarities"

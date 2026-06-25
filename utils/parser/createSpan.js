@@ -45,11 +45,39 @@ const escapeHtmlAttribute = (text = "") =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-export const createEffectTooltip = (name, bold, effect, text) => {
+export const createEffectTooltip = (name, effect, html) => {
+  const images = Array.isArray(effect.images)
+    ? effect.images
+    : effect.images
+      ? [effect.images]
+      : [];
+  console.log(effect.images);
+
+  const imageHtml = images
+    .filter(Boolean)
+    .map((image) => {
+      const fileName = String(image).endsWith(".webp")
+        ? image
+        : `${image}.webp`;
+
+      return `<img
+          src="/assets/images/effects/${fileName}"
+          alt="${escapeHtmlAttribute(name)}"
+          class="effect-tooltip-image"
+        />`;
+    })
+    .join("");
+
   return `<span
-    class="effect-tooltip effect-keyword-${effect.color} ${bold ? "font-bold" : ""}"
-    data-effect-id="${effect.id}"
-    data-tooltip="${escapeHtmlAttribute(text)}"
-  >${name}</span>`;
+      class="effect-tooltip effect-keyword-${effect.color} font-bold"
+      data-effect-id="${effect.id}"
+    >${name}<span 
+      class="effect-tooltip-card"><span 
+      class="effect-tooltip-header">${
+            imageHtml
+              ? `<span class="effect-tooltip-images">${imageHtml}</span>`
+              : ""
+          }</span>
+        <span class="effect-tooltip-text">${html}</span></span></span>`;
 };
 

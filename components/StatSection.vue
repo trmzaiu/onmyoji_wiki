@@ -9,7 +9,7 @@ const props = defineProps({
   isShikigami: Boolean,
 });
 
-const hasLevel40 = computed(() => props.entity.id !== 193);
+const hasLevel40 = computed(() => props.entity.id !== 402);
 
 const text = (key) => getUIText(key, props.language);
 </script>
@@ -127,6 +127,9 @@ const text = (key) => getUIText(key, props.language);
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <th colspan="8" class="spacing-row"></th>
+        </tr>
         <!-- === ATK === -->
         <tr class="stats-row">
           <!-- 1 -->

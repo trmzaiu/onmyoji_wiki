@@ -60,15 +60,68 @@ export const parseSkillDescription = ({
   language,
   currentSkillIndex,
 }) => {
+  const getEffectName = (effect, id, value) => {
+    let effectName = getLocalizedName(effect, language);
+
+    if (id === "17" && value) {
+      effectName = effectName.replace(
+        /^(\S+)\s+(.*)$/,
+        `$1 ${value} $2`
+      );
+    }
+
+    return effectName;
+  };
+
+  const parseTooltipDescription = (effect) => {
+    const rawText =
+      effect?.description?.[language] ??
+      effect?.description?.en ??
+      "";
+
+    return parseBaseDescription({
+      text: rawText,
+      shikigamiMap,
+      onmyojiMap,
+      language,
+
+      skillReplacer: (_, type, id) => {
+        const index = parseInt(id, 10);
+        const name = getSkillName(entity, index, language);
+
+        if (!name) return _;
+
+        return createSkillSpan(
+          name,
+          type === "kb" ? "bold" : "highlight",
+          index - 1
+        );
+      },
+
+      effectReplacer: (_, type, id, value) => {
+        const nestedEffect = effectMap?.get(String(id));
+
+        if (!nestedEffect) return _;
+
+        const nestedName = getEffectName(nestedEffect, id, value);
+
+        return createEffectSpan(
+          nestedName,
+          type === "eb",
+          nestedEffect.color
+        );
+      },
+    });
+  };
+
   return parseBaseDescription({
     text,
-    entity,
     shikigamiMap,
     onmyojiMap,
     language,
+
     skillReplacer: (_, type, id) => {
       const index = parseInt(id, 10);
-
       const name = getSkillName(entity, index, language);
 
       if (!name) return _;
@@ -77,40 +130,28 @@ export const parseSkillDescription = ({
         return name;
       }
 
-      let variant = "normal";
-
-      if (index !== currentSkillIndex + 1) {
-        if (type === "kb") {
-          variant = "bold";
-        } else {
-          variant = "highlight";
-        }
-
-        return createSkillSpan(name, variant, index - 1);
-      }
+      return createSkillSpan(
+        name,
+        type === "kb" ? "bold" : "highlight",
+        index - 1
+      );
     },
+
     effectReplacer: (_, type, id, value) => {
       const effect = effectMap?.get(String(id));
 
       if (!effect) return _;
 
-      let effectName = getLocalizedName(effect, language);
-
-      if (id === "17" && value) {
-        effectName = effectName.replace(
-          /^(\S+)\s+(.*)$/,
-          `$1 ${value} $2`
-        );
-      }
+      const effectName = getEffectName(effect, id, value);
 
       if (effect.tooltip === true && type === "eb") {
-        const description = effect?.description?.[language] ?? "";
+        const description = parseTooltipDescription(effect);
 
         return createEffectTooltip(
           effectName,
-          type === "eb",
           effect,
-          description);
+          description
+        );
       }
 
       return createEffectSpan(

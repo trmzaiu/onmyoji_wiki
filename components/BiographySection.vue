@@ -31,7 +31,7 @@ const text = (key) => getUIText(key, props.language);
 </script>
 
 <template>
-  <table class="bio-table" v-if="shikigami.id !== 193">
+  <table class="bio-table" v-if="shikigami.id !== 402">
     <thead>
       <tr>
         <th class="table-title no-column">No.</th>
@@ -96,7 +96,7 @@ const text = (key) => getUIText(key, props.language);
               class="reward-icon"
             />
             <span class="reward-amount">{{
-              shikigami.id >= 201 && shikigami.id <= 214
+              shikigami.id >= 414 && shikigami.id <= 430
                 ? 2
                 : [71, 84, 130, 117, 111].includes(shikigami.id)
                 ? ""

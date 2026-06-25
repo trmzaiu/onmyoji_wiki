@@ -186,7 +186,7 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
           <tr
             v-if="
               !['SP', 'UR', 'N'].includes(entity.rarity) &&
-              entity.id !== 193 &&
+              entity.id !== 402 &&
               isShikigami
             "
           >
