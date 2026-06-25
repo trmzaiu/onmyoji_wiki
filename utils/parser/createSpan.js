@@ -37,3 +37,19 @@ export const createEffectSpan = (name, bold, color) => {
   return `<span class="effect-keyword effect-keyword-${color} ${bold ? "font-bold" : ""}"
 >${name}</span>`;
 };
+
+const escapeHtmlAttribute = (text = "") =>
+  String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+export const createEffectTooltip = (name, bold, effect, text) => {
+  return `<span
+    class="effect-tooltip effect-keyword-${effect.color} ${bold ? "font-bold" : ""}"
+    data-effect-id="${effect.id}"
+    data-tooltip="${escapeHtmlAttribute(text)}"
+  >${name}</span>`;
+};
+

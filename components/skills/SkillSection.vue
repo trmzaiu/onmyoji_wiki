@@ -5,8 +5,8 @@ import SkillLevel from "./SkillLevel.vue";
 import SkillTitle from "./SkillTitle.vue";
 import SubSkill from "./SubSkill.vue";
 
-import { parseSkillDescription } from "~/utils/parser/skillParser.js";
 import { parseEffectDescription, parseEffectTags } from "~/utils/parser/effectParser.js";
+import { parseSkillDescription } from "~/utils/parser/skillParser.js";
 
 import { collectNestedEffects, getAllSkillEffectText } from "~/utils/effectCollecter";
 
@@ -81,6 +81,14 @@ const currentSkillEffects = computed(() => {
   });
 });
 
+const visibleSkillEffects = computed(() =>
+  currentSkillEffects.value.filter((effect) => effect.tooltip === false)
+);
+
+const tooltipSkillEffects = computed(() =>
+  currentSkillEffects.value.filter((effect) => effect.color === true)
+);
+
 // =====================================================
 // Effect Helpers
 // =====================================================
@@ -97,8 +105,7 @@ const toggleEffectCard = (effectId) => {
   collapsedEffects.value = new Set(collapsed);
 };
 
-const isEffectCollapsed = (effectId) =>
-  collapsedEffects.value.has(effectId);
+const isEffectCollapsed = (effectId) => collapsedEffects.value.has(effectId);
 
 const effectDescriptionText = (effect) =>
   parseEffectDescription({
@@ -126,7 +133,7 @@ watch(
 // Emits
 // =====================================================
 
-const emit = defineEmits(["update:showEvolution", "change-skill",]);
+const emit = defineEmits(["update:showEvolution", "change-skill"]);
 </script>
 
 <template>
@@ -146,6 +153,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
         :skill="skill"
         :tag-map="tagMap"
         :skill-description-text="skillDescriptionText"
+        :tooltip-effects="tooltipSkillEffects"
         :language="language"
         :show-evolution="showEvolution"
         @update:showEvolution="emit('update:showEvolution', $event)"
@@ -153,7 +161,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill",]);
       />
 
       <SkillEffect
-        :effects="currentSkillEffects"
+        :effects="visibleSkillEffects"
         :language="language"
         :is-effect-collapsed="isEffectCollapsed"
         :toggle-effect-card="toggleEffectCard"

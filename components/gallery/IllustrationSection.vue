@@ -12,8 +12,7 @@ const props = defineProps({
 
 const emit = defineEmits(["open-image"]);
 
-const getIllustrationUrl = (nameEn) =>
-  `/assets/images/illustrations/${nameEn}.jpg`;
+const getIllustrationUrl = (nameEn) => `/assets/images/illustrations/${nameEn}.jpg`;
 
 const getIllustrationName = (img) => {
   if (props.language === "en") {
@@ -24,9 +23,13 @@ const getIllustrationName = (img) => {
 };
 
 const formatIllustrationName = (name) => {
-  return name
-    .replace(/[_ ]\d+$/, "")
-    .replace(/_/g, " ");
+  return name.replace(/[_ ]\d+$/, "").replace(/_/g, " ");
+};
+
+const isChineseText = (text = "") => /[\u4E00-\u9FFF]/.test(text);
+
+const getIllustrationLanguage = (img) => {
+  return isChineseText(img.name_en) ? "cn" : props.language;
 };
 </script>
 
@@ -49,7 +52,7 @@ const formatIllustrationName = (name) => {
       <div
         v-if="!/^No[ _]Name/i.test(img.name_en)"
         class="illustration-label"
-        :class="`skin-${language}`"
+        :class="`skin-${getIllustrationLanguage(img)}`"
       >
         {{ formatIllustrationName(getIllustrationName(img)) }}
       </div>

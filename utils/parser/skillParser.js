@@ -1,5 +1,5 @@
 import { getLocalizedName, getSkillName, replacePipeline } from "../helper/helper";
-import { createEffectImage, createEffectSpan, createSkillSpan } from "./createSpan";
+import { createEffectImage, createEffectSpan, createEffectTooltip, createSkillSpan } from "./createSpan";
 
 export const parseBaseDescription = ({
   text,
@@ -103,11 +103,21 @@ export const parseSkillDescription = ({
         );
       }
 
+      if (effect.tooltip === true && type === "eb") {
+        const description = effect?.description?.[language] ?? "";
+
+        return createEffectTooltip(
+          effectName,
+          type === "eb",
+          effect,
+          description);
+      }
+
       return createEffectSpan(
         effectName,
         type === "eb",
         effect.color
       );
-    }
+    },
   });
 };
