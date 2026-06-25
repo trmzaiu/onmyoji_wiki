@@ -108,7 +108,6 @@
 
 .skill-content {
   position: relative;
-  isolation: isolate;
 
   width: 100%;
   padding: 10px 20px;
