@@ -712,7 +712,7 @@ const addCKeywordListeners = () => {
         <AccessorySection
           :route-name="routeName"
           :entity="shikigami"
-          :language="isEnglish"
+          :language="language"
         />
 
         <!-- Illustrations -->

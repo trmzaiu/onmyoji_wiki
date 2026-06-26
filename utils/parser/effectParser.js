@@ -3,29 +3,29 @@ import { createEffectSpan, createSkillSpan } from "./createSpan";
 import { parseBaseDescription } from "./skillParser";
 
 export const effectTagType = (tag = "") => {
-  const value = tag.toLowerCase();
+	const value = tag.toLowerCase();
 
-  if (value.includes("buff") || value.includes("增益")) {
-    return "buff";
-  }
+	if (value.includes("buff") || value.includes("增益")) {
+		return "buff";
+	}
 
-  if (value.includes("debuff") || value.includes("减益")) {
-    return "debuff";
-  }
+	if (value.includes("debuff") || value.includes("减益")) {
+		return "debuff";
+	}
 
-  if (value.includes("mark") || value.includes("印记")) {
-    return "mark";
-  }
+	if (value.includes("mark") || value.includes("印记")) {
+		return "mark";
+	}
 
-  if (value.includes("status") || value.includes("状态")) {
-    return "status";
-  }
+	if (value.includes("status") || value.includes("状态")) {
+		return "status";
+	}
 
-  if (value.includes("general") || value.includes("通用")) {
-    return "general";
-  }
+	if (value.includes("general") || value.includes("通用")) {
+		return "general";
+	}
 
-  return "general";
+	return "general";
 };
 
 export const parseEffectTags = (effect, language) => {
@@ -69,6 +69,19 @@ export const parseEffectDescription = ({
 }) => {
 	const renderedEffects = new Set();
 
+	const getEffectName = (effect, id, value) => {
+		let effectName = getLocalizedName(effect, language);
+
+		if (id === "17" && value) {
+			effectName = effectName.replace(
+				/^(\S+)\s+(.*)$/,
+				`$1 ${value} $2`
+			);
+		}
+
+		return effectName;
+	};
+
 	return parseBaseDescription({
 		text,
 		shikigami,
@@ -89,21 +102,18 @@ export const parseEffectDescription = ({
 
 			return createSkillSpan(name, "bold");
 		},
-		effectReplacer: (_, type, id) => {
+		effectReplacer: (_, type, id, value) => {
 			const effect = effectMap?.get(String(id));
 
 			if (!effect) return _;
 
-			const effectName = getLocalizedName(
-				effect,
-				language
-			);
+			const effectName = getEffectName(effect, id, value);
 
 			if (String(id) === String(currentEffectId)) {
 				return createEffectSpan(
 					effectName,
 					false,
-					'normal'
+					"normal"
 				);
 			}
 

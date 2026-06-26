@@ -30,7 +30,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill"]);
         ></div>
 
         <span class="skill-badge-text">
-          {{ tagMap?.[tagId]?.name?.[language] }}
+          {{ tagMap?.[tagId]?.name?.[language] || tagMap?.[tagId]?.name.en }}
         </span>
       </div>
     </div>
@@ -50,7 +50,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill"]);
 
   <div class="skill-voice-wrapper" v-if="skill.voice">
     <p class="skill-voice" :class="`voice-${language}`">
-      "{{ skill.voice?.[language] }}"
+      "{{ skill.voice?.[language] || skill.voice.en }}"
     </p>
   </div>
 

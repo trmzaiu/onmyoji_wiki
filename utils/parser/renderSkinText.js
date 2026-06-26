@@ -1,7 +1,7 @@
 export function renderSkinText({
   text,
   shikigami,
-  isEnglish,
+  language,
 }) {
   return text.replace(
     /<n>(\d+)<\/n>/g,
@@ -17,9 +17,7 @@ export function renderSkinText({
         return _;
       }
 
-      const keyword = isEnglish
-        ? skinItem.name?.en
-        : skinItem.name?.cn || skinItem.name?.en;
+      const keyword = skinItem.name?.[language];
 
       return `<span class="skin-keyword">${keyword}</span>`;
     }

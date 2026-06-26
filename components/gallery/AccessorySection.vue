@@ -1,18 +1,21 @@
 <script setup>
 import { renderSkinText } from "~/utils/parser/renderSkinText";
+import { getUIText } from "~/utils/helper/helper";
 
 const props = defineProps({
   routeName: String,
   entity: Object,
-  isEnglish: Boolean,
+  language: String,
 });
 
 const skinText = (text) =>
   renderSkinText({
     text,
-    shikigami: props.entity.value,
-    isEnglish: props.isEnglish,
+    shikigami: props.entity,
+    language: props.language,
   });
+
+  const text = (key) => getUIText(key, props.language);
 </script>
 
 <template>
@@ -25,19 +28,19 @@ const skinText = (text) =>
         <th class="table-title bio-no-column">No.</th>
 
         <th class="table-title accessory-image-column">
-          {{ isEnglish ? "Image" : "Ảnh" }}
+          {{ text("image") }}
         </th>
 
         <th class="table-title">
-          {{ isEnglish ? "Name" : "Tên" }}
+          {{ text("name") }}
         </th>
 
         <th class="table-title accessory-type-column">
-          {{ isEnglish ? "Type" : "Loại" }}
+          {{ text("type") }}
         </th>
 
         <th class="table-title">
-          {{ isEnglish ? "Obtained" : "Cách nhận" }}
+          {{ text("obtained") }}
         </th>
       </tr>
     </thead>
@@ -71,13 +74,13 @@ const skinText = (text) =>
           </div>
 
           <div class="accessory-sub-name">
-            <span class="lang-zh">
+            <span class="skin-cn">
               {{ bio.name.cn }}
             </span>
 
-            -
+            –
 
-            <span class="skin-name-vn">
+            <span class="skin-vn">
               {{ bio.name.vn }}
             </span>
           </div>

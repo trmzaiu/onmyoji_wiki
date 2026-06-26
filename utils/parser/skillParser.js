@@ -61,57 +61,102 @@ export const parseSkillDescription = ({
   currentSkillIndex,
 }) => {
   const getEffectName = (effect, id, value) => {
-    let effectName = getLocalizedName(effect, language);
+    let name = getLocalizedName(effect, language);
 
     if (id === "17" && value) {
-      effectName = effectName.replace(
+      name = name.replace(
         /^(\S+)\s+(.*)$/,
         `$1 ${value} $2`
       );
     }
 
-    return effectName;
+    return name;
   };
 
-  const parseTooltipDescription = (effect) => {
-    const rawText =
-      effect?.description?.[language] ??
-      effect?.description?.en ??
-      "";
+  const currentSkillReplacer = (_, type, id) => {
+    const index = Number(id);
 
-    return parseBaseDescription({
-      text: rawText,
+    const name = getSkillName(entity, index, language);
+
+    if (!name) return _;
+
+    if (index === currentSkillIndex + 1) {
+      return name;
+    }
+
+    return createSkillSpan(
+      name,
+      type === "kb" ? "bold" : "highlight",
+      index - 1
+    );
+  };
+
+  const tooltipSkillReplacer = (_, type, id) => {
+    const [shikiId, skillIndex] = id.split("-");
+
+    const shiki = shikigamiMap?.get(String(shikiId));
+
+    if (!shiki) return _;
+
+    const name = getSkillName(shiki, skillIndex, language);
+
+    if (!name) return _;
+
+    return createSkillSpan(
+      name,
+      type === "kb" ? "bold" : "highlight"
+    );
+  };
+
+  const tooltipEffectReplacer = (_, type, id, value) => {
+    const effect = effectMap?.get(String(id));
+
+    if (!effect) return _;
+
+    return createEffectSpan(
+      getEffectName(effect, id, value),
+      type === "eb",
+      effect.color
+    );
+  };
+
+  const parseTooltipDescription = (effect) =>
+    parseBaseDescription({
+      text:
+        effect?.description?.[language] ??
+        effect?.description?.en ??
+        "",
       shikigamiMap,
       onmyojiMap,
       language,
-
-      skillReplacer: (_, type, id) => {
-        const index = parseInt(id, 10);
-        const name = getSkillName(entity, index, language);
-
-        if (!name) return _;
-
-        return createSkillSpan(
-          name,
-          type === "kb" ? "bold" : "highlight",
-          index - 1
-        );
-      },
-
-      effectReplacer: (_, type, id, value) => {
-        const nestedEffect = effectMap?.get(String(id));
-
-        if (!nestedEffect) return _;
-
-        const nestedName = getEffectName(nestedEffect, id, value);
-
-        return createEffectSpan(
-          nestedName,
-          type === "eb",
-          nestedEffect.color
-        );
-      },
+      skillReplacer: tooltipSkillReplacer,
+      effectReplacer: tooltipEffectReplacer,
     });
+
+  const effectReplacer = (_, type, id, value) => {
+    const effect = effectMap?.get(String(id));
+
+    if (!effect) return _;
+
+    const effectName = getEffectName(
+      effect,
+      id,
+      value
+    );
+
+    if (effect.tooltip && type === "eb") {
+      return createEffectTooltip(
+        effectName,
+        effect,
+        parseTooltipDescription(effect)
+      );
+    }
+
+    return createEffectSpan(
+      effectName,
+      type === "eb",
+      effect.color
+    );
   };
 
   return parseBaseDescription({
@@ -119,46 +164,7 @@ export const parseSkillDescription = ({
     shikigamiMap,
     onmyojiMap,
     language,
-
-    skillReplacer: (_, type, id) => {
-      const index = parseInt(id, 10);
-      const name = getSkillName(entity, index, language);
-
-      if (!name) return _;
-
-      if (index === currentSkillIndex + 1) {
-        return name;
-      }
-
-      return createSkillSpan(
-        name,
-        type === "kb" ? "bold" : "highlight",
-        index - 1
-      );
-    },
-
-    effectReplacer: (_, type, id, value) => {
-      const effect = effectMap?.get(String(id));
-
-      if (!effect) return _;
-
-      const effectName = getEffectName(effect, id, value);
-
-      if (effect.tooltip === true && type === "eb") {
-        const description = parseTooltipDescription(effect);
-
-        return createEffectTooltip(
-          effectName,
-          effect,
-          description
-        );
-      }
-
-      return createEffectSpan(
-        effectName,
-        type === "eb",
-        effect.color
-      );
-    },
+    skillReplacer: currentSkillReplacer,
+    effectReplacer,
   });
 };

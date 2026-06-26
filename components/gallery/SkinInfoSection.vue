@@ -105,7 +105,7 @@ const text = (key) => getUIText(key, props.language);
                   {{ skin.name?.cn }}
                 </span>
 
-                -
+                –
 
                 <span class="skin-vn">
                   {{ skin.name?.vn }}

@@ -40,8 +40,8 @@ const getEntityLinkData = ({
       (Array.isArray(name?.jp)
         ? name.jp[1] ?? name.jp[0]
         : name?.jp) ??
-      name?.en 
-      "";
+      name?.en
+    "";
   } else {
     finalName =
       name?.en ??
@@ -74,15 +74,18 @@ const renderEntity = ({
   });
 
   const entityKey = `${targetType}-${targetData.id}`;
+  const isFirst = !displayedEntities.has(entityKey);
 
-  if (!displayedEntities.has(entityKey)) {
-    displayedEntities.add(entityKey);
+  displayedEntities.add(entityKey);
 
-    return `<a class="other-shiki font-bold" href="/${targetType}/${
-      encodeURIComponent(finalName)}">${keyword}</a>`;
+  if (!isFirst) {
+    return `<span class="other-shiki">${keyword}</span>`;
   }
 
-  return `<span class="other-shiki">${keyword}</span>`;
+  return `<a
+      class="other-shiki font-bold"
+      href="/${targetType}/${encodeURIComponent(finalName)}"
+    >${keyword}</a>`;
 };
 
 export const renderProfileText = ({
@@ -96,7 +99,7 @@ export const renderProfileText = ({
 
   const text =
     profile?.[language] ??
-    profile?.en 
+    profile?.en ??
     "";
 
   if (!text) return "";

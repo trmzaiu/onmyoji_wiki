@@ -48,6 +48,18 @@ const skins = computed(() => {
 const openImage = (skin, index) => {
   emit("open-image", getSkinImage(skin, index));
 };
+
+const getDisplayLanguage = (skin) => {
+  if (skin.name?.[language]) {
+    return language;
+  }
+
+  if (skin.name?.cn) {
+    return "cn";
+  }
+
+  return "en";
+};
 </script>
 
 <template>
@@ -64,10 +76,7 @@ const openImage = (skin, index) => {
         :alt="skin.name.en || skin.name.cn"
         class="skin-image"
       />
-      <p
-        class="skin-name"
-        :class="`skin-${language}`"
-      >
+      <p class="skin-name" :class="`skin-${skin.name?.[language] ? language : 'cn'}`">
         {{ skin.name?.[language] || skin.name?.cn }}
       </p>
     </div>

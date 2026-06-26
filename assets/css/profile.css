@@ -395,13 +395,11 @@
 
 .profile-section a,
 .profile-section span {
-	font: inherit;
 	color: inherit;
 }
 
 .profile-section .other-shiki {
 	color: var(--color-red);
-	font: inherit;
 	vertical-align: baseline;
 	text-decoration: none;
 }
