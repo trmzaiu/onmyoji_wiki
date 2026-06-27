@@ -59,7 +59,7 @@ const text = (key) => getUIText(key, props.language);
         <th class="table-title">
           {{ text("name") }}
         </th>
-        <th class="table-title">
+        <th class="table-title pinyin">
           {{ text("artist") }}
         </th>
         <th class="table-title obtained-column">

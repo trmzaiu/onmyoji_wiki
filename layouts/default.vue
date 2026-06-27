@@ -1,5 +1,5 @@
 <template>
-  <div id="app" >
+  <div id="app">
     <header class="header">
       <div class="nav-container">
         <div class="nav-content">
@@ -258,7 +258,7 @@ export default {
 
 <style>
 #app {
-  font-family: "Noto Sans", sans-serif;
+  font-family: "M PLUS 2", sans-serif;
   background: #891727;
   color: #f4f1e8;
 }
@@ -359,14 +359,14 @@ export default {
 
 .nav-item:hover,
 .dropdown-toggle:hover {
-  color: #fff;
+  color: #f4f1e8;
 
   transform: translateY(-2px);
 }
 
 /* active route */
 .router-link-active {
-  color: #fff !important;
+  color: #f4f1e8 !important;
 }
 
 /* Dropdown */
@@ -450,7 +450,7 @@ export default {
 .submenu-label:hover {
   background: rgba(165, 25, 25, 0.18);
 
-  color: #fff;
+  color: #f4f1e8;
 
   padding-left: 18px;
 }

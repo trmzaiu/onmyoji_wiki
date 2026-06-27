@@ -137,8 +137,8 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
               <strong>CN</strong>
             </td>
             <td colspan="3">
-              <div class="lang-cn">{{ entity.name.cn[0] }}</div>
-              <div>{{ entity.name.cn[1] }}</div>
+              <div class="name-cn lang-cn">{{ entity.name.cn[0] }}</div>
+              <div class="name-py pinyin">{{ entity.name.cn[1] }}</div>
             </td>
           </tr>
           <tr>
@@ -146,8 +146,8 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
               <strong>JP</strong>
             </td>
             <td colspan="3">
-              <div class="lang-cn">{{ entity.name.jp[0] }}</div>
-              <div>{{ entity.name.jp[1] }}</div>
+              <div class="name-cn lang-cn">{{ entity.name.jp[0] }}</div>
+              <div class="name-py pinyin">{{ entity.name.jp[2] || entity.name.jp[1] }}</div>
             </td>
           </tr>
           <tr>
@@ -155,7 +155,7 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
               <strong>GL</strong>
             </td>
             <td colspan="3">
-              <div>{{ entity.name.en }}</div>
+              <div class="skin-en">{{ entity.name.en }}</div>
             </td>
           </tr>
           <tr>
@@ -163,7 +163,7 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
               <strong>VN</strong>
             </td>
             <td colspan="3">
-              <div>{{ entity.name.vn }}</div>
+              <div class="skin-vn">{{ entity.name.vn }}</div>
             </td>
           </tr>
           <tr>
@@ -263,12 +263,12 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
               <div><strong v-if="entity.date.en">GL</strong></div>
             </td>
             <td colspan="3">
-              <div>
+              <div class="release-date">
                 {{
                   language === "cn" ? formatChineseDate(entity.date.cn) : entity.date.cn
                 }}
               </div>
-              <div v-if="entity.date.en">
+              <div v-if="entity.date.en" class="release-date">
                 {{
                   language === "cn" ? formatChineseDate(entity.date.en) : entity.date.en
                 }}

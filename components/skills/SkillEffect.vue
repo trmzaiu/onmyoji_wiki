@@ -38,6 +38,7 @@ const props = defineProps({
               :key="i"
               :src="'/assets/images/effects/' + img + '.webp'"
               :alt="img"
+              class="effect-image"
             />
           </div>
 

@@ -21,7 +21,7 @@ export const createEntityLink = ({
 };
 
 export const createEffectImage = (keyword) => {
-  return `<img src="/assets/images/effects/${keyword}.webp" alt="${keyword}" class="effect-image"/>`
+  return `<img src="/assets/images/effects/${keyword}.webp" alt="${keyword}" class="effect-img"/>`
 }
 
 export const createEntitySpan = (keyword) => {
@@ -69,7 +69,7 @@ export const createEffectTooltip = (name, effect, html) => {
     .join("");
 
   return `<span
-      class="effect-tooltip effect-keyword-${effect.color} font-bold"
+      class="effect-tooltip effect-keyword-${effect.color}"
       data-effect-id="${effect.id}"
     >${name}<span 
       class="effect-tooltip-card"><span 

@@ -17,6 +17,13 @@ const currentDescription = computed(() => {
     : props.skill.base?.[props.language] || "";
 });
 
+function description(text) {
+  return text
+    .split("\n")
+    .map((p) => `<p>${props.skillDescriptionText(p)}</p>`)
+    .join("");
+}
+
 const emit = defineEmits(["update:showEvolution", "change-skill"]);
 </script>
 
@@ -59,12 +66,20 @@ const emit = defineEmits(["update:showEvolution", "change-skill"]);
     class="evolution-badge"
     @click="emit('update:showEvolution', !showEvolution)"
   >
-    {{ showEvolution ? (language === 'cn' ? '觉醒后' : 'Evo') : (language === 'cn' ? '觉醒前' : 'Base') }}
+    {{
+      showEvolution
+        ? language === "cn"
+          ? "觉醒后"
+          : "Evo"
+        : language === "cn"
+        ? "觉醒前"
+        : "Base"
+    }}
   </div>
 
-  <p
+  <div
     class="skill-description"
-    v-html="skillDescriptionText(currentDescription)"
+    v-html="description(currentDescription)"
     @click="emit('change-skill', $event)"
-  ></p>
+  ></div>
 </template>

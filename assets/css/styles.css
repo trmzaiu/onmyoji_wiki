@@ -30,32 +30,34 @@
 
 /* Fonts */
 
-.title-en, .title-vn {
+.title-en,
+.title-vn {
   font-family: "Bona Nova SC", serif;
 }
 
 .title-cn {
-  font-family: "华文中宋", serif;
+  font-family: "Chiron Sung HK", serif;
 }
 
-.voice-en, .voice-vn {
+.voice-en,
+.voice-vn {
   font-family: "Inconsolata", monospace;
 }
 
+.lang-cn,
+.skin-cn,
 .voice-cn {
   font-family: "stkaiti", sans-serif;
 }
 
-.lang-cn, .skin-cn {
-  font-family: "stkaiti", sans-serif;
-}
-
-.skin-en {
-	font-family: "Caveat Brush", cursive;
-}
-
+.skin-en,
 .skin-vn {
-	font-family: "Patrick Hand", cursive;
+  font-family: "Mali", cursive;
+}
+
+.pinyin {
+  font-family: "Iansui", cursive;
+
 }
 
 /* ==================================================
@@ -130,11 +132,11 @@
   border-radius: 10px;
 
   background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  color: #f4f1e8;
 
   font-size: 14px;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.4;
   cursor: pointer;
 
   outline: none;
@@ -176,7 +178,7 @@
 /* Màu của option khi mở dropdown */
 .language-select option {
   background: #242424;
-  color: #fff;
+  color: #f4f1e8;
 }
 
 .language-icon {

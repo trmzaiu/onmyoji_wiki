@@ -51,7 +51,6 @@
 }
 
 .bio-table .table-cell {
-  font-family: "Noto Sans", sans-serif;
   font-size: 15px;
 }
 
@@ -62,7 +61,7 @@
 }
 
 .bio-text {
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .reward-cell {
@@ -99,7 +98,7 @@
 
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
+  color: #f4f1e8;
 
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }

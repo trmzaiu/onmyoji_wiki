@@ -1,5 +1,4 @@
 <script setup>
-
 const props = defineProps({
   routeName: String,
   skill: Object,
@@ -7,8 +6,6 @@ const props = defineProps({
   isShikigami: Boolean,
   language: String,
 });
-
-
 </script>
 
 <template>
@@ -25,18 +22,13 @@ const props = defineProps({
     <span class="skill-heading">
       <div class="skill-title">
         <span class="skill-name" :class="`title-${language}`">
-          {{
-            skill.name?.[language]
-          }}
+          {{ skill.name?.[language] }}
         </span>
         <span v-if="language !== 'cn'" class="skill-sub-name">
           ({{
-            skill.name.cn ===
-            skill.name.jp
+            skill.name.cn === skill.name.jp
               ? skill.name.cn
-              : skill.name.cn +
-                " / " +
-                skill.name.jp
+              : skill.name.cn + "／" + skill.name.jp
           }})
         </span>
       </div>

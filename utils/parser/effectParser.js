@@ -67,8 +67,6 @@ export const parseEffectDescription = ({
 	language,
 	currentEffectId,
 }) => {
-	const renderedEffects = new Set();
-
 	const getEffectName = (effect, id, value) => {
 		let effectName = getLocalizedName(effect, language);
 
@@ -117,14 +115,9 @@ export const parseEffectDescription = ({
 				);
 			}
 
-			const isFirstAppearance =
-				!renderedEffects.has(id);
-
-			renderedEffects.add(id);
-
 			return createEffectSpan(
 				effectName,
-				isFirstAppearance,
+				false,
 				effect.color
 			);
 		}

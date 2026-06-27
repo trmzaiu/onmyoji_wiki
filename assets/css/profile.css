@@ -227,8 +227,20 @@
 	text-align: center;
 }
 
+.name-cn {
+	font-size: 18px;
+}
+
+.name-py {
+	font-size: 14px;
+}
+
 .voice-actor {
 	white-space: pre-line;
+}
+
+.release-date {
+	font-size: 14px;
 }
 
 /* Rarity */
@@ -303,12 +315,14 @@
 	right: 0;
 	bottom: 0;
 
-	color: #fff;
+	color: #f4f1e8;
 	text-shadow:
 		-1px -1px 0 rgba(74, 0, 0, 0.8),
 		1px -1px 0 rgba(74, 0, 0, 0.8),
 		-1px 1px 0 rgba(74, 0, 0, 0.8),
 		1px 1px 0 rgba(74, 0, 0, 0.8);
+	font-size: 12px;
+	font-weight: 700;
 }
 
 .version-item {
@@ -362,7 +376,7 @@
 	padding: 8px 18px 10px;
 
 	font-size: 15px;
-	line-height: 1.9;
+	line-height: 1.5;
 	letter-spacing: 0.2px;
 	text-align: justify;
 	white-space: pre-line;
