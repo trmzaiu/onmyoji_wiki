@@ -122,9 +122,7 @@ function setupInfiniteScroll() {
 async function fetchLatestShikigami() {
   const { data, error } = await supabase
     .from("Shikigami")
-    .select("*")
-    .order("id", { ascending: false })
-    .limit(20);
+    .select("*");
 
   if (error) {
     console.error(error);
@@ -139,11 +137,14 @@ async function fetchLatestShikigami() {
 
       const releaseDate = new Date(shiki.date.cn);
 
-      const diffDays = (now - releaseDate) / (1000 * 60 * 60 * 24);
+      const diffDays = Math.floor(
+        (now.getTime() - releaseDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
 
-      return diffDays <= 30;
+      return diffDays >= 0 && diffDays <= 30;
     })
     .sort((a, b) => new Date(b.date.cn) - new Date(a.date.cn));
+
 }
 
 // ======================================================
