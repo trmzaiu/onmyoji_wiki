@@ -318,7 +318,15 @@ const text = (key) => getUIText(key, props.language);
 
           <!-- 6 -->
           <td v-if="hasLevel40">
-            {{ entity.stats.DEF[1] }}
+            <div class="flex">
+              {{ entity.stats.DEF[1] }}
+              <span
+                v-if="entity.evolution && entity.evolution.no === 12"
+                class="increase-cell"
+              >
+                +{{ Math.round((entity.stats.DEF[1] * entity.evolution.count) / 100) }}
+              </span>
+            </div>
           </td>
           <td v-else class="empty-cell"></td>
 

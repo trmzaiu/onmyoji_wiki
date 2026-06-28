@@ -69,7 +69,7 @@ const text = (key) => getUIText(key, props.language);
     </thead>
     <tbody>
       <template v-for="(skin, index) in skins || []" :key="index">
-        <tr v-if="skin && skin.obtained !== 'Cancelled'" class="skin-info-row">
+        <tr v-if="skin && skin.obtained.en !== 'Cancelled'" class="skin-info-row">
           <!-- ICON -->
           <td class="table-cell skin-image-cell">
             <div class="skin-info-image-wrapper">
