@@ -8,7 +8,7 @@ const props = defineProps({
   language: String,
 });
 
-const text = (key) => getUIText(key, language.value);
+const text = (key) => getUIText(key, props.language);
 
 const statMap = {
   ATK: {
