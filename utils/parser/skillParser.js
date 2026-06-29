@@ -2,10 +2,10 @@ import { getLocalizedName, getSkillName, replacePipeline } from "../helper/helpe
 import { createEffectImage, createEffectSpan, createEffectTooltip, createSkillSpan } from "./createSpan";
 
 export const parseBaseDescription = ({
-  text,
-  shikigamiMap,
-  onmyojiMap,
-  language,
+  text = "",
+  shikigamiMap = new Map(),
+  onmyojiMap = new Map(),
+  language = "en",
   skillReplacer,
   effectReplacer,
 }) => {

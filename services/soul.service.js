@@ -18,3 +18,16 @@ export async function getSoulsByIds(ids = []) {
 	);
 }
 
+export async function getSoulByName(name) {
+	const supabase = useSupabase();
+	const { data, error } = await supabase
+		.from("Soul")
+		.select("*")
+		.eq("name->>en", name)
+		.single();
+
+	if (error) throw error;
+
+	return data;
+}
+

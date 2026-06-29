@@ -51,7 +51,6 @@ export const createEffectTooltip = (name, effect, html) => {
     : effect.images
       ? [effect.images]
       : [];
-  console.log(effect.images);
 
   const imageHtml = images
     .filter(Boolean)

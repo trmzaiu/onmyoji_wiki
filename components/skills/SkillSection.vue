@@ -85,9 +85,6 @@ const visibleSkillEffects = computed(() =>
   currentSkillEffects.value.filter((effect) => effect.tooltip === false)
 );
 
-const tooltipSkillEffects = computed(() =>
-  currentSkillEffects.value.filter((effect) => effect.color === true)
-);
 
 // =====================================================
 // Effect Helpers
@@ -153,7 +150,7 @@ const emit = defineEmits(["update:showEvolution", "change-skill"]);
         :skill="skill"
         :tag-map="tagMap"
         :skill-description-text="skillDescriptionText"
-        :tooltip-effects="tooltipSkillEffects"
+
         :language="language"
         :show-evolution="showEvolution"
         @update:showEvolution="emit('update:showEvolution', $event)"

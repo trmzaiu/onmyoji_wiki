@@ -2,9 +2,14 @@ export function extractEntityIds({
   skills = [],
   effects = [],
   profile = [],
+  soulEffect = {},
   tag = "s",
 }) {
+  skills = Array.isArray(skills) ? skills : [];
+  effects = Array.isArray(effects) ? effects : [];
+  
   const ids = new Set();
+  const languages = ["en", "vn", "cn"];
 
   const regex =
     tag === "k"
@@ -27,10 +32,9 @@ export function extractEntityIds({
 
   // SKILLS
   skills.forEach((skill) => {
-    extractFromText(skill.description?.en);
-    extractFromText(skill.description?.vn);
+    languages.forEach((lang) => {
+      extractFromText(skill.description?.[lang]);
 
-    ["en", "vn"].forEach((lang) => {
       skill.levels?.[lang]?.forEach?.((lvl) => {
         extractFromText(lvl.effect);
       });
@@ -39,13 +43,20 @@ export function extractEntityIds({
 
   // EFFECTS
   effects.forEach((effect) => {
-    extractFromText(effect.description?.en, true);
-    extractFromText(effect.description?.vn, true);
+    languages.forEach((lang) => {
+      extractFromText(effect.description?.[lang], true);
+    });
   });
 
   // PROFILE
-  extractFromText(profile?.en);
-  extractFromText(profile?.vn);
+  languages.forEach((lang) => {
+    extractFromText(profile?.[lang]);
+  });
+
+  // SOUL
+  languages.forEach((lang) => {
+    extractFromText(soulEffect?.[lang]);
+  });
 
   return [...ids];
 }

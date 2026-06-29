@@ -1,27 +1,38 @@
 export const getAllSkillEffectText = ({
-	skill,
-	language = "en",
-	showEvolution,
+  skill,
+  language = "en",
+  showEvolution,
 }) => {
-	let text = "";
+  let text = "";
 
-	if (skill.base) {
-		text += showEvolution
-			? skill.description?.[language] || ""
-			: skill.base?.[language] || "";
-	} else {
-		text += skill.description?.[language] || "";
-	}
+  if (skill.base) {
+    text += showEvolution
+      ? skill.description?.[language] || ""
+      : skill.base?.[language] || "";
+  } else {
+    text += skill.description?.[language] || "";
+  }
 
-	const levels = skill.levels?.[language];
+  const levels = skill.levels?.[language];
 
-	if (Array.isArray(levels)) {
-		text += levels.map((lvl) => lvl.effect || "").join(" ");
-	} else if (typeof levels === "string") {
-		text += ` ${levels}`;
-	}
+  if (Array.isArray(levels)) {
+    text += levels.map((lvl) => lvl.effect || "").join(" ");
+  } else if (typeof levels === "string") {
+    text += ` ${levels}`;
+  }
 
-	return text;
+  return text;
+};
+
+export const getAllSoulEffectText = ({
+  effect,
+  language = "en",
+}) => {
+  let text = "";
+
+  text += effect?.[language]
+
+  return text;
 };
 
 export const collectNestedEffects = ({
@@ -38,9 +49,13 @@ export const collectNestedEffects = ({
     effects.map((effect) => [String(effect.id), effect])
   );
 
+  console.log("effectById", effectById);
+
   const ids = [...text.matchAll(/<eb>(\d+)<\/eb>/g)].map(
     (match) => match[1]
   );
+
+  console.log("ids", ids);
 
   const results = [];
 
@@ -72,67 +87,65 @@ export const collectNestedEffects = ({
   );
 };
 
+export const markFirstAppearancesInText = (
+  text = "",
+  seenEffects = new Set(),
+  seenSkills = new Set()
+) => {
+  return text
+    .replace(/<e>(\d+)<\/e>/g, (match, id) => {
+      if (seenEffects.has(id)) return match;
+
+      seenEffects.add(id);
+      return `<eb>${id}</eb>`;
+    })
+    .replace(/<k>(\d+)<\/k>/g, (match, id) => {
+      if (seenSkills.has(id)) return match;
+
+      seenSkills.add(id);
+      return `<kb>${id}</kb>`;
+    });
+};
+
 export const markFirstAppearances = ({
   skill,
   language = "en",
   showEvolution,
 }) => {
+  const clone = JSON.parse(JSON.stringify(skill));
+
   const seenEffects = new Set();
   const seenSkills = new Set();
 
-  const processText = (text) => {
-    if (!text) return text;
-
-    text = text.replace(
-      /<e>(\d+)<\/e>/g,
-      (match, id) => {
-        if (seenEffects.has(id)) {
-          return match;
-        }
-
-        seenEffects.add(id);
-
-        return `<eb>${id}</eb>`;
-      }
-    );
-
-    text = text.replace(
-      /<k>(\d+)<\/k>/g,
-      (match, id) => {
-        if (seenSkills.has(id)) {
-          return match;
-        }
-
-        seenSkills.add(id);
-
-        return `<kb>${id}</kb>`;
-      }
-    );
-
-    return text;
-  };
-
-  const clone = JSON.parse(JSON.stringify(skill));
-
   if (clone.base) {
     if (showEvolution) {
-      clone.description[language] = processText(
-        clone.description?.[language]
+      clone.description[language] = markFirstAppearancesInText(
+        clone.description?.[language],
+        seenEffects,
+        seenSkills
       );
     } else {
-      clone.base[language] = processText(
-        clone.base?.[language]
+      clone.base[language] = markFirstAppearancesInText(
+        clone.base?.[language],
+        seenEffects,
+        seenSkills
       );
     }
   } else {
-    clone.description[language] = processText(
-      clone.description?.[language]
+    clone.description[language] = markFirstAppearancesInText(
+      clone.description?.[language],
+      seenEffects,
+      seenSkills
     );
   }
 
   if (Array.isArray(clone.levels?.[language])) {
     clone.levels[language].forEach((level) => {
-      level.effect = processText(level.effect);
+      level.effect = markFirstAppearancesInText(
+        level.effect,
+        seenEffects,
+        seenSkills
+      );
     });
   }
 

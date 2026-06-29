@@ -1,0 +1,123 @@
+.soul-section {
+    margin-top: 28px;
+}
+
+.soul-section:first-child {
+    margin-top: 0;
+}
+
+.soul-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 16px;
+
+    color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.soul-section-title::before {
+    content: "";
+    flex: 1;
+    height: 2px;
+
+    background: linear-gradient(to right,
+            transparent 0%,
+            rgba(159, 49, 46, 0.25) 35%,
+            #b83d39 100%);
+}
+
+.soul-section-title::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+
+    background: linear-gradient(to left,
+            transparent 0%,
+            rgba(159, 49, 46, 0.25) 35%,
+            #b83d39 100%);
+}
+
+.soul-section-title::before {
+    max-width: 30px;
+}
+
+.soul-section-title::after {
+    opacity: .5;
+}
+
+.soul-effect {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.soul-effect > :last-child {
+  margin-top: 4px;
+}
+
+.soul-effect-description {
+    position: relative;
+
+    padding-left: 26px;
+
+    line-height: 1.9;
+}
+
+.soul-effect-description::before {
+    content: "❖";
+
+    position: absolute;
+    left: 0;
+    top: 2px;
+
+    color: #9f312e;
+    font-size: 16px;
+}
+
+.soul-effect-description p {
+    margin: 0;
+}
+
+.obtained-list {
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.obtained-list li {
+    position: relative;
+
+    padding: 10px 14px 10px 32px;
+
+    color: var(--text-secondary);
+
+    background: rgba(255, 255, 255, 0.025);
+    border-radius: 6px;
+
+    transition: background .2s ease;
+}
+
+.obtained-list li::before {
+    content: "✦";
+
+    position: absolute;
+    left: 12px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #b83d39;
+    font-size: 13px;
+}
+
+.obtained-list li:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
