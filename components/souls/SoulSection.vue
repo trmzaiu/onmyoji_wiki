@@ -1,11 +1,14 @@
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed } from "vue";
+import { getUIText } from "~/utils/helper/helper";
 
 const props = defineProps({
   routeName: String,
   entity: Object,
   language: String,
 });
+
+const text = (key) => getUIText(key, language.value);
 
 const statMap = {
   ATK: {
@@ -123,7 +126,7 @@ function getType(type) {
           </tr>
           <tr>
             <td class="character-title" colspan="4" :class="`title-${language}`">
-              Effects
+              {{ text("effect") }}
             </td>
           </tr>
           <tr v-if="entity.type !== 'Random Stat'">
