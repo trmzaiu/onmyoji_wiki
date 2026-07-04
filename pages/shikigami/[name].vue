@@ -2,6 +2,8 @@
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import { useSupabase } from "~/composables/useSupabase";
+
 import { useShikigami } from "~/composables/useShikigami";
 import { useLanguage } from "~/composables/useLanguage";
 
@@ -27,6 +29,8 @@ import StatSection from "~/components/StatSection.vue";
 import TabSection from "~/components/TabSection.vue";
 
 import { getUIText } from "~/utils/helper/helper";
+
+const supabase = useSupabase();
 
 /* ---------------------- GLOBAL ---------------------- */
 
@@ -82,9 +86,7 @@ const displayTitle = computed(() => {
     return shikigami.value?.name?.cn?.[0] ?? "";
   }
 
-  return shikigami.value?.name?.jp?.[1] ??
-    shikigami.value?.name?.jp?.[0] ??
-    "";
+  return shikigami.value?.name?.jp?.[1] ?? shikigami.value?.name?.jp?.[0] ?? "";
 });
 
 async function changeTab(tab) {
@@ -142,18 +144,14 @@ const getSkillTabName = (skill, index) => {
   // Skill thứ 2
   if (index === 1 && hasExtraSkillOnTab2) {
     if (type1 !== type3) {
-      const firstName =
-        type1 === type2 ? special1 : getSkillTypeText(type1);
+      const firstName = type1 === type2 ? special1 : getSkillTypeText(type1);
 
-      const secondName =
-        type3 === type2 ? special1 : getSkillTypeText(type3);
+      const secondName = type3 === type2 ? special1 : getSkillTypeText(type3);
 
       return `${firstName} / ${secondName}`;
     }
 
-    return type1 === type2
-      ? special1
-      : getSkillTypeText(type1);
+    return type1 === type2 ? special1 : getSkillTypeText(type1);
   }
 
   // Skill thứ 3
@@ -162,9 +160,7 @@ const getSkillTabName = (skill, index) => {
       return special2;
     }
 
-    return type2 === type1
-      ? special2
-      : getSkillTypeText(type2);
+    return type2 === type1 ? special2 : getSkillTypeText(type2);
   }
 
   // Hai skill có cùng type
@@ -400,6 +396,7 @@ const addCKeywordListeners = () => {
     });
   });
 };
+
 </script>
 
 <template>
@@ -420,13 +417,13 @@ const addCKeywordListeners = () => {
       </div>
 
       <!-- Character -->
-      <CharacterSection 
-        :route-name="routeName" 
-        :entity="shikigami" 
+      <CharacterSection
+        :route-name="routeName"
+        :entity="shikigami"
         :roles="roles"
         :type="'shikigami'"
-        :language="language" 
-        />
+        :language="language"
+      />
 
       <!-- Profile -->
       <ProfileSection
@@ -438,7 +435,7 @@ const addCKeywordListeners = () => {
       />
 
       <!-- Content -->
-      <TabSection :active-tab="activeTab" :language="language" @change="changeTab"/>
+      <TabSection :active-tab="activeTab" :language="language" @change="changeTab" />
 
       <!-- Main Tab -->
       <div
@@ -619,10 +616,7 @@ const addCKeywordListeners = () => {
                         {{ text("effect") }}
                       </th>
                     </tr>
-                    <tr
-                      v-for="lvl in linkedSkill.levels?.[language]"
-                      :key="lvl.level"
-                    >
+                    <tr v-for="lvl in linkedSkill.levels?.[language]" :key="lvl.level">
                       <td class="level-cell">{{ lvl.level }}</td>
                       <td
                         class="effect-cell"
@@ -632,9 +626,7 @@ const addCKeywordListeners = () => {
                   </tbody>
                 </table>
                 <div v-else>
-                  <p class="no-level">
-                    { linkedSkill.levels?.[language] }
-                  </p>
+                  <p class="no-level">{ linkedSkill.levels?.[language] }</p>
                 </div>
               </div>
             </div>
@@ -649,7 +641,11 @@ const addCKeywordListeners = () => {
         </div>
 
         <!-- Biography Unlock -->
-        <h2 class="session-title" v-if="shikigami.id !== 402" :class="`title-${language}`">
+        <h2
+          class="session-title"
+          v-if="shikigami.id !== 402"
+          :class="`title-${language}`"
+        >
           {{ text("biography") }}
         </h2>
 
@@ -667,7 +663,7 @@ const addCKeywordListeners = () => {
           {{ text("soulChoices") }}
         </h2>
 
-        <SoulChoicesSection :souls="souls" :shikigami="shikigami" :language="language"/>
+        <SoulChoicesSection :souls="souls" :shikigami="shikigami" :language="language" />
       </div>
 
       <!-- Gallery Tab -->
@@ -720,7 +716,11 @@ const addCKeywordListeners = () => {
           {{ text("illustration") }}
         </h2>
 
-        <IllustrationSection :illustrations="illustrations" :language="language" @open-image="openModal" />
+        <IllustrationSection
+          :illustrations="illustrations"
+          :language="language"
+          @open-image="openModal"
+        />
         <div ref="loadMoreRef" v-if="illustrationHasMore" class="loading-trigger"></div>
       </div>
     </div>

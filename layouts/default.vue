@@ -325,9 +325,10 @@ export default {
 
   color: rgba(0, 0, 0, 0.88);
 
-  font-family: "Fira Sans", sans-serif;
+  font-family: "Bona Nova SC", serif;
 
   font-size: 18px;
+  font-weight: 600;
 
   text-transform: uppercase;
   text-decoration: none;

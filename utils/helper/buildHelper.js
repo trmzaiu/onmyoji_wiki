@@ -45,26 +45,26 @@ export function getStatClass(stat) {
 }
 
 export function parseSubstats(text) {
+  const icons = {
+    ">>>": "❯❯❯",
+    ">>": "❯❯",
+    ">": "❯",
+    "/": "•",
+  };
+
   return text
-    .replace(/=/g, " = ")
+    .replace(/>>>/g, " >>> ")
     .replace(/>>/g, " >> ")
     .replace(/>/g, " > ")
-    .replace(/\//g, " / ")
+    .replace(/\//g, " ／ ")
+    .replace(/=/g, " ＝ ")
     .trim()
     .split(/\s+/)
-    .map((token) => {
-      if (token === ">" || token === ">>" || token === "/") {
-        return {
-          type: "arrow",
-          value: token,
-        };
-      }
-
-      return {
-        type: "stat",
-        value: token,
-      };
-    });
+    .map((token) => ({
+      type: icons[token] ? "icon" : "stat",
+      value: icons[token] || token,
+      raw: token,
+    }));
 }
 
 export function getRoleClass(role) {
