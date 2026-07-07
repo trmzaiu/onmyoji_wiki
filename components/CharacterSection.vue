@@ -63,7 +63,7 @@ const getOtherVersionName = (entity) => {
 const formatChineseDate = (dateString) => {
   const date = new Date(dateString);
 
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+  return `${date.getFullYear()} 年 ${date.getMonth() + 1} 月 ${date.getDate()} 日`;
 };
 
 const getRoleName = (role) => {
@@ -177,7 +177,7 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
               <div><strong v-if="entity.name.va.jp">JP</strong></div>
             </td>
             <td colspan="3">
-              <div class="voice-actor">{{ entity.name.va.cn }}</div>
+              <div class="voice-actor lang-cn">{{ entity.name.va.cn }}</div>
               <div class="voice-actor" :class="`lang-${language}`">
                 {{ language === "cn" ? entity.name.va.jp_cn : entity.name.va.jp }}
               </div>

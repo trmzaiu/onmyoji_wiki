@@ -4,8 +4,8 @@ import { useRoute } from "vue-router";
 
 import { useSupabase } from "~/composables/useSupabase";
 
-import { useShikigami } from "~/composables/useShikigami";
 import { useLanguage } from "~/composables/useLanguage";
+import { useShikigami } from "~/composables/useShikigami";
 
 import { getOnmyojiByIds } from "~/services/onmyoji.service";
 import { getShikigamiByIds } from "~/services/shikigami.service";
@@ -119,6 +119,7 @@ const getSkillTypeText = (type) => {
   const typeMap = {
     Normal: text("normal"),
     Special: text("special"),
+    Passive: text("passive"),
   };
 
   return typeMap[type] || type;
@@ -396,7 +397,6 @@ const addCKeywordListeners = () => {
     });
   });
 };
-
 </script>
 
 <template>

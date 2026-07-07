@@ -409,6 +409,7 @@
 .effect-card-desc {
   line-height: 1.4;
   font-size: 15px;
+  white-space: pre-line;
 }
 
 .title-color-red {
@@ -527,7 +528,7 @@
   z-index: 1000;
 
   width: max-content;
-  max-width: min(320px, 75vw);
+  max-width: min(250px, 75vw);
   padding: 10px 12px;
 
   visibility: hidden;

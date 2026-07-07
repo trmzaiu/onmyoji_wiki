@@ -258,7 +258,7 @@ export default {
 
 <style>
 #app {
-  font-family: "M PLUS 2", sans-serif;
+  font-family: "Montserrat", sans-serif;
   background: #891727;
   color: #f4f1e8;
 }

@@ -6,11 +6,31 @@ const getDisplayName = ({
 
   const name = targetData.name;
 
+  if (language === "cn") {
+    return (
+      (Array.isArray(name?.cn)
+        ? name.cn[0]
+        : name?.cn) ??
+      name?.en ??
+      ""
+    );
+  }
+
+  if (language === "jp") {
+    return (
+      (Array.isArray(name?.jp)
+        ? name.jp[0]
+        : name?.jp) ??
+      name?.en ??
+      ""
+    );
+  }
+
   return (
     name?.[language] ??
     name?.en ??
     name?.vn ??
-    name?.cn ??
+    (Array.isArray(name?.cn) ? name.cn[0] : name?.cn) ??
     ""
   );
 };
@@ -116,6 +136,10 @@ export const renderProfileText = ({
 
       // Current shikigami => normal text
       if (id === shikigami.id) {
+        if (language === "cn") {
+          return shikigami.name?.cn?.[0];
+        }
+        
         return shikigami.name?.[language];
       }
 

@@ -38,7 +38,8 @@ export const parseEffectTags = (effect, language) => {
 		};
 	}
 
-	const match = description.match(/^\[(.*?)\]\s*/);
+
+	const match = description.match(/^(?:\[(.*?)\]|【(.*?)】)\s*/);
 
 	if (!match) {
 		return {
@@ -47,14 +48,16 @@ export const parseEffectTags = (effect, language) => {
 		};
 	}
 
-	const tags = match[1]
-		.split(",")
+	const tagText = match[1] || match[2];
+
+	const tags = tagText
+		.split(/[，,]/)
 		.map((t) => t.trim())
 		.filter(Boolean);
 
 	return {
 		tags,
-		description: description.replace(/^\[(.*?)\]\s*/, ""),
+		description: description.replace(/^(?:\[(.*?)\]|【(.*?)】)\s*/, ""),
 	};
 };
 
