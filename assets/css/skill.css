@@ -297,7 +297,7 @@
 
 .skill-keyword-bold {
   color: var(--color-yellow);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -528,7 +528,7 @@
   z-index: 1000;
 
   width: max-content;
-  max-width: min(250px, 75vw);
+  max-width: min(235px, 75vw);
   padding: 10px 12px;
 
   visibility: hidden;
@@ -588,11 +588,11 @@
   transform: translate(-50%, 0);
 }
 
-.effect-tooltip-images {
+.effect-tooltip-header {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 10px;
 
   margin-bottom: 8px;
   padding-bottom: 7px;
@@ -600,15 +600,33 @@
   border-bottom: 1px solid rgba(215, 177, 102, 0.22);
 }
 
+.effect-tooltip-name {
+  flex: 1;
+
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .35);
+}
+
+.effect-tooltip-images {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  flex-shrink: 0;
+}
+
 .effect-tooltip-image {
   display: block;
 
-  width: 38px;
-  height: 38px;
+  width: 24px;
+  height: 24px;
 
   object-fit: contain;
 
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .45));
 }
 
 .effect-tooltip-text {

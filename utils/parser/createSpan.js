@@ -72,7 +72,12 @@ export const createEffectTooltip = (name, effect, html) => {
       data-effect-id="${effect.id}"
     >${name}<span 
       class="effect-tooltip-card"><span 
-      class="effect-tooltip-header">${
+      class="effect-tooltip-header"><span 
+      class="effect-tooltip-name effect-keyword-${effect.color}">${name}<span
+        class="lang-cn"
+        > 
+        (${effect.name.cn})
+        </span></span>${
             imageHtml
               ? `<span class="effect-tooltip-images">${imageHtml}</span>`
               : ""

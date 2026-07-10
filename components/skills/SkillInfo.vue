@@ -69,10 +69,10 @@ const emit = defineEmits(["update:showEvolution", "change-skill"]);
     {{
       showEvolution
         ? language === "cn"
-          ? "觉醒后"
+          ? "觉醒"
           : "Evo"
         : language === "cn"
-        ? "觉醒前"
+        ? "默认"
         : "Base"
     }}
   </div>

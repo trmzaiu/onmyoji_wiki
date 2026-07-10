@@ -139,7 +139,11 @@ export const renderProfileText = ({
         if (language === "cn") {
           return shikigami.name?.cn?.[0];
         }
-        
+
+        if (language === "vn" && shikigami.crossover === true) {
+          return shikigami.name?.en;
+        }
+
         return shikigami.name?.[language];
       }
 

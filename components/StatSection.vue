@@ -35,13 +35,13 @@ const text = (key) => getUIText(key, props.language);
                   : ""
               }}
               <br />
-              {{ text("level") }}1
+              {{ text("level") }} 1
             </div>
           </th>
           <th colspan="2" v-else>
             <div class="stats-title" :class="!isShikigami ? 'stats-title-left' : ''">
               <br />
-              {{ text("level") }}60
+              {{ text("level") }} 60
             </div>
           </th>
 
@@ -54,7 +54,7 @@ const text = (key) => getUIText(key, props.language);
                   : ""
               }}
               <br />
-              {{ text("level") }}40
+              {{ text("level") }} 40
             </div>
           </th>
           <th colspan="2" v-if="!isShikigami">

@@ -11,7 +11,10 @@ export const getUIText = (key, language = "en") => {
   return uiText[language]?.[key] ?? uiText.en?.[key] ?? key;
 };
 
-export const getLocalizedName = (obj, language = "en") => {
+export const getLocalizedName = (
+  obj,
+  language = "en"
+) => {
   if (!obj?.name) return "";
 
   const name = obj.name;
@@ -20,6 +23,10 @@ export const getLocalizedName = (obj, language = "en") => {
     return Array.isArray(name.cn)
       ? name.cn[0] ?? name.en ?? ""
       : name.cn ?? name.en ?? "";
+  }
+
+  if (language === "vn" && obj.crossover === true) {
+    return name.en ?? "";
   }
 
   return name?.[language] ?? name.en ?? "";

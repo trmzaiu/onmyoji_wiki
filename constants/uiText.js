@@ -83,7 +83,7 @@ export const uiText = {
     unevolved: "觉醒前",
     evolved: "觉醒后",
     level: "等级",
-    withlevel: "拥有40",
+    withlevel: "拥有 40",
     totem: "级御灵",
 
     skills: "技能",

@@ -26,9 +26,7 @@ const props = defineProps({
         </span>
         <span v-if="language !== 'cn'" class="skill-sub-name">
           ({{
-            skill.name.cn === skill.name.jp
-              ? skill.name.cn
-              : skill.name.cn + "／" + skill.name.jp
+            skill.name.cn
           }})
         </span>
       </div>

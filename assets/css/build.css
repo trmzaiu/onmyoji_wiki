@@ -80,10 +80,13 @@
   margin-right: 8px;
 }
 
+.build-stat-group .build-stat {
+  margin-right: 8px;
+}
+
 .build-stat {
   display: inline-block;
 
-  margin-right: 6px;
   padding: 5px 10px;
 
   border-radius: 8px;
