@@ -96,10 +96,25 @@ function fetchLatestShikigami() {
       const releaseDate = new Date(shiki.date.cn);
 
       const diffDays = Math.floor(
-        (now.getTime() - releaseDate.getTime()) / (1000 * 60 * 60 * 24)
+        (releaseDate.getTime() - now.getTime()) /
+          (1000 * 60 * 60 * 24)
       );
 
-      return diffDays >= 0 && diffDays <= 30;
+      return diffDays >= -30 && diffDays <= 30;
+    })
+    .map((shiki) => {
+      const releaseDate = new Date(shiki.date.cn);
+
+      const diffDays = Math.floor(
+        (releaseDate.getTime() - now.getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
+
+      return {
+        ...shiki,
+        upcoming: diffDays > 0,
+        diffDays,
+      };
     })
     .sort((a, b) => new Date(b.date.cn) - new Date(a.date.cn));
 }
@@ -215,7 +230,8 @@ onUnmounted(() => {
               {{ shiki.name.jp[1] }}
             </a>
             <span>{{ shiki.name.cn[0] }}</span>
-            <span>released on {{ shiki.date.cn }}</span>
+            <span v-if="shiki.upcoming">coming in {{ shiki.date.cn }}</span>
+            <span v-else>released on {{ shiki.date.cn }}</span>
           </div>
         </div>
       </div>

@@ -46,7 +46,13 @@ const emit = defineEmits(["update:showEvolution", "change-skill"]);
         <i class="fa-solid fa-clock"></i>
         {{ skill.cooldown }}
       </span>
-      <span>
+      <span v-if="skill.type === 'Passive'" class="skill-type">
+        <span class="skill-type-bg tint-type tint-type-color"></span>
+        <span class="skill-type-text">
+          {{ language === "cn" ? "被动" : skill.type }}
+        </span>
+      </span>
+      <span v-else>
         <img src="/assets/images/Onibi.webp" alt="Onibi" />
         {{ skill.onibi }}
       </span>
