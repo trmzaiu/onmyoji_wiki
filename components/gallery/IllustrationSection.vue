@@ -29,7 +29,11 @@ const formatIllustrationName = (name) => {
 const isChineseText = (text = "") => /[\u4E00-\u9FFF]/.test(text);
 
 const getIllustrationLanguage = (img) => {
-  return isChineseText(img.name_en) ? "cn" : props.language;
+  return props.language === "en"
+    ? isChineseText(img?.name_en)
+      ? "cn"
+      : "en"
+    : props.language;
 };
 </script>
 

@@ -60,28 +60,35 @@ export const createEffectTooltip = (name, effect, html) => {
         : `${image}.webp`;
 
       return `<img
-          src="/assets/images/effects/${fileName}"
-          alt="${escapeHtmlAttribute(name)}"
-          class="effect-tooltip-image"
-        />`;
+        src="/assets/images/effects/${fileName}"
+        alt="${escapeHtmlAttribute(name)}"
+        class="effect-tooltip-image"
+      />`;
     })
     .join("");
+
+  const cnName = Array.isArray(effect.name?.cn)
+    ? effect.name.cn[0]
+    : effect.name?.cn ?? "";
+
+  const cnHtml =
+    cnName && cnName !== name
+      ? `<span class="lang-cn">(${escapeHtmlAttribute(cnName)})</span>`
+      : "";
 
   return `<span
       class="effect-tooltip effect-keyword-${effect.color}"
       data-effect-id="${effect.id}"
     >${name}<span 
       class="effect-tooltip-card"><span 
-      class="effect-tooltip-header"><span 
-      class="effect-tooltip-name effect-keyword-${effect.color}">${name}<span
-        class="lang-cn"
-        > 
-        (${effect.name.cn})
-        </span></span>${
+        class="effect-tooltip-header"><span 
+          class="effect-tooltip-name effect-keyword-${effect.color}">
+            ${name}${cnHtml}
+          </span>${
             imageHtml
               ? `<span class="effect-tooltip-images">${imageHtml}</span>`
               : ""
-          }</span>
-        <span class="effect-tooltip-text">${html}</span></span></span>`;
+          }
+        </span><span class="effect-tooltip-text">${html}</span></span></span>`;
 };
 

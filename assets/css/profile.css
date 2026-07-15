@@ -53,29 +53,28 @@
 
 .role-tags {
 	position: absolute;
-	top: 12px;
 	left: 10px;
+	top: 10px;
 	z-index: 3;
 
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 5px;
+	gap: 6px;
 }
 
 .role-tag {
-	--tag-main: #8c4a35;
-	--tag-dark: #5a261c;
-	--tag-line: rgba(231, 194, 122, 0.8);
-	--tag-text: #f5dfae;
+	--tag-main: #858584;
+	--tag-dark: #555555;
+	--tag-line: #93826c;
+	--tag-text: #c5c1b2;
 
 	position: relative;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 
-	min-width: 55px;
-	height: 25px;
+	min-width: 60px;
 	padding: 0 12px;
 
 	color: var(--tag-text);
@@ -84,22 +83,13 @@
 			var(--tag-dark),
 			var(--tag-main));
 
-	border: 1px solid rgba(255, 227, 165, 0.32);
+	border: 1px solid var(--tag-line);
 
 	border-radius: 0;
 
 	font-family: "Noto Serif SC", "Noto Serif JP", serif;
 	font-size: 12px;
-	font-weight: 700;
-	line-height: 1;
-}
-
-.role-tag::before {
-	position: absolute;
-	inset: 3px;
-
-	content: "";
-	pointer-events: none;
+	font-weight: 600;
 }
 
 .role-decoration {
@@ -114,11 +104,11 @@
 }
 
 .role-decoration-left {
-	left: 5px;
+	left: 3px;
 }
 
 .role-decoration-right {
-	right: 5px;
+	right: 3px;
 }
 
 .role-red {
@@ -126,13 +116,6 @@
 	--tag-dark: #572925;
 	--tag-line: #a57555;
 	--tag-text: #e4d5bf;
-}
-
-.role-green {
-	--tag-main: #4b7862;
-	--tag-dark: #3d835b;
-	--tag-line: #8f8963;
-	--tag-text: #c8d2b9;
 }
 
 .role-yellow {
@@ -351,13 +334,13 @@
 }
 
 .version-name {
-  display: block;
-  width: 100%;
+	display: block;
+	width: 100%;
 
-  text-align: center;
-  line-height: 1.4;
+	text-align: center;
+	line-height: 1.4;
 
-  word-break: break-word;
+	word-break: break-word;
 }
 
 .version-item:hover .version-name {

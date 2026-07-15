@@ -147,7 +147,9 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
             </td>
             <td colspan="3">
               <div class="name-cn lang-cn">{{ entity.name.jp[0] }}</div>
-              <div class="name-py pinyin">{{ entity.name.jp[2] || entity.name.jp[1] }}</div>
+              <div class="name-py pinyin">
+                {{ entity.name.jp[2] || entity.name.jp[1] }}
+              </div>
             </td>
           </tr>
           <tr>
@@ -178,7 +180,10 @@ watch(() => props.entity?.version, loadOtherVersions, { deep: true });
             </td>
             <td colspan="3">
               <div class="voice-actor lang-cn">{{ entity.name.va.cn }}</div>
-              <div class="voice-actor" :class="`lang-${language}`">
+              <div
+                class="voice-actor"
+                :class="`${language === 'cn' ? 'lang-cn' : 'pinyin'}`"
+              >
                 {{ language === "cn" ? entity.name.va.jp_cn : entity.name.va.jp }}
               </div>
             </td>

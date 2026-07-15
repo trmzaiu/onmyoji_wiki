@@ -279,6 +279,7 @@
 .tab.active {
   color: var(--color-red);
   font-weight: 600;
+  cursor: pointer;
 }
 
 .tab.active::after {
@@ -396,7 +397,6 @@
 
   box-shadow: 0 0 14px rgba(165, 25, 25, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.04);
 
-  cursor: default;
 }
 
 .tabs-rarity button:last-child {
@@ -655,4 +655,82 @@
 
 .effect-copy-panel button:active {
   transform: translateY(0);
+}
+
+
+/* ==================================================
+   SEARCH BAR
+================================================== */
+
+.search-bar {
+  position: relative;
+
+  width: min(420px, 100%);
+  margin: 0 0 18px;
+}
+
+.search-bar input {
+  width: 100%;
+
+  padding: 10px 42px 10px 14px;
+
+  color: #f8ece5;
+  font-size: 14px;
+  font-weight: 500;
+
+  background: linear-gradient(to right,
+      rgba(165, 25, 25, 0.18),
+      rgba(255, 255, 255, 0.03));
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 220, .05),
+    0 3px 10px rgba(0, 0, 0, .28);
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
+}
+
+.search-bar input::placeholder {
+  color: rgba(255, 210, 210, .45);
+}
+
+.search-bar input:hover {
+  border-color: rgba(196, 86, 86, .55);
+}
+
+.search-bar input:focus {
+  outline: none;
+
+  border-color: var(--text-primary);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 220, .08),
+    0 0 0 2px rgba(130, 25, 25, .18),
+    0 0 14px rgba(150, 30, 30, .22);
+
+  background: linear-gradient(to right, rgba(165, 25, 25, 0.35), rgba(165, 25, 25, 0.12));
+}
+
+.search-bar i {
+  position: absolute;
+
+  top: 50%;
+  right: 14px;
+
+  transform: translateY(-50%);
+
+  color: rgba(235, 180, 180, .65);
+
+  transition: color .2s ease;
+
+  pointer-events: none;
+}
+
+.search-bar:focus-within i {
+  color: rgba(255, 215, 215, .95);
 }

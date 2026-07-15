@@ -8,88 +8,54 @@ const supabase = useSupabase();
 // STATE
 // ======================================================
 
-const shikigamiList = ref([]);
 const latestShikigami = ref([]);
-const tabLoading = ref(false);
 
-const rarities = ["All", "UR", "SP", "SSR", "SR", "R", "N", "Crossover", "Removed"];
+const rarities = ["UR", "SP", "SSR", "SR", "R", "N", "Crossover", "Removed"];
 
-const selectedRarity = ref("All");
+const selectedRarity = ref(null);
 
 const { language } = useLanguage();
+
+const search = ref("");
 
 // ======================================================
 // LAZY LOAD
 // ======================================================
 
-const page = ref(0);
+const allShikigami = ref([]);
 
-const limit = 20;
+const visibleCount = ref(20);
 
-const loading = ref(false);
-
-const hasMore = ref(true);
+const pageSize = 20;
 
 // ======================================================
 // FETCH
 // ======================================================
 
 async function fetchShikigami() {
-  if (loading.value || !hasMore.value) return;
-
-  loading.value = true;
-
-  const from = page.value * limit;
-  const to = from + limit - 1;
-
-  let query = supabase.from("Shikigami").select("*").order("id", { ascending: true });
-
-  if (selectedRarity.value === "Removed") {
-    query = query.eq("id", 560);
-  } else if (selectedRarity.value === "Crossover") {
-    query = query.eq("crossover", true);
-  } else if (selectedRarity.value !== "All") {
-    query = query
-      .eq("rarity", selectedRarity.value)
-      .neq("crossover", true)
-      .neq("id", 560);
-  }
-
-  const { data, error } = await query.range(from, to);
+  const { data, error } = await supabase
+    .from("Shikigami")
+    .select("id, name, rarity, crossover, date")
+    .order("id");
 
   if (error) {
-    console.error("Fetch error:", error);
-  } else {
-    if (page.value === 0) {
-      shikigamiList.value = data;
-    } else {
-      shikigamiList.value.push(...data);
-    }
-
-    if (data.length < limit) {
-      hasMore.value = false;
-    }
-
-    page.value++;
+    console.error(error);
+    return;
   }
 
-  loading.value = false;
+  allShikigami.value = data;
 }
 
 // ======================================================
 // RESET + REFETCH WHEN CHANGING TAB
 // ======================================================
 
-watch(selectedRarity, async () => {
-  tabLoading.value = true;
+watch(selectedRarity, () => {
+  visibleCount.value = pageSize;
+});
 
-  page.value = 0;
-
-  hasMore.value = true;
-
-  await fetchShikigami();
-
-  tabLoading.value = false;
+watch(search, () => {
+  visibleCount.value = pageSize;
 });
 
 // ======================================================
@@ -101,8 +67,14 @@ function handleScroll() {
 
   const pageHeight = document.documentElement.offsetHeight;
 
-  if (scrollBottom >= pageHeight - 300) {
-    fetchShikigami();
+  if (
+    scrollBottom >= pageHeight - 300 &&
+    visibleCount.value < filteredShikigami.value.length
+  ) {
+    visibleCount.value = Math.min(
+      visibleCount.value + pageSize,
+      filteredShikigami.value.length
+    );
   }
 }
 
@@ -114,17 +86,10 @@ function setupInfiniteScroll() {
 // NEW RELEASES
 // ======================================================
 
-async function fetchLatestShikigami() {
-  const { data, error } = await supabase.from("Shikigami").select("*");
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
+function fetchLatestShikigami() {
   const now = new Date();
 
-  latestShikigami.value = data
+  latestShikigami.value = allShikigami.value
     .filter((shiki) => {
       if (!shiki.date?.cn) return false;
 
@@ -143,25 +108,47 @@ async function fetchLatestShikigami() {
 // SHIKIGAMI FILTERED BY RARITY
 // ======================================================
 
+const startsWithKeyword = (text = "", keyword) =>
+  text
+    .toLowerCase()
+    .split(/[\s\-_'・]+/)
+    .some((word) => word.startsWith(keyword));
+
 const filteredShikigami = computed(() => {
+  let list = allShikigami.value;
+
   if (selectedRarity.value === "Removed") {
-    return shikigamiList.value.filter((shiki) => shiki.id === 229);
+    list = list.filter((s) => s.id === 560);
+  } else if (selectedRarity.value === "Crossover") {
+    list = list.filter((s) => s.crossover);
+  } else if (selectedRarity.value) {
+    list = list.filter(
+      (s) => s.rarity === selectedRarity.value && !s.crossover && s.id !== 560
+    );
   }
 
-  if (selectedRarity.value === "Crossover") {
-    return shikigamiList.value.filter((shiki) => shiki.crossover === true);
+  if (search.value) {
+    const keyword = search.value.trim().toLowerCase();
+
+    if (!keyword) return list;
+
+    list = list.filter((s) => {
+      const names = [s.name.en, s.name.vn, s.name.jp?.[1], s.name.cn?.[0]];
+
+      return names.some((name) => startsWithKeyword(name, keyword));
+    });
   }
 
-  if (selectedRarity.value === "All") {
-    return shikigamiList.value;
-  }
-
-  return shikigamiList.value.filter(
-    (shiki) =>
-      shiki.rarity === selectedRarity.value && !shiki.crossover && shiki.id !== 229
-  );
+  return list;
 });
 
+const displayedShikigami = computed(() =>
+  filteredShikigami.value.slice(0, visibleCount.value)
+);
+
+watch(displayedShikigami, (list) => {
+  console.log("Displayed:", list.length);
+});
 // ======================================================
 // LIFECYCLE
 // ======================================================
@@ -169,7 +156,9 @@ const filteredShikigami = computed(() => {
 onMounted(async () => {
   document.title = "Shikigami";
 
-  await Promise.all([fetchLatestShikigami(), fetchShikigami()]);
+  await fetchShikigami();
+
+  fetchLatestShikigami();
 
   setupInfiniteScroll();
 });
@@ -180,7 +169,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="container" v-if="shikigamiList.length">
+  <div class="container" v-if="allShikigami.length">
     <div class="content-section">
       <!-- Header -->
       <div class="header-row">
@@ -238,19 +227,26 @@ onUnmounted(() => {
       >
         Shikigami List
       </h2>
+
+      <div class="search-bar">
+        <input v-model.trim="search" type="text" placeholder="Search Shikigami..." />
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+
       <div class="tabs-rarity">
         <button
           v-for="rarity in rarities"
           :key="rarity"
           :class="{ active: selectedRarity === rarity }"
-          @click="selectedRarity = rarity"
+          @click="selectedRarity = selectedRarity === rarity ? null : rarity"
         >
           {{ rarity }}
         </button>
       </div>
 
       <TransitionGroup name="shiki-fade" tag="div" class="shiki-list">
-        <div v-for="shiki in filteredShikigami" :key="shiki.id" class="shiki-item">
+        <div v-for="shiki in displayedShikigami" :key="shiki.id" class="shiki-item">
           <a :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
             <div class="shiki-image-wrapper">
               <img
@@ -279,19 +275,16 @@ onUnmounted(() => {
             </div>
           </a>
           <div class="flex flex-col items-center">
-            <a class="shiki-item-name" :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`">
+            <a
+              class="shiki-item-name"
+              :href="`/shikigami/${shiki.name.jp[1].replace(/ /g, '_')}`"
+            >
               {{ shiki.name.jp[1] }}
             </a>
             <span class="shiki-item-sub-name">{{ shiki.name.cn[0] }}</span>
           </div>
         </div>
       </TransitionGroup>
-
-      <div class="loading-dots" v-if="loading">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
     </div>
   </div>
 </template>
