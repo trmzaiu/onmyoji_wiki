@@ -25,19 +25,29 @@ function description(text) {
 }
 
 const emit = defineEmits(["update:showEvolution", "change-skill"]);
+
+const visibleTags = computed(() =>
+  (props.skill.tags || []).filter(
+    (tagId) => props.tagMap?.[tagId]?.name?.[props.language]
+  )
+);
 </script>
 
 <template>
   <div class="skill-header">
     <div class="skill-badges">
-      <div v-for="tagId in skill.tags" :key="tagId" class="skill-badge">
+      <div
+        v-for="tagId in visibleTags"
+        :key="tagId"
+        class="skill-badge"
+      >
         <div
           class="skill-badge-bg tint-base"
-          :class="'tint-' + (tagMap?.[tagId]?.color || 'grey')"
+          :class="'tint-' + (tagMap[tagId].color || 'grey')"
         ></div>
 
         <span class="skill-badge-text">
-          {{ tagMap?.[tagId]?.name?.[language] || tagMap?.[tagId]?.name.en }}
+          {{ tagMap[tagId].name[language] }}
         </span>
       </div>
     </div>
