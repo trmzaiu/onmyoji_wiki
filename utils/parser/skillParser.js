@@ -8,6 +8,7 @@ export const parseBaseDescription = ({
   language = "en",
   skillReplacer,
   effectReplacer,
+  skinReplacer,
 }) => {
   if (!text) return "";
 
@@ -46,6 +47,9 @@ export const parseBaseDescription = ({
 
     // EFFECTS
     [/<(e|eb)>(.*?)<\/\1>(\d+%)?/g, effectReplacer],
+
+    // SKIN
+    [/<n>(\d+)<\/n>/g, skinReplacer],
   ]);
 
   return processed;
@@ -72,6 +76,10 @@ export const parseSkillDescription = ({
 
     return name;
   };
+
+  // =========================
+  // Skill
+  // =========================
 
   const currentSkillReplacer = (_, type, id) => {
     const index = Number(id);
@@ -108,6 +116,38 @@ export const parseSkillDescription = ({
     );
   };
 
+  // =========================
+  // Skin
+  // =========================
+
+  const skinReplacer = (_, id) => {
+    const index = parseInt(id, 10);
+
+    const skinItem =
+      entity?.rarity !== "SP"
+        ? entity?.skins?.[index + 1]
+        : entity?.skins?.[index];
+
+    if (!skinItem) {
+      return _;
+    }
+
+    const keyword =
+      skinItem.name?.[language] ??
+      skinItem.name?.en ??
+      "";
+
+    if (!keyword) {
+      return _;
+    }
+
+    return `<span class="skin-keyword">${keyword}</span>`;
+  };
+
+  // =========================
+  // Effect
+  // =========================
+
   const tooltipEffectReplacer = (_, type, id, value) => {
     const effect = effectMap?.get(String(id));
 
@@ -131,6 +171,7 @@ export const parseSkillDescription = ({
       language,
       skillReplacer: tooltipSkillReplacer,
       effectReplacer: tooltipEffectReplacer,
+      skinReplacer,
     });
 
   const effectReplacer = (_, type, id, value) => {
@@ -166,5 +207,6 @@ export const parseSkillDescription = ({
     language,
     skillReplacer: currentSkillReplacer,
     effectReplacer,
+    skinReplacer,
   });
 };

@@ -184,11 +184,8 @@ export function useShikigami() {
         illustrationHasMore.value = false;
       }
 
-      console.log("I:", illustrations);
-
       illustrationPage.value++;
     } catch (error) {
-      console.error("Fetch illustrations error:", error);
     } finally {
       illustrationLoading.value = false;
     }

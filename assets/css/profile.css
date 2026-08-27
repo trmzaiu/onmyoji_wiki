@@ -24,7 +24,7 @@
 	align-items: center;
 	justify-content: center;
 
-	overflow: hidden;
+	overflow: visible;
 }
 
 .character-image {

@@ -12,7 +12,7 @@ const subSkillConfig = computed(() => {
   const id = props.shikigami.id;
   const skillIndex = props.skillIndex;
 
-  if (id === 107 && skillIndex === 0) {
+  if (id === 313 && skillIndex === 0) {
     return {
       titleSkill: 1,
       imagePrefix: "SubSkill",
@@ -22,7 +22,7 @@ const subSkillConfig = computed(() => {
     };
   }
 
-  if (id === 107 && skillIndex === 2) {
+  if (id === 313 && skillIndex === 2) {
     return {
       titleSkill: 1,
       imagePrefix: "SubSkill",
